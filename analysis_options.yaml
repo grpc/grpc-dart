@@ -11,6 +11,8 @@ linter:
     - hash_and_equals
     - iterable_contains_unrelated_type
     - list_remove_unrelated_type
+    - prefer_final_fields
+    - prefer_final_locals
     - test_types_in_equals
     - unrelated_type_equality_checks
     - valid_regexps

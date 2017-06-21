@@ -43,7 +43,7 @@ StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor() =>
         handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
       if (value is GrpcData) {
         if (value.isCompressed) {
-          // TODO(jakobr): Decompress...
+          // TODO(dart-lang/grpc-dart#6): Actually handle decompression.
           sink.add(new GrpcData(value.data, isCompressed: false));
           return;
         }
@@ -70,7 +70,7 @@ class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
     final payloadLength = payload.length;
     final bytes = new Uint8List(payloadLength + 5);
     final header = bytes.buffer.asByteData(0, 5);
-    header.setUint8(0, 0); // No compression
+    header.setUint8(0, 0); // TODO(dart-lang/grpc-dart#6): Handle compression
     header.setUint32(1, payloadLength);
     bytes.setRange(5, bytes.length, payload);
     return bytes;
@@ -80,7 +80,7 @@ class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
 class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
   @override
   GrpcMessage convert(StreamMessage input) {
-    _GrpcMessageSink sink = new _GrpcMessageSink();
+    final sink = new _GrpcMessageSink();
     startChunkedConversion(sink)
       ..add(input)
       ..close();
@@ -96,7 +96,7 @@ class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
 class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
   final Sink<GrpcMessage> _out;
 
-  Uint8List _dataHeader = new Uint8List(5);
+  final _dataHeader = new Uint8List(5);
   Uint8List _data;
   int _dataOffset = 0;
 

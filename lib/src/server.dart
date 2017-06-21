@@ -34,7 +34,7 @@ class ServiceMethod<Q, R> {
 
 /// Definition of a gRPC service.
 abstract class Service {
-  Map<String, ServiceMethod> _$methods = {};
+  final Map<String, ServiceMethod> _$methods = {};
 
   String get $name;
 
@@ -50,14 +50,13 @@ abstract class Service {
 /// Listens for incoming gRPC calls, dispatching them to a [ServerHandler].
 class Server {
   final Map<String, Service> _services = {};
-  MultiProtocolHttpServer _server;
+  ServerSocket _server;
 
-  SecurityContext _security;
+  final _connections = <ServerTransportConnection>[];
+
   final int _port;
 
-  Server({@required SecurityContext security, int port = 443})
-      : _port = port,
-        _security = security ?? new SecurityContext();
+  Server({int port = 8080}) : _port = port;
 
   void addService(Service service) {
     _services[service.$name] = service;
@@ -66,26 +65,31 @@ class Server {
   ServiceMethod _lookupMethod(String service, String method) =>
       _services[service]?.$lookupMethod(method);
 
-  void _handleHttp11(HttpRequest request) {
-    // TODO(jakobr): Handle upgrade to h2c, but only if insecure is allowed.
-    request.response.statusCode = 505;
-    request.response.write('HTTP/2 required.');
-    request.response.close();
-  }
-
-  void _handleHttp2(ServerTransportStream stream) {
-    new ServerHandler(_lookupMethod, stream).handle();
-  }
-
   Future<Null> serve() async {
-    _server = await MultiProtocolHttpServer.bind('0.0.0.0', _port, _security);
-    _server.startServing(_handleHttp11, _handleHttp2, onError: (error, stack) {
-      print('Error: $error');
+    // TODO(dart-lang/grpc-dart#4): Add TLS support.
+    // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
+    _server = await ServerSocket.bind('0.0.0.0', _port);
+    _server.listen((socket) {
+      final connection = new ServerTransportConnection.viaSocket(socket);
+      _connections.add(connection);
+      connection.incomingStreams.listen((stream) {
+        new ServerHandler(_lookupMethod, stream).handle();
+      }, onError: (error) {
+        print('Connection error: $error');
+      }, onDone: () {
+        _connections.remove(connection);
+      });
+    }, onError: (error) {
+      print('Socket error: $error');
     });
   }
 
-  void shutdown() {
-    _server?.close();
+  Future<Null> shutdown() {
+    final done = _connections.map((connection) => connection.finish()).toList();
+    if (_server != null) {
+      done.add(_server.close());
+    }
+    return Future.wait(done);
   }
 }
 
@@ -190,7 +194,7 @@ class ServerHandler {
         ..close();
     }
 
-    var data =
+    final data =
         message as GrpcData; // TODO(jakobr): Cast should not be necessary here.
     var request;
     try {

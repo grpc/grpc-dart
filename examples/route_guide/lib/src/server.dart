@@ -109,19 +109,19 @@ class RouteGuideService extends RouteGuideServiceBase {
       return num * PI / 180;
     }
 
-    var lat1 = start.latitude / coordFactor;
-    var lat2 = end.latitude / coordFactor;
-    var lon1 = start.longitude / coordFactor;
-    var lon2 = end.longitude / coordFactor;
-    var R = 6371000; // metres
-    var phi1 = toRadians(lat1);
-    var phi2 = toRadians(lat2);
-    var dLat = toRadians(lat2 - lat1);
-    var dLon = toRadians(lon2 - lon1);
+    final lat1 = start.latitude / coordFactor;
+    final lat2 = end.latitude / coordFactor;
+    final lon1 = start.longitude / coordFactor;
+    final lon2 = end.longitude / coordFactor;
+    final R = 6371000; // metres
+    final phi1 = toRadians(lat1);
+    final phi2 = toRadians(lat2);
+    final dLat = toRadians(lat2 - lat1);
+    final dLon = toRadians(lon2 - lon1);
 
-    var a = sin(dLat / 2) * sin(dLat / 2) +
+    final a = sin(dLat / 2) * sin(dLat / 2) +
         cos(phi1) * cos(phi2) * sin(dLon / 2) * sin(dLon / 2);
-    var c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
     return R * c;
   }
@@ -129,10 +129,7 @@ class RouteGuideService extends RouteGuideServiceBase {
 
 class Server {
   Future<Null> main(List<String> args) async {
-    final security = new SecurityContext();
-    security.usePrivateKey('data/key.pem', password: 'hestfisker');
-    security.useCertificateChain('data/cert.pem');
-    final server = new grpc.Server(security: security, port: 8443)
+    final server = new grpc.Server(port: 8080)
       ..addService(new RouteGuideService());
     await server.serve();
     print('Server listening...');

@@ -20,20 +20,13 @@ class ClientChannel {
   final List<Socket> _sockets = [];
   final List<TransportConnection> _connections = [];
 
-  final SecurityContext securityContext;
-  final bool Function(X509Certificate certificate) onBadCertificate;
-
   // TODO(jakobr): Channel options.
-  ClientChannel(this.host,
-      {this.port = 443, this.securityContext, this.onBadCertificate});
+  ClientChannel(this.host, {this.port = 8080});
 
   /// Returns a connection to this [Channel]'s RPC endpoint. The connection may
   /// be shared between multiple RPC calls.
   Future<ClientTransportConnection> connect() async {
-    final socket = await SecureSocket.connect(host, port,
-        supportedProtocols: ['h2', 'http/1.1'],
-        context: securityContext,
-        onBadCertificate: onBadCertificate);
+    final socket = await Socket.connect(host, port);
     _sockets.add(socket);
     final connection = new ClientTransportConnection.viaSocket(socket);
     _connections.add(connection);
@@ -51,18 +44,25 @@ class ClientChannel {
 
 /// Description of a gRPC method.
 class ClientMethod<Q, R> {
-  final String service;
-  final String method;
-  String get path => '/$service/$method';
+  final String path;
   final List<int> Function(Q value) requestSerializer;
   final R Function(List<int> value) responseDeserializer;
 
-  ClientMethod(this.service, this.method, this.requestSerializer,
-      this.responseDeserializer);
+  ClientMethod(this.path, this.requestSerializer, this.responseDeserializer);
 }
 
 /// An active call to a gRPC endpoint.
 class ClientCall<Q, R> implements Response {
+  static final _methodPost = new Header.ascii(':method', 'POST');
+  static final _schemeHttp = new Header.ascii(':scheme', 'http');
+  static final _schemeHttps = new Header.ascii(':scheme', 'https');
+  static final _contentTypeGrpc =
+      new Header.ascii('content-type', 'application/grpc');
+  static final _teTrailers = new Header.ascii('te', 'trailers');
+  static final _grpcAcceptEncoding =
+      new Header.ascii('grpc-accept-encoding', 'identity');
+  static final _userAgent = new Header.ascii('user-agent', 'dart-grpc/0.2.0');
+
   final ClientChannel _channel;
 
   final Completer<Map<String, String>> _headers = new Completer();
@@ -99,15 +99,15 @@ class ClientCall<Q, R> implements Response {
     final connection = await _channel.connect();
     // TODO(jakobr): Populate HTTP-specific headers in connection?
     final headers = <Header>[
-      new Header.ascii(':method', 'POST'),
-      new Header.ascii(':scheme', 'https'),
+      _methodPost,
+      _schemeHttp,
       new Header.ascii(':path', path),
       new Header.ascii(':authority', _channel.host),
       new Header.ascii('grpc-timeout', '5S'),
-      new Header.ascii('content-type', 'application/grpc'),
-      new Header.ascii('te', 'trailers'),
-      new Header.ascii('grpc-accept-encoding', 'identity'),
-      new Header.ascii('user-agent', 'dart-grpc/0.2.0'),
+      _contentTypeGrpc,
+      _teTrailers,
+      _grpcAcceptEncoding,
+      _userAgent,
     ];
     metadata.forEach((key, value) {
       // TODO(jakobr): Filter out headers owned by gRPC.
@@ -119,7 +119,8 @@ class ClientCall<Q, R> implements Response {
         .map(GrpcHttpEncoder.frame)
         .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
         .handleError(_onRequestError)
-        .pipe(_stream.outgoingMessages);
+        .pipe(_stream.outgoingMessages)
+        .catchError(_onRequestError);
     // The response stream might have been listened to before _stream was ready,
     // so try setting up the subscription here as well.
     _onResponseListen();

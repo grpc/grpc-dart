@@ -21,33 +21,24 @@ abstract class RouteGuideClient {
 class RouteGuideClientImpl implements RouteGuideClient {
   final ClientChannel _channel;
 
-  ClientMethod<Point, Feature> _$getFeature;
-  ClientMethod<Rectangle, Feature> _$listFeatures;
-  ClientMethod<Point, RouteSummary> _$recordRoute;
-  ClientMethod<RouteNote, RouteNote> _$routeChat;
+  static final _$getFeature = new ClientMethod<Point, Feature>(
+      '/routeguide.RouteGuide/GetFeature',
+      (Point value) => value.writeToBuffer(),
+      (List<int> value) => new Feature.fromBuffer(value));
+  static final _$listFeatures = new ClientMethod<Rectangle, Feature>(
+      '/routeguide.RouteGuide/ListFeatures',
+      (Rectangle value) => value.writeToBuffer(),
+      (List<int> value) => new Feature.fromBuffer(value));
+  static final _$recordRoute = new ClientMethod<Point, RouteSummary>(
+      '/routeguide.RouteGuide/RecordRoute',
+      (Point value) => value.writeToBuffer(),
+      (List<int> value) => new RouteSummary.fromBuffer(value));
+  static final _$routeChat = new ClientMethod<RouteNote, RouteNote>(
+      '/routeguide.RouteGuide/RouteChat',
+      (RouteNote value) => value.writeToBuffer(),
+      (List<int> value) => new RouteNote.fromBuffer(value));
 
-  RouteGuideClientImpl(this._channel) {
-    _$getFeature = new ClientMethod(
-        'routeguide.RouteGuide',
-        'GetFeature',
-        (Point value) => value.writeToBuffer(),
-        (List<int> value) => new Feature.fromBuffer(value));
-    _$listFeatures = new ClientMethod(
-        'routeguide.RouteGuide',
-        'ListFeatures',
-        (Rectangle value) => value.writeToBuffer(),
-        (List<int> value) => new Feature.fromBuffer(value));
-    _$recordRoute = new ClientMethod(
-        'routeguide.RouteGuide',
-        'RecordRoute',
-        (Point value) => value.writeToBuffer(),
-        (List<int> value) => new RouteSummary.fromBuffer(value));
-    _$routeChat = new ClientMethod(
-        'routeguide.RouteGuide',
-        'RouteChat',
-        (RouteNote value) => value.writeToBuffer(),
-        (List<int> value) => new RouteNote.fromBuffer(value));
-  }
+  RouteGuideClientImpl(this._channel);
 
   @override
   ResponseFuture<Feature> getFeature(Point request) {
@@ -124,8 +115,7 @@ abstract class RouteGuideServiceBase extends Service {
 
   Stream<Feature> listFeatures_Pre(
       ServerContext context, Future<Rectangle> request) async* {
-    final results = listFeatures(context, await request);
-    await for (var result in results) yield result;
+    yield* listFeatures(context, await request);
   }
 
   Future<Feature> getFeature(ServerContext context, Point request);

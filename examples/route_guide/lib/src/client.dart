@@ -16,11 +16,7 @@ class Client {
   RouteGuideClient stub;
 
   Client() {
-    channel =
-        new ClientChannel('0.0.0.0', port: 8443, onBadCertificate: (cert) {
-      // TODO(jakobr): Actually deal with certificates.
-      return true;
-    });
+    channel = new ClientChannel('0.0.0.0', port: 8080);
     stub = new RouteGuideClient(channel);
   }
 

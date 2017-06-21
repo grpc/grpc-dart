@@ -32,7 +32,7 @@ void main() {
     });
 
     test('converts chunked data correctly', () async {
-      var result = output.toList();
+      final result = output.toList();
       input
         ..add(new HeadersStreamMessage([]))
         ..add(new DataStreamMessage([0, 0]))
@@ -44,7 +44,7 @@ void main() {
         ..add(new DataStreamMessage([4, 48, 49, 50, 51, 1, 0, 0, 1, 0]))
         ..add(new DataStreamMessage(new List.filled(256, 90)));
       input.close();
-      var converted = await result;
+      final converted = await result;
       expect(converted.length, 6);
 
       void verify(GrpcData message, List<int> expected) {
@@ -60,7 +60,7 @@ void main() {
     });
 
     test('throws error if data is received after trailers', () async {
-      var result = output.toList();
+      final result = output.toList();
       input
         ..add(new HeadersStreamMessage([]))
         ..add(new HeadersStreamMessage([]))
@@ -76,7 +76,7 @@ void main() {
 
     test('throws error if input is closed while receiving data header',
         () async {
-      var result = output.toList();
+      final result = output.toList();
       input
         ..add(new HeadersStreamMessage([]))
         ..add(new DataStreamMessage([0, 0, 0]))
@@ -91,7 +91,7 @@ void main() {
     });
 
     test('throws error if input is closed while receiving data', () async {
-      var result = output.toList();
+      final result = output.toList();
       input
         ..add(new HeadersStreamMessage([]))
         ..add(new DataStreamMessage([0, 0, 0, 0, 2, 1]))
@@ -107,7 +107,7 @@ void main() {
 
     test('throws error if receiving metadata while reading data header',
         () async {
-      var result = output.toList();
+      final result = output.toList();
       input
         ..add(new HeadersStreamMessage([]))
         ..add(new DataStreamMessage([0, 0, 0, 0]))
@@ -123,7 +123,7 @@ void main() {
     });
 
     test('throws error if receiving metadata while reading data', () async {
-      var result = output.toList();
+      final result = output.toList();
       input
         ..add(new HeadersStreamMessage([]))
         ..add(new DataStreamMessage([0, 0, 0, 0, 2, 1]))
@@ -140,14 +140,14 @@ void main() {
     });
 
     test('discards empty data frames, but not empty gRPC frames', () async {
-      var result = output.toList();
+      final result = output.toList();
       input
         ..add(new HeadersStreamMessage([]))
         ..add(new DataStreamMessage([]))
         ..add(new DataStreamMessage([0, 0, 0, 0, 2, 0, 1]))
         ..add(new DataStreamMessage([0, 0, 0, 0, 0]))
         ..close();
-      var converted = await result;
+      final converted = await result;
       expect(converted.length, 3);
       expect(converted[0], new isInstanceOf<GrpcMetadata>());
       expect(converted[1], new isInstanceOf<GrpcData>());
