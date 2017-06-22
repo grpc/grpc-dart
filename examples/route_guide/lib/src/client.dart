@@ -87,7 +87,7 @@ class Client {
                 coordFactor}');
         yield point;
         await new Future.delayed(
-            new Duration(milliseconds: 500 + random.nextInt(1000)));
+            new Duration(milliseconds: 500 + random.nextInt(100)));
       }
     }
 
@@ -101,13 +101,6 @@ class Client {
   /// Run the routeChat demo. Send some chat messages, and print any chat
   /// messages that are sent from the server.
   Future<Null> runRouteChat() async {
-    final request = new StreamController<RouteNote>();
-    final call = stub.routeChat(request.stream);
-    final responseDone = call.forEach((note) {
-      print('Got message ${note.message} at ${note.location.latitude}, ${note
-          .location.longitude}');
-    });
-
     RouteNote createNote(String message, int latitude, int longitude) {
       final location = new Point()
         ..latitude = latitude
@@ -124,14 +117,20 @@ class Client {
       createNote('Fourth message', 0, 0),
     ];
 
-    for (var note in notes) {
-      print(
-          'Sending message ${note.message} at ${note.location.latitude}, ${note
-              .location.longitude}');
-      request.add(note);
+    Stream<RouteNote> outgoingNotes() async* {
+      for (final note in notes) {
+        // Short delay to simulate some other interaction.
+        await new Future.delayed(new Duration(milliseconds: 10));
+        print('Sending message ${note.message} at ${note.location.latitude}, '
+            '${note.location.longitude}');
+        yield note;
+      }
     }
 
-    request.close();
-    await responseDone;
+    final call = stub.routeChat(outgoingNotes());
+    await call.forEach((note) {
+      print('Got message ${note.message} at ${note.location.latitude}, ${note
+          .location.longitude}');
+    });
   }
 }
