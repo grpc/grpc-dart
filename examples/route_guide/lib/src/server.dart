@@ -17,7 +17,7 @@ class RouteGuideService extends RouteGuideServiceBase {
 
   // getFeature handler. Returns a feature for the given location.
   // The [context] object provides access to client metadata, cancellation, etc.
-  Future<Feature> getFeature(grpc.ServerContext context, Point request) async {
+  Future<Feature> getFeature(grpc.ServiceCall call, Point request) async {
     return featuresDb.firstWhere((f) => f.location == request,
         orElse: () => new Feature()..location = request);
   }
@@ -46,7 +46,7 @@ class RouteGuideService extends RouteGuideServiceBase {
   /// listFeatures handler. Returns a stream of features within the given
   /// rectangle.
   Stream<Feature> listFeatures(
-      grpc.ServerContext context, Rectangle request) async* {
+      grpc.ServiceCall call, Rectangle request) async* {
     final normalizedRectangle = _normalize(request);
     // For each feature, check if it is in the given bounding box
     for (var feature in featuresDb) {
@@ -62,7 +62,7 @@ class RouteGuideService extends RouteGuideServiceBase {
   /// about the "trip": number of points, number of known features visited,
   /// total distance traveled, and total time spent.
   Future<RouteSummary> recordRoute(
-      grpc.ServerContext context, Stream<Point> request) async {
+      grpc.ServiceCall call, Stream<Point> request) async {
     int pointCount = 0;
     int featureCount = 0;
     double distance = 0.0;
@@ -94,7 +94,7 @@ class RouteGuideService extends RouteGuideServiceBase {
   /// responds with a stream of all previous messages at each of those
   /// locations.
   Stream<RouteNote> routeChat(
-      grpc.ServerContext context, Stream<RouteNote> request) async* {
+      grpc.ServiceCall call, Stream<RouteNote> request) async* {
     await for (var note in request) {
       final notes = routeNotes.putIfAbsent(note.location, () => <RouteNote>[]);
       for (var note in notes) yield note;

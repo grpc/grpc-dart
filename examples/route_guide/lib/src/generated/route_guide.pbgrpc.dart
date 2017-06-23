@@ -109,18 +109,18 @@ abstract class RouteGuideServiceBase extends Service {
   }
 
   Future<Feature> getFeature_Pre(
-      ServerContext context, Future<Point> request) async {
-    return getFeature(context, await request);
+      ServiceCall call, Future<Point> request) async {
+    return getFeature(call, await request);
   }
 
   Stream<Feature> listFeatures_Pre(
-      ServerContext context, Future<Rectangle> request) async* {
-    yield* listFeatures(context, await request);
+      ServiceCall call, Future<Rectangle> request) async* {
+    yield* listFeatures(call, await request);
   }
 
-  Future<Feature> getFeature(ServerContext context, Point request);
-  Stream<Feature> listFeatures(ServerContext context, Rectangle request);
+  Future<Feature> getFeature(ServiceCall call, Point request);
+  Stream<Feature> listFeatures(ServiceCall call, Rectangle request);
   Future<RouteSummary> recordRoute(
-      ServerContext context, Stream<Point> request);
-  Stream<RouteNote> routeChat(ServerContext context, Stream<RouteNote> request);
+      ServiceCall call, Stream<Point> request);
+  Stream<RouteNote> routeChat(ServiceCall call, Stream<RouteNote> request);
 }

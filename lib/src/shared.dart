@@ -12,16 +12,19 @@ abstract class Response {
   /// Header metadata returned from the server.
   ///
   /// The [headers] future will complete before any response objects become
-  /// available.
+  /// available. If [cancel] is called before the headers are available, the
+  /// returned future will complete with an error.
   Future<Map<String, String>> get headers;
 
   /// Trailer metadata returned from the server.
   ///
   /// The [trailers] future will complete after all responses have been received
-  /// from the server.
+  /// from the server. If [cancel] is called before the trailers are available,
+  /// the returned future will complete with an error.
   Future<Map<String, String>> get trailers;
 
-  /// Cancel this gRPC call.
+  /// Cancel this gRPC call. Any remaining request objects will not be sent, and
+  /// no further responses will be received.
   Future<Null> cancel();
 }
 
@@ -52,17 +55,4 @@ abstract class _ResponseMixin<Q, R> implements Response {
 
   @override
   Future<Null> cancel() => _call.cancel();
-}
-
-abstract class ServerContext {
-  Map<String, String> get clientMetadata;
-
-  Map<String, String> get headers;
-  Map<String, String> get trailers;
-
-  int get timeout;
-  bool get isCanceled;
-
-  void sendHeaders();
-  void sendTrailer(int status, [String statusMessage]);
 }
