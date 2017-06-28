@@ -64,6 +64,7 @@ class ClientCall<Q, R> implements Response {
   static final _userAgent = new Header.ascii('user-agent', 'dart-grpc/0.2.0');
 
   final ClientChannel _channel;
+  final ClientMethod<Q, R> _method;
 
   final Completer<Map<String, String>> _headers = new Completer();
   final Completer<Map<String, String>> _trailers = new Completer();
@@ -76,18 +77,9 @@ class ClientCall<Q, R> implements Response {
   StreamController<R> _responses;
   StreamSubscription<GrpcMessage> _responseSubscription;
 
-  final List<int> Function(Q request) _requestSerializer;
-  final R Function(List<int> response) _responseDeserializer;
-
-  final String path;
-
   final Map<String, String> metadata;
 
-  ClientCall(this._channel, ClientMethod<Q, R> method,
-      {this.metadata = const {}})
-      : path = method.path,
-        _requestSerializer = method.requestSerializer,
-        _responseDeserializer = method.responseDeserializer {
+  ClientCall(this._channel, this._method, {this.metadata = const {}}) {
     _responses = new StreamController(onListen: _onResponseListen);
     _call().catchError((error) {
       _responses.addError(
@@ -101,7 +93,7 @@ class ClientCall<Q, R> implements Response {
     final headers = <Header>[
       _methodPost,
       _schemeHttp,
-      new Header.ascii(':path', path),
+      new Header.ascii(':path', _method.path),
       new Header.ascii(':authority', _channel.host),
       new Header.ascii('grpc-timeout', '5S'),
       _contentTypeGrpc,
@@ -115,7 +107,7 @@ class ClientCall<Q, R> implements Response {
     });
     _stream = connection.makeRequest(headers);
     _requests.stream
-        .map(_requestSerializer)
+        .map(_method.requestSerializer)
         .map(GrpcHttpEncoder.frame)
         .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
         .handleError(_onRequestError)
@@ -168,7 +160,7 @@ class ClientCall<Q, R> implements Response {
         _responseError(new GrpcError(1218, 'Received data after trailers'));
         return;
       }
-      _responses.add(_responseDeserializer(data.data));
+      _responses.add(_method.responseDeserializer(data.data));
       _hasReceivedResponses = true;
     } else if (data is GrpcMetadata) {
       if (!_headers.isCompleted) {

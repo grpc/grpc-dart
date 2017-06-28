@@ -16,7 +16,7 @@ class Client {
   RouteGuideClient stub;
 
   Client() {
-    channel = new ClientChannel('0.0.0.0', port: 8080);
+    channel = new ClientChannel('127.0.0.1', port: 8080);
     stub = new RouteGuideClient(channel);
   }
 

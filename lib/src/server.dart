@@ -133,7 +133,6 @@ abstract class ServiceCall {
   void sendTrailer(int status, [String statusMessage]);
 }
 
-
 /// Handles an incoming gRPC call.
 class ServerHandler {
   final ServerTransportStream _stream;

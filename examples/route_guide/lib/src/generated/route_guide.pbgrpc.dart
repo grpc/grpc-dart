@@ -120,7 +120,6 @@ abstract class RouteGuideServiceBase extends Service {
 
   Future<Feature> getFeature(ServiceCall call, Point request);
   Stream<Feature> listFeatures(ServiceCall call, Rectangle request);
-  Future<RouteSummary> recordRoute(
-      ServiceCall call, Stream<Point> request);
+  Future<RouteSummary> recordRoute(ServiceCall call, Stream<Point> request);
   Stream<RouteNote> routeChat(ServiceCall call, Stream<RouteNote> request);
 }
