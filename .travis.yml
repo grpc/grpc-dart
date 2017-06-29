@@ -5,17 +5,28 @@ sudo: false
 dart:
   - dev
   - stable
+
 # Define test tasks to run.
 dart_task:
-  # Run the tests -- include the default-skipped presubmit tests.
-  - test: --platform vm --run-skipped
-  - dartfmt
-  - dartanalyzer
+  - test: --platform vm
+
+# Only run one instance of the formatter and the analyzer, rather than running
+# them against each Dart version.
+matrix:
+  include:
+  - dart: stable
+    dart_task: dartfmt
+  - dart: dev
+    dart_task: dartanalyzer
 
 # Only building master means that we don't run two builds for each pull request.
 branches:
   only: [master]
 
+os:
+  - linux
+  - osx
+  
 cache:
   directories:
     - $HOME/.pub-cache
