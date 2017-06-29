@@ -55,7 +55,6 @@ class ClientMethod<Q, R> {
 class ClientCall<Q, R> implements Response {
   static final _methodPost = new Header.ascii(':method', 'POST');
   static final _schemeHttp = new Header.ascii(':scheme', 'http');
-  static final _schemeHttps = new Header.ascii(':scheme', 'https');
   static final _contentTypeGrpc =
       new Header.ascii('content-type', 'application/grpc');
   static final _teTrailers = new Header.ascii('te', 'trailers');
