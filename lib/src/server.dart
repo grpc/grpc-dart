@@ -5,8 +5,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:meta/meta.dart';
-import 'package:http2/multiprotocol_server.dart';
 import 'package:http2/transport.dart';
 
 import 'streams.dart';

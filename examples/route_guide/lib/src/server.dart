@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:math' show PI, atan2, cos, max, min, sin, sqrt;
 
 import 'package:grpc/grpc.dart' as grpc;
@@ -66,7 +65,7 @@ class RouteGuideService extends RouteGuideServiceBase {
     int pointCount = 0;
     int featureCount = 0;
     double distance = 0.0;
-    Point previous = null;
+    Point previous;
     final timer = new Stopwatch();
 
     await for (var location in request) {

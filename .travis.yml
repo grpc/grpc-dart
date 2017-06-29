@@ -16,8 +16,10 @@ matrix:
   include:
   - dart: stable
     dart_task: dartfmt
+  # Wish we could exclude `examples` in `analysis_options.yaml` but it seems
+  # blocked by https://github.com/dart-lang/sdk/issues/26212
   - dart: dev
-    dart_task: dartanalyzer
+    dart_task: dartanalyzer lib test
 
 # Only building master means that we don't run two builds for each pull request.
 branches:
