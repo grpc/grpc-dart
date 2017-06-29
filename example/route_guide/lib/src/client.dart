@@ -128,9 +128,9 @@ class Client {
     }
 
     final call = stub.routeChat(outgoingNotes());
-    await call.forEach((note) {
+    await for (var note in call) {
       print('Got message ${note.message} at ${note.location.latitude}, ${note
           .location.longitude}');
-    });
+    }
   }
 }
