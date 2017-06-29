@@ -1,11 +1,13 @@
 language: dart
 sudo: false
 
+# Run against dev and stable channels.
 dart:
   - dev
   - stable
+# Define test tasks to run.
 dart_task:
-  # Run the tests -- include the default-skipped presubmit tests
+  # Run the tests -- include the default-skipped presubmit tests.
   - test: --platform vm --run-skipped
   - dartfmt
   - dartanalyzer
