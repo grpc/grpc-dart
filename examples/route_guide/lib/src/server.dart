@@ -65,7 +65,7 @@ class RouteGuideService extends RouteGuideServiceBase {
     int pointCount = 0;
     int featureCount = 0;
     double distance = 0.0;
-    Point previous = null;
+    Point previous;
     final timer = new Stopwatch();
 
     await for (var location in request) {
