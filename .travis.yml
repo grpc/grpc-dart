@@ -1,0 +1,32 @@
+language: dart
+sudo: false
+
+# Run against dev and stable channels.
+dart:
+  - dev
+  - stable
+
+# Define test tasks to run.
+dart_task:
+  - test: --platform vm
+
+# Only run one instance of the formatter and the analyzer, rather than running
+# them against each Dart version.
+matrix:
+  include:
+  - dart: stable
+    dart_task: dartfmt
+  - dart: dev
+    dart_task: dartanalyzer
+
+# Only building master means that we don't run two builds for each pull request.
+branches:
+  only: [master]
+
+os:
+  - linux
+  - osx
+  
+cache:
+  directories:
+    - $HOME/.pub-cache
