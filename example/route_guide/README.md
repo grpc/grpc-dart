@@ -7,8 +7,8 @@ Please refer to [gRPC Basics: Dart]() for more information.
 See the definition of the route guide service in `protos/route_guide.proto`.
 
 # Run the sample code
-To compile and run the examples, assuming you are in the root of the route_guide
-folder, i.e., .../examples/route_guide/, first get the dependencies by running:
+To compile and run the example, assuming you are in the root of the route_guide
+folder, i.e., .../example/route_guide/, first get the dependencies by running:
 
 ```sh
 $ pub get
