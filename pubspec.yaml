@@ -1,6 +1,7 @@
 name: grpc
 description: Dart implementation of gRPC.
 version: 0.0.1
+author: Dart Team <misc@dartlang.org>
 homepage: https://github.com/dart-lang/grpc-dart
 
 environment:
