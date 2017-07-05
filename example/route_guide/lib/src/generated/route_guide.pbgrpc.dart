@@ -1,24 +1,18 @@
 ///
 //  Generated code. Do not modify.
-//
-// ...yeah, alright, is isn't actually generated *yet*, but this is just about
-// what it'll look like when it is...
 ///
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_prefixes
+library routeguide_route_guide_pbgrpc;
+
 import 'dart:async';
 
 import 'package:grpc/grpc.dart';
+
 import 'route_guide.pb.dart';
+export 'route_guide.pb.dart';
 
-abstract class RouteGuideClient {
-  ResponseFuture<Feature> getFeature(Point request);
-  ResponseStream<Feature> listFeatures(Rectangle request);
-  ResponseFuture<RouteSummary> recordRoute(Stream<Point> request);
-  ResponseStream<RouteNote> routeChat(Stream<RouteNote> request);
-
-  factory RouteGuideClient(ClientChannel channel) = RouteGuideClientImpl;
-}
-
-class RouteGuideClientImpl implements RouteGuideClient {
+class RouteGuideClient {
   final ClientChannel _channel;
 
   static final _$getFeature = new ClientMethod<Point, Feature>(
@@ -38,9 +32,8 @@ class RouteGuideClientImpl implements RouteGuideClient {
       (RouteNote value) => value.writeToBuffer(),
       (List<int> value) => new RouteNote.fromBuffer(value));
 
-  RouteGuideClientImpl(this._channel);
+  RouteGuideClient(this._channel);
 
-  @override
   ResponseFuture<Feature> getFeature(Point request) {
     final call = new ClientCall(_channel, _$getFeature);
     call.request
@@ -49,7 +42,6 @@ class RouteGuideClientImpl implements RouteGuideClient {
     return new ResponseFuture(call);
   }
 
-  @override
   ResponseStream<Feature> listFeatures(Rectangle request) {
     final call = new ClientCall(_channel, _$listFeatures);
     call.request
@@ -58,15 +50,12 @@ class RouteGuideClientImpl implements RouteGuideClient {
     return new ResponseStream(call);
   }
 
-  @override
   ResponseFuture<RouteSummary> recordRoute(Stream<Point> request) {
-    final call = new ClientCall(_channel, _$recordRoute,
-        metadata: {'grpc-timeout': '20S'});
+    final call = new ClientCall(_channel, _$recordRoute);
     request.pipe(call.request);
     return new ResponseFuture(call);
   }
 
-  @override
   ResponseStream<RouteNote> routeChat(Stream<RouteNote> request) {
     final call = new ClientCall(_channel, _$routeChat);
     request.pipe(call.request);

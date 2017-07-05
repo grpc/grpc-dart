@@ -87,7 +87,7 @@ class Client {
                 coordFactor}');
         yield point;
         await new Future.delayed(
-            new Duration(milliseconds: 500 + random.nextInt(100)));
+            new Duration(milliseconds: 200 + random.nextInt(100)));
       }
     }
 
