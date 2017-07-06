@@ -1,6 +1,8 @@
 ///
 //  Generated code. Do not modify.
 ///
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: library_prefixes
 library routeguide_route_guide;
 
 // ignore: UNUSED_SHOWN_NAME
@@ -34,7 +36,7 @@ class Point extends GeneratedMessage {
   }
 
   int get latitude => $_get(0, 1, 0);
-  void set latitude(int v) {
+  set latitude(int v) {
     $_setUnsignedInt32(0, 1, v);
   }
 
@@ -42,7 +44,7 @@ class Point extends GeneratedMessage {
   void clearLatitude() => clearField(1);
 
   int get longitude => $_get(1, 2, 0);
-  void set longitude(int v) {
+  set longitude(int v) {
     $_setUnsignedInt32(1, 2, v);
   }
 
@@ -79,7 +81,7 @@ class Rectangle extends GeneratedMessage {
   }
 
   Point get lo => $_get(0, 1, null);
-  void set lo(Point v) {
+  set lo(Point v) {
     setField(1, v);
   }
 
@@ -87,7 +89,7 @@ class Rectangle extends GeneratedMessage {
   void clearLo() => clearField(1);
 
   Point get hi => $_get(1, 2, null);
-  void set hi(Point v) {
+  set hi(Point v) {
     setField(2, v);
   }
 
@@ -125,7 +127,7 @@ class Feature extends GeneratedMessage {
   }
 
   String get name => $_get(0, 1, '');
-  void set name(String v) {
+  set name(String v) {
     $_setString(0, 1, v);
   }
 
@@ -133,7 +135,7 @@ class Feature extends GeneratedMessage {
   void clearName() => clearField(1);
 
   Point get location => $_get(1, 2, null);
-  void set location(Point v) {
+  set location(Point v) {
     setField(2, v);
   }
 
@@ -171,7 +173,7 @@ class RouteNote extends GeneratedMessage {
   }
 
   Point get location => $_get(0, 1, null);
-  void set location(Point v) {
+  set location(Point v) {
     setField(1, v);
   }
 
@@ -179,7 +181,7 @@ class RouteNote extends GeneratedMessage {
   void clearLocation() => clearField(1);
 
   String get message => $_get(1, 2, '');
-  void set message(String v) {
+  set message(String v) {
     $_setString(1, 2, v);
   }
 
@@ -220,7 +222,7 @@ class RouteSummary extends GeneratedMessage {
   }
 
   int get pointCount => $_get(0, 1, 0);
-  void set pointCount(int v) {
+  set pointCount(int v) {
     $_setUnsignedInt32(0, 1, v);
   }
 
@@ -228,7 +230,7 @@ class RouteSummary extends GeneratedMessage {
   void clearPointCount() => clearField(1);
 
   int get featureCount => $_get(1, 2, 0);
-  void set featureCount(int v) {
+  set featureCount(int v) {
     $_setUnsignedInt32(1, 2, v);
   }
 
@@ -236,7 +238,7 @@ class RouteSummary extends GeneratedMessage {
   void clearFeatureCount() => clearField(2);
 
   int get distance => $_get(2, 3, 0);
-  void set distance(int v) {
+  set distance(int v) {
     $_setUnsignedInt32(2, 3, v);
   }
 
@@ -244,7 +246,7 @@ class RouteSummary extends GeneratedMessage {
   void clearDistance() => clearField(3);
 
   int get elapsedTime => $_get(3, 4, 0);
-  void set elapsedTime(int v) {
+  set elapsedTime(int v) {
     $_setUnsignedInt32(3, 4, v);
   }
 
