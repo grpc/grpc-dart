@@ -4,6 +4,6 @@
 
 import 'package:metadata/src/client.dart';
 
-main(List<String> args) async {
-  await new Client().main(args);
+main(List<String> args) {
+  new Client().main(args);
 }
