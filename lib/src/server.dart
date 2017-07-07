@@ -95,32 +95,36 @@ class Server {
 ///
 /// Gives the method handler access to custom metadata from the client, and
 /// ability to set custom metadata on the header/trailer sent to the client.
-abstract class ServiceCall {
+class ServiceCall {
+  final ServerHandler _handler;
+
+  ServiceCall(this._handler);
+
   /// Custom metadata from the client.
-  Map<String, String> get clientMetadata;
+  Map<String, String> get clientMetadata => _handler._clientMetadata;
 
   /// Custom metadata to be sent to the client. Will be [null] once the headers
   /// have been sent, either when [sendHeaders] is called, or when the first
   /// response message is sent.
-  Map<String, String> get headers;
+  Map<String, String> get headers => _handler._customHeaders;
 
   /// Custom metadata to be sent to the client after all response messages.
-  Map<String, String> get trailers;
+  Map<String, String> get trailers => _handler._customTrailers;
 
   /// Deadline for this call. If the call is still active after this time, then
   /// the client or server may cancel it.
-  DateTime get deadline;
+  DateTime get deadline => _handler._deadline;
 
   /// Returns [true] if the [deadline] has been exceeded.
-  bool get isTimedOut;
+  bool get isTimedOut => _handler._isTimedOut;
 
   /// Returns [true] if the client has canceled this call.
-  bool get isCanceled;
+  bool get isCanceled => _handler._isCanceled;
 
   /// Send response headers. This is done automatically before sending the first
   /// response message, but can be done manually before the first response is
   /// ready, if necessary.
-  void sendHeaders();
+  void sendHeaders() => _handler._sendHeaders();
 
   /// Send response trailers. A trailer indicating success ([status] == 0) will
   /// be sent automatically when all responses are sent. This method can be used
@@ -128,7 +132,9 @@ abstract class ServiceCall {
   ///
   /// The call will be closed after calling this method, and no further
   /// responses can be sent.
-  void sendTrailer(int status, [String statusMessage]);
+  /// responses can be sent.
+  void sendTrailer(int status, [String statusMessage]) =>
+      _handler._sendTrailers(status: status, message: statusMessage);
 }
 
 /// Handles an incoming gRPC call.
@@ -144,12 +150,27 @@ class ServerHandler {
   StreamController _requests;
   bool _hasReceivedRequest = false;
 
+  Stream _responses;
   StreamSubscription _responseSubscription;
   bool _headersSent = false;
 
+  Map<String, String> _customHeaders = {};
+  Map<String, String> _customTrailers = {};
+
+  DateTime _deadline;
+  bool _isCanceled = false;
+
   ServerHandler(this._methodLookup, this._stream);
 
+  bool get isCanceled => _isCanceled;
+  bool get _isTimedOut => _deadline?.isBefore(new DateTime.now()) ?? false;
+
   void handle() {
+    _stream.onTerminated = (int errorCode) {
+      _isCanceled = true;
+      _responseSubscription?.cancel();
+    };
+
     _incomingSubscription = _stream.incomingMessages
         .transform(new GrpcHttpDecoder())
         .transform(grpcDecompressor())
@@ -176,7 +197,7 @@ class ServerHandler {
     final method = path[2];
     _descriptor = _methodLookup(service, method);
     if (_descriptor == null) {
-      _sendError(404, 'Method not found');
+      _sendError(404, 'Path /$service/$method not found');
       return;
     }
     _startStreamingRequest();
@@ -190,23 +211,23 @@ class ServerHandler {
         onResume: _incomingSubscription.resume);
     _incomingSubscription.onData(_onDataActive);
 
-    Stream responses;
+    final context = new ServiceCall(this);
     if (_descriptor.streamingResponse) {
       if (_descriptor.streamingRequest) {
-        responses = _descriptor.handler(null, _requests.stream);
+        _responses = _descriptor.handler(context, _requests.stream);
       } else {
-        responses = _descriptor.handler(null, _requests.stream.single);
+        _responses = _descriptor.handler(context, _requests.stream.single);
       }
     } else {
       Future response;
       if (_descriptor.streamingRequest) {
-        response = _descriptor.handler(null, _requests.stream);
+        response = _descriptor.handler(context, _requests.stream);
       } else {
-        response = _descriptor.handler(null, _requests.stream.single);
+        response = _descriptor.handler(context, _requests.stream.single);
       }
-      responses = response.asStream();
+      _responses = response.asStream();
     }
-    _responseSubscription = responses.listen(_onResponse,
+    _responseSubscription = _responses.listen(_onResponse,
         onError: _onResponseError,
         onDone: _onResponseDone,
         cancelOnError: true);
@@ -251,9 +272,23 @@ class ServerHandler {
   // -- Active state, outgoing response data --
 
   void _onResponse(response) {
-    _ensureHeadersSent();
-    final bytes = _descriptor.responseSerializer(response);
-    _stream.sendData(GrpcHttpEncoder.frame(bytes));
+    try {
+      if (!_headersSent) {
+        _sendHeaders();
+      }
+      final bytes = _descriptor.responseSerializer(response);
+      _stream.sendData(GrpcHttpEncoder.frame(bytes));
+    } catch (error) {
+      _responseSubscription.cancel();
+      if (!_requests.isClosed) {
+        // If we can, alert the handler that things are going wrong.
+        _requests
+            .addError(new GrpcError(1001, 'Error sending response: $error'));
+        _requests.close();
+      }
+      _incomingSubscription.cancel();
+      _stream.terminate();
+    }
   }
 
   void _onResponseDone() {
@@ -269,36 +304,44 @@ class ServerHandler {
     }
   }
 
-  void _ensureHeadersSent() {
-    if (_headersSent) return;
-    _sendHeaders();
-  }
-
   void _sendHeaders() {
     if (_headersSent) throw new GrpcError(1514, 'Headers already sent');
-    final headers = [
-      new Header.ascii(':status',
-          200.toString()), // TODO(jakobr): Should really be on package:http2.
-      new Header.ascii('content-type', 'application/grpc'),
-    ];
-    // headers.addAll(context.headers);
+    final headersMap = <String, String>{};
+    headersMap.addAll(_customHeaders);
+    _customHeaders = null;
+
+    // TODO(jakobr): Should come from package:http2?
+    headersMap[':status'] = '200';
+    headersMap['content-type'] = 'application/grpc';
+
+    final headers = <Header>[];
+    headersMap
+        .forEach((key, value) => headers.add(new Header.ascii(key, value)));
     _stream.sendHeaders(headers);
     _headersSent = true;
   }
 
   void _sendTrailers({int status = 0, String message}) {
-    final trailers = <Header>[];
+    final trailersMap = <String, String>{};
     if (!_headersSent) {
-      trailers.addAll([
-        new Header.ascii(':status', 200.toString()),
-        new Header.ascii('content-type', 'application/grpc'),
-      ]);
+      trailersMap.addAll(_customHeaders);
+      _customHeaders = null;
     }
-    trailers.add(new Header.ascii('grpc-status', status.toString()));
+    trailersMap.addAll(_customTrailers);
+    _customTrailers = null;
+    if (!_headersSent) {
+      // TODO(jakobr): Should come from package:http2?
+      trailersMap[':status'] = '200';
+      trailersMap['content-type'] = 'application/grpc';
+    }
+    trailersMap['grpc-status'] = status.toString();
     if (message != null) {
-      trailers.add(new Header.ascii('grpc-message', message));
+      trailersMap['grpc-message'] = message;
     }
-    // trailers.addAll(context.trailers);
+
+    final trailers = <Header>[];
+    trailersMap
+        .forEach((key, value) => trailers.add(new Header.ascii(key, value)));
     _stream.sendHeaders(trailers, endStream: true);
     // We're done!
     _incomingSubscription.cancel();
@@ -308,9 +351,11 @@ class ServerHandler {
   // -- All states, incoming error / stream closed --
 
   void _onError(error) {
-    print('Stream error: $error');
-    // TODO(jakobr): Handle. Might be a cancel request from the client, which
-    // should be propagated.
+    // Exception from the incoming stream. Most likely a cancel request from the
+    // client, so we treat it as such.
+    _isCanceled = true;
+    _requests.addError(new GrpcError(1001, 'Canceled'));
+    _responseSubscription?.cancel();
   }
 
   void _onDoneError() {
@@ -327,7 +372,6 @@ class ServerHandler {
   }
 
   void _sendError(int status, String message) {
-    print('Sending error $status: $message');
     _sendTrailers(status: status, message: message);
   }
 }

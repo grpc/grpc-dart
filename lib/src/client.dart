@@ -12,16 +12,44 @@ import 'package:http2/transport.dart';
 import 'shared.dart';
 import 'streams.dart';
 
+const _reservedHeaders = const [
+  'content-type',
+  'te',
+  'grpc-timeout',
+  'grpc-accept-encoding',
+  'user-agent',
+];
+
+/// Runtime options for a RPC call.
+class CallOptions {
+  final Map<String, String> metadata;
+  final Duration timeout;
+
+  CallOptions._(this.metadata, this.timeout);
+
+  factory CallOptions({Map<String, String> metadata, Duration timeout}) {
+    final sanitizedMetadata = <String, String>{};
+    metadata?.forEach((key, value) {
+      final lowerCaseKey = key.toLowerCase();
+      if (!lowerCaseKey.startsWith(':') &&
+          !_reservedHeaders.contains(lowerCaseKey)) {
+        sanitizedMetadata[lowerCaseKey] = value;
+      }
+    });
+    return new CallOptions._(new Map.unmodifiable(sanitizedMetadata), timeout);
+  }
+}
+
 /// A channel to an RPC endpoint.
 class ClientChannel {
   final String host;
   final int port;
+  final CallOptions options;
 
   final List<Socket> _sockets = [];
   final List<TransportConnection> _connections = [];
 
-  // TODO(jakobr): Channel options.
-  ClientChannel(this.host, {this.port = 8080});
+  ClientChannel(this.host, {this.port = 8080, this.options});
 
   /// Returns a connection to this [Channel]'s RPC endpoint. The connection may
   /// be shared between multiple RPC calls.
@@ -76,32 +104,65 @@ class ClientCall<Q, R> implements Response {
   StreamController<R> _responses;
   StreamSubscription<GrpcMessage> _responseSubscription;
 
-  final Map<String, String> metadata;
+  final CallOptions options;
 
-  ClientCall(this._channel, this._method, {this.metadata = const {}}) {
+  Future<Null> _callSetup;
+
+  ClientCall(this._channel, this._method, {this.options}) {
     _responses = new StreamController(onListen: _onResponseListen);
-    _call().catchError((error) {
+    _callSetup = _initiateCall().catchError((error) {
       _responses.addError(
           new GrpcError(1703, 'Error connecting: ${error.toString()}'));
     });
   }
 
-  Future<Null> _call() async {
+  /// Convert [timeout] to grpc-timeout header string format.
+  // Mostly inspired by grpc-java implementation.
+  // TODO(jakobr): Modify to match grpc/core implementation instead.
+  static String toTimeoutString(Duration duration) {
+    const cutoff = 100000;
+    final timeout = duration.inMicroseconds;
+    if (timeout < 0) {
+      // Smallest possible timeout.
+      return '1n';
+    } else if (timeout < cutoff) {
+      return '${timeout}u';
+    } else if (timeout < cutoff * 1000) {
+      return '${timeout~/1000}m';
+    } else if (timeout < cutoff * 1000 * 1000) {
+      return '${timeout~/1000000}S';
+    } else if (timeout < cutoff * 1000 * 1000 * 60) {
+      return '${timeout~/60000000}M';
+    } else {
+      return '${timeout~/3600000000}H';
+    }
+  }
+
+  Future<Null> _initiateCall() async {
     final connection = await _channel.connect();
+    final timeout = options?.timeout ?? _channel.options?.timeout;
     // TODO(jakobr): Populate HTTP-specific headers in connection?
     final headers = <Header>[
       _methodPost,
       _schemeHttp,
       new Header.ascii(':path', _method.path),
       new Header.ascii(':authority', _channel.host),
-      new Header.ascii('grpc-timeout', '5S'),
+    ];
+    if (timeout != null) {
+      headers.add(new Header.ascii('grpc-timeout', toTimeoutString(timeout)));
+    }
+    headers.addAll([
       _contentTypeGrpc,
       _teTrailers,
       _grpcAcceptEncoding,
       _userAgent,
-    ];
-    metadata.forEach((key, value) {
-      // TODO(jakobr): Filter out headers owned by gRPC.
+    ]);
+    // TODO(jakobr): Flip this around, and have the Channel create the call
+    // object and apply options (including the above TODO).
+    final customMetadata = <String, String>{};
+    customMetadata.addAll(_channel.options?.metadata ?? {});
+    customMetadata.addAll(options?.metadata ?? {});
+    customMetadata.forEach((key, value) {
       headers.add(new Header.ascii(key, value));
     });
     _stream = connection.makeRequest(headers);
@@ -250,11 +311,16 @@ class ClientCall<Q, R> implements Response {
 
   @override
   Future<Null> cancel() async {
-    _stream.terminate();
-    final futures = <Future>[
-      _requests.close(),
-      _responses.close(),
-    ];
+    _callSetup.whenComplete(() {
+      // Terminate the stream if the call connects after being canceled.
+      _stream?.terminate();
+    });
+    // Don't await _responses.close() here. It'll only complete once the done
+    // event has been delivered, and it's the caller of this function that is
+    // reading from responses as well, so we might end up deadlocked.
+    _responses.close();
+    _stream?.terminate();
+    final futures = <Future>[_requests.close()];
     if (_responseSubscription != null) {
       futures.add(_responseSubscription.cancel());
     }

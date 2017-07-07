@@ -2,8 +2,6 @@
 The route guide server and client demonstrate how to use Dart gRPC libraries to
 perform unary, client streaming, server streaming and full duplex RPCs.
 
-Please refer to [gRPC Basics: Dart]() for more information.
-
 See the definition of the route guide service in `protos/route_guide.proto`.
 
 # Run the sample code
