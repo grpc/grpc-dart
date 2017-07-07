@@ -15,12 +15,9 @@ class Client {
   ClientChannel channel;
   RouteGuideClient stub;
 
-  Client() {
+  Future<Null> main(List<String> args) async {
     channel = new ClientChannel('127.0.0.1', port: 8080);
     stub = new RouteGuideClient(channel);
-  }
-
-  Future<Null> main(List<String> args) async {
     // Run all of the demos in order.
     await runGetFeature();
     await runListFeatures();

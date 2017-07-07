@@ -116,6 +116,28 @@ class ClientCall<Q, R> implements Response {
     });
   }
 
+  /// Convert [timeout] to grpc-timeout header string format.
+  // Mostly inspired by grpc-java implementation.
+  // TODO(jakobr): Modify to match grpc/core implementation instead.
+  static String toTimeoutString(Duration duration) {
+    const cutoff = 100000;
+    final timeout = duration.inMicroseconds;
+    if (timeout < 0) {
+      // Smallest possible timeout.
+      return '1n';
+    } else if (timeout < cutoff) {
+      return '${timeout}u';
+    } else if (timeout < cutoff * 1000) {
+      return '${timeout~/1000}m';
+    } else if (timeout < cutoff * 1000 * 1000) {
+      return '${timeout~/1000000}S';
+    } else if (timeout < cutoff * 1000 * 1000 * 60) {
+      return '${timeout~/60000000}M';
+    } else {
+      return '${timeout~/3600000000}H';
+    }
+  }
+
   Future<Null> _initiateCall() async {
     final connection = await _channel.connect();
     final timeout = options?.timeout ?? _channel.options?.timeout;
@@ -127,10 +149,9 @@ class ClientCall<Q, R> implements Response {
       new Header.ascii(':authority', _channel.host),
     ];
     if (timeout != null) {
-      headers.add(new Header.ascii('grpc-timeout', '${timeout.inSeconds}S'));
+      headers.add(new Header.ascii('grpc-timeout', toTimeoutString(timeout)));
     }
     headers.addAll([
-      new Header.ascii('grpc-timeout', '5S'),
       _contentTypeGrpc,
       _teTrailers,
       _grpcAcceptEncoding,
