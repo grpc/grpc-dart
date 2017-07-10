@@ -27,7 +27,7 @@ void main() {
         await output.toList();
         fail('Did not throw exception');
       } on GrpcError catch (e) {
-        expect(e.code, 103);
+        expect(e.code, StatusCode.unimplemented);
         expect(e.message, 'Received data before header metadata');
       }
     });
@@ -70,7 +70,7 @@ void main() {
         await result;
         fail('Did not throw');
       } on GrpcError catch (e) {
-        expect(e.code, 102);
+        expect(e.code, StatusCode.unimplemented);
         expect(e.message, 'Received data after trailer metadata');
       }
     });
@@ -86,7 +86,7 @@ void main() {
         await result;
         fail('Did not throw');
       } on GrpcError catch (e) {
-        expect(e.code, 105);
+        expect(e.code, StatusCode.unavailable);
         expect(e.message, 'Closed in non-idle state');
       }
     });
@@ -101,7 +101,7 @@ void main() {
         await result;
         fail('Did not throw');
       } on GrpcError catch (e) {
-        expect(e.code, 105);
+        expect(e.code, StatusCode.unavailable);
         expect(e.message, 'Closed in non-idle state');
       }
     });
@@ -118,8 +118,8 @@ void main() {
         await result;
         fail('Did not throw');
       } on GrpcError catch (e) {
-        expect(e.code, 101);
-        expect(e.message, 'Received header while reading header at offset 4');
+        expect(e.code, StatusCode.unimplemented);
+        expect(e.message, 'Received header while reading data');
       }
     });
 
@@ -134,9 +134,8 @@ void main() {
         await result;
         fail('Did not throw');
       } on GrpcError catch (e) {
-        expect(e.code, 101);
-        expect(e.message,
-            'Received header while reading data (2 bytes) at offset 1');
+        expect(e.code, StatusCode.unimplemented);
+        expect(e.message, 'Received header while reading data');
       }
     });
 
