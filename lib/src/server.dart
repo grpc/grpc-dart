@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'package:http2/transport.dart';
 
+import 'status.dart';
 import 'streams.dart';
 
 /// Definition of a gRPC service method.
@@ -182,7 +183,7 @@ class ServerHandler {
 
   void _onDataIdle(GrpcMessage message) {
     if (message is! GrpcMetadata) {
-      _sendError(401, 'Expected header frame');
+      _sendError(new GrpcError.unimplemented('Expected header frame'));
       return;
     }
     final headerMessage = message
@@ -190,14 +191,15 @@ class ServerHandler {
     _clientMetadata = headerMessage.metadata;
     final path = _clientMetadata[':path'].split('/');
     if (path.length < 3) {
-      _sendError(404, 'Invalid path');
+      _sendError(new GrpcError.unimplemented('Invalid path'));
       return;
     }
     final service = path[1];
     final method = path[2];
     _descriptor = _methodLookup(service, method);
     if (_descriptor == null) {
-      _sendError(404, 'Path /$service/$method not found');
+      _sendError(
+          new GrpcError.unimplemented('Path /$service/$method not found'));
       return;
     }
     _startStreamingRequest();
@@ -239,29 +241,32 @@ class ServerHandler {
 
   void _onDataActive(GrpcMessage message) {
     if (message is! GrpcData) {
-      _sendError(711, 'Expected data frame');
+      _sendError(new GrpcError.unimplemented('Expected data frame'));
       _requests
-        ..addError(new GrpcError(712, 'No request received'))
+        ..addError(new GrpcError.unimplemented('No request received'))
         ..close();
       return;
     }
 
     if (_hasReceivedRequest && !_descriptor.streamingRequest) {
-      _sendError(712, 'Too many requests');
+      final error = new GrpcError.unimplemented('Too many requests');
+      _sendError(error);
       _requests
-        ..addError(new GrpcError(712, 'Too many requests'))
+        ..addError(error)
         ..close();
     }
 
-    final data =
-        message as GrpcData; // TODO(jakobr): Cast should not be necessary here.
+    // TODO(jakobr): Cast should not be necessary here.
+    final data = message as GrpcData;
     var request;
     try {
       request = _descriptor.requestDeserializer(data.data);
     } catch (error) {
-      _sendError(730, 'Error deserializing request: $error');
+      final grpcError =
+          new GrpcError.internal('Error deserializing request: $error');
+      _sendError(grpcError);
       _requests
-        ..addError(new GrpcError(730, 'Error deserializing request: $error'))
+        ..addError(grpcError)
         ..close();
       return;
     }
@@ -283,7 +288,7 @@ class ServerHandler {
       if (!_requests.isClosed) {
         // If we can, alert the handler that things are going wrong.
         _requests
-            .addError(new GrpcError(1001, 'Error sending response: $error'));
+            .addError(new GrpcError.internal('Error sending response: $error'));
         _requests.close();
       }
       _incomingSubscription.cancel();
@@ -297,15 +302,14 @@ class ServerHandler {
 
   void _onResponseError(error) {
     if (error is GrpcError) {
-      // TODO(jakobr): error.metadata...
-      _sendError(error.code, error.message);
+      _sendError(error);
     } else {
-      _sendError(107, error.toString());
+      _sendError(new GrpcError.unknown(error.toString()));
     }
   }
 
   void _sendHeaders() {
-    if (_headersSent) throw new GrpcError(1514, 'Headers already sent');
+    if (_headersSent) throw new GrpcError.internal('Headers already sent');
     final headersMap = <String, String>{};
     headersMap.addAll(_customHeaders);
     _customHeaders = null;
@@ -354,24 +358,25 @@ class ServerHandler {
     // Exception from the incoming stream. Most likely a cancel request from the
     // client, so we treat it as such.
     _isCanceled = true;
-    _requests.addError(new GrpcError(1001, 'Canceled'));
+    _requests.addError(new GrpcError.cancelled('Canceled'));
     _responseSubscription?.cancel();
   }
 
   void _onDoneError() {
-    _sendError(710, 'Request stream closed unexpectedly');
+    _sendError(new GrpcError.unavailable('Request stream closed unexpectedly'));
   }
 
   void _onDoneExpected() {
     if (!(_hasReceivedRequest || _descriptor.streamingRequest)) {
-      _sendError(730, 'Expected request message');
-      _requests.addError(new GrpcError(730, 'No request message received'));
+      final error = new GrpcError.unimplemented('Expected request message');
+      _sendError(error);
+      _requests.addError(error);
     }
     _requests.close();
     _incomingSubscription.cancel();
   }
 
-  void _sendError(int status, String message) {
-    _sendTrailers(status: status, message: message);
+  void _sendError(GrpcError error) {
+    _sendTrailers(status: error.code, message: error.message);
   }
 }

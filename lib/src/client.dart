@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 
 import 'shared.dart';
+import 'status.dart';
 import 'streams.dart';
 
 const _reservedHeaders = const [
@@ -112,7 +113,7 @@ class ClientCall<Q, R> implements Response {
     _responses = new StreamController(onListen: _onResponseListen);
     _callSetup = _initiateCall().catchError((error) {
       _responses.addError(
-          new GrpcError(1703, 'Error connecting: ${error.toString()}'));
+          new GrpcError.unavailable('Error connecting: ${error.toString()}'));
     });
   }
 
@@ -213,11 +214,13 @@ class ClientCall<Q, R> implements Response {
   void _onResponseData(GrpcMessage data) {
     if (data is GrpcData) {
       if (!_headers.isCompleted) {
-        _responseError(new GrpcError(1217, 'Received data before headers'));
+        _responseError(
+            new GrpcError.unimplemented('Received data before headers'));
         return;
       }
       if (_trailers.isCompleted) {
-        _responseError(new GrpcError(1218, 'Received data after trailers'));
+        _responseError(
+            new GrpcError.unimplemented('Received data after trailers'));
         return;
       }
       _responses.add(_method.responseDeserializer(data.data));
@@ -230,7 +233,8 @@ class ClientCall<Q, R> implements Response {
         return;
       }
       if (_trailers.isCompleted) {
-        _responseError(new GrpcError(1219, 'Received multiple trailers'));
+        _responseError(
+            new GrpcError.unimplemented('Received multiple trailers'));
         return;
       }
       final metadata = data.metadata;
@@ -240,11 +244,11 @@ class ClientCall<Q, R> implements Response {
         final status = int.parse(metadata['grpc-status']);
         final message = metadata['grpc-message'];
         if (status != 0) {
-          _responseError(new GrpcError(status, message, metadata));
+          _responseError(new GrpcError.custom(status, message));
         }
       }
     } else {
-      _responseError(new GrpcError(1220, 'Unexpected frame received'));
+      _responseError(new GrpcError.unimplemented('Unexpected frame received'));
     }
   }
 
@@ -255,32 +259,33 @@ class ClientCall<Q, R> implements Response {
       _responseError(error);
       return;
     }
-    _responseError(new GrpcError(1221, error.toString()));
+    _responseError(new GrpcError.unknown(error.toString()));
   }
 
   /// Handles closure of the response stream. Verifies that server has sent
   /// response messages and header/trailer metadata, as necessary.
   void _onResponseDone() {
     if (!_headers.isCompleted) {
-      _responseError(new GrpcError(1223, 'Did not receive anything'));
+      _responseError(new GrpcError.unavailable('Did not receive anything'));
       return;
     }
     if (!_trailers.isCompleted) {
       if (_hasReceivedResponses) {
         // Trailers are required after receiving data.
-        _responseError(new GrpcError(1222, 'Missing trailers'));
+        _responseError(new GrpcError.unavailable('Missing trailers'));
         return;
       }
 
       // Only received a header frame and no data frames, so the header
       // should contain "trailers" as well (Trailers-Only).
+      _trailers.complete(_headerMetadata);
       final status = _headerMetadata['grpc-status'];
+      // If status code is missing, we must treat it as '0'. As in 'success'.
       final statusCode = status != null ? int.parse(status) : 0;
       if (statusCode != 0) {
         final message = _headerMetadata['grpc-message'];
-        _responseError(new GrpcError(statusCode, message, _headerMetadata));
+        _responseError(new GrpcError.custom(statusCode, message));
       }
-      // If status code is missing, we must treat it as '0'. As in 'success'.
     }
     _responses.close();
     _responseSubscription.cancel();
@@ -291,7 +296,7 @@ class ClientCall<Q, R> implements Response {
   /// error to the user code on the [_responses] stream.
   void _onRequestError(error) {
     if (error is! GrpcError) {
-      error = new GrpcError(1217, error.toString());
+      error = new GrpcError.unknown(error.toString());
     }
 
     _responses.addError(error);

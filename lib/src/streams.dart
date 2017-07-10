@@ -9,6 +9,8 @@ import 'dart:typed_data';
 
 import 'package:http2/transport.dart';
 
+import 'status.dart';
+
 abstract class GrpcMessage {}
 
 class GrpcMetadata extends GrpcMessage {
@@ -26,16 +28,6 @@ class GrpcData extends GrpcMessage {
 
   @override
   String toString() => 'gRPC Data (${data.length} bytes)';
-}
-
-class GrpcError {
-  final int code;
-  final String message;
-  final Map<String, String> metadata;
-  GrpcError(this.code, this.message, [this.metadata = const {}]);
-
-  @override
-  String toString() => 'gRPC Error ($code, $message, $metadata)';
 }
 
 StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor() =>
@@ -63,7 +55,7 @@ class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
     } else if (input is GrpcData) {
       return new DataStreamMessage(frame(input.data));
     }
-    throw new GrpcError(99, 'Unexpected message type');
+    throw new GrpcError.internal('Unexpected message type');
   }
 
   static List<int> frame(List<int> payload) {
@@ -152,8 +144,7 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
     if (_data != null || _dataOffset != 0) {
       // We were in the middle of receiving data, so receiving a header frame
       // is a violation of the gRPC protocol.
-      throw new GrpcError(101,
-          'Received header while reading ${_data == null ? 'header' : 'data (${_data.length} bytes)'} at offset $_dataOffset');
+      throw new GrpcError.unimplemented('Received header while reading data');
     }
     final headers = <String, String>{};
     for (var header in chunk.headers) {
@@ -171,25 +162,26 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
   @override
   void add(StreamMessage chunk) {
     if (_trailerReceived) {
-      throw new GrpcError(102, 'Received data after trailer metadata');
+      throw new GrpcError.unimplemented('Received data after trailer metadata');
     }
     if (chunk is DataStreamMessage) {
       if (!_headerReceived) {
-        throw new GrpcError(103, 'Received data before header metadata');
+        throw new GrpcError.unimplemented(
+            'Received data before header metadata');
       }
       _addData(chunk);
     } else if (chunk is HeadersStreamMessage) {
       _addHeaders(chunk);
     } else {
       // No clue what this is.
-      throw new GrpcError(104, 'Received unknown HTTP/2 frame type');
+      throw new GrpcError.unimplemented('Received unknown HTTP/2 frame type');
     }
   }
 
   @override
   void close() {
     if (_data != null || _dataOffset != 0) {
-      throw new GrpcError(105, 'Closed in non-idle state');
+      throw new GrpcError.unavailable('Closed in non-idle state');
     }
     _out.close();
   }
