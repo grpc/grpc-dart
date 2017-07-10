@@ -358,7 +358,7 @@ class ServerHandler {
     // Exception from the incoming stream. Most likely a cancel request from the
     // client, so we treat it as such.
     _isCanceled = true;
-    _requests.addError(new GrpcError.cancelled('Canceled'));
+    _requests.addError(new GrpcError.cancelled('Cancelled'));
     _responseSubscription?.cancel();
   }
 
