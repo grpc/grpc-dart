@@ -41,6 +41,12 @@ abstract class Service {
     _$methods[method.name] = method;
   }
 
+  /// Client metadata handler.
+  ///
+  /// Services can override this method to provide common handling of incoming
+  /// metadata from the client.
+  void $onMetadata(ServiceCall context) {}
+
   ServiceMethod $lookupMethod(String name) => _$methods[name];
 }
 
@@ -61,8 +67,7 @@ class Server {
     _services[service.$name] = service;
   }
 
-  ServiceMethod _lookupMethod(String service, String method) =>
-      _services[service]?.$lookupMethod(method);
+  Service lookupService(String service) => _services[service];
 
   Future<Null> serve() async {
     // TODO(dart-lang/grpc-dart#4): Add TLS support.
@@ -72,7 +77,7 @@ class Server {
       final connection = new ServerTransportConnection.viaSocket(socket);
       _connections.add(connection);
       connection.incomingStreams.listen((stream) {
-        new ServerHandler(_lookupMethod, stream).handle();
+        new ServerHandler(lookupService, stream).handle();
       }, onError: (error) {
         print('Connection error: $error');
       }, onDone: () {
@@ -133,7 +138,6 @@ class ServiceCall {
   ///
   /// The call will be closed after calling this method, and no further
   /// responses can be sent.
-  /// responses can be sent.
   void sendTrailer(int status, [String statusMessage]) =>
       _handler._sendTrailers(status: status, message: statusMessage);
 }
@@ -141,12 +145,14 @@ class ServiceCall {
 /// Handles an incoming gRPC call.
 class ServerHandler {
   final ServerTransportStream _stream;
-  final ServiceMethod Function(String service, String method) _methodLookup;
+  final Service Function(String service) _serviceLookup;
 
   StreamSubscription<GrpcMessage> _incomingSubscription;
 
-  Map<String, String> _clientMetadata;
+  Service _service;
   ServiceMethod _descriptor;
+
+  Map<String, String> _clientMetadata;
 
   StreamController _requests;
   bool _hasReceivedRequest = false;
@@ -161,7 +167,7 @@ class ServerHandler {
   DateTime _deadline;
   bool _isCanceled = false;
 
-  ServerHandler(this._methodLookup, this._stream);
+  ServerHandler(this._serviceLookup, this._stream);
 
   bool get isCanceled => _isCanceled;
   bool get _isTimedOut => _deadline?.isBefore(new DateTime.now()) ?? false;
@@ -169,7 +175,7 @@ class ServerHandler {
   void handle() {
     _stream.onTerminated = (int errorCode) {
       _isCanceled = true;
-      _responseSubscription?.cancel();
+      _cancelResponseSubscription();
     };
 
     _incomingSubscription = _stream.incomingMessages
@@ -177,6 +183,14 @@ class ServerHandler {
         .transform(grpcDecompressor())
         .listen(_onDataIdle,
             onError: _onError, onDone: _onDoneError, cancelOnError: true);
+  }
+
+  /// Cancel response subscription, if active. If the stream exits with an
+  /// error, just ignore it. The client is long gone, so it doesn't care.
+  /// We need the catchError() handler here, since otherwise the error would
+  /// be an unhandled exception.
+  void _cancelResponseSubscription() {
+    _responseSubscription?.cancel()?.catchError((_) {});
   }
 
   // -- Idle state, incoming data --
@@ -189,17 +203,20 @@ class ServerHandler {
     final headerMessage = message
         as GrpcMetadata; // TODO(jakobr): Cast should not be necessary here.
     _clientMetadata = headerMessage.metadata;
-    final path = _clientMetadata[':path'].split('/');
-    if (path.length < 3) {
+    final path = _clientMetadata[':path'];
+    final pathSegments = path.split('/');
+    if (pathSegments.length < 3) {
       _sendError(new GrpcError.unimplemented('Invalid path'));
+      _sinkIncoming();
       return;
     }
-    final service = path[1];
-    final method = path[2];
-    _descriptor = _methodLookup(service, method);
+    final serviceName = pathSegments[1];
+    final methodName = pathSegments[2];
+    _service = _serviceLookup(serviceName);
+    _descriptor = _service?.$lookupMethod(methodName);
     if (_descriptor == null) {
-      _sendError(
-          new GrpcError.unimplemented('Path /$service/$method not found'));
+      _sendError(new GrpcError.unimplemented('Path $path not found'));
+      _sinkIncoming();
       return;
     }
     _startStreamingRequest();
@@ -214,6 +231,7 @@ class ServerHandler {
     _incomingSubscription.onData(_onDataActive);
 
     final context = new ServiceCall(this);
+    _service.$onMetadata(context);
     if (_descriptor.streamingResponse) {
       if (_descriptor.streamingRequest) {
         _responses = _descriptor.handler(context, _requests.stream);
@@ -284,15 +302,17 @@ class ServerHandler {
       final bytes = _descriptor.responseSerializer(response);
       _stream.sendData(GrpcHttpEncoder.frame(bytes));
     } catch (error) {
-      _responseSubscription.cancel();
+      final grpcError =
+          new GrpcError.internal('Error sending response: $error');
       if (!_requests.isClosed) {
         // If we can, alert the handler that things are going wrong.
         _requests
-            .addError(new GrpcError.internal('Error sending response: $error'));
-        _requests.close();
+          ..addError(grpcError)
+          ..close();
       }
-      _incomingSubscription.cancel();
-      _stream.terminate();
+      _sendError(grpcError);
+      _cancelResponseSubscription();
+      _sinkIncoming();
     }
   }
 
@@ -348,8 +368,7 @@ class ServerHandler {
         .forEach((key, value) => trailers.add(new Header.ascii(key, value)));
     _stream.sendHeaders(trailers, endStream: true);
     // We're done!
-    _incomingSubscription.cancel();
-    _responseSubscription?.cancel();
+    _cancelResponseSubscription();
   }
 
   // -- All states, incoming error / stream closed --
@@ -358,12 +377,15 @@ class ServerHandler {
     // Exception from the incoming stream. Most likely a cancel request from the
     // client, so we treat it as such.
     _isCanceled = true;
-    _requests.addError(new GrpcError.cancelled('Cancelled'));
-    _responseSubscription?.cancel();
+    if (!_requests.isClosed) {
+      _requests.addError(new GrpcError.cancelled('Cancelled'));
+    }
+    _cancelResponseSubscription();
   }
 
   void _onDoneError() {
     _sendError(new GrpcError.unavailable('Request stream closed unexpectedly'));
+    _onDone();
   }
 
   void _onDoneExpected() {
@@ -372,8 +394,20 @@ class ServerHandler {
       _sendError(error);
       _requests.addError(error);
     }
-    _requests.close();
+    _onDone();
+  }
+
+  void _onDone() {
+    _requests?.close();
     _incomingSubscription.cancel();
+  }
+
+  /// Sink incoming requests. This is used when an error has already been
+  /// reported, but we still need to consume the request stream from the client.
+  void _sinkIncoming() {
+    _incomingSubscription
+      ..onData((_) {})
+      ..onDone(_onDone);
   }
 
   void _sendError(GrpcError error) {

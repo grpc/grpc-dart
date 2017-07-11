@@ -22,6 +22,7 @@ matrix:
     script:
     - dartanalyzer lib test
     - for example in example/*; do (cd $example; echo [Analyzing $example]; pub get; dartanalyzer .); done
+    - (cd interop; echo [Analyzing interop]; pub get; dartanalyzer .)
 
 
 # Only building master means that we don't run two builds for each pull request.
@@ -31,7 +32,7 @@ branches:
 os:
   - linux
   - osx
-  
+
 cache:
   directories:
     - $HOME/.pub-cache

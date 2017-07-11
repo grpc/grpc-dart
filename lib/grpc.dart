@@ -5,3 +5,5 @@
 export 'src/client.dart';
 export 'src/server.dart';
 export 'src/shared.dart';
+export 'src/status.dart';
+export 'src/streams.dart';
