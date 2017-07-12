@@ -9,7 +9,7 @@ environment:
 dependencies:
   async: ^1.13.3
   meta: ^1.0.5
-  http2: ^0.1.2
+  http2: ^0.1.3
 
 dev_dependencies:
   mockito: ^2.0.2

@@ -139,18 +139,17 @@ class ClientCall<Q, R> implements Response {
     }
   }
 
-  Future<Null> _initiateCall() async {
-    final connection = await _channel.connect();
-    final timeout = options?.timeout ?? _channel.options?.timeout;
+  static List<Header> createCallHeaders(String path, String authority,
+      {String timeout, Map<String, String> metadata}) {
     // TODO(jakobr): Populate HTTP-specific headers in connection?
     final headers = <Header>[
       _methodPost,
       _schemeHttp,
-      new Header.ascii(':path', _method.path),
-      new Header.ascii(':authority', _channel.host),
+      new Header.ascii(':path', path),
+      new Header.ascii(':authority', authority),
     ];
     if (timeout != null) {
-      headers.add(new Header.ascii('grpc-timeout', toTimeoutString(timeout)));
+      headers.add(new Header.ascii('grpc-timeout', timeout));
     }
     headers.addAll([
       _contentTypeGrpc,
@@ -158,14 +157,23 @@ class ClientCall<Q, R> implements Response {
       _grpcAcceptEncoding,
       _userAgent,
     ]);
+    metadata?.forEach((key, value) {
+      headers.add(new Header.ascii(key, value));
+    });
+    return headers;
+  }
+
+  Future<Null> _initiateCall() async {
+    final connection = await _channel.connect();
+    final timeout = options?.timeout ?? _channel.options?.timeout;
+    final timeoutString = timeout != null ? toTimeoutString(timeout) : null;
     // TODO(jakobr): Flip this around, and have the Channel create the call
     // object and apply options (including the above TODO).
     final customMetadata = <String, String>{};
     customMetadata.addAll(_channel.options?.metadata ?? {});
     customMetadata.addAll(options?.metadata ?? {});
-    customMetadata.forEach((key, value) {
-      headers.add(new Header.ascii(key, value));
-    });
+    final headers = createCallHeaders(_method.path, _channel.host,
+        timeout: timeoutString, metadata: customMetadata);
     _stream = connection.makeRequest(headers);
     _requests.stream
         .map(_method.requestSerializer)

@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:grpc/src/streams.dart';
 import 'package:http2/transport.dart';
@@ -12,6 +11,8 @@ import 'package:mockito/mockito.dart';
 
 import 'package:grpc/grpc.dart';
 
+import 'utils.dart';
+
 class MockConnection extends Mock implements ClientTransportConnection {}
 
 class MockStream extends Mock implements ClientTransportStream {}
@@ -19,9 +20,6 @@ class MockStream extends Mock implements ClientTransportStream {}
 class MockChannel extends Mock implements ClientChannel {}
 
 typedef ServerMessageHandler = void Function(StreamMessage message);
-
-List<int> mockEncode(int value) => new List.filled(value, 0);
-int mockDecode(List<int> value) => value.length;
 
 class TestClient {
   final ClientChannel _channel;
@@ -73,8 +71,8 @@ class ClientHarness {
   MockChannel channel;
   MockStream stream;
 
-  StreamController fromClient;
-  StreamController toClient;
+  StreamController<StreamMessage> fromClient;
+  StreamController<StreamMessage> toClient;
 
   TestClient client;
 
@@ -112,33 +110,12 @@ class ClientHarness {
     if (closeStream) toClient.close();
   }
 
-  void validateHeaders(List<Header> headers,
-      {String path, Map<String, String> customHeaders}) {
-    final headerMap = new Map.fromIterable(headers,
-        key: (h) => ASCII.decode(h.name), value: (h) => ASCII.decode(h.value));
-    expect(headerMap[':method'], 'POST');
-    expect(headerMap[':scheme'], 'http');
-    if (path != null) {
-      expect(headerMap[':path'], path);
-    }
-    expect(headerMap[':authority'], 'test');
-    expect(headerMap['grpc-timeout'], isNull);
-    expect(headerMap['content-type'], 'application/grpc');
-    expect(headerMap['te'], 'trailers');
-    expect(headerMap['grpc-accept-encoding'], 'identity');
-    expect(headerMap['user-agent'], startsWith('dart-grpc/'));
-
-    customHeaders?.forEach((key, value) {
-      expect(headerMap[key], value);
-    });
-  }
-
   Future<Null> runTest(
       {Future clientCall,
       dynamic expectedResult,
       String expectedPath,
       Map<String, String> expectedCustomHeaders,
-      List<ServerMessageHandler> serverHandlers = const [],
+      List<MessageHandler> serverHandlers = const [],
       Function doneHandler,
       bool expectDone = true}) async {
     int serverHandlerIndex = 0;
@@ -160,7 +137,7 @@ class ClientHarness {
 
     final List<Header> capturedHeaders =
         verify(connection.makeRequest(captureAny)).captured.single;
-    validateHeaders(capturedHeaders,
+    validateRequestHeaders(capturedHeaders,
         path: expectedPath, customHeaders: expectedCustomHeaders);
 
     await clientSubscription.cancel();
@@ -180,7 +157,7 @@ class ClientHarness {
       dynamic expectedException,
       String expectedPath,
       Map<String, String> expectedCustomHeaders,
-      List<ServerMessageHandler> serverHandlers = const [],
+      List<MessageHandler> serverHandlers = const [],
       bool expectDone = true}) async {
     return runTest(
       clientCall: expectThrows(clientCall, expectedException),
