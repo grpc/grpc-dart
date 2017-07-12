@@ -220,5 +220,14 @@ class GrpcError {
   GrpcError.unauthenticated([this.message]) : code = StatusCode.unauthenticated;
 
   @override
+  bool operator ==(other) {
+    if (other is! GrpcError) return false;
+    return code == other.code && message == other.message;
+  }
+
+  @override
+  int get hashCode => code.hashCode ^ (message?.hashCode ?? 17);
+
+  @override
   String toString() => 'gRPC Error ($code, $message)';
 }

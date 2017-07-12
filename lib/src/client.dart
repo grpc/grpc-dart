@@ -101,7 +101,7 @@ class ClientCall<Q, R> implements Response {
   Map<String, String> _headerMetadata;
 
   TransportStream _stream;
-  final StreamController<Q> _requests = new StreamController();
+  final _requests = new StreamController<Q>();
   StreamController<R> _responses;
   StreamSubscription<GrpcMessage> _responseSubscription;
 

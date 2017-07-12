@@ -20,18 +20,6 @@ void main() {
       output = input.stream.transform(new GrpcHttpDecoder());
     });
 
-    test('throws error if data is received before headers', () async {
-      input.add(new DataStreamMessage([0]));
-      input.close();
-      try {
-        await output.toList();
-        fail('Did not throw exception');
-      } on GrpcError catch (e) {
-        expect(e.code, StatusCode.unimplemented);
-        expect(e.message, 'Received data before header metadata');
-      }
-    });
-
     test('converts chunked data correctly', () async {
       final result = output.toList();
       input
@@ -58,21 +46,6 @@ void main() {
       verify(converted[3], [65]);
       verify(converted[4], [48, 49, 50, 51]);
       verify(converted[5], new List.filled(256, 90));
-    });
-
-    test('throws error if data is received after trailers', () async {
-      final result = output.toList();
-      input
-        ..add(new HeadersStreamMessage([]))
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage([]));
-      try {
-        await result;
-        fail('Did not throw');
-      } on GrpcError catch (e) {
-        expect(e.code, StatusCode.unimplemented);
-        expect(e.message, 'Received data after trailer metadata');
-      }
     });
 
     test('throws error if input is closed while receiving data header',

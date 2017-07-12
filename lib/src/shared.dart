@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:async/async.dart';
 import 'package:grpc/src/client.dart';
+import 'package:grpc/src/status.dart';
 
 /// A gRPC response.
 abstract class Response {
@@ -33,7 +34,23 @@ class ResponseFuture<R> extends DelegatingFuture<R>
     with _ResponseMixin<dynamic, R> {
   final ClientCall<dynamic, R> _call;
 
-  ResponseFuture(this._call) : super(_call.response.single);
+  static R _ensureOnlyOneResponse<R>(R previous, R element) {
+    if (previous != null) {
+      throw new GrpcError.unimplemented('More than one response received');
+    }
+    return element;
+  }
+
+  static R _ensureOneResponse<R>(R value) {
+    if (value == null)
+      throw new GrpcError.unimplemented('No responses received');
+    return value;
+  }
+
+  ResponseFuture(this._call)
+      : super(_call.response
+            .fold(null, _ensureOnlyOneResponse)
+            .then(_ensureOneResponse));
 }
 
 /// A gRPC response producing a stream of values.
