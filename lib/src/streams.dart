@@ -92,9 +92,6 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
   Uint8List _data;
   int _dataOffset = 0;
 
-  bool _headerReceived = false;
-  bool _trailerReceived = false;
-
   _GrpcMessageConversionSink(this._out);
 
   void _addData(DataStreamMessage chunk) {
@@ -152,23 +149,11 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
       headers[ASCII.decode(header.name)] = ASCII.decode(header.value);
     }
     _out.add(new GrpcMetadata(headers));
-    if (_headerReceived) {
-      _trailerReceived = true;
-    } else {
-      _headerReceived = true;
-    }
   }
 
   @override
   void add(StreamMessage chunk) {
-    if (_trailerReceived) {
-      throw new GrpcError.unimplemented('Received data after trailer metadata');
-    }
     if (chunk is DataStreamMessage) {
-      if (!_headerReceived) {
-        throw new GrpcError.unimplemented(
-            'Received data before header metadata');
-      }
       _addData(chunk);
     } else if (chunk is HeadersStreamMessage) {
       _addHeaders(chunk);
