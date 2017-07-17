@@ -13,6 +13,8 @@ import 'package:mockito/mockito.dart';
 import 'src/client_utils.dart';
 
 void main() {
+  const dummyValue = 0;
+
   ClientHarness harness;
 
   setUp(() {
@@ -24,122 +26,123 @@ void main() {
   });
 
   test('Unary calls work end-to-end', () async {
+    const requestValue = 17;
+    const responseValue = 19;
+
     void _handleRequest(StreamMessage message) {
       expect(message, new isInstanceOf<DataStreamMessage>());
       expect(message.endStream, false);
       final data = new GrpcHttpDecoder().convert(message) as GrpcData;
-      expect(data.data.length, 17);
+      expect(mockDecode(data.data), requestValue);
 
-      harness.toClient
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage(
-            GrpcHttpEncoder.frame(new List.filled(19, 0))))
-        ..add(new HeadersStreamMessage([], endStream: true))
-        ..close();
+      harness
+        ..sendResponseHeader()
+        ..sendResponseValue(responseValue)
+        ..sendResponseTrailer();
     }
 
     await harness.runTest(
-      clientCall: harness.client.unary(17),
-      expectedResult: 19,
+      clientCall: harness.client.unary(requestValue),
+      expectedResult: responseValue,
       expectedPath: '/Test/Unary',
       serverHandlers: [_handleRequest],
     );
   });
 
   test('Client-streaming calls work end-to-end', () async {
-    void _handleFirstRequest(StreamMessage message) {
-      expect(message, new isInstanceOf<DataStreamMessage>());
-      expect(message.endStream, false);
-      final data = new GrpcHttpDecoder().convert(message) as GrpcData;
-      expect(data.data.length, 17);
-    }
+    const requests = const [17, 3];
+    const response = 12;
 
-    void _handleSecondRequest(StreamMessage message) {
-      expect(message, new isInstanceOf<DataStreamMessage>());
-      expect(message.endStream, false);
-      final data = new GrpcHttpDecoder().convert(message) as GrpcData;
-      expect(data.data.length, 3);
+    var index = 0;
 
-      harness.toClient
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage(
-            GrpcHttpEncoder.frame(new List.filled(12, 0))))
-        ..add(new HeadersStreamMessage([], endStream: true))
-        ..close();
-    }
-
-    await harness.runTest(
-      clientCall:
-          harness.client.clientStreaming(new Stream.fromIterable([17, 3])),
-      expectedResult: 12,
-      expectedPath: '/Test/ClientStreaming',
-      serverHandlers: [_handleFirstRequest, _handleSecondRequest],
-    );
-  });
-
-  test('Server-streaming calls work end-to-end', () async {
     void handleRequest(StreamMessage message) {
       expect(message, new isInstanceOf<DataStreamMessage>());
       expect(message.endStream, false);
       final data = new GrpcHttpDecoder().convert(message) as GrpcData;
-      expect(data.data.length, 4);
+      expect(mockDecode(data.data), requests[index++]);
+    }
 
-      harness.toClient
-        ..add(new HeadersStreamMessage([]))
-        ..add(
-            new DataStreamMessage(GrpcHttpEncoder.frame(new List.filled(3, 0))))
-        ..add(new DataStreamMessage(
-            GrpcHttpEncoder.frame(new List.filled(17, 0))))
-        ..add(
-            new DataStreamMessage(GrpcHttpEncoder.frame(new List.filled(9, 0))))
-        ..add(new HeadersStreamMessage([], endStream: true))
-        ..close();
+    void handleDone() {
+      harness
+        ..sendResponseHeader()
+        ..sendResponseValue(response)
+        ..sendResponseTrailer();
     }
 
     await harness.runTest(
-      clientCall: harness.client.serverStreaming(4).toList(),
-      expectedResult: [3, 17, 9],
+      clientCall:
+          harness.client.clientStreaming(new Stream.fromIterable(requests)),
+      expectedResult: response,
+      expectedPath: '/Test/ClientStreaming',
+      serverHandlers: [handleRequest, handleRequest],
+      doneHandler: handleDone,
+    );
+  });
+
+  test('Server-streaming calls work end-to-end', () async {
+    const request = 4;
+    const responses = const [3, 17, 9];
+
+    void handleRequest(StreamMessage message) {
+      expect(message, new isInstanceOf<DataStreamMessage>());
+      expect(message.endStream, false);
+      final data = new GrpcHttpDecoder().convert(message) as GrpcData;
+      expect(mockDecode(data.data), request);
+
+      harness.sendResponseHeader();
+      responses.forEach(harness.sendResponseValue);
+      harness.sendResponseTrailer();
+    }
+
+    await harness.runTest(
+      clientCall: harness.client.serverStreaming(request).toList(),
+      expectedResult: responses,
       expectedPath: '/Test/ServerStreaming',
       serverHandlers: [handleRequest],
     );
   });
 
   test('Bidirectional calls work end-to-end', () async {
+    const requests = const [1, 15, 7];
+    const responses = const [3, 17, 9];
+
+    var index = 0;
+
     void handleRequest(StreamMessage message) {
       expect(message, new isInstanceOf<DataStreamMessage>());
       expect(message.endStream, false);
       final data = new GrpcHttpDecoder().convert(message) as GrpcData;
-      expect(data.data.length, 4);
+      expect(mockDecode(data.data), requests[index]);
 
-      harness.toClient
-        ..add(new HeadersStreamMessage([]))
-        ..add(
-            new DataStreamMessage(GrpcHttpEncoder.frame(new List.filled(3, 0))))
-        ..add(new DataStreamMessage(
-            GrpcHttpEncoder.frame(new List.filled(17, 0))))
-        ..add(
-            new DataStreamMessage(GrpcHttpEncoder.frame(new List.filled(9, 0))))
-        ..add(new HeadersStreamMessage([], endStream: true))
-        ..close();
+      if (index == 0) {
+        harness.sendResponseHeader();
+      }
+      harness.sendResponseValue(responses[index]);
+      index++;
+    }
+
+    void handleDone() {
+      harness.sendResponseTrailer();
     }
 
     await harness.runTest(
-      clientCall: harness.client.serverStreaming(4).toList(),
-      expectedResult: [3, 17, 9],
-      expectedPath: '/Test/ServerStreaming',
-      serverHandlers: [handleRequest],
+      clientCall: harness.client
+          .bidirectional(new Stream.fromIterable(requests))
+          .toList(),
+      expectedResult: responses,
+      expectedPath: '/Test/Bidirectional',
+      serverHandlers: [handleRequest, handleRequest, handleRequest],
+      doneHandler: handleDone,
     );
   });
 
   test('Unary call with no response throws error', () async {
     void handleRequest(_) {
-      harness.toClient
-        ..add(new HeadersStreamMessage([], endStream: true))
-        ..close();
+      harness.sendResponseTrailer();
     }
 
     await harness.runFailureTest(
-      clientCall: harness.client.unary(4),
+      clientCall: harness.client.unary(dummyValue),
       expectedException: new GrpcError.unimplemented('No responses received'),
       serverHandlers: [handleRequest],
     );
@@ -147,16 +150,15 @@ void main() {
 
   test('Unary call with more than one response throws error', () async {
     void handleRequest(_) {
-      harness.toClient
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage(GrpcHttpEncoder.frame([])))
-        ..add(new DataStreamMessage(GrpcHttpEncoder.frame([])))
-        ..add(new HeadersStreamMessage([], endStream: true))
-        ..close();
+      harness
+        ..sendResponseHeader()
+        ..sendResponseValue(dummyValue)
+        ..sendResponseValue(dummyValue)
+        ..sendResponseTrailer();
     }
 
     await harness.runFailureTest(
-      clientCall: harness.client.unary(4),
+      clientCall: harness.client.unary(dummyValue),
       expectedException:
           new GrpcError.unimplemented('More than one response received'),
       serverHandlers: [handleRequest],
@@ -169,7 +171,7 @@ void main() {
     }
 
     await harness.runFailureTest(
-      clientCall: harness.client.unary(4),
+      clientCall: harness.client.unary(dummyValue),
       expectedException: new GrpcError.unavailable('Did not receive anything'),
       serverHandlers: [handleRequest],
     );
@@ -177,14 +179,14 @@ void main() {
 
   test('Call throws if trailers are missing', () async {
     void handleRequest(_) {
-      harness.toClient
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage(GrpcHttpEncoder.frame([])))
-        ..close();
+      harness
+        ..sendResponseHeader()
+        ..sendResponseValue(dummyValue)
+        ..toClient.close();
     }
 
     await harness.runFailureTest(
-      clientCall: harness.client.unary(4),
+      clientCall: harness.client.unary(dummyValue),
       expectedException: new GrpcError.unavailable('Missing trailers'),
       serverHandlers: [handleRequest],
     );
@@ -192,11 +194,11 @@ void main() {
 
   test('Call throws if data is received before headers', () async {
     void handleRequest(_) {
-      harness.toClient.add(new DataStreamMessage(GrpcHttpEncoder.frame([])));
+      harness.sendResponseValue(dummyValue);
     }
 
     await harness.runFailureTest(
-      clientCall: harness.client.unary(4),
+      clientCall: harness.client.unary(dummyValue),
       expectedException:
           new GrpcError.unimplemented('Received data before headers'),
       serverHandlers: [handleRequest],
@@ -205,14 +207,14 @@ void main() {
 
   test('Call throws if data is received after trailers', () async {
     void handleRequest(_) {
-      harness.toClient
-        ..add(new HeadersStreamMessage([]))
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage(GrpcHttpEncoder.frame([])));
+      harness
+        ..sendResponseHeader()
+        ..sendResponseTrailer(closeStream: false)
+        ..sendResponseValue(dummyValue);
     }
 
     await harness.runFailureTest(
-      clientCall: harness.client.unary(4),
+      clientCall: harness.client.unary(dummyValue),
       expectedException:
           new GrpcError.unimplemented('Received data after trailers'),
       serverHandlers: [handleRequest],
@@ -221,14 +223,14 @@ void main() {
 
   test('Call throws if multiple trailers are received', () async {
     void handleRequest(_) {
-      harness.toClient
-        ..add(new HeadersStreamMessage([]))
-        ..add(new HeadersStreamMessage([]))
-        ..add(new HeadersStreamMessage([]));
+      harness
+        ..sendResponseHeader()
+        ..sendResponseTrailer(closeStream: false)
+        ..sendResponseTrailer();
     }
 
     await harness.runFailureTest(
-      clientCall: harness.client.unary(4),
+      clientCall: harness.client.unary(dummyValue),
       expectedException:
           new GrpcError.unimplemented('Received multiple trailers'),
       serverHandlers: [handleRequest],
@@ -236,17 +238,21 @@ void main() {
   });
 
   test('Call throws if non-zero status is received', () async {
+    const customStatusCode = 17;
+    const customStatusMessage = 'Custom message';
+
     void handleRequest(_) {
       harness.toClient.add(new HeadersStreamMessage([
-        new Header.ascii('grpc-status', '17'),
-        new Header.ascii('grpc-message', 'Custom message')
+        new Header.ascii('grpc-status', '$customStatusCode'),
+        new Header.ascii('grpc-message', customStatusMessage)
       ], endStream: true));
       harness.toClient.close();
     }
 
     await harness.runFailureTest(
-      clientCall: harness.client.unary(4),
-      expectedException: new GrpcError.custom(17, 'Custom message'),
+      clientCall: harness.client.unary(dummyValue),
+      expectedException:
+          new GrpcError.custom(customStatusCode, customStatusMessage),
       serverHandlers: [handleRequest],
     );
   });
@@ -257,7 +263,7 @@ void main() {
     }
 
     await harness.runFailureTest(
-      clientCall: harness.client.unary(4),
+      clientCall: harness.client.unary(dummyValue),
       expectedException: new GrpcError.unknown('Test error'),
       serverHandlers: [handleRequest],
     );
@@ -265,12 +271,13 @@ void main() {
 
   test('Call forwards known response stream errors', () async {
     final expectedException = new GrpcError.dataLoss('Oops!');
+
     void handleRequest(_) {
       harness.toClient.addError(expectedException);
     }
 
     await harness.runFailureTest(
-      clientCall: harness.client.unary(4),
+      clientCall: harness.client.unary(dummyValue),
       expectedException: expectedException,
       serverHandlers: [handleRequest],
     );
@@ -281,13 +288,14 @@ void main() {
     when(harness.channel.connect()).thenThrow('Connection error');
     final expectedError =
         new GrpcError.unavailable('Error connecting: Connection error');
-    harness.expectThrows(harness.client.unary(4), expectedError);
+    harness.expectThrows(harness.client.unary(dummyValue), expectedError);
     harness.expectThrows(
-        harness.client.serverStreaming(4).toList(), expectedError);
+        harness.client.serverStreaming(dummyValue).toList(), expectedError);
   });
 
   test('Known request errors are reported', () async {
     final expectedException = new GrpcError.deadlineExceeded('Too late!');
+
     Stream<int> requests() async* {
       throw expectedException;
     }

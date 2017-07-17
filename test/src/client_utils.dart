@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:grpc/src/streams.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
@@ -19,25 +20,20 @@ class MockChannel extends Mock implements ClientChannel {}
 
 typedef ServerMessageHandler = void Function(StreamMessage message);
 
+List<int> mockEncode(int value) => new List.filled(value, 0);
+int mockDecode(List<int> value) => value.length;
+
 class TestClient {
   final ClientChannel _channel;
 
-  static final _$unary = new ClientMethod<int, int>(
-      '/Test/Unary',
-      (int value) => new List.filled(value, 0),
-      (List<int> value) => value.length);
+  static final _$unary =
+      new ClientMethod<int, int>('/Test/Unary', mockEncode, mockDecode);
   static final _$clientStreaming = new ClientMethod<int, int>(
-      '/Test/ClientStreaming',
-      (int value) => new List.filled(value, 0),
-      (List<int> value) => value.length);
+      '/Test/ClientStreaming', mockEncode, mockDecode);
   static final _$serverStreaming = new ClientMethod<int, int>(
-      '/Test/ServerStreaming',
-      (int value) => new List.filled(value, 0),
-      (List<int> value) => value.length);
-  static final _$bidirectional = new ClientMethod<int, int>(
-      '/Test/Bidirectional',
-      (int value) => new List.filled(value, 0),
-      (List<int> value) => value.length);
+      '/Test/ServerStreaming', mockEncode, mockDecode);
+  static final _$bidirectional =
+      new ClientMethod<int, int>('/Test/Bidirectional', mockEncode, mockDecode);
 
   TestClient(this._channel);
 
@@ -101,6 +97,21 @@ class ClientHarness {
     toClient.close();
   }
 
+  void sendResponseHeader({List<Header> headers = const []}) {
+    toClient.add(new HeadersStreamMessage(headers));
+  }
+
+  void sendResponseValue(int value) {
+    toClient
+        .add(new DataStreamMessage(GrpcHttpEncoder.frame(mockEncode(value))));
+  }
+
+  void sendResponseTrailer(
+      {List<Header> headers = const [], bool closeStream = true}) {
+    toClient.add(new HeadersStreamMessage(headers, endStream: true));
+    if (closeStream) toClient.close();
+  }
+
   void validateHeaders(List<Header> headers,
       {String path, Map<String, String> customHeaders}) {
     final headerMap = new Map.fromIterable(headers,
@@ -128,6 +139,7 @@ class ClientHarness {
       String expectedPath,
       Map<String, String> expectedCustomHeaders,
       List<ServerMessageHandler> serverHandlers = const [],
+      Function doneHandler,
       bool expectDone = true}) async {
     int serverHandlerIndex = 0;
     void handleServerMessage(StreamMessage message) {
@@ -137,7 +149,7 @@ class ClientHarness {
     final clientSubscription = fromClient.stream.listen(
         expectAsync1(handleServerMessage, count: serverHandlers.length),
         onError: expectAsync1((_) {}, count: 0),
-        onDone: expectAsync0(() {}, count: expectDone ? 1 : 0));
+        onDone: expectAsync0(doneHandler ?? () {}, count: expectDone ? 1 : 0));
 
     final result = await clientCall;
     if (expectedResult != null) {
