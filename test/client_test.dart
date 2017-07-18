@@ -5,12 +5,12 @@
 import 'dart:async';
 
 import 'package:grpc/src/status.dart';
-import 'package:grpc/src/streams.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'src/client_utils.dart';
+import 'src/utils.dart';
 
 void main() {
   const dummyValue = 0;
@@ -25,14 +25,12 @@ void main() {
     harness.tearDown();
   });
 
-  test('Unary calls work end-to-end', () async {
+  test('Unary calls work on the client', () async {
     const requestValue = 17;
     const responseValue = 19;
 
-    void _handleRequest(StreamMessage message) {
-      expect(message, new isInstanceOf<DataStreamMessage>());
-      expect(message.endStream, false);
-      final data = new GrpcHttpDecoder().convert(message) as GrpcData;
+    void handleRequest(StreamMessage message) {
+      final data = validateDataMessage(message);
       expect(mockDecode(data.data), requestValue);
 
       harness
@@ -45,20 +43,18 @@ void main() {
       clientCall: harness.client.unary(requestValue),
       expectedResult: responseValue,
       expectedPath: '/Test/Unary',
-      serverHandlers: [_handleRequest],
+      serverHandlers: [handleRequest],
     );
   });
 
-  test('Client-streaming calls work end-to-end', () async {
+  test('Client-streaming calls work on the client', () async {
     const requests = const [17, 3];
     const response = 12;
 
     var index = 0;
 
     void handleRequest(StreamMessage message) {
-      expect(message, new isInstanceOf<DataStreamMessage>());
-      expect(message.endStream, false);
-      final data = new GrpcHttpDecoder().convert(message) as GrpcData;
+      final data = validateDataMessage(message);
       expect(mockDecode(data.data), requests[index++]);
     }
 
@@ -79,14 +75,12 @@ void main() {
     );
   });
 
-  test('Server-streaming calls work end-to-end', () async {
+  test('Server-streaming calls work on the client', () async {
     const request = 4;
     const responses = const [3, 17, 9];
 
     void handleRequest(StreamMessage message) {
-      expect(message, new isInstanceOf<DataStreamMessage>());
-      expect(message.endStream, false);
-      final data = new GrpcHttpDecoder().convert(message) as GrpcData;
+      final data = validateDataMessage(message);
       expect(mockDecode(data.data), request);
 
       harness.sendResponseHeader();
@@ -102,16 +96,14 @@ void main() {
     );
   });
 
-  test('Bidirectional calls work end-to-end', () async {
+  test('Bidirectional calls work on the client', () async {
     const requests = const [1, 15, 7];
     const responses = const [3, 17, 9];
 
     var index = 0;
 
     void handleRequest(StreamMessage message) {
-      expect(message, new isInstanceOf<DataStreamMessage>());
-      expect(message.endStream, false);
-      final data = new GrpcHttpDecoder().convert(message) as GrpcData;
+      final data = validateDataMessage(message);
       expect(mockDecode(data.data), requests[index]);
 
       if (index == 0) {

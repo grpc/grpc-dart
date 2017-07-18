@@ -76,9 +76,7 @@ class Server {
     _server.listen((socket) {
       final connection = new ServerTransportConnection.viaSocket(socket);
       _connections.add(connection);
-      connection.incomingStreams.listen((stream) {
-        new ServerHandler(lookupService, stream).handle();
-      }, onError: (error) {
+      connection.incomingStreams.listen(serveStream, onError: (error) {
         print('Connection error: $error');
       }, onDone: () {
         _connections.remove(connection);
@@ -86,6 +84,10 @@ class Server {
     }, onError: (error) {
       print('Socket error: $error');
     });
+  }
+
+  void serveStream(ServerTransportStream stream) {
+    new ServerHandler(lookupService, stream).handle();
   }
 
   Future<Null> shutdown() {
@@ -198,6 +200,7 @@ class ServerHandler {
   void _onDataIdle(GrpcMessage message) {
     if (message is! GrpcMetadata) {
       _sendError(new GrpcError.unimplemented('Expected header frame'));
+      _sinkIncoming();
       return;
     }
     final headerMessage = message
@@ -222,6 +225,28 @@ class ServerHandler {
     _startStreamingRequest();
   }
 
+  Future<T> _toSingleFuture<T>(Stream<T> stream) {
+    T _ensureOnlyOneRequest(T previous, T element) {
+      if (previous != null) {
+        throw new GrpcError.unimplemented('More than one request received');
+      }
+      return element;
+    }
+
+    T _ensureOneRequest(T value) {
+      if (value == null)
+        throw new GrpcError.unimplemented('No requests received');
+      return value;
+    }
+
+    final future =
+        stream.fold(null, _ensureOnlyOneRequest).then(_ensureOneRequest);
+    // Make sure errors on the future aren't unhandled, but return the original
+    // future so the request handler can also get the error.
+    future.catchError((_) {});
+    return future;
+  }
+
   void _startStreamingRequest() {
     _incomingSubscription.pause();
     _requests = new StreamController(
@@ -236,17 +261,20 @@ class ServerHandler {
       if (_descriptor.streamingRequest) {
         _responses = _descriptor.handler(context, _requests.stream);
       } else {
-        _responses = _descriptor.handler(context, _requests.stream.single);
+        _responses =
+            _descriptor.handler(context, _toSingleFuture(_requests.stream));
       }
     } else {
       Future response;
       if (_descriptor.streamingRequest) {
         response = _descriptor.handler(context, _requests.stream);
       } else {
-        response = _descriptor.handler(context, _requests.stream.single);
+        response =
+            _descriptor.handler(context, _toSingleFuture(_requests.stream));
       }
       _responses = response.asStream();
     }
+
     _responseSubscription = _responses.listen(_onResponse,
         onError: _onResponseError,
         onDone: _onResponseDone,
@@ -259,9 +287,10 @@ class ServerHandler {
 
   void _onDataActive(GrpcMessage message) {
     if (message is! GrpcData) {
-      _sendError(new GrpcError.unimplemented('Expected data frame'));
+      final error = new GrpcError.unimplemented('Expected request');
+      _sendError(error);
       _requests
-        ..addError(new GrpcError.unimplemented('No request received'))
+        ..addError(error)
         ..close();
       return;
     }
@@ -272,6 +301,7 @@ class ServerHandler {
       _requests
         ..addError(error)
         ..close();
+      return;
     }
 
     // TODO(jakobr): Cast should not be necessary here.
@@ -296,10 +326,10 @@ class ServerHandler {
 
   void _onResponse(response) {
     try {
+      final bytes = _descriptor.responseSerializer(response);
       if (!_headersSent) {
         _sendHeaders();
       }
-      final bytes = _descriptor.responseSerializer(response);
       _stream.sendData(GrpcHttpEncoder.frame(bytes));
     } catch (error) {
       final grpcError =
@@ -312,7 +342,6 @@ class ServerHandler {
       }
       _sendError(grpcError);
       _cancelResponseSubscription();
-      _sinkIncoming();
     }
   }
 
@@ -330,6 +359,7 @@ class ServerHandler {
 
   void _sendHeaders() {
     if (_headersSent) throw new GrpcError.internal('Headers already sent');
+
     final headersMap = <String, String>{};
     headersMap.addAll(_customHeaders);
     _customHeaders = null;
@@ -369,6 +399,7 @@ class ServerHandler {
     _stream.sendHeaders(trailers, endStream: true);
     // We're done!
     _cancelResponseSubscription();
+    _sinkIncoming();
   }
 
   // -- All states, incoming error / stream closed --
@@ -381,6 +412,8 @@ class ServerHandler {
       _requests.addError(new GrpcError.cancelled('Cancelled'));
     }
     _cancelResponseSubscription();
+    _incomingSubscription.cancel();
+    _stream.terminate();
   }
 
   void _onDoneError() {
@@ -390,7 +423,7 @@ class ServerHandler {
 
   void _onDoneExpected() {
     if (!(_hasReceivedRequest || _descriptor.streamingRequest)) {
-      final error = new GrpcError.unimplemented('Expected request message');
+      final error = new GrpcError.unimplemented('No request received');
       _sendError(error);
       _requests.addError(error);
     }
