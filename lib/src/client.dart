@@ -108,35 +108,24 @@ class ClientCall<Q, R> implements Response {
   final CallOptions options;
 
   Future<Null> _callSetup;
+  Timer _timeoutTimer;
 
   ClientCall(this._channel, this._method, {this.options}) {
     _responses = new StreamController(onListen: _onResponseListen);
-    _callSetup = _initiateCall().catchError((error) {
+    final timeout = options?.timeout ?? _channel.options?.timeout;
+    if (timeout != null) {
+      _timeoutTimer = new Timer(timeout, _onTimedOut);
+    }
+    _callSetup = _initiateCall(timeout).catchError((error) {
       _responses.addError(
           new GrpcError.unavailable('Error connecting: ${error.toString()}'));
+      _timeoutTimer?.cancel();
     });
   }
 
-  /// Convert [timeout] to grpc-timeout header string format.
-  // Mostly inspired by grpc-java implementation.
-  // TODO(jakobr): Modify to match grpc/core implementation instead.
-  static String toTimeoutString(Duration duration) {
-    const cutoff = 100000;
-    final timeout = duration.inMicroseconds;
-    if (timeout < 0) {
-      // Smallest possible timeout.
-      return '1n';
-    } else if (timeout < cutoff) {
-      return '${timeout}u';
-    } else if (timeout < cutoff * 1000) {
-      return '${timeout~/1000}m';
-    } else if (timeout < cutoff * 1000 * 1000) {
-      return '${timeout~/1000000}S';
-    } else if (timeout < cutoff * 1000 * 1000 * 60) {
-      return '${timeout~/60000000}M';
-    } else {
-      return '${timeout~/3600000000}H';
-    }
+  void _onTimedOut() {
+    _responses.addError(new GrpcError.deadlineExceeded('Deadline exceeded'));
+    cancel().catchError((_) {});
   }
 
   static List<Header> createCallHeaders(String path, String authority,
@@ -163,10 +152,9 @@ class ClientCall<Q, R> implements Response {
     return headers;
   }
 
-  Future<Null> _initiateCall() async {
+  Future<Null> _initiateCall(Duration timeout) async {
     final connection = await _channel.connect();
-    final timeout = options?.timeout ?? _channel.options?.timeout;
-    final timeoutString = timeout != null ? toTimeoutString(timeout) : null;
+    final timeoutString = toTimeoutString(timeout);
     // TODO(jakobr): Flip this around, and have the Channel create the call
     // object and apply options (including the above TODO).
     final customMetadata = <String, String>{};
@@ -212,9 +200,10 @@ class ClientCall<Q, R> implements Response {
   /// Emit an error response to the user, and tear down this call.
   void _responseError(GrpcError error) {
     _responses.addError(error);
+    _timeoutTimer?.cancel();
     _responseSubscription.cancel();
-    _stream.terminate();
     _responses.close();
+    _stream.terminate();
   }
 
   /// Data handler for responses coming from the server. Handles header/trailer
@@ -295,6 +284,7 @@ class ClientCall<Q, R> implements Response {
         _responseError(new GrpcError.custom(statusCode, message));
       }
     }
+    _timeoutTimer?.cancel();
     _responses.close();
     _responseSubscription.cancel();
   }
@@ -308,6 +298,7 @@ class ClientCall<Q, R> implements Response {
     }
 
     _responses.addError(error);
+    _timeoutTimer?.cancel();
     _responses.close();
     _responseSubscription?.cancel();
     _stream.terminate();
@@ -324,6 +315,7 @@ class ClientCall<Q, R> implements Response {
 
   @override
   Future<Null> cancel() async {
+    _timeoutTimer?.cancel();
     _callSetup.whenComplete(() {
       // Terminate the stream if the call connects after being canceled.
       _stream?.terminate();

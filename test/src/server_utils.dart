@@ -38,32 +38,32 @@ class TestService extends Service {
         mockDecode, (int value) => throw 'Failed'));
   }
 
-  Future<int> _unary(ServiceCall call, Future<int> request) async {
+  Future<int> _unary(ServiceCall call, Future<int> request) {
     if (unaryHandler == null) {
       fail('Should not invoke Unary');
     }
     return unaryHandler(call, request);
   }
 
-  Future<int> _clientStreaming(ServiceCall call, Stream<int> request) async {
+  Future<int> _clientStreaming(ServiceCall call, Stream<int> request) {
     if (clientStreamingHandler == null) {
       fail('Should not invoke ClientStreaming');
     }
     return clientStreamingHandler(call, request);
   }
 
-  Stream<int> _serverStreaming(ServiceCall call, Future<int> request) async* {
+  Stream<int> _serverStreaming(ServiceCall call, Future<int> request) {
     if (serverStreamingHandler == null) {
       fail('Should not invoke ServerStreaming');
     }
-    yield* serverStreamingHandler(call, request);
+    return serverStreamingHandler(call, request);
   }
 
-  Stream<int> _bidirectional(ServiceCall call, Stream<int> request) async* {
+  Stream<int> _bidirectional(ServiceCall call, Stream<int> request) {
     if (bidirectionalHandler == null) {
       fail('Should not invoke Bidirectional');
     }
-    yield* bidirectionalHandler(call, request);
+    return bidirectionalHandler(call, request);
   }
 }
 

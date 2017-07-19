@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:grpc/src/shared.dart';
 import 'package:http2/transport.dart';
 
 import 'status.dart';
@@ -168,11 +169,12 @@ class ServerHandler {
 
   DateTime _deadline;
   bool _isCanceled = false;
+  bool _isTimedOut = false;
+  Timer _timeoutTimer;
 
   ServerHandler(this._serviceLookup, this._stream);
 
   bool get isCanceled => _isCanceled;
-  bool get _isTimedOut => _deadline?.isBefore(new DateTime.now()) ?? false;
 
   void handle() {
     _stream.onTerminated = (int errorCode) {
@@ -281,6 +283,24 @@ class ServerHandler {
         cancelOnError: true);
     _incomingSubscription.onData(_onDataActive);
     _incomingSubscription.onDone(_onDoneExpected);
+
+    final timeout = fromTimeoutString(_clientMetadata['grpc-timeout']);
+    if (timeout != null) {
+      _deadline = new DateTime.now().add(timeout);
+      _timeoutTimer = new Timer(timeout, _onTimedOut);
+    }
+  }
+
+  void _onTimedOut() {
+    _isTimedOut = true;
+    _isCanceled = true;
+    final error = new GrpcError.deadlineExceeded('Deadline exceeded');
+    if (!_requests.isClosed) {
+      _requests
+        ..addError(error)
+        ..close();
+    }
+    _sendError(error);
   }
 
   // -- Active state, incoming data --
@@ -360,13 +380,16 @@ class ServerHandler {
   void _sendHeaders() {
     if (_headersSent) throw new GrpcError.internal('Headers already sent');
 
-    final headersMap = <String, String>{};
-    headersMap.addAll(_customHeaders);
-    _customHeaders = null;
+    _customHeaders..remove(':status')..remove('content-type');
 
     // TODO(jakobr): Should come from package:http2?
-    headersMap[':status'] = '200';
-    headersMap['content-type'] = 'application/grpc';
+    final headersMap = <String, String>{
+      ':status': '200',
+      'content-type': 'application/grpc'
+    };
+
+    headersMap.addAll(_customHeaders);
+    _customHeaders = null;
 
     final headers = <Header>[];
     headersMap
@@ -376,18 +399,21 @@ class ServerHandler {
   }
 
   void _sendTrailers({int status = 0, String message}) {
+    _timeoutTimer?.cancel();
+
     final trailersMap = <String, String>{};
-    if (!_headersSent) {
-      trailersMap.addAll(_customHeaders);
-      _customHeaders = null;
-    }
-    trailersMap.addAll(_customTrailers);
-    _customTrailers = null;
     if (!_headersSent) {
       // TODO(jakobr): Should come from package:http2?
       trailersMap[':status'] = '200';
       trailersMap['content-type'] = 'application/grpc';
+
+      _customHeaders..remove(':status')..remove('content-type');
+      trailersMap.addAll(_customHeaders);
+      _customHeaders = null;
     }
+    _customTrailers..remove(':status')..remove('content-type');
+    trailersMap.addAll(_customTrailers);
+    _customTrailers = null;
     trailersMap['grpc-status'] = status.toString();
     if (message != null) {
       trailersMap['grpc-message'] = message;
@@ -407,6 +433,7 @@ class ServerHandler {
   void _onError(error) {
     // Exception from the incoming stream. Most likely a cancel request from the
     // client, so we treat it as such.
+    _timeoutTimer?.cancel();
     _isCanceled = true;
     if (!_requests.isClosed) {
       _requests.addError(new GrpcError.cancelled('Cancelled'));
