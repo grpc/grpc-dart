@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:grpc/grpc.dart';
@@ -105,9 +106,24 @@ Future<Null> main(List<String> args) async {
   final argumentParser = new ArgParser();
   argumentParser.addOption('port', defaultsTo: '8080');
   argumentParser.addOption('use_tls', defaultsTo: 'false');
+  argumentParser.addOption('tls_cert_file', defaultsTo: 'server1.pem');
+  argumentParser.addOption('tls_key_file', defaultsTo: 'server1.key');
   final arguments = argumentParser.parse(args);
   final port = int.parse(arguments['port']);
-  final server = new Server(port: port)..addService(new TestService());
+
+  final services = [new TestService()];
+
+  Server server;
+  if (arguments['use_tls'] == 'true') {
+    final certificate = new File(arguments['tls_cert_file']).readAsBytes();
+    final privateKey = new File(arguments['tls_key_file']).readAsBytes();
+    server = new Server.secure(services,
+        certificate: await certificate,
+        privateKey: await privateKey,
+        port: port);
+  } else {
+    server = new Server.insecure(services, port: port);
+  }
   await server.serve();
-  print('Server listening...');
+  print('Server listening on port $port...');
 }

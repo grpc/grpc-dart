@@ -13,7 +13,8 @@ class Client {
   MetadataClient stub;
 
   Future<Null> main(List<String> args) async {
-    channel = new ClientChannel('127.0.0.1', port: 8080);
+    channel = new ClientChannel('127.0.0.1',
+        port: 8080, options: new ChannelOptions.insecure());
     stub = new MetadataClient(channel);
     // Run all of the demos in order.
     await runEcho();
@@ -41,11 +42,10 @@ class Client {
 
   // Run the echo with delay cancel demo. ...
   Future<Null> runEchoDelayCancel() async {
-    final channelWithOptions = new ClientChannel('127.0.0.1',
-        port: 8080, options: new CallOptions(metadata: {'peer': 'Verner'}));
-    final stubWithCustomChannel = new MetadataClient(channelWithOptions);
+    final stubWithCustomOptions = new MetadataClient(channel,
+        options: new CallOptions(metadata: {'peer': 'Verner'}));
     final request = new Record()..value = 'Kaj';
-    final call = stubWithCustomChannel.echo(request,
+    final call = stubWithCustomOptions.echo(request,
         options: new CallOptions(metadata: {'delay': '1'}));
     call.headers.then((headers) {
       print('Received header metadata: $headers');
@@ -61,7 +61,6 @@ class Client {
     } catch (error) {
       print('Expected error: $error');
     }
-    await channelWithOptions.close();
   }
 
   // Run the addOne cancel demo.

@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:grpc/src/client.dart';
@@ -122,3 +123,6 @@ abstract class _ResponseMixin<Q, R> implements Response {
   @override
   Future<Null> cancel() => _call.cancel();
 }
+
+SecurityContext createSecurityContext(bool isServer) =>
+    new SecurityContext()..setAlpnProtocols(['grpc-exp', 'h2'], isServer);
