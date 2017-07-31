@@ -20,6 +20,7 @@ void main() {
 
   group('Unit:', () {
     test('Timeouts are converted correctly to header string', () {
+      expect(toTimeoutString(null), isNull);
       expect(toTimeoutString(new Duration(microseconds: -1)), '1n');
       expect(toTimeoutString(new Duration(microseconds: 0)), '0u');
       expect(toTimeoutString(new Duration(microseconds: 107)), '107u');
@@ -30,9 +31,13 @@ void main() {
           toTimeoutString(new Duration(seconds: 2, microseconds: 3)), '2000m');
       expect(
           toTimeoutString(new Duration(seconds: 2, milliseconds: 3)), '2003m');
+      expect(toTimeoutString(new Duration(hours: 17, seconds: 3)), '61203S');
+      expect(toTimeoutString(new Duration(minutes: 42)), '2520S');
+      expect(toTimeoutString(new Duration(days: 201)), '4824H');
     });
 
     test('Timeouts are converted correctly from header string', () {
+      expect(fromTimeoutString(null), isNull);
       expect(fromTimeoutString('1n'), new Duration(microseconds: 1000));
       expect(fromTimeoutString('0u'), new Duration(microseconds: 0));
       expect(fromTimeoutString('107u'), new Duration(microseconds: 107));
@@ -40,6 +45,13 @@ void main() {
       expect(fromTimeoutString('1420S'), new Duration(seconds: 1420));
       expect(fromTimeoutString('2000m'), new Duration(seconds: 2));
       expect(fromTimeoutString('2003m'), new Duration(milliseconds: 2003));
+      expect(fromTimeoutString('17H'), new Duration(hours: 17));
+      expect(fromTimeoutString('157M'), new Duration(minutes: 157));
+      expect(fromTimeoutString('1'), isNull);
+      expect(fromTimeoutString('202'), isNull);
+      expect(fromTimeoutString('1s'), isNull);
+      expect(fromTimeoutString('ab'), isNull);
+      expect(fromTimeoutString('-1S'), new Duration(seconds: -1));
     });
   });
 

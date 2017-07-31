@@ -36,26 +36,24 @@ String toTimeoutString(Duration duration) {
 Duration fromTimeoutString(String timeout) {
   if (timeout == null) return null;
   if (timeout.length < 2) return null;
-  try {
-    final value = int.parse(timeout.substring(0, timeout.length - 1));
-    switch (timeout[timeout.length - 1]) {
-      case 'n':
-        return new Duration(microseconds: value * 1000);
-      case 'u':
-        return new Duration(microseconds: value);
-      case 'm':
-        return new Duration(milliseconds: value);
-      case 'S':
-        return new Duration(seconds: value);
-      case 'M':
-        return new Duration(minutes: value);
-      case 'H':
-        return new Duration(hours: value);
-      default:
-        return null;
-    }
-  } catch (_) {
-    return null;
+  final value =
+      int.parse(timeout.substring(0, timeout.length - 1), onError: (_) => null);
+  if (value == null) return null;
+  switch (timeout[timeout.length - 1]) {
+    case 'n':
+      return new Duration(microseconds: value * 1000);
+    case 'u':
+      return new Duration(microseconds: value);
+    case 'm':
+      return new Duration(milliseconds: value);
+    case 'S':
+      return new Duration(seconds: value);
+    case 'M':
+      return new Duration(minutes: value);
+    case 'H':
+      return new Duration(hours: value);
+    default:
+      return null;
   }
 }
 
