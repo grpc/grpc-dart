@@ -114,6 +114,7 @@ class ClientHarness {
       {Future clientCall,
       dynamic expectedResult,
       String expectedPath,
+      Duration expectedTimeout,
       Map<String, String> expectedCustomHeaders,
       List<MessageHandler> serverHandlers = const [],
       Function doneHandler,
@@ -138,7 +139,9 @@ class ClientHarness {
     final List<Header> capturedHeaders =
         verify(connection.makeRequest(captureAny)).captured.single;
     validateRequestHeaders(capturedHeaders,
-        path: expectedPath, customHeaders: expectedCustomHeaders);
+        path: expectedPath,
+        timeout: toTimeoutString(expectedTimeout),
+        customHeaders: expectedCustomHeaders);
 
     await clientSubscription.cancel();
   }
@@ -156,12 +159,14 @@ class ClientHarness {
       {Future clientCall,
       dynamic expectedException,
       String expectedPath,
+      Duration expectedTimeout,
       Map<String, String> expectedCustomHeaders,
       List<MessageHandler> serverHandlers = const [],
       bool expectDone = true}) async {
     return runTest(
       clientCall: expectThrows(clientCall, expectedException),
       expectedPath: expectedPath,
+      expectedTimeout: expectedTimeout,
       expectedCustomHeaders: expectedCustomHeaders,
       serverHandlers: serverHandlers,
       expectDone: expectDone,
