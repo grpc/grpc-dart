@@ -53,7 +53,7 @@ abstract class Service {
 
 /// A gRPC server.
 ///
-/// Listens for incoming gRPC calls, dispatching them to a [ServerHandler].
+/// Listens for incoming RPCs, dispatching them to the right [Service] handler.
 class Server {
   final Map<String, Service> _services = {};
   final int port;
@@ -69,10 +69,16 @@ class Server {
     }
   }
 
+  /// Create a server for the given [services] with no transport security,
+  /// listening on [port].
   factory Server.insecure(List<Service> services, {int port}) {
     return new Server._(services, port ?? 80, null);
   }
 
+  /// Create a secure server for the given [services], listening on [port].
+  ///
+  /// If the [certificate] or [privateKey] is encrypted, the password must also
+  /// be provided.
   factory Server.secure(List<Service> services,
       {List<int> certificate,
       String certificatePassword,

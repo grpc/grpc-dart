@@ -21,22 +21,24 @@ const _reservedHeaders = const [
   'user-agent',
 ];
 
-/// Channel options.
+/// Options controlling how connections are made on a [ClientChannel].
 class ChannelOptions {
   final bool _useTls;
   final List<int> _certificateBytes;
   final String _certificatePassword;
 
-  ChannelOptions._(this._useTls,
+  const ChannelOptions._(this._useTls,
       [this._certificateBytes, this._certificatePassword]);
 
-  factory ChannelOptions() => new ChannelOptions._(true);
+  /// Enable TLS using the default trust store.
+  const ChannelOptions() : this._(true);
 
-  factory ChannelOptions.insecure() => new ChannelOptions._(false);
+  /// Disable TLS. RPCs are sent in clear text.
+  const ChannelOptions.insecure() : this._(false);
 
-  factory ChannelOptions.secure({List<int> certificate, String password}) {
-    return new ChannelOptions._(true, certificate, password);
-  }
+  /// Enable TLS and specify the [certificate]s to trust.
+  ChannelOptions.secure({List<int> certificate, String password})
+      : this._(true, certificate, password);
 
   SecurityContext get securityContext {
     if (!_useTls) return null;
@@ -58,8 +60,8 @@ class ClientChannel {
   final List<Socket> _sockets = [];
   final List<TransportConnection> _connections = [];
 
-  ClientChannel(this.host, {this.port = 8080, ChannelOptions options})
-      : options = options ?? new ChannelOptions();
+  ClientChannel(this.host,
+      {this.port = 443, this.options = const ChannelOptions()});
 
   /// Returns a connection to this [Channel]'s RPC endpoint. The connection may
   /// be shared between multiple RPC calls.
@@ -97,7 +99,7 @@ class ClientMethod<Q, R> {
   ClientMethod(this.path, this.requestSerializer, this.responseDeserializer);
 }
 
-/// Runtime options for a RPC call.
+/// Runtime options for an RPC.
 class CallOptions {
   final Map<String, String> metadata;
   final Duration timeout;
