@@ -7,14 +7,7 @@ import 'dart:io';
 import 'package:grpc/grpc.dart';
 import 'package:test/test.dart';
 
-const isIncorrectPasswordError = const _IncorrectPasswordError();
-
-class _IncorrectPasswordError extends TypeMatcher {
-  const _IncorrectPasswordError() : super("TlsException");
-  bool matches(item, Map matchState) =>
-      item is TlsException &&
-      item.osError.message.contains('INCORRECT_PASSWORD');
-}
+const isTlsException = const isInstanceOf<TlsException>();
 
 void main() {
   group('Certificates', () {
@@ -24,20 +17,18 @@ void main() {
 
       final missingPassword =
           new ChannelOptions.secure(certificate: certificate);
-      expect(() => missingPassword.securityContext,
-          throwsA(isIncorrectPasswordError));
+      expect(() => missingPassword.securityContext, throwsA(isTlsException));
 
       final wrongPassword = new ChannelOptions.secure(
           certificate: certificate, password: 'wrong');
-      expect(() => wrongPassword.securityContext,
-          throwsA(isIncorrectPasswordError));
+      expect(() => wrongPassword.securityContext, throwsA(isTlsException));
 
       final correctPassword = new ChannelOptions.secure(
           certificate: certificate, password: 'correct');
       expect(correctPassword.securityContext, isNotNull);
 
       final channel = new ClientChannel('localhost', options: missingPassword);
-      expect(channel.connect(), throwsA(isIncorrectPasswordError));
+      expect(channel.connect(), throwsA(isTlsException));
     });
   });
 }

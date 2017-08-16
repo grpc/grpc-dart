@@ -124,5 +124,10 @@ abstract class _ResponseMixin<Q, R> implements Response {
   Future<Null> cancel() => _call.cancel();
 }
 
+// TODO: Simplify once we have a stable Dart 1.25 release (update pubspec to
+// require SDK >=1.25.0, and remove check for alpnSupported).
 SecurityContext createSecurityContext(bool isServer) =>
-    new SecurityContext()..setAlpnProtocols(['grpc-exp', 'h2'], isServer);
+    SecurityContext.alpnSupported
+        ? (new SecurityContext()
+          ..setAlpnProtocols(['grpc-exp', 'h2'], isServer))
+        : new SecurityContext();
