@@ -128,8 +128,8 @@ class RouteGuideService extends RouteGuideServiceBase {
 
 class Server {
   Future<Null> main(List<String> args) async {
-    final server = new grpc.Server(port: 8080)
-      ..addService(new RouteGuideService());
+    final server =
+        new grpc.Server.insecure([new RouteGuideService()], port: 8080);
     await server.serve();
     print('Server listening...');
   }

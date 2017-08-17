@@ -96,7 +96,11 @@ class ServerHarness {
   final toServer = new StreamController<StreamMessage>();
   final fromServer = new StreamController<StreamMessage>();
   final service = new TestService();
-  final server = new Server();
+  Server server;
+
+  ServerHarness() {
+    server = new Server.insecure([service]);
+  }
 
   static ServiceMethod<int, int> createMethod(String name,
       Function methodHandler, bool clientStreaming, bool serverStreaming) {
@@ -105,7 +109,6 @@ class ServerHarness {
   }
 
   void setUp() {
-    server.addService(service);
     final stream = new TestServerStream(toServer.stream, fromServer.sink);
     server.serveStream(stream);
   }

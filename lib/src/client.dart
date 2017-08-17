@@ -21,23 +21,33 @@ const _reservedHeaders = const [
   'user-agent',
 ];
 
-/// Runtime options for a RPC call.
-class CallOptions {
-  final Map<String, String> metadata;
-  final Duration timeout;
+/// Options controlling how connections are made on a [ClientChannel].
+class ChannelOptions {
+  final bool _useTls;
+  final List<int> _certificateBytes;
+  final String _certificatePassword;
 
-  CallOptions._(this.metadata, this.timeout);
+  const ChannelOptions._(this._useTls,
+      [this._certificateBytes, this._certificatePassword]);
 
-  factory CallOptions({Map<String, String> metadata, Duration timeout}) {
-    final sanitizedMetadata = <String, String>{};
-    metadata?.forEach((key, value) {
-      final lowerCaseKey = key.toLowerCase();
-      if (!lowerCaseKey.startsWith(':') &&
-          !_reservedHeaders.contains(lowerCaseKey)) {
-        sanitizedMetadata[lowerCaseKey] = value;
-      }
-    });
-    return new CallOptions._(new Map.unmodifiable(sanitizedMetadata), timeout);
+  /// Enable TLS using the default trust store.
+  const ChannelOptions() : this._(true);
+
+  /// Disable TLS. RPCs are sent in clear text.
+  const ChannelOptions.insecure() : this._(false);
+
+  /// Enable TLS and specify the [certificate]s to trust.
+  ChannelOptions.secure({List<int> certificate, String password})
+      : this._(true, certificate, password);
+
+  SecurityContext get securityContext {
+    if (!_useTls) return null;
+    final context = createSecurityContext(false);
+    if (_certificateBytes != null) {
+      context.setTrustedCertificatesBytes(_certificateBytes,
+          password: _certificatePassword);
+    }
+    return context;
   }
 }
 
@@ -45,17 +55,26 @@ class CallOptions {
 class ClientChannel {
   final String host;
   final int port;
-  final CallOptions options;
+  final ChannelOptions options;
 
   final List<Socket> _sockets = [];
   final List<TransportConnection> _connections = [];
 
-  ClientChannel(this.host, {this.port = 8080, this.options});
+  ClientChannel(this.host,
+      {this.port = 443, this.options = const ChannelOptions()});
 
   /// Returns a connection to this [Channel]'s RPC endpoint. The connection may
   /// be shared between multiple RPC calls.
   Future<ClientTransportConnection> connect() async {
-    final socket = await Socket.connect(host, port);
+    final securityContext = options.securityContext;
+
+    Socket socket;
+    if (securityContext == null) {
+      socket = await Socket.connect(host, port);
+    } else {
+      socket = await SecureSocket.connect(host, port,
+          context: securityContext, supportedProtocols: ['grpc-exp', 'h2']);
+    }
     _sockets.add(socket);
     final connection = new ClientTransportConnection.viaSocket(socket);
     _connections.add(connection);
@@ -78,6 +97,49 @@ class ClientMethod<Q, R> {
   final R Function(List<int> value) responseDeserializer;
 
   ClientMethod(this.path, this.requestSerializer, this.responseDeserializer);
+}
+
+/// Runtime options for an RPC.
+class CallOptions {
+  final Map<String, String> metadata;
+  final Duration timeout;
+
+  CallOptions._(this.metadata, this.timeout);
+
+  factory CallOptions({Map<String, String> metadata, Duration timeout}) {
+    final sanitizedMetadata = <String, String>{};
+    metadata?.forEach((key, value) {
+      final lowerCaseKey = key.toLowerCase();
+      if (!lowerCaseKey.startsWith(':') &&
+          !_reservedHeaders.contains(lowerCaseKey)) {
+        sanitizedMetadata[lowerCaseKey] = value;
+      }
+    });
+    return new CallOptions._(new Map.unmodifiable(sanitizedMetadata), timeout);
+  }
+
+  CallOptions mergedWith(CallOptions other) {
+    if (other == null) return this;
+    final mergedMetadata = new Map.from(metadata)..addAll(other.metadata);
+    final mergedTimeout = other.timeout ?? timeout;
+    return new CallOptions._(
+        new Map.unmodifiable(mergedMetadata), mergedTimeout);
+  }
+}
+
+/// Base class for client stubs.
+class Client {
+  final ClientChannel _channel;
+  final CallOptions _options;
+
+  Client(this._channel, {CallOptions options})
+      : _options = options ?? new CallOptions();
+
+  ClientCall<Q, R> $createCall<Q, R>(ClientMethod<Q, R> method,
+      {CallOptions options}) {
+    return new ClientCall(_channel, method,
+        options: _options.mergedWith(options));
+  }
 }
 
 /// An active call to a gRPC endpoint.
@@ -112,7 +174,7 @@ class ClientCall<Q, R> implements Response {
 
   ClientCall(this._channel, this._method, {this.options}) {
     _responses = new StreamController(onListen: _onResponseListen);
-    final timeout = options?.timeout ?? _channel.options?.timeout;
+    final timeout = options?.timeout;
     if (timeout != null) {
       _timeoutTimer = new Timer(timeout, _onTimedOut);
     }
@@ -157,11 +219,8 @@ class ClientCall<Q, R> implements Response {
     final timeoutString = toTimeoutString(timeout);
     // TODO(jakobr): Flip this around, and have the Channel create the call
     // object and apply options (including the above TODO).
-    final customMetadata = <String, String>{};
-    customMetadata.addAll(_channel.options?.metadata ?? {});
-    customMetadata.addAll(options?.metadata ?? {});
     final headers = createCallHeaders(_method.path, _channel.host,
-        timeout: timeoutString, metadata: customMetadata);
+        timeout: timeoutString, metadata: options?.metadata);
     _stream = connection.makeRequest(headers);
     _requests.stream
         .map(_method.requestSerializer)

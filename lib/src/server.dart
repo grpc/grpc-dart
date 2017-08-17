@@ -53,28 +53,63 @@ abstract class Service {
 
 /// A gRPC server.
 ///
-/// Listens for incoming gRPC calls, dispatching them to a [ServerHandler].
+/// Listens for incoming RPCs, dispatching them to the right [Service] handler.
 class Server {
   final Map<String, Service> _services = {};
-  ServerSocket _server;
+  final int port;
+  final SecurityContext _securityContext;
 
+  ServerSocket _insecureServer;
+  SecureServerSocket _secureServer;
   final _connections = <ServerTransportConnection>[];
 
-  final int _port;
+  Server._(List<Service> services, this.port, this._securityContext) {
+    for (final service in services) {
+      _services[service.$name] = service;
+    }
+  }
 
-  Server({int port = 8080}) : _port = port;
+  /// Create a server for the given [services] with no transport security,
+  /// listening on [port].
+  factory Server.insecure(List<Service> services, {int port}) {
+    return new Server._(services, port ?? 80, null);
+  }
 
-  void addService(Service service) {
-    _services[service.$name] = service;
+  /// Create a secure server for the given [services], listening on [port].
+  ///
+  /// If the [certificate] or [privateKey] is encrypted, the password must also
+  /// be provided.
+  factory Server.secure(List<Service> services,
+      {List<int> certificate,
+      String certificatePassword,
+      List<int> privateKey,
+      String privateKeyPassword,
+      int port}) {
+    final context = createSecurityContext(true);
+    if (privateKey != null) {
+      context.usePrivateKeyBytes(privateKey, password: privateKeyPassword);
+    }
+    if (certificate != null) {
+      context.useCertificateChainBytes(certificate,
+          password: certificatePassword);
+    }
+    return new Server._(services, port ?? 443, context);
   }
 
   Service lookupService(String service) => _services[service];
 
   Future<Null> serve() async {
-    // TODO(dart-lang/grpc-dart#4): Add TLS support.
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
-    _server = await ServerSocket.bind('0.0.0.0', _port);
-    _server.listen((socket) {
+    Stream<Socket> server;
+    if (_securityContext != null) {
+      _secureServer =
+          await SecureServerSocket.bind('0.0.0.0', port, _securityContext);
+      server = _secureServer;
+    } else {
+      _insecureServer = await ServerSocket.bind('0.0.0.0', port);
+      server = _insecureServer;
+    }
+    server.listen((socket) {
       final connection = new ServerTransportConnection.viaSocket(socket);
       _connections.add(connection);
       connection.incomingStreams.listen(serveStream, onError: (error) {
@@ -93,8 +128,11 @@ class Server {
 
   Future<Null> shutdown() {
     final done = _connections.map((connection) => connection.finish()).toList();
-    if (_server != null) {
-      done.add(_server.close());
+    if (_insecureServer != null) {
+      done.add(_insecureServer.close());
+    }
+    if (_secureServer != null) {
+      done.add(_secureServer.close());
     }
     return Future.wait(done);
   }

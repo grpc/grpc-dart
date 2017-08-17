@@ -12,9 +12,7 @@ import 'package:grpc/grpc.dart';
 import 'metadata.pb.dart';
 export 'metadata.pb.dart';
 
-class MetadataClient {
-  final ClientChannel _channel;
-
+class MetadataClient extends Client {
   static final _$echo = new ClientMethod<Record, Record>(
       '/grpc.Metadata/Echo',
       (Record value) => value.writeToBuffer(),
@@ -28,10 +26,11 @@ class MetadataClient {
       (Empty value) => value.writeToBuffer(),
       (List<int> value) => new Number.fromBuffer(value));
 
-  MetadataClient(this._channel);
+  MetadataClient(ClientChannel channel, {CallOptions options})
+      : super(channel, options: options);
 
   ResponseFuture<Record> echo(Record request, {CallOptions options}) {
-    final call = new ClientCall(_channel, _$echo, options: options);
+    final call = $createCall(_$echo, options: options);
     call.request
       ..add(request)
       ..close();
@@ -39,13 +38,13 @@ class MetadataClient {
   }
 
   ResponseStream<Number> addOne(Stream<Number> request, {CallOptions options}) {
-    final call = new ClientCall(_channel, _$addOne, options: options);
+    final call = $createCall(_$addOne, options: options);
     request.pipe(call.request);
     return new ResponseStream(call);
   }
 
   ResponseStream<Number> fibonacci(Empty request, {CallOptions options}) {
-    final call = new ClientCall(_channel, _$fibonacci, options: options);
+    final call = $createCall(_$fibonacci, options: options);
     call.request
       ..add(request)
       ..close();
