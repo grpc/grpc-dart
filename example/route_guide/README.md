@@ -29,7 +29,7 @@ $ dart bin/client.dart
 If you have made changes to the message or service definition in
 `protos/route_guide.proto` and need to regenerate the corresponding Dart files,
 you will need to have protoc version 3.0.0 or higher and the Dart protoc plugin
-version 0.7.3 or higher on your PATH.
+version 0.7.6 or higher on your PATH.
 
 To install protoc, see the instructions on
 [the Protocol Buffers website](https://developers.google.com/protocol-buffers/).

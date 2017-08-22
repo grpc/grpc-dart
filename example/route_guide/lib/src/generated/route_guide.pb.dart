@@ -12,8 +12,8 @@ import 'package:protobuf/protobuf.dart';
 
 class Point extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Point')
-    ..a/*<int>*/(1, 'latitude', PbFieldType.O3)
-    ..a/*<int>*/(2, 'longitude', PbFieldType.O3)
+    ..a<int>(1, 'latitude', PbFieldType.O3)
+    ..a<int>(2, 'longitude', PbFieldType.O3)
     ..hasRequiredFields = false;
 
   Point() : super();
@@ -56,8 +56,8 @@ class _ReadonlyPoint extends Point with ReadonlyMessageMixin {}
 
 class Rectangle extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Rectangle')
-    ..a/*<Point>*/(1, 'lo', PbFieldType.OM, Point.getDefault, Point.create)
-    ..a/*<Point>*/(2, 'hi', PbFieldType.OM, Point.getDefault, Point.create)
+    ..a<Point>(1, 'lo', PbFieldType.OM, Point.getDefault, Point.create)
+    ..a<Point>(2, 'hi', PbFieldType.OM, Point.getDefault, Point.create)
     ..hasRequiredFields = false;
 
   Rectangle() : super();
@@ -101,9 +101,8 @@ class _ReadonlyRectangle extends Rectangle with ReadonlyMessageMixin {}
 
 class Feature extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Feature')
-    ..a/*<String>*/(1, 'name', PbFieldType.OS)
-    ..a/*<Point>*/(
-        2, 'location', PbFieldType.OM, Point.getDefault, Point.create)
+    ..a<String>(1, 'name', PbFieldType.OS)
+    ..a<Point>(2, 'location', PbFieldType.OM, Point.getDefault, Point.create)
     ..hasRequiredFields = false;
 
   Feature() : super();
@@ -147,9 +146,8 @@ class _ReadonlyFeature extends Feature with ReadonlyMessageMixin {}
 
 class RouteNote extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('RouteNote')
-    ..a/*<Point>*/(
-        1, 'location', PbFieldType.OM, Point.getDefault, Point.create)
-    ..a/*<String>*/(2, 'message', PbFieldType.OS)
+    ..a<Point>(1, 'location', PbFieldType.OM, Point.getDefault, Point.create)
+    ..a<String>(2, 'message', PbFieldType.OS)
     ..hasRequiredFields = false;
 
   RouteNote() : super();
@@ -193,10 +191,10 @@ class _ReadonlyRouteNote extends RouteNote with ReadonlyMessageMixin {}
 
 class RouteSummary extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('RouteSummary')
-    ..a/*<int>*/(1, 'pointCount', PbFieldType.O3)
-    ..a/*<int>*/(2, 'featureCount', PbFieldType.O3)
-    ..a/*<int>*/(3, 'distance', PbFieldType.O3)
-    ..a/*<int>*/(4, 'elapsedTime', PbFieldType.O3)
+    ..a<int>(1, 'pointCount', PbFieldType.O3)
+    ..a<int>(2, 'featureCount', PbFieldType.O3)
+    ..a<int>(3, 'distance', PbFieldType.O3)
+    ..a<int>(4, 'elapsedTime', PbFieldType.O3)
     ..hasRequiredFields = false;
 
   RouteSummary() : super();

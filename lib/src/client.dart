@@ -64,7 +64,7 @@ class ClientChannel {
       {this.port = 443, this.options = const ChannelOptions()});
 
   /// Returns a connection to this [Channel]'s RPC endpoint. The connection may
-  /// be shared between multiple RPC calls.
+  /// be shared between multiple RPCs.
   Future<ClientTransportConnection> connect() async {
     final securityContext = options.securityContext;
 

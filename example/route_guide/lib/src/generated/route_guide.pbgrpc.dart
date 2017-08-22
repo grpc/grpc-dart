@@ -12,9 +12,7 @@ import 'package:grpc/grpc.dart';
 import 'route_guide.pb.dart';
 export 'route_guide.pb.dart';
 
-class RouteGuideClient {
-  final ClientChannel _channel;
-
+class RouteGuideClient extends Client {
   static final _$getFeature = new ClientMethod<Point, Feature>(
       '/routeguide.RouteGuide/GetFeature',
       (Point value) => value.writeToBuffer(),
@@ -32,32 +30,36 @@ class RouteGuideClient {
       (RouteNote value) => value.writeToBuffer(),
       (List<int> value) => new RouteNote.fromBuffer(value));
 
-  RouteGuideClient(this._channel);
+  RouteGuideClient(ClientChannel channel, {CallOptions options})
+      : super(channel, options: options);
 
-  ResponseFuture<Feature> getFeature(Point request) {
-    final call = new ClientCall(_channel, _$getFeature);
+  ResponseFuture<Feature> getFeature(Point request, {CallOptions options}) {
+    final call = $createCall(_$getFeature, options: options);
     call.request
       ..add(request)
       ..close();
     return new ResponseFuture(call);
   }
 
-  ResponseStream<Feature> listFeatures(Rectangle request) {
-    final call = new ClientCall(_channel, _$listFeatures);
+  ResponseStream<Feature> listFeatures(Rectangle request,
+      {CallOptions options}) {
+    final call = $createCall(_$listFeatures, options: options);
     call.request
       ..add(request)
       ..close();
     return new ResponseStream(call);
   }
 
-  ResponseFuture<RouteSummary> recordRoute(Stream<Point> request) {
-    final call = new ClientCall(_channel, _$recordRoute);
+  ResponseFuture<RouteSummary> recordRoute(Stream<Point> request,
+      {CallOptions options}) {
+    final call = $createCall(_$recordRoute, options: options);
     request.pipe(call.request);
     return new ResponseFuture(call);
   }
 
-  ResponseStream<RouteNote> routeChat(Stream<RouteNote> request) {
-    final call = new ClientCall(_channel, _$routeChat);
+  ResponseStream<RouteNote> routeChat(Stream<RouteNote> request,
+      {CallOptions options}) {
+    final call = $createCall(_$routeChat, options: options);
     request.pipe(call.request);
     return new ResponseStream(call);
   }

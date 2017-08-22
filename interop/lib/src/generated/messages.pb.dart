@@ -16,7 +16,7 @@ export 'messages.pbenum.dart';
 
 class BoolValue extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('BoolValue')
-    ..a/*<bool>*/(1, 'value', PbFieldType.OB)
+    ..a<bool>(1, 'value', PbFieldType.OB)
     ..hasRequiredFields = false;
 
   BoolValue() : super();
@@ -52,9 +52,9 @@ class _ReadonlyBoolValue extends BoolValue with ReadonlyMessageMixin {}
 
 class Payload extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Payload')
-    ..e/*<PayloadType>*/(1, 'type', PbFieldType.OE, PayloadType.COMPRESSABLE,
+    ..e<PayloadType>(1, 'type', PbFieldType.OE, PayloadType.COMPRESSABLE,
         PayloadType.valueOf)
-    ..a/*<List<int>>*/(2, 'body', PbFieldType.OY)
+    ..a<List<int>>(2, 'body', PbFieldType.OY)
     ..hasRequiredFields = false;
 
   Payload() : super();
@@ -98,8 +98,8 @@ class _ReadonlyPayload extends Payload with ReadonlyMessageMixin {}
 
 class EchoStatus extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('EchoStatus')
-    ..a/*<int>*/(1, 'code', PbFieldType.O3)
-    ..a/*<String>*/(2, 'message', PbFieldType.OS)
+    ..a<int>(1, 'code', PbFieldType.O3)
+    ..a<String>(2, 'message', PbFieldType.OS)
     ..hasRequiredFields = false;
 
   EchoStatus() : super();
@@ -143,19 +143,19 @@ class _ReadonlyEchoStatus extends EchoStatus with ReadonlyMessageMixin {}
 
 class SimpleRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('SimpleRequest')
-    ..e/*<PayloadType>*/(1, 'responseType', PbFieldType.OE,
+    ..e<PayloadType>(1, 'responseType', PbFieldType.OE,
         PayloadType.COMPRESSABLE, PayloadType.valueOf)
-    ..a/*<int>*/(2, 'responseSize', PbFieldType.O3)
-    ..a/*<Payload>*/(
+    ..a<int>(2, 'responseSize', PbFieldType.O3)
+    ..a<Payload>(
         3, 'payload', PbFieldType.OM, Payload.getDefault, Payload.create)
-    ..a/*<bool>*/(4, 'fillUsername', PbFieldType.OB)
-    ..a/*<bool>*/(5, 'fillOauthScope', PbFieldType.OB)
-    ..a/*<BoolValue>*/(6, 'responseCompressed', PbFieldType.OM,
+    ..a<bool>(4, 'fillUsername', PbFieldType.OB)
+    ..a<bool>(5, 'fillOauthScope', PbFieldType.OB)
+    ..a<BoolValue>(6, 'responseCompressed', PbFieldType.OM,
         BoolValue.getDefault, BoolValue.create)
-    ..a/*<EchoStatus>*/(7, 'responseStatus', PbFieldType.OM,
-        EchoStatus.getDefault, EchoStatus.create)
-    ..a/*<BoolValue>*/(8, 'expectCompressed', PbFieldType.OM,
-        BoolValue.getDefault, BoolValue.create)
+    ..a<EchoStatus>(7, 'responseStatus', PbFieldType.OM, EchoStatus.getDefault,
+        EchoStatus.create)
+    ..a<BoolValue>(8, 'expectCompressed', PbFieldType.OM, BoolValue.getDefault,
+        BoolValue.create)
     ..hasRequiredFields = false;
 
   SimpleRequest() : super();
@@ -249,10 +249,10 @@ class _ReadonlySimpleRequest extends SimpleRequest with ReadonlyMessageMixin {}
 
 class SimpleResponse extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('SimpleResponse')
-    ..a/*<Payload>*/(
+    ..a<Payload>(
         1, 'payload', PbFieldType.OM, Payload.getDefault, Payload.create)
-    ..a/*<String>*/(2, 'username', PbFieldType.OS)
-    ..a/*<String>*/(3, 'oauthScope', PbFieldType.OS)
+    ..a<String>(2, 'username', PbFieldType.OS)
+    ..a<String>(3, 'oauthScope', PbFieldType.OS)
     ..hasRequiredFields = false;
 
   SimpleResponse() : super();
@@ -308,10 +308,10 @@ class _ReadonlySimpleResponse extends SimpleResponse with ReadonlyMessageMixin {
 
 class StreamingInputCallRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('StreamingInputCallRequest')
-    ..a/*<Payload>*/(
+    ..a<Payload>(
         1, 'payload', PbFieldType.OM, Payload.getDefault, Payload.create)
-    ..a/*<BoolValue>*/(2, 'expectCompressed', PbFieldType.OM,
-        BoolValue.getDefault, BoolValue.create)
+    ..a<BoolValue>(2, 'expectCompressed', PbFieldType.OM, BoolValue.getDefault,
+        BoolValue.create)
     ..hasRequiredFields = false;
 
   StreamingInputCallRequest() : super();
@@ -361,7 +361,7 @@ class _ReadonlyStreamingInputCallRequest extends StreamingInputCallRequest
 
 class StreamingInputCallResponse extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('StreamingInputCallResponse')
-    ..a/*<int>*/(1, 'aggregatedPayloadSize', PbFieldType.O3)
+    ..a<int>(1, 'aggregatedPayloadSize', PbFieldType.O3)
     ..hasRequiredFields = false;
 
   StreamingInputCallResponse() : super();
@@ -404,9 +404,9 @@ class _ReadonlyStreamingInputCallResponse extends StreamingInputCallResponse
 
 class ResponseParameters extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('ResponseParameters')
-    ..a/*<int>*/(1, 'size', PbFieldType.O3)
-    ..a/*<int>*/(2, 'intervalUs', PbFieldType.O3)
-    ..a/*<BoolValue>*/(
+    ..a<int>(1, 'size', PbFieldType.O3)
+    ..a<int>(2, 'intervalUs', PbFieldType.O3)
+    ..a<BoolValue>(
         3, 'compressed', PbFieldType.OM, BoolValue.getDefault, BoolValue.create)
     ..hasRequiredFields = false;
 
@@ -464,14 +464,14 @@ class _ReadonlyResponseParameters extends ResponseParameters
 
 class StreamingOutputCallRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('StreamingOutputCallRequest')
-    ..e/*<PayloadType>*/(1, 'responseType', PbFieldType.OE,
+    ..e<PayloadType>(1, 'responseType', PbFieldType.OE,
         PayloadType.COMPRESSABLE, PayloadType.valueOf)
-    ..pp/*<ResponseParameters>*/(2, 'responseParameters', PbFieldType.PM,
+    ..pp<ResponseParameters>(2, 'responseParameters', PbFieldType.PM,
         ResponseParameters.$checkItem, ResponseParameters.create)
-    ..a/*<Payload>*/(
+    ..a<Payload>(
         3, 'payload', PbFieldType.OM, Payload.getDefault, Payload.create)
-    ..a/*<EchoStatus>*/(7, 'responseStatus', PbFieldType.OM,
-        EchoStatus.getDefault, EchoStatus.create)
+    ..a<EchoStatus>(7, 'responseStatus', PbFieldType.OM, EchoStatus.getDefault,
+        EchoStatus.create)
     ..hasRequiredFields = false;
 
   StreamingOutputCallRequest() : super();
@@ -532,7 +532,7 @@ class _ReadonlyStreamingOutputCallRequest extends StreamingOutputCallRequest
 
 class StreamingOutputCallResponse extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('StreamingOutputCallResponse')
-    ..a/*<Payload>*/(
+    ..a<Payload>(
         1, 'payload', PbFieldType.OM, Payload.getDefault, Payload.create)
     ..hasRequiredFields = false;
 
@@ -576,7 +576,7 @@ class _ReadonlyStreamingOutputCallResponse extends StreamingOutputCallResponse
 
 class ReconnectParams extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('ReconnectParams')
-    ..a/*<int>*/(1, 'maxReconnectBackoffMs', PbFieldType.O3)
+    ..a<int>(1, 'maxReconnectBackoffMs', PbFieldType.O3)
     ..hasRequiredFields = false;
 
   ReconnectParams() : super();
@@ -616,8 +616,8 @@ class _ReadonlyReconnectParams extends ReconnectParams
 
 class ReconnectInfo extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('ReconnectInfo')
-    ..a/*<bool>*/(1, 'passed', PbFieldType.OB)
-    ..p/*<int>*/(2, 'backoffMs', PbFieldType.P3)
+    ..a<bool>(1, 'passed', PbFieldType.OB)
+    ..p<int>(2, 'backoffMs', PbFieldType.P3)
     ..hasRequiredFields = false;
 
   ReconnectInfo() : super();
