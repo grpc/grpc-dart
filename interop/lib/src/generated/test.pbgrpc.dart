@@ -13,9 +13,7 @@ import 'empty.pb.dart';
 import 'messages.pb.dart';
 export 'test.pb.dart';
 
-class TestServiceClient {
-  final ClientChannel _channel;
-
+class TestServiceClient extends Client {
   static final _$emptyCall = new ClientMethod<Empty, Empty>(
       '/grpc.testing.TestService/EmptyCall',
       (Empty value) => value.writeToBuffer(),
@@ -58,10 +56,11 @@ class TestServiceClient {
       (Empty value) => value.writeToBuffer(),
       (List<int> value) => new Empty.fromBuffer(value));
 
-  TestServiceClient(this._channel);
+  TestServiceClient(ClientChannel channel, {CallOptions options})
+      : super(channel, options: options);
 
   ResponseFuture<Empty> emptyCall(Empty request, {CallOptions options}) {
-    final call = new ClientCall(_channel, _$emptyCall, options: options);
+    final call = $createCall(_$emptyCall, options: options);
     call.request
       ..add(request)
       ..close();
@@ -70,7 +69,7 @@ class TestServiceClient {
 
   ResponseFuture<SimpleResponse> unaryCall(SimpleRequest request,
       {CallOptions options}) {
-    final call = new ClientCall(_channel, _$unaryCall, options: options);
+    final call = $createCall(_$unaryCall, options: options);
     call.request
       ..add(request)
       ..close();
@@ -79,8 +78,7 @@ class TestServiceClient {
 
   ResponseFuture<SimpleResponse> cacheableUnaryCall(SimpleRequest request,
       {CallOptions options}) {
-    final call =
-        new ClientCall(_channel, _$cacheableUnaryCall, options: options);
+    final call = $createCall(_$cacheableUnaryCall, options: options);
     call.request
       ..add(request)
       ..close();
@@ -90,8 +88,7 @@ class TestServiceClient {
   ResponseStream<StreamingOutputCallResponse> streamingOutputCall(
       StreamingOutputCallRequest request,
       {CallOptions options}) {
-    final call =
-        new ClientCall(_channel, _$streamingOutputCall, options: options);
+    final call = $createCall(_$streamingOutputCall, options: options);
     call.request
       ..add(request)
       ..close();
@@ -101,8 +98,7 @@ class TestServiceClient {
   ResponseFuture<StreamingInputCallResponse> streamingInputCall(
       Stream<StreamingInputCallRequest> request,
       {CallOptions options}) {
-    final call =
-        new ClientCall(_channel, _$streamingInputCall, options: options);
+    final call = $createCall(_$streamingInputCall, options: options);
     request.pipe(call.request);
     return new ResponseFuture(call);
   }
@@ -110,7 +106,7 @@ class TestServiceClient {
   ResponseStream<StreamingOutputCallResponse> fullDuplexCall(
       Stream<StreamingOutputCallRequest> request,
       {CallOptions options}) {
-    final call = new ClientCall(_channel, _$fullDuplexCall, options: options);
+    final call = $createCall(_$fullDuplexCall, options: options);
     request.pipe(call.request);
     return new ResponseStream(call);
   }
@@ -118,15 +114,14 @@ class TestServiceClient {
   ResponseStream<StreamingOutputCallResponse> halfDuplexCall(
       Stream<StreamingOutputCallRequest> request,
       {CallOptions options}) {
-    final call = new ClientCall(_channel, _$halfDuplexCall, options: options);
+    final call = $createCall(_$halfDuplexCall, options: options);
     request.pipe(call.request);
     return new ResponseStream(call);
   }
 
   ResponseFuture<Empty> unimplementedCall(Empty request,
       {CallOptions options}) {
-    final call =
-        new ClientCall(_channel, _$unimplementedCall, options: options);
+    final call = $createCall(_$unimplementedCall, options: options);
     call.request
       ..add(request)
       ..close();
@@ -222,20 +217,18 @@ abstract class TestServiceBase extends Service {
       ServiceCall call, Stream<StreamingOutputCallRequest> request);
 }
 
-class UnimplementedServiceClient {
-  final ClientChannel _channel;
-
+class UnimplementedServiceClient extends Client {
   static final _$unimplementedCall = new ClientMethod<Empty, Empty>(
       '/grpc.testing.UnimplementedService/UnimplementedCall',
       (Empty value) => value.writeToBuffer(),
       (List<int> value) => new Empty.fromBuffer(value));
 
-  UnimplementedServiceClient(this._channel);
+  UnimplementedServiceClient(ClientChannel channel, {CallOptions options})
+      : super(channel, options: options);
 
   ResponseFuture<Empty> unimplementedCall(Empty request,
       {CallOptions options}) {
-    final call =
-        new ClientCall(_channel, _$unimplementedCall, options: options);
+    final call = $createCall(_$unimplementedCall, options: options);
     call.request
       ..add(request)
       ..close();
@@ -264,9 +257,7 @@ abstract class UnimplementedServiceBase extends Service {
   Future<Empty> unimplementedCall(ServiceCall call, Empty request);
 }
 
-class ReconnectServiceClient {
-  final ClientChannel _channel;
-
+class ReconnectServiceClient extends Client {
   static final _$start = new ClientMethod<ReconnectParams, Empty>(
       '/grpc.testing.ReconnectService/Start',
       (ReconnectParams value) => value.writeToBuffer(),
@@ -276,10 +267,11 @@ class ReconnectServiceClient {
       (Empty value) => value.writeToBuffer(),
       (List<int> value) => new ReconnectInfo.fromBuffer(value));
 
-  ReconnectServiceClient(this._channel);
+  ReconnectServiceClient(ClientChannel channel, {CallOptions options})
+      : super(channel, options: options);
 
   ResponseFuture<Empty> start(ReconnectParams request, {CallOptions options}) {
-    final call = new ClientCall(_channel, _$start, options: options);
+    final call = $createCall(_$start, options: options);
     call.request
       ..add(request)
       ..close();
@@ -287,7 +279,7 @@ class ReconnectServiceClient {
   }
 
   ResponseFuture<ReconnectInfo> stop(Empty request, {CallOptions options}) {
-    final call = new ClientCall(_channel, _$stop, options: options);
+    final call = $createCall(_$stop, options: options);
     call.request
       ..add(request)
       ..close();

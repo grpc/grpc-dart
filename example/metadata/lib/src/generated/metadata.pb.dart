@@ -12,7 +12,7 @@ import 'package:protobuf/protobuf.dart';
 
 class Record extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Record')
-    ..a/*<String>*/(1, 'value', PbFieldType.OS)
+    ..a<String>(1, 'value', PbFieldType.OS)
     ..hasRequiredFields = false;
 
   Record() : super();
@@ -48,7 +48,7 @@ class _ReadonlyRecord extends Record with ReadonlyMessageMixin {}
 
 class Number extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Number')
-    ..a/*<int>*/(1, 'value', PbFieldType.O3)
+    ..a<int>(1, 'value', PbFieldType.O3)
     ..hasRequiredFields = false;
 
   Number() : super();
