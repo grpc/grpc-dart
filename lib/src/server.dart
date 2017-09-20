@@ -217,6 +217,7 @@ class ServerHandler {
   void handle() {
     _stream.onTerminated = (int errorCode) {
       _isCanceled = true;
+      _timeoutTimer?.cancel();
       _cancelResponseSubscription();
     };
 
@@ -330,15 +331,16 @@ class ServerHandler {
   }
 
   void _onTimedOut() {
+    if (_isCanceled) return;
     _isTimedOut = true;
     _isCanceled = true;
     final error = new GrpcError.deadlineExceeded('Deadline exceeded');
+    _sendError(error);
     if (!_requests.isClosed) {
       _requests
         ..addError(error)
         ..close();
     }
-    _sendError(error);
   }
 
   // -- Active state, incoming data --
@@ -473,7 +475,7 @@ class ServerHandler {
     // client, so we treat it as such.
     _timeoutTimer?.cancel();
     _isCanceled = true;
-    if (!_requests.isClosed) {
+    if (_requests != null && !_requests.isClosed) {
       _requests.addError(new GrpcError.cancelled('Cancelled'));
     }
     _cancelResponseSubscription();
