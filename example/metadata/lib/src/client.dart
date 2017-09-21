@@ -117,7 +117,7 @@ class Client {
 
   /// Run the timeout demo.
   ///
-  /// Call an RPC that returns a stream of Fibonacci numbers, and specify a RPC
+  /// Call an RPC that returns a stream of Fibonacci numbers, and specify an RPC
   /// timeout of 2 seconds.
   Future<Null> runFibonacciTimeout() async {
     final call = stub.fibonacci(new Empty(),

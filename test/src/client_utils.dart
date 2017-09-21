@@ -47,32 +47,27 @@ class TestClient extends Client {
       : super(channel, options: options);
 
   ResponseFuture<int> unary(int request, {CallOptions options}) {
-    final call = $createCall(_$unary, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(_$unary, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseFuture(call);
   }
 
   ResponseFuture<int> clientStreaming(Stream<int> request,
       {CallOptions options}) {
-    final call = $createCall(_$clientStreaming, options: options);
-    request.pipe(call.request);
+    final call = $createCall(_$clientStreaming, request, options: options);
     return new ResponseFuture(call);
   }
 
   ResponseStream<int> serverStreaming(int request, {CallOptions options}) {
-    final call = $createCall(_$serverStreaming, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(
+        _$serverStreaming, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseStream(call);
   }
 
   ResponseStream<int> bidirectional(Stream<int> request,
       {CallOptions options}) {
-    final call = $createCall(_$bidirectional, options: options);
-    request.pipe(call.request);
+    final call = $createCall(_$bidirectional, request, options: options);
     return new ResponseStream(call);
   }
 }

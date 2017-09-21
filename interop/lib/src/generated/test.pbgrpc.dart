@@ -1,8 +1,7 @@
 ///
 //  Generated code. Do not modify.
 ///
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: library_prefixes
+// ignore_for_file: non_constant_identifier_names,library_prefixes
 library grpc.testing_test_pbgrpc;
 
 import 'dart:async';
@@ -60,71 +59,61 @@ class TestServiceClient extends Client {
       : super(channel, options: options);
 
   ResponseFuture<Empty> emptyCall(Empty request, {CallOptions options}) {
-    final call = $createCall(_$emptyCall, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(_$emptyCall, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseFuture(call);
   }
 
   ResponseFuture<SimpleResponse> unaryCall(SimpleRequest request,
       {CallOptions options}) {
-    final call = $createCall(_$unaryCall, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(_$unaryCall, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseFuture(call);
   }
 
   ResponseFuture<SimpleResponse> cacheableUnaryCall(SimpleRequest request,
       {CallOptions options}) {
-    final call = $createCall(_$cacheableUnaryCall, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(
+        _$cacheableUnaryCall, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseFuture(call);
   }
 
   ResponseStream<StreamingOutputCallResponse> streamingOutputCall(
       StreamingOutputCallRequest request,
       {CallOptions options}) {
-    final call = $createCall(_$streamingOutputCall, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(
+        _$streamingOutputCall, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseStream(call);
   }
 
   ResponseFuture<StreamingInputCallResponse> streamingInputCall(
       Stream<StreamingInputCallRequest> request,
       {CallOptions options}) {
-    final call = $createCall(_$streamingInputCall, options: options);
-    request.pipe(call.request);
+    final call = $createCall(_$streamingInputCall, request, options: options);
     return new ResponseFuture(call);
   }
 
   ResponseStream<StreamingOutputCallResponse> fullDuplexCall(
       Stream<StreamingOutputCallRequest> request,
       {CallOptions options}) {
-    final call = $createCall(_$fullDuplexCall, options: options);
-    request.pipe(call.request);
+    final call = $createCall(_$fullDuplexCall, request, options: options);
     return new ResponseStream(call);
   }
 
   ResponseStream<StreamingOutputCallResponse> halfDuplexCall(
       Stream<StreamingOutputCallRequest> request,
       {CallOptions options}) {
-    final call = $createCall(_$halfDuplexCall, options: options);
-    request.pipe(call.request);
+    final call = $createCall(_$halfDuplexCall, request, options: options);
     return new ResponseStream(call);
   }
 
   ResponseFuture<Empty> unimplementedCall(Empty request,
       {CallOptions options}) {
-    final call = $createCall(_$unimplementedCall, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(
+        _$unimplementedCall, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseFuture(call);
   }
 }
@@ -228,10 +217,9 @@ class UnimplementedServiceClient extends Client {
 
   ResponseFuture<Empty> unimplementedCall(Empty request,
       {CallOptions options}) {
-    final call = $createCall(_$unimplementedCall, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(
+        _$unimplementedCall, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseFuture(call);
   }
 }
@@ -271,18 +259,14 @@ class ReconnectServiceClient extends Client {
       : super(channel, options: options);
 
   ResponseFuture<Empty> start(ReconnectParams request, {CallOptions options}) {
-    final call = $createCall(_$start, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(_$start, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseFuture(call);
   }
 
   ResponseFuture<ReconnectInfo> stop(Empty request, {CallOptions options}) {
-    final call = $createCall(_$stop, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(_$stop, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseFuture(call);
   }
 }

@@ -69,8 +69,6 @@ class ClientConnection {
 
   final ClientTransportConnection _transport;
 
-  bool _isShutdown = false;
-
   ClientConnection(this._transport);
 
   static List<Header> createCallHeaders(
@@ -97,26 +95,28 @@ class ClientConnection {
     return headers;
   }
 
-  /// Shut down this connection.
+  /// Shuts down this connection.
   ///
   /// No further calls may be made on this connection, but existing calls
   /// are allowed to finish.
   Future<Null> shutdown() {
-    _isShutdown = true;
     // TODO(jakobr): Manage streams, close [_transport] when all are done.
     return _transport.finish();
   }
 
-  /// Terminate this connection.
+  /// Terminates this connection.
   ///
   /// All open calls are terminated immediately, and no further calls may be
   /// made on this connection.
   Future<Null> terminate() {
-    _isShutdown = true;
     // TODO(jakobr): Manage streams, close them immediately.
     return _transport.terminate();
   }
 
+  /// Starts a new RPC on this connection.
+  ///
+  /// Creates a new transport stream on this connection, and sends initial call
+  /// metadata.
   ClientTransportStream sendRequest(
       bool useTls, String authority, String path, CallOptions options) {
     final headers = createCallHeaders(useTls, authority, path, options);
@@ -147,40 +147,42 @@ class ClientChannel {
 
   void _shutdownCheck([Function() cleanup]) {
     if (!_isShutdown) return;
-    cleanup();
+    if (cleanup != null) cleanup();
     throw new GrpcError.unavailable('Channel shutting down.');
   }
 
-  /// Shut down this channel.
+  /// Shuts down this channel.
   ///
-  /// No further calls can be made on this channel. Calls already in progress
-  /// will be allowed to complete.
+  /// No further RPCs can be made on this channel. RPCs already in progress will
+  /// be allowed to complete.
   Future<Null> shutdown() {
+    if (_isShutdown) return new Future.value();
     _isShutdown = true;
     return Future.wait(_connections.map((c) => c.shutdown()));
   }
 
-  /// Terminate this channel.
+  /// Terminates this channel.
   ///
-  /// Calls already in progress will be terminated. No further calls can be made
+  /// RPCs already in progress will be terminated. No further RPCs can be made
   /// on this channel.
   Future<Null> terminate() {
     _isShutdown = true;
     return Future.wait(_connections.map((c) => c.terminate()));
   }
 
-  /// Returns a connection to this [Channel]'s RPC endpoint. The connection may
-  /// be shared between multiple RPCs.
+  /// Returns a connection to this [Channel]'s RPC endpoint.
+  ///
+  /// The connection may be shared between multiple RPCs.
   Future<ClientConnection> connect() async {
     _shutdownCheck();
     final securityContext = options.securityContext;
 
     var socket = await Socket.connect(host, port);
-    _shutdownCheck(() => socket.destroy());
+    _shutdownCheck(socket.destroy);
     if (securityContext != null) {
       socket = await SecureSocket.secure(socket,
           host: authority, context: securityContext);
-      _shutdownCheck(() => socket.destroy());
+      _shutdownCheck(socket.destroy);
     }
     final connection =
         new ClientConnection(new ClientTransportConnection.viaSocket(socket));
@@ -188,9 +190,10 @@ class ClientChannel {
     return connection;
   }
 
+  /// Initiates a new RPC on this connection.
   ClientCall<Q, R> createCall<Q, R>(
-      ClientMethod<Q, R> method, CallOptions options) {
-    final call = new ClientCall(method, options.timeout);
+      ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
+    final call = new ClientCall(method, requests, options.timeout);
     connect().then((connection) {
       // TODO(jakobr): Check if deadline is exceeded.
       if (call._isCancelled) return;
@@ -249,15 +252,17 @@ class Client {
   Client(this._channel, {CallOptions options})
       : _options = options ?? new CallOptions();
 
-  ClientCall<Q, R> $createCall<Q, R>(ClientMethod<Q, R> method,
+  ClientCall<Q, R> $createCall<Q, R>(
+      ClientMethod<Q, R> method, Stream<Q> requests,
       {CallOptions options}) {
-    return _channel.createCall(method, _options.mergedWith(options));
+    return _channel.createCall(method, requests, _options.mergedWith(options));
   }
 }
 
 /// An active call to a gRPC endpoint.
 class ClientCall<Q, R> implements Response {
   final ClientMethod<Q, R> _method;
+  final Stream<Q> _requests;
 
   final _headers = new Completer<Map<String, String>>();
   final _trailers = new Completer<Map<String, String>>();
@@ -266,8 +271,6 @@ class ClientCall<Q, R> implements Response {
   Map<String, String> _headerMetadata;
 
   TransportStream _stream;
-  // ignore: close_sinks
-  final _requests = new StreamController<Q>();
   StreamController<R> _responses;
   StreamSubscription<StreamMessage> _requestSubscription;
   StreamSubscription<GrpcMessage> _responseSubscription;
@@ -275,16 +278,7 @@ class ClientCall<Q, R> implements Response {
   bool _isCancelled = false;
   Timer _timeoutTimer;
 
-  ClientCall(this._method, Duration timeout) {
-    _requestSubscription = _requests.stream
-        .map(_method.requestSerializer)
-        .map(GrpcHttpEncoder.frame)
-        .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
-        .handleError(_onRequestError)
-        .listen((_) {
-      throw new GrpcError.internal('Request received before stream is ready.');
-    }, cancelOnError: true);
-    _requestSubscription.pause();
+  ClientCall(this._method, this._requests, Duration timeout) {
     _responses = new StreamController(onListen: _onResponseListen);
     if (timeout != null) {
       _timeoutTimer = new Timer(timeout, _onTimedOut);
@@ -306,10 +300,15 @@ class ClientCall<Q, R> implements Response {
       return;
     }
     _stream = stream;
-    _requestSubscription.onData(_stream.outgoingMessages.add);
-    _requestSubscription.onError(_stream.outgoingMessages.addError);
-    _requestSubscription.onDone(_stream.outgoingMessages.close);
-    _requestSubscription.resume();
+    _requestSubscription = _requests
+        .map(_method.requestSerializer)
+        .map(GrpcHttpEncoder.frame)
+        .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
+        .handleError(_onRequestError)
+        .listen(_stream.outgoingMessages.add,
+            onError: _stream.outgoingMessages.addError,
+            onDone: _stream.outgoingMessages.close,
+            cancelOnError: true);
     // The response stream might have been listened to before _stream was ready,
     // so try setting up the subscription here as well.
     _onResponseListen();
@@ -346,7 +345,7 @@ class ClientCall<Q, R> implements Response {
   void _responseError(GrpcError error) {
     _responses.addError(error);
     _timeoutTimer?.cancel();
-    _requestSubscription.cancel();
+    _requestSubscription?.cancel();
     _responseSubscription.cancel();
     _responses.close();
     _stream.terminate();
@@ -446,12 +445,11 @@ class ClientCall<Q, R> implements Response {
     _responses.addError(error);
     _timeoutTimer?.cancel();
     _responses.close();
-    _requestSubscription.cancel();
+    _requestSubscription?.cancel();
     _responseSubscription?.cancel();
     _stream.terminate();
   }
 
-  StreamSink<Q> get request => _requests.sink;
   Stream<R> get response => _responses.stream;
 
   @override
@@ -476,7 +474,10 @@ class ClientCall<Q, R> implements Response {
     // reading from responses as well, so we might end up deadlocked.
     _responses.close();
     _stream?.terminate();
-    final futures = <Future>[_requestSubscription.cancel()];
+    final futures = <Future>[];
+    if (_requestSubscription != null) {
+      futures.add(_requestSubscription.cancel());
+    }
     if (_responseSubscription != null) {
       futures.add(_responseSubscription.cancel());
     }
