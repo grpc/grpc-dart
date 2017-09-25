@@ -9,6 +9,7 @@ environment:
 dependencies:
   args: ^0.13.0
   async: ^1.13.3
+  collection: ^1.14.2
   grpc:
     path: ../
   protobuf: ^0.5.4
