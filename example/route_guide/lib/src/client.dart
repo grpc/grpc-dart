@@ -24,7 +24,7 @@ class Client {
     await runListFeatures();
     await runRecordRoute();
     await runRouteChat();
-    await channel.close();
+    await channel.shutdown();
   }
 
   void printFeature(Feature feature) {

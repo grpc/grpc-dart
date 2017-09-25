@@ -13,17 +13,27 @@ import 'package:grpc/grpc.dart';
 
 import 'utils.dart';
 
-class MockConnection extends Mock implements ClientTransportConnection {}
+class MockTransport extends Mock implements ClientTransportConnection {}
 
 class MockStream extends Mock implements ClientTransportStream {}
 
-class MockChannel extends Mock implements ClientChannel {}
+class MockChannel extends ClientChannel {
+  final ClientConnection connection;
+
+  var connectionError;
+
+  MockChannel(String host, this.connection) : super(host);
+
+  @override
+  Future<ClientConnection> connect() async {
+    if (connectionError != null) throw connectionError;
+    return connection;
+  }
+}
 
 typedef ServerMessageHandler = void Function(StreamMessage message);
 
-class TestClient {
-  final ClientChannel _channel;
-
+class TestClient extends Client {
   static final _$unary =
       new ClientMethod<int, int>('/Test/Unary', mockEncode, mockDecode);
   static final _$clientStreaming = new ClientMethod<int, int>(
@@ -33,41 +43,37 @@ class TestClient {
   static final _$bidirectional =
       new ClientMethod<int, int>('/Test/Bidirectional', mockEncode, mockDecode);
 
-  TestClient(this._channel);
+  TestClient(ClientChannel channel, {CallOptions options})
+      : super(channel, options: options);
 
   ResponseFuture<int> unary(int request, {CallOptions options}) {
-    final call = new ClientCall(_channel, _$unary, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(_$unary, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseFuture(call);
   }
 
   ResponseFuture<int> clientStreaming(Stream<int> request,
       {CallOptions options}) {
-    final call = new ClientCall(_channel, _$clientStreaming, options: options);
-    request.pipe(call.request);
+    final call = $createCall(_$clientStreaming, request, options: options);
     return new ResponseFuture(call);
   }
 
   ResponseStream<int> serverStreaming(int request, {CallOptions options}) {
-    final call = new ClientCall(_channel, _$serverStreaming, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(
+        _$serverStreaming, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseStream(call);
   }
 
   ResponseStream<int> bidirectional(Stream<int> request,
       {CallOptions options}) {
-    final call = new ClientCall(_channel, _$bidirectional, options: options);
-    request.pipe(call.request);
+    final call = $createCall(_$bidirectional, request, options: options);
     return new ResponseStream(call);
   }
 }
 
 class ClientHarness {
-  MockConnection connection;
+  MockTransport transport;
   MockChannel channel;
   MockStream stream;
 
@@ -77,14 +83,12 @@ class ClientHarness {
   TestClient client;
 
   void setUp() {
-    connection = new MockConnection();
-    channel = new MockChannel();
+    transport = new MockTransport();
+    channel = new MockChannel('test', new ClientConnection(transport));
     stream = new MockStream();
     fromClient = new StreamController();
     toClient = new StreamController();
-    when(channel.host).thenReturn('test');
-    when(channel.connect()).thenReturn(connection);
-    when(connection.makeRequest(any)).thenReturn(stream);
+    when(transport.makeRequest(any)).thenReturn(stream);
     when(stream.outgoingMessages).thenReturn(fromClient.sink);
     when(stream.incomingMessages).thenReturn(toClient.stream);
     client = new TestClient(channel);
@@ -134,10 +138,8 @@ class ClientHarness {
       expect(result, expectedResult);
     }
 
-    verify(channel.connect()).called(1);
-
     final List<Header> capturedHeaders =
-        verify(connection.makeRequest(captureAny)).captured.single;
+        verify(transport.makeRequest(captureAny)).captured.single;
     validateRequestHeaders(capturedHeaders,
         path: expectedPath,
         timeout: toTimeoutString(expectedTimeout),

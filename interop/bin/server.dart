@@ -84,8 +84,11 @@ class TestService extends TestServiceBase {
       throw new GrpcError.custom(
           request.responseStatus.code, request.responseStatus.message);
     }
-    return new StreamingOutputCallResponse()
-      ..payload = _payloadForRequest(request.responseParameters[0]);
+    final response = new StreamingOutputCallResponse();
+    if (request.responseParameters.isNotEmpty) {
+      response.payload = _payloadForRequest(request.responseParameters[0]);
+    }
+    return response;
   }
 
   @override

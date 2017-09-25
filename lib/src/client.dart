@@ -26,9 +26,10 @@ class ChannelOptions {
   final bool _useTls;
   final List<int> _certificateBytes;
   final String _certificatePassword;
+  final String authority;
 
   const ChannelOptions._(this._useTls,
-      [this._certificateBytes, this._certificatePassword]);
+      [this._certificateBytes, this._certificatePassword, this.authority]);
 
   /// Enable TLS using the default trust store.
   const ChannelOptions() : this._(true);
@@ -37,8 +38,9 @@ class ChannelOptions {
   const ChannelOptions.insecure() : this._(false);
 
   /// Enable TLS and specify the [certificate]s to trust.
-  ChannelOptions.secure({List<int> certificate, String password})
-      : this._(true, certificate, password);
+  ChannelOptions.secure(
+      {List<int> certificate, String password, String authority})
+      : this._(true, certificate, password, authority);
 
   SecurityContext get securityContext {
     if (!_useTls) return null;
@@ -51,42 +53,157 @@ class ChannelOptions {
   }
 }
 
-/// A channel to an RPC endpoint.
+/// A connection to a single RPC endpoint.
+///
+/// RPCs made on a connection are always sent to the same endpoint.
+class ClientConnection {
+  static final _methodPost = new Header.ascii(':method', 'POST');
+  static final _schemeHttp = new Header.ascii(':scheme', 'http');
+  static final _schemeHttps = new Header.ascii(':scheme', 'https');
+  static final _contentTypeGrpc =
+      new Header.ascii('content-type', 'application/grpc');
+  static final _teTrailers = new Header.ascii('te', 'trailers');
+  static final _grpcAcceptEncoding =
+      new Header.ascii('grpc-accept-encoding', 'identity');
+  static final _userAgent = new Header.ascii('user-agent', 'dart-grpc/0.2.0');
+
+  final ClientTransportConnection _transport;
+
+  ClientConnection(this._transport);
+
+  static List<Header> createCallHeaders(
+      bool useTls, String authority, String path, CallOptions options) {
+    final headers = [
+      _methodPost,
+      useTls ? _schemeHttps : _schemeHttp,
+      new Header.ascii(':path', path),
+      new Header.ascii(':authority', authority),
+    ];
+    if (options.timeout != null) {
+      headers.add(
+          new Header.ascii('grpc-timeout', toTimeoutString(options.timeout)));
+    }
+    headers.addAll([
+      _contentTypeGrpc,
+      _teTrailers,
+      _grpcAcceptEncoding,
+      _userAgent,
+    ]);
+    options.metadata.forEach((key, value) {
+      headers.add(new Header.ascii(key, value));
+    });
+    return headers;
+  }
+
+  /// Shuts down this connection.
+  ///
+  /// No further calls may be made on this connection, but existing calls
+  /// are allowed to finish.
+  Future<Null> shutdown() {
+    // TODO(jakobr): Manage streams, close [_transport] when all are done.
+    return _transport.finish();
+  }
+
+  /// Terminates this connection.
+  ///
+  /// All open calls are terminated immediately, and no further calls may be
+  /// made on this connection.
+  Future<Null> terminate() {
+    // TODO(jakobr): Manage streams, close them immediately.
+    return _transport.terminate();
+  }
+
+  /// Starts a new RPC on this connection.
+  ///
+  /// Creates a new transport stream on this connection, and sends initial call
+  /// metadata.
+  ClientTransportStream sendRequest(
+      bool useTls, String authority, String path, CallOptions options) {
+    final headers = createCallHeaders(useTls, authority, path, options);
+    final stream = _transport.makeRequest(headers);
+    // TODO(jakobr): Manage streams. Subscribe to stream state changes.
+    return stream;
+  }
+}
+
+/// A channel to a virtual RPC endpoint.
+///
+/// For each RPC, the channel picks a [ClientConnection] to dispatch the call.
+/// RPCs on the same channel may be sent to different connections, depending on
+/// load balancing settings.
 class ClientChannel {
   final String host;
   final int port;
   final ChannelOptions options;
 
-  final List<Socket> _sockets = [];
-  final List<TransportConnection> _connections = [];
+  final _connections = <ClientConnection>[];
+
+  bool _isShutdown = false;
 
   ClientChannel(this.host,
       {this.port = 443, this.options = const ChannelOptions()});
 
-  /// Returns a connection to this [Channel]'s RPC endpoint. The connection may
-  /// be shared between multiple RPCs.
-  Future<ClientTransportConnection> connect() async {
+  String get authority => options.authority ?? host;
+
+  void _shutdownCheck([Function() cleanup]) {
+    if (!_isShutdown) return;
+    if (cleanup != null) cleanup();
+    throw new GrpcError.unavailable('Channel shutting down.');
+  }
+
+  /// Shuts down this channel.
+  ///
+  /// No further RPCs can be made on this channel. RPCs already in progress will
+  /// be allowed to complete.
+  Future<Null> shutdown() {
+    if (_isShutdown) return new Future.value();
+    _isShutdown = true;
+    return Future.wait(_connections.map((c) => c.shutdown()));
+  }
+
+  /// Terminates this channel.
+  ///
+  /// RPCs already in progress will be terminated. No further RPCs can be made
+  /// on this channel.
+  Future<Null> terminate() {
+    _isShutdown = true;
+    return Future.wait(_connections.map((c) => c.terminate()));
+  }
+
+  /// Returns a connection to this [Channel]'s RPC endpoint.
+  ///
+  /// The connection may be shared between multiple RPCs.
+  Future<ClientConnection> connect() async {
+    _shutdownCheck();
     final securityContext = options.securityContext;
 
-    Socket socket;
-    if (securityContext == null) {
-      socket = await Socket.connect(host, port);
-    } else {
-      socket = await SecureSocket.connect(host, port,
-          context: securityContext, supportedProtocols: ['grpc-exp', 'h2']);
+    var socket = await Socket.connect(host, port);
+    _shutdownCheck(socket.destroy);
+    if (securityContext != null) {
+      socket = await SecureSocket.secure(socket,
+          host: authority, context: securityContext);
+      _shutdownCheck(socket.destroy);
     }
-    _sockets.add(socket);
-    final connection = new ClientTransportConnection.viaSocket(socket);
+    final connection =
+        new ClientConnection(new ClientTransportConnection.viaSocket(socket));
     _connections.add(connection);
     return connection;
   }
 
-  /// Close all connections made on this [ClientChannel].
-  Future<Null> close() async {
-    await Future.wait(_connections.map((c) => c.finish()));
-    _connections.clear();
-    await Future.wait(_sockets.map((s) => s.close()));
-    _sockets.clear();
+  /// Initiates a new RPC on this connection.
+  ClientCall<Q, R> createCall<Q, R>(
+      ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
+    final call = new ClientCall(method, requests, options.timeout);
+    connect().then((connection) {
+      // TODO(jakobr): Check if deadline is exceeded.
+      if (call._isCancelled) return;
+      final stream = connection.sendRequest(
+          this.options._useTls, authority, method.path, options);
+      call._onConnectedStream(stream);
+    }, onError: (error) {
+      call._onConnectError(error);
+    });
+    return call;
   }
 }
 
@@ -135,103 +252,71 @@ class Client {
   Client(this._channel, {CallOptions options})
       : _options = options ?? new CallOptions();
 
-  ClientCall<Q, R> $createCall<Q, R>(ClientMethod<Q, R> method,
+  ClientCall<Q, R> $createCall<Q, R>(
+      ClientMethod<Q, R> method, Stream<Q> requests,
       {CallOptions options}) {
-    return new ClientCall(_channel, method,
-        options: _options.mergedWith(options));
+    return _channel.createCall(method, requests, _options.mergedWith(options));
   }
 }
 
 /// An active call to a gRPC endpoint.
 class ClientCall<Q, R> implements Response {
-  static final _methodPost = new Header.ascii(':method', 'POST');
-  static final _schemeHttp = new Header.ascii(':scheme', 'http');
-  static final _contentTypeGrpc =
-      new Header.ascii('content-type', 'application/grpc');
-  static final _teTrailers = new Header.ascii('te', 'trailers');
-  static final _grpcAcceptEncoding =
-      new Header.ascii('grpc-accept-encoding', 'identity');
-  static final _userAgent = new Header.ascii('user-agent', 'dart-grpc/0.2.0');
-
-  final ClientChannel _channel;
   final ClientMethod<Q, R> _method;
+  final Stream<Q> _requests;
 
-  final Completer<Map<String, String>> _headers = new Completer();
-  final Completer<Map<String, String>> _trailers = new Completer();
+  final _headers = new Completer<Map<String, String>>();
+  final _trailers = new Completer<Map<String, String>>();
   bool _hasReceivedResponses = false;
 
   Map<String, String> _headerMetadata;
 
   TransportStream _stream;
-  final _requests = new StreamController<Q>();
   StreamController<R> _responses;
+  StreamSubscription<StreamMessage> _requestSubscription;
   StreamSubscription<GrpcMessage> _responseSubscription;
 
-  final CallOptions options;
-
-  Future<Null> _callSetup;
+  bool _isCancelled = false;
   Timer _timeoutTimer;
 
-  ClientCall(this._channel, this._method, {this.options}) {
+  ClientCall(this._method, this._requests, Duration timeout) {
     _responses = new StreamController(onListen: _onResponseListen);
-    final timeout = options?.timeout;
     if (timeout != null) {
       _timeoutTimer = new Timer(timeout, _onTimedOut);
     }
-    _callSetup = _initiateCall(timeout).catchError((error) {
-      _responses.addError(
-          new GrpcError.unavailable('Error connecting: ${error.toString()}'));
-      _timeoutTimer?.cancel();
-    });
   }
 
-  void _onTimedOut() {
-    _responses.addError(new GrpcError.deadlineExceeded('Deadline exceeded'));
-    cancel().catchError((_) {});
-  }
-
-  static List<Header> createCallHeaders(String path, String authority,
-      {String timeout, Map<String, String> metadata}) {
-    // TODO(jakobr): Populate HTTP-specific headers in connection?
-    final headers = <Header>[
-      _methodPost,
-      _schemeHttp,
-      new Header.ascii(':path', path),
-      new Header.ascii(':authority', authority),
-    ];
-    if (timeout != null) {
-      headers.add(new Header.ascii('grpc-timeout', timeout));
+  void _onConnectError(error) {
+    if (!_responses.isClosed) {
+      _responses
+          .addError(new GrpcError.unavailable('Error connecting: $error'));
     }
-    headers.addAll([
-      _contentTypeGrpc,
-      _teTrailers,
-      _grpcAcceptEncoding,
-      _userAgent,
-    ]);
-    metadata?.forEach((key, value) {
-      headers.add(new Header.ascii(key, value));
-    });
-    return headers;
+    _safeTerminate();
   }
 
-  Future<Null> _initiateCall(Duration timeout) async {
-    final connection = await _channel.connect();
-    final timeoutString = toTimeoutString(timeout);
-    // TODO(jakobr): Flip this around, and have the Channel create the call
-    // object and apply options (including the above TODO).
-    final headers = createCallHeaders(_method.path, _channel.host,
-        timeout: timeoutString, metadata: options?.metadata);
-    _stream = connection.makeRequest(headers);
-    _requests.stream
+  void _onConnectedStream(ClientTransportStream stream) {
+    if (_isCancelled) {
+      // Should not happen, but just in case.
+      stream.terminate();
+      return;
+    }
+    _stream = stream;
+    _requestSubscription = _requests
         .map(_method.requestSerializer)
         .map(GrpcHttpEncoder.frame)
         .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
         .handleError(_onRequestError)
-        .pipe(_stream.outgoingMessages)
-        .catchError(_onRequestError);
+        .listen(_stream.outgoingMessages.add,
+            onError: _stream.outgoingMessages.addError,
+            onDone: _stream.outgoingMessages.close,
+            cancelOnError: true);
     // The response stream might have been listened to before _stream was ready,
     // so try setting up the subscription here as well.
     _onResponseListen();
+  }
+
+  void _onTimedOut() {
+    _responses.addError(new GrpcError.deadlineExceeded('Deadline exceeded'));
+    _safeTerminate();
   }
 
   /// Subscribe to incoming response messages, once [_stream] is available, and
@@ -260,6 +345,7 @@ class ClientCall<Q, R> implements Response {
   void _responseError(GrpcError error) {
     _responses.addError(error);
     _timeoutTimer?.cancel();
+    _requestSubscription?.cancel();
     _responseSubscription.cancel();
     _responses.close();
     _stream.terminate();
@@ -359,11 +445,11 @@ class ClientCall<Q, R> implements Response {
     _responses.addError(error);
     _timeoutTimer?.cancel();
     _responses.close();
+    _requestSubscription?.cancel();
     _responseSubscription?.cancel();
     _stream.terminate();
   }
 
-  StreamSink<Q> get request => _requests.sink;
   Stream<R> get response => _responses.stream;
 
   @override
@@ -373,21 +459,32 @@ class ClientCall<Q, R> implements Response {
   Future<Map<String, String>> get trailers => _trailers.future;
 
   @override
-  Future<Null> cancel() async {
+  Future<Null> cancel() {
+    if (!_responses.isClosed) {
+      _responses.addError(new GrpcError.cancelled('Cancelled by client.'));
+    }
+    return _terminate();
+  }
+
+  Future<Null> _terminate() async {
+    _isCancelled = true;
     _timeoutTimer?.cancel();
-    _callSetup.whenComplete(() {
-      // Terminate the stream if the call connects after being canceled.
-      _stream?.terminate();
-    });
     // Don't await _responses.close() here. It'll only complete once the done
     // event has been delivered, and it's the caller of this function that is
     // reading from responses as well, so we might end up deadlocked.
     _responses.close();
     _stream?.terminate();
-    final futures = <Future>[_requests.close()];
+    final futures = <Future>[];
+    if (_requestSubscription != null) {
+      futures.add(_requestSubscription.cancel());
+    }
     if (_responseSubscription != null) {
       futures.add(_responseSubscription.cancel());
     }
     await Future.wait(futures);
+  }
+
+  Future<Null> _safeTerminate() {
+    return _terminate().catchError((_) {});
   }
 }

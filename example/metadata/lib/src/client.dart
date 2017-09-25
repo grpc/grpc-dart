@@ -22,10 +22,13 @@ class Client {
     await runAddOneCancel();
     await runFibonacciCancel();
     await runFibonacciTimeout();
-    await channel.close();
+    await channel.shutdown();
   }
 
-  // Run the echo demo. ...
+  /// Run the echo demo.
+  ///
+  /// Send custom metadata with a RPC, and print out the received response and
+  /// metadata.
   Future<Null> runEcho() async {
     final request = new Record()..value = 'Kaj';
     final call = stub.echo(request,
@@ -40,7 +43,11 @@ class Client {
     print('Echo response: ${response.value}');
   }
 
-  // Run the echo with delay cancel demo. ...
+  /// Run the echo with delay cancel demo.
+  ///
+  /// Same as the echo demo, but demonstrating per-client custom metadata, as
+  /// well as a per-call metadata. The server will delay the response for the
+  /// requested duration, during which the client will cancel the RPC.
   Future<Null> runEchoDelayCancel() async {
     final stubWithCustomOptions = new MetadataClient(channel,
         options: new CallOptions(metadata: {'peer': 'Verner'}));
@@ -63,7 +70,10 @@ class Client {
     }
   }
 
-  // Run the addOne cancel demo.
+  /// Run the addOne cancel demo.
+  ///
+  /// Makes a bi-directional RPC, sends 4 requests, and cancels the RPC after
+  /// receiving 3 responses.
   Future<Null> runAddOneCancel() async {
     final numbers = new StreamController<int>();
     final call =
@@ -74,7 +84,7 @@ class Client {
       if (number.value == 3) {
         receivedThree.complete(true);
       }
-    });
+    }, onError: (e) => print('Caught: $e'));
     numbers.add(1);
     numbers.add(2);
     numbers.add(3);
@@ -84,23 +94,43 @@ class Client {
     await Future.wait([sub.cancel(), numbers.close()]);
   }
 
+  /// Run the Fibonacci demo.
+  ///
   /// Call an RPC that returns a stream of Fibonacci numbers. Cancel the call
   /// after receiving more than 5 responses.
   Future<Null> runFibonacciCancel() async {
     final call = stub.fibonacci(new Empty());
     int count = 0;
-    await for (var number in call) {
-      count++;
-      print('Received ${number.value} (count=$count)');
-      if (count > 5) {
-        await call.cancel();
+    try {
+      await for (var number in call) {
+        count++;
+        print('Received ${number.value} (count=$count)');
+        if (count > 5) {
+          await call.cancel();
+        }
       }
+    } on GrpcError catch (e) {
+      print('Caught: $e');
     }
     print('Final count: $count');
   }
 
-  // Run the timeout demo. ...
+  /// Run the timeout demo.
+  ///
+  /// Call an RPC that returns a stream of Fibonacci numbers, and specify an RPC
+  /// timeout of 2 seconds.
   Future<Null> runFibonacciTimeout() async {
-    // TODO(jakobr): Implement timeouts.
+    final call = stub.fibonacci(new Empty(),
+        options: new CallOptions(timeout: new Duration(seconds: 2)));
+    int count = 0;
+    try {
+      await for (var number in call) {
+        count++;
+        print('Received ${number.value} (count=$count)');
+      }
+    } on GrpcError catch (e) {
+      print('Caught: $e');
+    }
+    print('Final count: $count');
   }
 }

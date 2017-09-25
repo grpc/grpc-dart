@@ -143,10 +143,11 @@ class ServerHarness {
 
   void sendRequestHeader(String path,
       {String authority = 'test',
-      String timeout,
-      Map<String, String> metadata}) {
-    final headers = ClientCall.createCallHeaders(path, authority,
-        timeout: timeout, metadata: metadata);
+      Map<String, String> metadata,
+      Duration timeout}) {
+    final options = new CallOptions(metadata: metadata, timeout: timeout);
+    final headers =
+        ClientConnection.createCallHeaders(true, authority, path, options);
     toServer.add(new HeadersStreamMessage(headers));
   }
 

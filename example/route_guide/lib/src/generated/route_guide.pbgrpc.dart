@@ -34,33 +34,27 @@ class RouteGuideClient extends Client {
       : super(channel, options: options);
 
   ResponseFuture<Feature> getFeature(Point request, {CallOptions options}) {
-    final call = $createCall(_$getFeature, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(_$getFeature, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseFuture(call);
   }
 
   ResponseStream<Feature> listFeatures(Rectangle request,
       {CallOptions options}) {
-    final call = $createCall(_$listFeatures, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(_$listFeatures, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseStream(call);
   }
 
   ResponseFuture<RouteSummary> recordRoute(Stream<Point> request,
       {CallOptions options}) {
-    final call = $createCall(_$recordRoute, options: options);
-    request.pipe(call.request);
+    final call = $createCall(_$recordRoute, request, options: options);
     return new ResponseFuture(call);
   }
 
   ResponseStream<RouteNote> routeChat(Stream<RouteNote> request,
       {CallOptions options}) {
-    final call = $createCall(_$routeChat, options: options);
-    request.pipe(call.request);
+    final call = $createCall(_$routeChat, request, options: options);
     return new ResponseStream(call);
   }
 }

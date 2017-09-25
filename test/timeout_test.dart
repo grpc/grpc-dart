@@ -132,7 +132,8 @@ void main() {
       harness
         ..service.unaryHandler = methodHandler
         ..expectErrorResponse(StatusCode.deadlineExceeded, 'Deadline exceeded')
-        ..sendRequestHeader('/Test/Unary', metadata: {'grpc-timeout': '1u'});
+        ..sendRequestHeader('/Test/Unary',
+            timeout: new Duration(microseconds: 1));
       await harness.fromServer.done;
     });
   });

@@ -25,7 +25,7 @@ void validateRequestHeaders(List<Header> headers,
     Map<String, String> customHeaders}) {
   final headerMap = headersToMap(headers);
   expect(headerMap[':method'], 'POST');
-  expect(headerMap[':scheme'], 'http');
+  expect(headerMap[':scheme'], 'https');
   if (path != null) {
     expect(headerMap[':path'], path);
   }

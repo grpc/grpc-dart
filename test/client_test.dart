@@ -276,8 +276,7 @@ void main() {
   });
 
   test('Connection errors are reported', () async {
-    reset(harness.channel);
-    when(harness.channel.connect()).thenThrow('Connection error');
+    harness.channel.connectionError = 'Connection error';
     final expectedError =
         new GrpcError.unavailable('Error connecting: Connection error');
     harness.expectThrows(harness.client.unary(dummyValue), expectedError);

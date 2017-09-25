@@ -1,8 +1,7 @@
 ///
 //  Generated code. Do not modify.
 ///
-// ignore_for_file: non_constant_identifier_names
-// ignore_for_file: library_prefixes
+// ignore_for_file: non_constant_identifier_names,library_prefixes
 library grpc_metadata_pbgrpc;
 
 import 'dart:async';
@@ -30,24 +29,19 @@ class MetadataClient extends Client {
       : super(channel, options: options);
 
   ResponseFuture<Record> echo(Record request, {CallOptions options}) {
-    final call = $createCall(_$echo, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(_$echo, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseFuture(call);
   }
 
   ResponseStream<Number> addOne(Stream<Number> request, {CallOptions options}) {
-    final call = $createCall(_$addOne, options: options);
-    request.pipe(call.request);
+    final call = $createCall(_$addOne, request, options: options);
     return new ResponseStream(call);
   }
 
   ResponseStream<Number> fibonacci(Empty request, {CallOptions options}) {
-    final call = $createCall(_$fibonacci, options: options);
-    call.request
-      ..add(request)
-      ..close();
+    final call = $createCall(_$fibonacci, new Stream.fromIterable([request]),
+        options: options);
     return new ResponseStream(call);
   }
 }
