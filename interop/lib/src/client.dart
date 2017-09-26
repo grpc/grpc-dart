@@ -17,12 +17,19 @@ const _headerEchoKey = 'x-grpc-test-echo-initial';
 const _headerEchoData = 'test_initial_metadata_value';
 
 const _trailerEchoKey = 'x-grpc-test-echo-trailing-bin';
-const _trailerEchoData = '0xababab';
+const _trailerEchoData = 'q6ur'; // 0xababab in base64
 
 class Tester {
   String serverHost;
   String serverHostOverride;
   int _serverPort;
+  String testCase;
+  bool _useTls;
+  bool _useTestCA;
+  String defaultServiceAccount;
+  String oauthScope;
+  String serviceAccountKeyFile;
+
   void set serverPort(String value) {
     if (value == null) {
       _serverPort = null;
@@ -35,20 +42,13 @@ class Tester {
     }
   }
 
-  String testCase;
-  bool _useTls;
   void set useTls(String value) {
     _useTls = value != 'false';
   }
 
-  bool _useTestCA;
   void set useTestCA(String value) {
     _useTestCA = value == 'true';
   }
-
-  String defaultServiceAccount;
-  String oauthScope;
-  String serviceAccountKeyFile;
 
   TestServiceClient client;
   UnimplementedServiceClient unimplementedServiceClient;
@@ -780,7 +780,7 @@ class Tester {
   Future<Null> customMetadata() async {
     void validate(Map<String, String> headers, Map<String, String> trailers) {
       if (headers[_headerEchoKey] != _headerEchoData) {
-        throw 'Invalid header data recived.';
+        throw 'Invalid header data received.';
       }
       if (trailers[_trailerEchoKey] != _trailerEchoData) {
         throw 'Invalid trailer data received.';
@@ -963,18 +963,21 @@ class Tester {
 
     var receivedResponse = false;
     call.listen((response) {
-      if (receivedResponse) throw 'Received too many responses.';
+      if (receivedResponse) {
+        completer.completeError('Received too many responses.');
+        return;
+      }
       receivedResponse = true;
       if (response.payload.body.length != 31415) {
-        throw 'Invalid response length: ${response.payload.body
-            .length} != 31415.';
+        completer.completeError('Invalid response length: '
+            '${response.payload.body.length} != 31415.');
       }
       call.cancel();
     }, onError: (e) {
-      if (e is! GrpcError) completer.completeError('Unexpected error $e.');
+      if (e is! GrpcError) completer.completeError('Unexpected error: $e.');
       if (e.code != StatusCode.cancelled) {
         completer
-            .completeError('Unexpected status code ${e.code} - ${e.message}.');
+            .completeError('Unexpected status code ${e.code}: ${e.message}.');
       }
       completer.complete(true);
     }, onDone: () {
@@ -1019,7 +1022,6 @@ class Tester {
       if (e.code != StatusCode.deadlineExceeded) {
         throw 'Unexpected status code ${e.code} - ${e.message}.';
       }
-      return;
     } finally {
       requests.close();
     }
