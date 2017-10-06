@@ -148,6 +148,7 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
       // TODO(jakobr): Handle duplicate header names correctly.
       headers[ASCII.decode(header.name)] = ASCII.decode(header.value);
     }
+    // TODO(jakobr): Check :status, go to error mode if not 2xx.
     _out.add(new GrpcMetadata(headers));
   }
 

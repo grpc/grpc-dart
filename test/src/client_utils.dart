@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'dart:io';
 import 'package:grpc/src/streams.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
@@ -17,18 +18,40 @@ class MockTransport extends Mock implements ClientTransportConnection {}
 
 class MockStream extends Mock implements ClientTransportStream {}
 
-class MockChannel extends ClientChannel {
-  final ClientConnection connection;
+class FakeConnection extends ClientConnection {
+  final ClientTransportConnection transport;
 
   var connectionError;
 
-  MockChannel(String host, this.connection) : super(host);
+  FakeConnection(String host, this.transport, ChannelOptions options)
+      : super(host, 443, options);
 
   @override
-  Future<ClientConnection> connect() async {
+  Future<ClientTransportConnection> connectTransport() async {
     if (connectionError != null) throw connectionError;
-    return connection;
+    return transport;
   }
+}
+
+Duration testBackoff(Duration lastBackoff) => const Duration(milliseconds: 1);
+
+class FakeChannelOptions implements ChannelOptions {
+  String authority;
+  Duration idleTimeout = const Duration(seconds: 1);
+  BackoffStrategy backoffStrategy = testBackoff;
+  SecurityContext securityContext = new SecurityContext();
+  bool isSecure = true;
+}
+
+class FakeChannel extends ClientChannel {
+  final ClientConnection connection;
+  final FakeChannelOptions options;
+
+  FakeChannel(String host, this.connection, this.options)
+      : super(host, options: options);
+
+  @override
+  Future<ClientConnection> getConnection() async => connection;
 }
 
 typedef ServerMessageHandler = void Function(StreamMessage message);
@@ -74,7 +97,9 @@ class TestClient extends Client {
 
 class ClientHarness {
   MockTransport transport;
-  MockChannel channel;
+  FakeConnection connection;
+  FakeChannel channel;
+  FakeChannelOptions channelOptions;
   MockStream stream;
 
   StreamController<StreamMessage> fromClient;
@@ -84,11 +109,14 @@ class ClientHarness {
 
   void setUp() {
     transport = new MockTransport();
-    channel = new MockChannel('test', new ClientConnection(transport));
+    channelOptions = new FakeChannelOptions();
+    connection = new FakeConnection('test', transport, channelOptions);
+    channel = new FakeChannel('test', connection, channelOptions);
     stream = new MockStream();
     fromClient = new StreamController();
     toClient = new StreamController();
     when(transport.makeRequest(any)).thenReturn(stream);
+    when(transport.onActiveStateChanged = captureAny).thenReturn(null);
     when(stream.outgoingMessages).thenReturn(fromClient.sink);
     when(stream.incomingMessages).thenReturn(toClient.stream);
     client = new TestClient(channel);
@@ -112,6 +140,13 @@ class ClientHarness {
       {List<Header> headers = const [], bool closeStream = true}) {
     toClient.add(new HeadersStreamMessage(headers, endStream: true));
     if (closeStream) toClient.close();
+  }
+
+  void signalIdle() {
+    final ActiveStateHandler handler =
+        verify(transport.onActiveStateChanged = captureAny).captured.single;
+    expect(handler, isNotNull);
+    handler(false);
   }
 
   Future<Null> runTest(

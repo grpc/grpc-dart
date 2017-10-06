@@ -18,12 +18,17 @@ class Client {
   Future<Null> main(List<String> args) async {
     channel = new ClientChannel('127.0.0.1',
         port: 8080, options: const ChannelOptions.insecure());
-    stub = new RouteGuideClient(channel);
+    stub = new RouteGuideClient(channel,
+        options: new CallOptions(timeout: new Duration(seconds: 30)));
     // Run all of the demos in order.
-    await runGetFeature();
-    await runListFeatures();
-    await runRecordRoute();
-    await runRouteChat();
+    try {
+      await runGetFeature();
+      await runListFeatures();
+      await runRecordRoute();
+      await runRouteChat();
+    } catch (e) {
+      print('Caught error: $e');
+    }
     await channel.shutdown();
   }
 
