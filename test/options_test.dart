@@ -26,9 +26,6 @@ void main() {
       final correctPassword = new ChannelOptions.secure(
           certificate: certificate, password: 'correct');
       expect(correctPassword.securityContext, isNotNull);
-
-      final channel = new ClientChannel('localhost', options: missingPassword);
-      expect(channel.connect(), throwsA(isTlsException));
     });
   });
 }

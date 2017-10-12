@@ -4,10 +4,9 @@
 
 import 'dart:async';
 
-import 'package:grpc/src/status.dart';
+import 'package:grpc/grpc.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
-import 'package:mockito/mockito.dart';
 
 import 'src/client_utils.dart';
 import 'src/utils.dart';
@@ -275,15 +274,6 @@ void main() {
     );
   });
 
-  test('Connection errors are reported', () async {
-    harness.channel.connectionError = 'Connection error';
-    final expectedError =
-        new GrpcError.unavailable('Error connecting: Connection error');
-    harness.expectThrows(harness.client.unary(dummyValue), expectedError);
-    harness.expectThrows(
-        harness.client.serverStreaming(dummyValue).toList(), expectedError);
-  });
-
   test('Known request errors are reported', () async {
     final expectedException = new GrpcError.deadlineExceeded('Too late!');
 
@@ -309,5 +299,86 @@ void main() {
       expectedException: expectedException,
       expectDone: false,
     );
+  });
+
+  Future<Null> makeUnaryCall() async {
+    void handleRequest(StreamMessage message) {
+      harness
+        ..sendResponseHeader()
+        ..sendResponseValue(1)
+        ..sendResponseTrailer();
+    }
+
+    await harness.runTest(
+      clientCall: harness.client.unary(1),
+      expectedResult: 1,
+      expectedPath: '/Test/Unary',
+      serverHandlers: [handleRequest],
+    );
+  }
+
+  test('Reconnect on connection error', () async {
+    final connectionStates = <ConnectionState>[];
+    harness.connection.connectionError = 'Connection error';
+    int failureCount = 0;
+    harness.connection.onStateChanged = (connection) {
+      final state = connection.state;
+      connectionStates.add(state);
+      if (state == ConnectionState.transientFailure) failureCount++;
+      if (failureCount == 2) {
+        harness.connection.connectionError = null;
+      }
+    };
+
+    await makeUnaryCall();
+
+    expect(failureCount, 2);
+    expect(connectionStates, [
+      ConnectionState.connecting,
+      ConnectionState.transientFailure,
+      ConnectionState.connecting,
+      ConnectionState.transientFailure,
+      ConnectionState.connecting,
+      ConnectionState.ready
+    ]);
+  });
+
+  test('Connections time out if idle', () async {
+    final done = new Completer();
+    final connectionStates = <ConnectionState>[];
+    harness.connection.onStateChanged = (connection) {
+      final state = connection.state;
+      connectionStates.add(state);
+      if (state == ConnectionState.idle) done.complete();
+    };
+
+    harness.channelOptions.idleTimeout = const Duration(microseconds: 10);
+
+    await makeUnaryCall();
+    harness.signalIdle();
+    expect(
+        connectionStates, [ConnectionState.connecting, ConnectionState.ready]);
+    await done.future;
+    expect(connectionStates, [
+      ConnectionState.connecting,
+      ConnectionState.ready,
+      ConnectionState.idle
+    ]);
+  });
+
+  test('Default reconnect backoff backs off', () {
+    Duration lastBackoff = defaultBackoffStrategy(null);
+    expect(lastBackoff, const Duration(seconds: 1));
+    for (int i = 0; i < 12; i++) {
+      final minNext = lastBackoff * (1.6 - 0.2);
+      final maxNext = lastBackoff * (1.6 + 0.2);
+      lastBackoff = defaultBackoffStrategy(lastBackoff);
+      if (lastBackoff != const Duration(minutes: 2)) {
+        expect(lastBackoff, greaterThanOrEqualTo(minNext));
+        expect(lastBackoff, lessThanOrEqualTo(maxNext));
+      }
+    }
+    expect(lastBackoff, const Duration(minutes: 2));
+    expect(defaultBackoffStrategy(lastBackoff), const Duration(minutes: 2));
   });
 }

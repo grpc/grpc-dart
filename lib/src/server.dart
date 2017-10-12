@@ -112,6 +112,8 @@ class Server {
     server.listen((socket) {
       final connection = new ServerTransportConnection.viaSocket(socket);
       _connections.add(connection);
+      // TODO(jakobr): Set active state handlers, close connection after idle
+      // timeout.
       connection.incomingStreams.listen(serveStream, onError: (error) {
         print('Connection error: $error');
       }, onDone: () {
