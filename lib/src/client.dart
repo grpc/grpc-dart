@@ -271,8 +271,8 @@ class ClientConnection {
   }
 
   void _handleIdleTimeout() {
-    if (_timer == null) return;
-    _timer = null;
+    if (_timer == null || _state != ConnectionState.ready) return;
+    _cancelTimer();
     _transport?.finish()?.catchError((_) => {}); // TODO(jakobr): Log error.
     _transport = null;
     _setState(ConnectionState.idle);
@@ -307,7 +307,6 @@ class ClientConnection {
     // TODO(jakobr): Log error.
     _cancelTimer();
     if (!_hasPendingCalls()) {
-      // If there are no pending calls, just go directly to idle.
       _setState(ConnectionState.idle);
       return;
     }
@@ -317,8 +316,8 @@ class ClientConnection {
   }
 
   void _handleReconnect() {
-    if (_timer == null) return;
-    _timer = null;
+    if (_timer == null || _state != ConnectionState.transientFailure) return;
+    _cancelTimer();
     _connect();
   }
 

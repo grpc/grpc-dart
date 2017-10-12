@@ -344,9 +344,12 @@ void main() {
   });
 
   test('Connections time out if idle', () async {
+    final done = new Completer();
     final connectionStates = <ConnectionState>[];
     harness.connection.onStateChanged = (connection) {
-      connectionStates.add(connection.state);
+      final state = connection.state;
+      connectionStates.add(state);
+      if (state == ConnectionState.idle) done.complete();
     };
 
     harness.channelOptions.idleTimeout = const Duration(microseconds: 10);
@@ -355,7 +358,7 @@ void main() {
     harness.signalIdle();
     expect(
         connectionStates, [ConnectionState.connecting, ConnectionState.ready]);
-    await new Future.delayed(const Duration(microseconds: 100));
+    await done.future;
     expect(connectionStates, [
       ConnectionState.connecting,
       ConnectionState.ready,
