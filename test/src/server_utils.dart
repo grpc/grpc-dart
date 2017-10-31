@@ -32,10 +32,10 @@ class TestService extends Service {
         'ServerStreaming', _serverStreaming, false, true));
     $addMethod(ServerHarness.createMethod(
         'Bidirectional', _bidirectional, true, true));
-    $addMethod(new ServiceMethod('RequestError', _bidirectional, true, true,
-        (List<int> value) => throw 'Failed', mockEncode));
-    $addMethod(new ServiceMethod('ResponseError', _bidirectional, true, true,
-        mockDecode, (int value) => throw 'Failed'));
+    $addMethod(new ServiceMethod<int, int>('RequestError', _bidirectional, true,
+        true, (List<int> value) => throw 'Failed', mockEncode));
+    $addMethod(new ServiceMethod<int, int>('ResponseError', _bidirectional,
+        true, true, mockDecode, (int value) => throw 'Failed'));
   }
 
   Future<int> _unary(ServiceCall call, Future<int> request) {
@@ -145,9 +145,8 @@ class ServerHarness {
       {String authority = 'test',
       Map<String, String> metadata,
       Duration timeout}) {
-    final options = new CallOptions(metadata: metadata, timeout: timeout);
-    final headers =
-        ClientConnection.createCallHeaders(true, authority, path, options);
+    final headers = ClientConnection.createCallHeaders(
+        true, authority, path, timeout, metadata);
     toServer.add(new HeadersStreamMessage(headers));
   }
 
