@@ -404,6 +404,10 @@ class ClientMethod<Q, R> {
 /// Metadata providers will be invoked for every RPC, and can add their own
 /// metadata to the RPC. If the function returns a [Future], the RPC will await
 /// completion of the returned [Future] before transmitting the request.
+///
+/// The metadata provider is given the current metadata map (possibly modified
+/// by previous metadata providers), and is expected to modify the map before
+/// returning or before completing the returned [Future].
 typedef FutureOr<Null> MetadataProvider(Map<String, String> metadata);
 
 /// Runtime options for an RPC.
@@ -414,6 +418,12 @@ class CallOptions {
 
   CallOptions._(this.metadata, this.timeout, this.metadataProviders);
 
+  /// Creates a [CallOptions] object.
+  ///
+  /// [CallOptions] can specify static [metadata], set the [timeout], and
+  /// configure per-RPC metadata [providers]. The metadata [providers] are
+  /// invoked in order for every RPC, and can modify the outgoing metadata
+  /// (including metadata provided by previous providers).
   factory CallOptions(
       {Map<String, String> metadata,
       Duration timeout,
