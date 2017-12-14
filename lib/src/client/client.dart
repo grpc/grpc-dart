@@ -6,16 +6,8 @@ import 'dart:async';
 
 import 'call.dart';
 import 'channel.dart';
+import 'method.dart';
 import 'options.dart';
-
-/// Description of a gRPC method.
-class ClientMethod<Q, R> {
-  final String path;
-  final List<int> Function(Q value) requestSerializer;
-  final R Function(List<int> value) responseDeserializer;
-
-  ClientMethod(this.path, this.requestSerializer, this.responseDeserializer);
-}
 
 /// Base class for client stubs.
 class Client {

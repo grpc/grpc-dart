@@ -9,9 +9,9 @@ import 'package:http2/transport.dart';
 import '../shared/status.dart';
 import '../shared/streams.dart';
 
-import 'client.dart';
 import 'common.dart';
 import 'connection.dart';
+import 'method.dart';
 import 'options.dart';
 
 const _reservedHeaders = const [

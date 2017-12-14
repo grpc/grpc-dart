@@ -7,8 +7,8 @@ import 'dart:async';
 import '../shared/status.dart';
 
 import 'call.dart';
-import 'client.dart';
 import 'connection.dart';
+import 'method.dart';
 import 'options.dart';
 
 /// A channel to a virtual RPC endpoint.

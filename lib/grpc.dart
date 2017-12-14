@@ -7,6 +7,7 @@ export 'src/client/channel.dart';
 export 'src/client/client.dart';
 export 'src/client/common.dart';
 export 'src/client/connection.dart';
+export 'src/client/method.dart';
 export 'src/client/options.dart';
 
 export 'src/server/call.dart';
