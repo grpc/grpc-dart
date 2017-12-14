@@ -87,7 +87,7 @@ class ChannelOptions {
         ..setTrustedCertificatesBytes(_certificateBytes,
             password: _certificatePassword);
     }
-    final context = SecurityContext.defaultContext;
+    final context = new SecurityContext(withTrustedRoots: true);
     if (SecurityContext.alpnSupported) {
       context.setAlpnProtocols(supportedAlpnProtocols, false);
     }
@@ -144,17 +144,16 @@ class ClientConnection {
 
   ConnectionState get state => _state;
 
-  static List<Header> createCallHeaders(
-      bool useTls, String authority, String path, CallOptions options) {
+  static List<Header> createCallHeaders(bool useTls, String authority,
+      String path, Duration timeout, Map<String, String> metadata) {
     final headers = [
       _methodPost,
       useTls ? _schemeHttps : _schemeHttp,
       new Header.ascii(':path', path),
       new Header.ascii(':authority', authority),
     ];
-    if (options.timeout != null) {
-      headers.add(
-          new Header.ascii('grpc-timeout', toTimeoutString(options.timeout)));
+    if (timeout != null) {
+      headers.add(new Header.ascii('grpc-timeout', toTimeoutString(timeout)));
     }
     headers.addAll([
       _contentTypeGrpc,
@@ -162,7 +161,7 @@ class ClientConnection {
       _grpcAcceptEncoding,
       _userAgent,
     ]);
-    options.metadata.forEach((key, value) {
+    metadata?.forEach((key, value) {
       headers.add(new Header.ascii(key, value));
     });
     return headers;
@@ -223,17 +222,21 @@ class ClientConnection {
     }
   }
 
+  ClientTransportStream makeRequest(
+      String path, Duration timeout, Map<String, String> metadata) {
+    final headers =
+        createCallHeaders(options.isSecure, authority, path, timeout, metadata);
+    return _transport.makeRequest(headers);
+  }
+
   void _startCall(ClientCall call) {
     if (call._isCancelled) return;
-    final headers =
-        createCallHeaders(options.isSecure, authority, call.path, call.options);
-    final stream = _transport.makeRequest(headers);
-    call._onConnectedStream(stream);
+    call._onConnectionReady(this);
   }
 
   void _shutdownCall(ClientCall call) {
     if (call._isCancelled) return;
-    call._onConnectError(
+    call._onConnectionError(
         new GrpcError.unavailable('Connection shutting down.'));
   }
 
@@ -382,7 +385,7 @@ class ClientChannel {
     getConnection().then((connection) {
       if (call._isCancelled) return;
       connection.dispatchCall(call);
-    }, onError: call._onConnectError);
+    }, onError: call._onConnectionError);
     return call;
   }
 }
@@ -396,31 +399,50 @@ class ClientMethod<Q, R> {
   ClientMethod(this.path, this.requestSerializer, this.responseDeserializer);
 }
 
+/// Provides per-RPC metadata.
+///
+/// Metadata providers will be invoked for every RPC, and can add their own
+/// metadata to the RPC. If the function returns a [Future], the RPC will await
+/// completion of the returned [Future] before transmitting the request.
+///
+/// The metadata provider is given the current metadata map (possibly modified
+/// by previous metadata providers), and is expected to modify the map before
+/// returning or before completing the returned [Future].
+typedef FutureOr<Null> MetadataProvider(Map<String, String> metadata);
+
 /// Runtime options for an RPC.
 class CallOptions {
   final Map<String, String> metadata;
   final Duration timeout;
+  final List<MetadataProvider> metadataProviders;
 
-  CallOptions._(this.metadata, this.timeout);
+  CallOptions._(this.metadata, this.timeout, this.metadataProviders);
 
-  factory CallOptions({Map<String, String> metadata, Duration timeout}) {
-    final sanitizedMetadata = <String, String>{};
-    metadata?.forEach((key, value) {
-      final lowerCaseKey = key.toLowerCase();
-      if (!lowerCaseKey.startsWith(':') &&
-          !_reservedHeaders.contains(lowerCaseKey)) {
-        sanitizedMetadata[lowerCaseKey] = value;
-      }
-    });
-    return new CallOptions._(new Map.unmodifiable(sanitizedMetadata), timeout);
+  /// Creates a [CallOptions] object.
+  ///
+  /// [CallOptions] can specify static [metadata], set the [timeout], and
+  /// configure per-RPC metadata [providers]. The metadata [providers] are
+  /// invoked in order for every RPC, and can modify the outgoing metadata
+  /// (including metadata provided by previous providers).
+  factory CallOptions(
+      {Map<String, String> metadata,
+      Duration timeout,
+      List<MetadataProvider> providers}) {
+    return new CallOptions._(new Map.unmodifiable(metadata ?? {}), timeout,
+        new List.unmodifiable(providers ?? []));
   }
+
+  factory CallOptions.from(Iterable<CallOptions> options) =>
+      options.fold(new CallOptions(), (p, o) => p.mergedWith(o));
 
   CallOptions mergedWith(CallOptions other) {
     if (other == null) return this;
     final mergedMetadata = new Map.from(metadata)..addAll(other.metadata);
     final mergedTimeout = other.timeout ?? timeout;
-    return new CallOptions._(
-        new Map.unmodifiable(mergedMetadata), mergedTimeout);
+    final mergedProviders = new List.from(metadataProviders)
+      ..addAll(other.metadataProviders);
+    return new CallOptions._(new Map.unmodifiable(mergedMetadata),
+        mergedTimeout, new List.unmodifiable(mergedProviders));
   }
 }
 
@@ -468,21 +490,49 @@ class ClientCall<Q, R> implements Response {
 
   String get path => _method.path;
 
-  void _onConnectError(error) {
+  void _onConnectionError(error) {
+    _terminateWithError(new GrpcError.unavailable('Error connecting: $error'));
+  }
+
+  void _terminateWithError(GrpcError error) {
     if (!_responses.isClosed) {
-      _responses
-          .addError(new GrpcError.unavailable('Error connecting: $error'));
+      _responses.addError(error);
     }
     _safeTerminate();
   }
 
-  void _onConnectedStream(ClientTransportStream stream) {
-    if (_isCancelled) {
-      // Should not happen, but just in case.
-      stream.terminate();
-      return;
+  static Map<String, String> _sanitizeMetadata(Map<String, String> metadata) {
+    final sanitizedMetadata = <String, String>{};
+    metadata.forEach((String key, String value) {
+      final lowerCaseKey = key.toLowerCase();
+      if (!lowerCaseKey.startsWith(':') &&
+          !_reservedHeaders.contains(lowerCaseKey)) {
+        sanitizedMetadata[lowerCaseKey] = value;
+      }
+    });
+    return sanitizedMetadata;
+  }
+
+  void _onConnectionReady(ClientConnection connection) {
+    if (_isCancelled) return;
+
+    if (options.metadataProviders.isEmpty) {
+      _sendRequest(connection, _sanitizeMetadata(options.metadata));
+    } else {
+      final metadata = new Map.from(options.metadata);
+      Future
+          .forEach(options.metadataProviders, (provider) => provider(metadata))
+          .then((_) => _sendRequest(connection, _sanitizeMetadata(metadata)))
+          .catchError(_onMetadataProviderError);
     }
-    _stream = stream;
+  }
+
+  void _onMetadataProviderError(error) {
+    _terminateWithError(new GrpcError.internal('Error making call: $error'));
+  }
+
+  void _sendRequest(ClientConnection connection, Map<String, String> metadata) {
+    _stream = connection.makeRequest(path, options.timeout, metadata);
     _requestSubscription = _requests
         .map(_method.requestSerializer)
         .map(GrpcHttpEncoder.frame)

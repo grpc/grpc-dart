@@ -52,7 +52,7 @@ class _ReadonlyBoolValue extends BoolValue with ReadonlyMessageMixin {}
 class Payload extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Payload')
     ..e<PayloadType>(1, 'type', PbFieldType.OE, PayloadType.COMPRESSABLE,
-        PayloadType.valueOf)
+        PayloadType.valueOf, PayloadType.values)
     ..a<List<int>>(2, 'body', PbFieldType.OY)
     ..hasRequiredFields = false;
 
@@ -143,7 +143,7 @@ class _ReadonlyEchoStatus extends EchoStatus with ReadonlyMessageMixin {}
 class SimpleRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('SimpleRequest')
     ..e<PayloadType>(1, 'responseType', PbFieldType.OE,
-        PayloadType.COMPRESSABLE, PayloadType.valueOf)
+        PayloadType.COMPRESSABLE, PayloadType.valueOf, PayloadType.values)
     ..a<int>(2, 'responseSize', PbFieldType.O3)
     ..a<Payload>(
         3, 'payload', PbFieldType.OM, Payload.getDefault, Payload.create)
@@ -464,7 +464,7 @@ class _ReadonlyResponseParameters extends ResponseParameters
 class StreamingOutputCallRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('StreamingOutputCallRequest')
     ..e<PayloadType>(1, 'responseType', PbFieldType.OE,
-        PayloadType.COMPRESSABLE, PayloadType.valueOf)
+        PayloadType.COMPRESSABLE, PayloadType.valueOf, PayloadType.values)
     ..pp<ResponseParameters>(2, 'responseParameters', PbFieldType.PM,
         ResponseParameters.$checkItem, ResponseParameters.create)
     ..a<Payload>(

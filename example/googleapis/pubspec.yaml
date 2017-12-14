@@ -1,17 +1,16 @@
-name: interop
-description: Dart gRPC interoperability test suite.
+name: googleapis
+description: Dart gRPC client sample for Google APIs
 version: 0.0.1
 homepage: https://github.com/dart-lang/grpc-dart
 
 environment:
-  sdk: '>=1.20.1 <2.0.0'
+  sdk: '>=1.24.3 <2.0.0'
 
 dependencies:
-  args: ^0.13.0
   async: ^1.13.3
-  collection: ^1.14.2
+  googleapis_auth: ^0.2.3+6
   grpc:
-    path: ../
+    path: ../../
   protobuf: ^0.6.0
 
 dev_dependencies:
