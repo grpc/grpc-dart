@@ -61,7 +61,7 @@ class ServerHandler extends ServiceCall {
         .transform(new GrpcHttpDecoder())
         .transform(grpcDecompressor())
         .listen(_onDataIdle,
-        onError: _onError, onDone: _onDoneError, cancelOnError: true);
+            onError: _onError, onDone: _onDoneError, cancelOnError: true);
   }
 
   /// Cancel response subscription, if active. If the stream exits with an
@@ -81,7 +81,7 @@ class ServerHandler extends ServiceCall {
       return;
     }
     final headerMessage = message
-    as GrpcMetadata; // TODO(jakobr): Cast should not be necessary here.
+        as GrpcMetadata; // TODO(jakobr): Cast should not be necessary here.
     _clientMetadata = headerMessage.metadata;
     final path = _clientMetadata[':path'];
     final pathSegments = path.split('/');
@@ -117,7 +117,7 @@ class ServerHandler extends ServiceCall {
     }
 
     final future =
-    stream.fold(null, _ensureOnlyOneRequest).then(_ensureOneRequest);
+        stream.fold(null, _ensureOnlyOneRequest).then(_ensureOneRequest);
     // Make sure errors on the future aren't unhandled, but return the original
     // future so the request handler can also get the error.
     future.catchError((_) {});
@@ -145,8 +145,7 @@ class ServerHandler extends ServiceCall {
       if (_descriptor.streamingRequest) {
         response = _descriptor.handler(this, _requests.stream);
       } else {
-        response =
-            _descriptor.handler(this, _toSingleFuture(_requests.stream));
+        response = _descriptor.handler(this, _toSingleFuture(_requests.stream));
       }
       _responses = response.asStream();
     }
@@ -206,7 +205,7 @@ class ServerHandler extends ServiceCall {
       request = _descriptor.requestDeserializer(data.data);
     } catch (error) {
       final grpcError =
-      new GrpcError.internal('Error deserializing request: $error');
+          new GrpcError.internal('Error deserializing request: $error');
       _sendError(grpcError);
       _requests
         ..addError(grpcError)
@@ -228,7 +227,7 @@ class ServerHandler extends ServiceCall {
       _stream.sendData(GrpcHttpEncoder.frame(bytes));
     } catch (error) {
       final grpcError =
-      new GrpcError.internal('Error sending response: $error');
+          new GrpcError.internal('Error sending response: $error');
       if (!_requests.isClosed) {
         // If we can, alert the handler that things are going wrong.
         _requests
@@ -267,8 +266,8 @@ class ServerHandler extends ServiceCall {
     _customHeaders = null;
 
     final outgoingHeaders = <Header>[];
-    outgoingHeadersMap
-        .forEach((key, value) => outgoingHeaders.add(new Header.ascii(key, value)));
+    outgoingHeadersMap.forEach(
+        (key, value) => outgoingHeaders.add(new Header.ascii(key, value)));
     _stream.sendHeaders(outgoingHeaders);
     _headersSent = true;
   }
@@ -295,8 +294,8 @@ class ServerHandler extends ServiceCall {
     }
 
     final outgoingTrailers = <Header>[];
-    outogingTrailersMap
-        .forEach((key, value) => outgoingTrailers.add(new Header.ascii(key, value)));
+    outogingTrailersMap.forEach(
+        (key, value) => outgoingTrailers.add(new Header.ascii(key, value)));
     _stream.sendHeaders(outgoingTrailers, endStream: true);
     // We're done!
     _cancelResponseSubscription();

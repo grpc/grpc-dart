@@ -22,7 +22,6 @@ const _reservedHeaders = const [
   'user-agent',
 ];
 
-
 /// An active call to a gRPC endpoint.
 class ClientCall<Q, R> implements Response {
   final ClientMethod<Q, R> _method;
@@ -101,9 +100,9 @@ class ClientCall<Q, R> implements Response {
         .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
         .handleError(_onRequestError)
         .listen(_stream.outgoingMessages.add,
-        onError: _stream.outgoingMessages.addError,
-        onDone: _stream.outgoingMessages.close,
-        cancelOnError: true);
+            onError: _stream.outgoingMessages.addError,
+            onDone: _stream.outgoingMessages.close,
+            cancelOnError: true);
     // The response stream might have been listened to before _stream was ready,
     // so try setting up the subscription here as well.
     _onResponseListen();
@@ -124,9 +123,9 @@ class ClientCall<Q, R> implements Response {
           .transform(new GrpcHttpDecoder())
           .transform(grpcDecompressor())
           .listen(_onResponseData,
-          onError: _onResponseError,
-          onDone: _onResponseDone,
-          cancelOnError: true);
+              onError: _onResponseError,
+              onDone: _onResponseDone,
+              cancelOnError: true);
       if (_responses.isPaused) {
         _responseSubscription.pause();
       }

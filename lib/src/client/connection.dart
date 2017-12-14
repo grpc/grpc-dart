@@ -39,10 +39,10 @@ class ClientConnection {
   static final _schemeHttp = new Header.ascii(':scheme', 'http');
   static final _schemeHttps = new Header.ascii(':scheme', 'https');
   static final _contentTypeGrpc =
-  new Header.ascii('content-type', 'application/grpc');
+      new Header.ascii('content-type', 'application/grpc');
   static final _teTrailers = new Header.ascii('te', 'trailers');
   static final _grpcAcceptEncoding =
-  new Header.ascii('grpc-accept-encoding', 'identity');
+      new Header.ascii('grpc-accept-encoding', 'identity');
   static final _userAgent = new Header.ascii('user-agent', 'dart-grpc/0.2.0');
 
   final String host;
@@ -144,7 +144,7 @@ class ClientConnection {
   ClientTransportStream makeRequest(
       String path, Duration timeout, Map<String, String> metadata) {
     final headers =
-    createCallHeaders(options.isSecure, authority, path, timeout, metadata);
+        createCallHeaders(options.isSecure, authority, path, timeout, metadata);
     return _transport.makeRequest(headers);
   }
 
@@ -251,4 +251,3 @@ class ClientConnection {
     }
   }
 }
-

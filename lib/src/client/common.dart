@@ -9,7 +9,6 @@ import 'package:async/async.dart';
 import '../shared/status.dart';
 import 'call.dart';
 
-
 /// A gRPC response.
 abstract class Response {
   /// Header metadata returned from the server.
@@ -51,8 +50,8 @@ class ResponseFuture<R> extends DelegatingFuture<R>
 
   ResponseFuture(this._call)
       : super(_call.response
-      .fold(null, _ensureOnlyOneResponse)
-      .then(_ensureOneResponse));
+            .fold(null, _ensureOnlyOneResponse)
+            .then(_ensureOneResponse));
 }
 
 /// A gRPC response producing a stream of values.

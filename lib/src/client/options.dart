@@ -50,21 +50,21 @@ class ChannelOptions {
   /// Disable TLS. RPCs are sent in clear text.
   const ChannelOptions.insecure(
       {Duration idleTimeout,
-        BackoffStrategy backoffStrategy =
-            defaultBackoffStrategy}) // Remove when dart-lang/sdk#31066 is fixed.
+      BackoffStrategy backoffStrategy =
+          defaultBackoffStrategy}) // Remove when dart-lang/sdk#31066 is fixed.
       : this._(false, null, null, null, idleTimeout, backoffStrategy);
 
   /// Enable TLS and optionally specify the [certificate]s to trust. If
   /// [certificates] is not provided, the default trust store is used.
   const ChannelOptions.secure(
       {List<int> certificate,
-        String password,
-        String authority,
-        Duration idleTimeout,
-        BackoffStrategy backoffStrategy =
-            defaultBackoffStrategy}) // Remove when dart-lang/sdk#31066 is fixed.
+      String password,
+      String authority,
+      Duration idleTimeout,
+      BackoffStrategy backoffStrategy =
+          defaultBackoffStrategy}) // Remove when dart-lang/sdk#31066 is fixed.
       : this._(true, certificate, password, authority, idleTimeout,
-      backoffStrategy);
+            backoffStrategy);
 
   SecurityContext get securityContext {
     if (!isSecure) return null;
@@ -80,7 +80,6 @@ class ChannelOptions {
     return context;
   }
 }
-
 
 /// Provides per-RPC metadata.
 ///
@@ -109,8 +108,8 @@ class CallOptions {
   /// (including metadata provided by previous providers).
   factory CallOptions(
       {Map<String, String> metadata,
-        Duration timeout,
-        List<MetadataProvider> providers}) {
+      Duration timeout,
+      List<MetadataProvider> providers}) {
     return new CallOptions._(new Map.unmodifiable(metadata ?? {}), timeout,
         new List.unmodifiable(providers ?? []));
   }
@@ -128,4 +127,3 @@ class CallOptions {
         mergedTimeout, new List.unmodifiable(mergedProviders));
   }
 }
-

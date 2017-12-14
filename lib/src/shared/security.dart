@@ -11,5 +11,5 @@ const supportedAlpnProtocols = const ['grpc-exp', 'h2'];
 SecurityContext createSecurityContext(bool isServer) =>
     SecurityContext.alpnSupported
         ? (new SecurityContext()
-      ..setAlpnProtocols(supportedAlpnProtocols, isServer))
+          ..setAlpnProtocols(supportedAlpnProtocols, isServer))
         : new SecurityContext();
