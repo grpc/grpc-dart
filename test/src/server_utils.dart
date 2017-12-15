@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:grpc/src/streams.dart';
+import 'package:grpc/src/shared/streams.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 

@@ -3,190 +3,18 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
-import 'package:grpc/src/shared.dart';
 import 'package:http2/transport.dart';
 
-import 'status.dart';
-import 'streams.dart';
+import '../shared/status.dart';
+import '../shared/streams.dart';
+import '../shared/timeout.dart';
 
-/// Definition of a gRPC service method.
-class ServiceMethod<Q, R> {
-  final String name;
-
-  final bool streamingRequest;
-  final bool streamingResponse;
-
-  final Q Function(List<int> request) requestDeserializer;
-  final List<int> Function(R response) responseSerializer;
-
-  final Function handler;
-
-  ServiceMethod(
-      this.name,
-      this.handler,
-      this.streamingRequest,
-      this.streamingResponse,
-      this.requestDeserializer,
-      this.responseSerializer);
-}
-
-/// Definition of a gRPC service.
-abstract class Service {
-  final Map<String, ServiceMethod> _$methods = {};
-
-  String get $name;
-
-  void $addMethod(ServiceMethod method) {
-    _$methods[method.name] = method;
-  }
-
-  /// Client metadata handler.
-  ///
-  /// Services can override this method to provide common handling of incoming
-  /// metadata from the client.
-  void $onMetadata(ServiceCall context) {}
-
-  ServiceMethod $lookupMethod(String name) => _$methods[name];
-}
-
-/// A gRPC server.
-///
-/// Listens for incoming RPCs, dispatching them to the right [Service] handler.
-class Server {
-  final Map<String, Service> _services = {};
-  final int port;
-  final SecurityContext _securityContext;
-
-  ServerSocket _insecureServer;
-  SecureServerSocket _secureServer;
-  final _connections = <ServerTransportConnection>[];
-
-  Server._(List<Service> services, this.port, this._securityContext) {
-    for (final service in services) {
-      _services[service.$name] = service;
-    }
-  }
-
-  /// Create a server for the given [services] with no transport security,
-  /// listening on [port].
-  factory Server.insecure(List<Service> services, {int port}) {
-    return new Server._(services, port ?? 80, null);
-  }
-
-  /// Create a secure server for the given [services], listening on [port].
-  ///
-  /// If the [certificate] or [privateKey] is encrypted, the password must also
-  /// be provided.
-  factory Server.secure(List<Service> services,
-      {List<int> certificate,
-      String certificatePassword,
-      List<int> privateKey,
-      String privateKeyPassword,
-      int port}) {
-    final context = createSecurityContext(true);
-    if (privateKey != null) {
-      context.usePrivateKeyBytes(privateKey, password: privateKeyPassword);
-    }
-    if (certificate != null) {
-      context.useCertificateChainBytes(certificate,
-          password: certificatePassword);
-    }
-    return new Server._(services, port ?? 443, context);
-  }
-
-  Service lookupService(String service) => _services[service];
-
-  Future<Null> serve() async {
-    // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
-    Stream<Socket> server;
-    if (_securityContext != null) {
-      _secureServer =
-          await SecureServerSocket.bind('0.0.0.0', port, _securityContext);
-      server = _secureServer;
-    } else {
-      _insecureServer = await ServerSocket.bind('0.0.0.0', port);
-      server = _insecureServer;
-    }
-    server.listen((socket) {
-      final connection = new ServerTransportConnection.viaSocket(socket);
-      _connections.add(connection);
-      // TODO(jakobr): Set active state handlers, close connection after idle
-      // timeout.
-      connection.incomingStreams.listen(serveStream, onError: (error) {
-        print('Connection error: $error');
-      }, onDone: () {
-        _connections.remove(connection);
-      });
-    }, onError: (error) {
-      print('Socket error: $error');
-    });
-  }
-
-  void serveStream(ServerTransportStream stream) {
-    new ServerHandler(lookupService, stream).handle();
-  }
-
-  Future<Null> shutdown() {
-    final done = _connections.map((connection) => connection.finish()).toList();
-    if (_insecureServer != null) {
-      done.add(_insecureServer.close());
-    }
-    if (_secureServer != null) {
-      done.add(_secureServer.close());
-    }
-    return Future.wait(done);
-  }
-}
-
-/// Server-side context for a gRPC call.
-///
-/// Gives the method handler access to custom metadata from the client, and
-/// ability to set custom metadata on the header/trailer sent to the client.
-class ServiceCall {
-  final ServerHandler _handler;
-
-  ServiceCall(this._handler);
-
-  /// Custom metadata from the client.
-  Map<String, String> get clientMetadata => _handler._clientMetadata;
-
-  /// Custom metadata to be sent to the client. Will be [null] once the headers
-  /// have been sent, either when [sendHeaders] is called, or when the first
-  /// response message is sent.
-  Map<String, String> get headers => _handler._customHeaders;
-
-  /// Custom metadata to be sent to the client after all response messages.
-  Map<String, String> get trailers => _handler._customTrailers;
-
-  /// Deadline for this call. If the call is still active after this time, then
-  /// the client or server may cancel it.
-  DateTime get deadline => _handler._deadline;
-
-  /// Returns [true] if the [deadline] has been exceeded.
-  bool get isTimedOut => _handler._isTimedOut;
-
-  /// Returns [true] if the client has canceled this call.
-  bool get isCanceled => _handler._isCanceled;
-
-  /// Send response headers. This is done automatically before sending the first
-  /// response message, but can be done manually before the first response is
-  /// ready, if necessary.
-  void sendHeaders() => _handler._sendHeaders();
-
-  /// Send response trailers. A trailer indicating success ([status] == 0) will
-  /// be sent automatically when all responses are sent. This method can be used
-  /// to send a different status code, if needed.
-  ///
-  /// The call will be closed after calling this method, and no further
-  /// responses can be sent.
-  void sendTrailer(int status, [String statusMessage]) =>
-      _handler._sendTrailers(status: status, message: statusMessage);
-}
+import 'call.dart';
+import 'service.dart';
 
 /// Handles an incoming gRPC call.
-class ServerHandler {
+class ServerHandler extends ServiceCall {
   final ServerTransportStream _stream;
   final Service Function(String service) _serviceLookup;
 
@@ -214,7 +42,13 @@ class ServerHandler {
 
   ServerHandler(this._serviceLookup, this._stream);
 
+  DateTime get deadline => _deadline;
   bool get isCanceled => _isCanceled;
+  bool get isTimedOut => _isTimedOut;
+
+  Map<String, String> get clientMetadata => _clientMetadata;
+  Map<String, String> get headers => _customHeaders;
+  Map<String, String> get trailers => _customTrailers;
 
   void handle() {
     _stream.onTerminated = (int errorCode) {
@@ -298,22 +132,20 @@ class ServerHandler {
         onResume: _incomingSubscription.resume);
     _incomingSubscription.onData(_onDataActive);
 
-    final context = new ServiceCall(this);
-    _service.$onMetadata(context);
+    _service.$onMetadata(this);
     if (_descriptor.streamingResponse) {
       if (_descriptor.streamingRequest) {
-        _responses = _descriptor.handler(context, _requests.stream);
+        _responses = _descriptor.handler(this, _requests.stream);
       } else {
         _responses =
-            _descriptor.handler(context, _toSingleFuture(_requests.stream));
+            _descriptor.handler(this, _toSingleFuture(_requests.stream));
       }
     } else {
       Future response;
       if (_descriptor.streamingRequest) {
-        response = _descriptor.handler(context, _requests.stream);
+        response = _descriptor.handler(this, _requests.stream);
       } else {
-        response =
-            _descriptor.handler(context, _toSingleFuture(_requests.stream));
+        response = _descriptor.handler(this, _toSingleFuture(_requests.stream));
       }
       _responses = response.asStream();
     }
@@ -390,7 +222,7 @@ class ServerHandler {
     try {
       final bytes = _descriptor.responseSerializer(response);
       if (!_headersSent) {
-        _sendHeaders();
+        sendHeaders();
       }
       _stream.sendData(GrpcHttpEncoder.frame(bytes));
     } catch (error) {
@@ -408,7 +240,7 @@ class ServerHandler {
   }
 
   void _onResponseDone() {
-    _sendTrailers();
+    sendTrailers();
   }
 
   void _onResponseError(error) {
@@ -419,52 +251,52 @@ class ServerHandler {
     }
   }
 
-  void _sendHeaders() {
+  void sendHeaders() {
     if (_headersSent) throw new GrpcError.internal('Headers already sent');
 
     _customHeaders..remove(':status')..remove('content-type');
 
     // TODO(jakobr): Should come from package:http2?
-    final headersMap = <String, String>{
+    final outgoingHeadersMap = <String, String>{
       ':status': '200',
       'content-type': 'application/grpc'
     };
 
-    headersMap.addAll(_customHeaders);
+    outgoingHeadersMap.addAll(_customHeaders);
     _customHeaders = null;
 
-    final headers = <Header>[];
-    headersMap
-        .forEach((key, value) => headers.add(new Header.ascii(key, value)));
-    _stream.sendHeaders(headers);
+    final outgoingHeaders = <Header>[];
+    outgoingHeadersMap.forEach(
+        (key, value) => outgoingHeaders.add(new Header.ascii(key, value)));
+    _stream.sendHeaders(outgoingHeaders);
     _headersSent = true;
   }
 
-  void _sendTrailers({int status = 0, String message}) {
+  void sendTrailers({int status = 0, String message}) {
     _timeoutTimer?.cancel();
 
-    final trailersMap = <String, String>{};
+    final outogingTrailersMap = <String, String>{};
     if (!_headersSent) {
       // TODO(jakobr): Should come from package:http2?
-      trailersMap[':status'] = '200';
-      trailersMap['content-type'] = 'application/grpc';
+      outogingTrailersMap[':status'] = '200';
+      outogingTrailersMap['content-type'] = 'application/grpc';
 
       _customHeaders..remove(':status')..remove('content-type');
-      trailersMap.addAll(_customHeaders);
+      outogingTrailersMap.addAll(_customHeaders);
       _customHeaders = null;
     }
     _customTrailers..remove(':status')..remove('content-type');
-    trailersMap.addAll(_customTrailers);
+    outogingTrailersMap.addAll(_customTrailers);
     _customTrailers = null;
-    trailersMap['grpc-status'] = status.toString();
+    outogingTrailersMap['grpc-status'] = status.toString();
     if (message != null) {
-      trailersMap['grpc-message'] = message;
+      outogingTrailersMap['grpc-message'] = message;
     }
 
-    final trailers = <Header>[];
-    trailersMap
-        .forEach((key, value) => trailers.add(new Header.ascii(key, value)));
-    _stream.sendHeaders(trailers, endStream: true);
+    final outgoingTrailers = <Header>[];
+    outogingTrailersMap.forEach(
+        (key, value) => outgoingTrailers.add(new Header.ascii(key, value)));
+    _stream.sendHeaders(outgoingTrailers, endStream: true);
     // We're done!
     _cancelResponseSubscription();
     _sinkIncoming();
@@ -513,6 +345,6 @@ class ServerHandler {
   }
 
   void _sendError(GrpcError error) {
-    _sendTrailers(status: error.code, message: error.message);
+    sendTrailers(status: error.code, message: error.message);
   }
 }

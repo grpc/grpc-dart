@@ -3,60 +3,11 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:async/async.dart';
-import 'package:grpc/src/client.dart';
-import 'package:grpc/src/status.dart';
 
-/// Convert [timeout] to grpc-timeout header string format.
-// Mostly inspired by grpc-java implementation.
-// TODO(jakobr): Modify to match grpc/core implementation instead.
-String toTimeoutString(Duration duration) {
-  if (duration == null) return null;
-  const cutoff = 100000;
-  final timeout = duration.inMicroseconds;
-  if (timeout < 0) {
-    // Smallest possible timeout.
-    return '1n';
-  } else if (timeout < cutoff) {
-    return '${timeout}u';
-  } else if (timeout < cutoff * 1000) {
-    return '${timeout~/1000}m';
-  } else if (timeout < cutoff * 1000 * 1000) {
-    return '${timeout~/1000000}S';
-  } else if (timeout < cutoff * 1000 * 1000 * 60) {
-    return '${timeout~/60000000}M';
-  } else {
-    return '${timeout~/3600000000}H';
-  }
-}
-
-/// Convert [timeout] from grpc-timeout header string format to [Duration].
-/// Returns [null] if [timeout] is not correctly formatted.
-Duration fromTimeoutString(String timeout) {
-  if (timeout == null) return null;
-  if (timeout.length < 2) return null;
-  final value =
-      int.parse(timeout.substring(0, timeout.length - 1), onError: (_) => null);
-  if (value == null) return null;
-  switch (timeout[timeout.length - 1]) {
-    case 'n':
-      return new Duration(microseconds: value * 1000);
-    case 'u':
-      return new Duration(microseconds: value);
-    case 'm':
-      return new Duration(milliseconds: value);
-    case 'S':
-      return new Duration(seconds: value);
-    case 'M':
-      return new Duration(minutes: value);
-    case 'H':
-      return new Duration(hours: value);
-    default:
-      return null;
-  }
-}
+import '../shared/status.dart';
+import 'call.dart';
 
 /// A gRPC response.
 abstract class Response {
@@ -123,13 +74,3 @@ abstract class _ResponseMixin<Q, R> implements Response {
   @override
   Future<Null> cancel() => _call.cancel();
 }
-
-const supportedAlpnProtocols = const ['grpc-exp', 'h2'];
-
-// TODO: Simplify once we have a stable Dart 1.25 release (update pubspec to
-// require SDK >=1.25.0, and remove check for alpnSupported).
-SecurityContext createSecurityContext(bool isServer) =>
-    SecurityContext.alpnSupported
-        ? (new SecurityContext()
-          ..setAlpnProtocols(supportedAlpnProtocols, isServer))
-        : new SecurityContext();

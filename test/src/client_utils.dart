@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'dart:io';
-import 'package:grpc/src/streams.dart';
+import 'package:grpc/src/shared/streams.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
