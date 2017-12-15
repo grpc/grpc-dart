@@ -1,4 +1,4 @@
-## 0.2.0 - 2017-12-14
+## 0.2.0 - 2017-12-15
 
 * Implemented support for per-RPC metadata providers. This can be used for
   authentication providers which may need to obtain or refresh a token before
