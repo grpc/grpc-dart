@@ -3,7 +3,6 @@ The googleapis client demonstrates how to use Dart gRPC libraries to communicate
 with Google APIs.
 
 # Set up Google Cloud Platform project
-
 This example uses the Stackdriver Logging API. Please follow the documentation on
 [Stackdriver Logging Documentation](https://cloud.google.com/logging/docs/) to create
 a project and enable the logging API.
@@ -11,7 +10,7 @@ a project and enable the logging API.
 Then follow the documentation to
 [create a service account](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount).
 This example uses the Logging/Logs Writer role.
- 
+
 Create a new service key, download the JSON file for it, and save it as
 `logging-service-account.json`.
 
@@ -30,7 +29,6 @@ $ pub run googleapis:logging
 ```
 
 # Regenerate the stubs
-
 The Dart gRPC stubs and message classes are generated based on protobuf definition
 files from [googleapis/googleapis](https://github.com/googleapis/googleapis).
 
@@ -58,7 +56,7 @@ environment variables to point to your clone of
 [google/protobuf](https://github.com/google/protobuf) and
 [googleapis/googleapis](https://github.com/googleapis/googleapis), respectively,
 and then run
- 
+
 ```sh
 $ tool/regenerate.sh
 ```
