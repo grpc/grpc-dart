@@ -28,7 +28,7 @@ Terminal:
 dartanalyzer lib test
 ```
 
-All analysis warnings and errors must be fixed; hints should we considered.
+All analysis warnings and errors must be fixed; hints should be considered.
 
 ## Running tests
 
