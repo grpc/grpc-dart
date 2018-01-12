@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 class StatusCode {
   /// The operation completed successfully.
   static final ok = 0;

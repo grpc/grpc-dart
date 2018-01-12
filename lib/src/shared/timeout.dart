@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 /// Convert [timeout] to grpc-timeout header string format.
 // Mostly inspired by grpc-java implementation.
 // TODO(jakobr): Modify to match grpc/core implementation instead.

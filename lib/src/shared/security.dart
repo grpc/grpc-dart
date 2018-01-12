@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 import 'dart:io';
 
 const supportedAlpnProtocols = const ['grpc-exp', 'h2'];

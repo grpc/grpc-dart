@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 /// Server-side context for a gRPC call.
 ///
 /// Gives the method handler access to custom metadata from the client, and

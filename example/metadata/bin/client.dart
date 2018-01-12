@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 import 'package:metadata/src/client.dart';
 
 main(List<String> args) {

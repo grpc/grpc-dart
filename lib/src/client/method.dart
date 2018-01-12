@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 /// Description of a gRPC method.
 class ClientMethod<Q, R> {
   final String path;
