@@ -122,49 +122,53 @@ abstract class TestServiceBase extends Service {
   String get $name => 'grpc.testing.TestService';
 
   TestServiceBase() {
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<Empty, Empty>(
         'EmptyCall',
         emptyCall_Pre,
         false,
         false,
         (List<int> value) => new Empty.fromBuffer(value),
         (Empty value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<SimpleRequest, SimpleResponse>(
         'UnaryCall',
         unaryCall_Pre,
         false,
         false,
         (List<int> value) => new SimpleRequest.fromBuffer(value),
         (SimpleResponse value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<SimpleRequest, SimpleResponse>(
         'CacheableUnaryCall',
         cacheableUnaryCall_Pre,
         false,
         false,
         (List<int> value) => new SimpleRequest.fromBuffer(value),
         (SimpleResponse value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<StreamingOutputCallRequest,
+            StreamingOutputCallResponse>(
         'StreamingOutputCall',
         streamingOutputCall_Pre,
         false,
         true,
         (List<int> value) => new StreamingOutputCallRequest.fromBuffer(value),
         (StreamingOutputCallResponse value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<StreamingInputCallRequest,
+            StreamingInputCallResponse>(
         'StreamingInputCall',
         streamingInputCall,
         true,
         false,
         (List<int> value) => new StreamingInputCallRequest.fromBuffer(value),
         (StreamingInputCallResponse value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<StreamingOutputCallRequest,
+            StreamingOutputCallResponse>(
         'FullDuplexCall',
         fullDuplexCall,
         true,
         true,
         (List<int> value) => new StreamingOutputCallRequest.fromBuffer(value),
         (StreamingOutputCallResponse value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<StreamingOutputCallRequest,
+            StreamingOutputCallResponse>(
         'HalfDuplexCall',
         halfDuplexCall,
         true,
@@ -228,7 +232,7 @@ abstract class UnimplementedServiceBase extends Service {
   String get $name => 'grpc.testing.UnimplementedService';
 
   UnimplementedServiceBase() {
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<Empty, Empty>(
         'UnimplementedCall',
         unimplementedCall_Pre,
         false,
@@ -275,14 +279,14 @@ abstract class ReconnectServiceBase extends Service {
   String get $name => 'grpc.testing.ReconnectService';
 
   ReconnectServiceBase() {
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<ReconnectParams, Empty>(
         'Start',
         start_Pre,
         false,
         false,
         (List<int> value) => new ReconnectParams.fromBuffer(value),
         (Empty value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<Empty, ReconnectInfo>(
         'Stop',
         stop_Pre,
         false,

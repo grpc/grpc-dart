@@ -8,8 +8,8 @@ import 'dart:async';
 
 import 'package:grpc/grpc.dart';
 
-import 'logging.pb.dart';
 import '../../protobuf/empty.pb.dart' as $google$protobuf;
+import 'logging.pb.dart';
 export 'logging.pb.dart';
 
 class LoggingServiceV2Client extends Client {
@@ -90,28 +90,30 @@ abstract class LoggingServiceV2ServiceBase extends Service {
   String get $name => 'google.logging.v2.LoggingServiceV2';
 
   LoggingServiceV2ServiceBase() {
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<DeleteLogRequest, $google$protobuf.Empty>(
         'DeleteLog',
         deleteLog_Pre,
         false,
         false,
         (List<int> value) => new DeleteLogRequest.fromBuffer(value),
         ($google$protobuf.Empty value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
-        'WriteLogEntries',
-        writeLogEntries_Pre,
-        false,
-        false,
-        (List<int> value) => new WriteLogEntriesRequest.fromBuffer(value),
-        (WriteLogEntriesResponse value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(
+        new ServiceMethod<WriteLogEntriesRequest, WriteLogEntriesResponse>(
+            'WriteLogEntries',
+            writeLogEntries_Pre,
+            false,
+            false,
+            (List<int> value) => new WriteLogEntriesRequest.fromBuffer(value),
+            (WriteLogEntriesResponse value) => value.writeToBuffer()));
+    $addMethod(new ServiceMethod<ListLogEntriesRequest, ListLogEntriesResponse>(
         'ListLogEntries',
         listLogEntries_Pre,
         false,
         false,
         (List<int> value) => new ListLogEntriesRequest.fromBuffer(value),
         (ListLogEntriesResponse value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<ListMonitoredResourceDescriptorsRequest,
+            ListMonitoredResourceDescriptorsResponse>(
         'ListMonitoredResourceDescriptors',
         listMonitoredResourceDescriptors_Pre,
         false,
@@ -120,7 +122,7 @@ abstract class LoggingServiceV2ServiceBase extends Service {
             new ListMonitoredResourceDescriptorsRequest.fromBuffer(value),
         (ListMonitoredResourceDescriptorsResponse value) =>
             value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<ListLogsRequest, ListLogsResponse>(
         'ListLogs',
         listLogs_Pre,
         false,

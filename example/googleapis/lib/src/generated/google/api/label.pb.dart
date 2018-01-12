@@ -15,7 +15,7 @@ export 'label.pbenum.dart';
 
 class LabelDescriptor extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('LabelDescriptor')
-    ..a<String>(1, 'key', PbFieldType.OS)
+    ..aOS(1, 'key')
     ..e<LabelDescriptor_ValueType>(
         2,
         'valueType',
@@ -23,7 +23,7 @@ class LabelDescriptor extends GeneratedMessage {
         LabelDescriptor_ValueType.STRING,
         LabelDescriptor_ValueType.valueOf,
         LabelDescriptor_ValueType.values)
-    ..a<String>(3, 'description', PbFieldType.OS)
+    ..aOS(3, 'description')
     ..hasRequiredFields = false;
 
   LabelDescriptor() : super();
@@ -49,28 +49,28 @@ class LabelDescriptor extends GeneratedMessage {
     if (v is! LabelDescriptor) checkItemFailed(v, 'LabelDescriptor');
   }
 
-  String get key => $_get(0, 1, '');
+  String get key => $_getS(0, '');
   set key(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasKey() => $_has(0, 1);
+  bool hasKey() => $_has(0);
   void clearKey() => clearField(1);
 
-  LabelDescriptor_ValueType get valueType => $_get(1, 2, null);
+  LabelDescriptor_ValueType get valueType => $_getN(1);
   set valueType(LabelDescriptor_ValueType v) {
     setField(2, v);
   }
 
-  bool hasValueType() => $_has(1, 2);
+  bool hasValueType() => $_has(1);
   void clearValueType() => clearField(2);
 
-  String get description => $_get(2, 3, '');
+  String get description => $_getS(2, '');
   set description(String v) {
-    $_setString(2, 3, v);
+    $_setString(2, v);
   }
 
-  bool hasDescription() => $_has(2, 3);
+  bool hasDescription() => $_has(2);
   void clearDescription() => clearField(3);
 }
 

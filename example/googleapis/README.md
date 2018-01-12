@@ -37,7 +37,7 @@ To regenerate them, you will need to check out both
 [google/protobuf](https://github.com/google/protobuf).
 
 You will also need to have protoc version 3.0.0 or higher and the Dart protoc
-plugin version 0.7.8 or higher on your PATH.
+plugin version 0.7.9 or higher on your PATH.
 
 To install protoc, see the instructions on
 [the Protocol Buffers website](https://developers.google.com/protocol-buffers/).

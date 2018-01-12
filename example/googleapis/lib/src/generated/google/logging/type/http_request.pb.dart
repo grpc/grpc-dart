@@ -14,22 +14,22 @@ import '../../protobuf/duration.pb.dart' as $google$protobuf;
 
 class HttpRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('HttpRequest')
-    ..a<String>(1, 'requestMethod', PbFieldType.OS)
-    ..a<String>(2, 'requestUrl', PbFieldType.OS)
-    ..a<Int64>(3, 'requestSize', PbFieldType.O6, Int64.ZERO)
+    ..aOS(1, 'requestMethod')
+    ..aOS(2, 'requestUrl')
+    ..aInt64(3, 'requestSize')
     ..a<int>(4, 'status', PbFieldType.O3)
-    ..a<Int64>(5, 'responseSize', PbFieldType.O6, Int64.ZERO)
-    ..a<String>(6, 'userAgent', PbFieldType.OS)
-    ..a<String>(7, 'remoteIp', PbFieldType.OS)
-    ..a<String>(8, 'referer', PbFieldType.OS)
-    ..a<bool>(9, 'cacheHit', PbFieldType.OB)
-    ..a<bool>(10, 'cacheValidatedWithOriginServer', PbFieldType.OB)
-    ..a<bool>(11, 'cacheLookup', PbFieldType.OB)
-    ..a<Int64>(12, 'cacheFillBytes', PbFieldType.O6, Int64.ZERO)
-    ..a<String>(13, 'serverIp', PbFieldType.OS)
+    ..aInt64(5, 'responseSize')
+    ..aOS(6, 'userAgent')
+    ..aOS(7, 'remoteIp')
+    ..aOS(8, 'referer')
+    ..aOB(9, 'cacheHit')
+    ..aOB(10, 'cacheValidatedWithOriginServer')
+    ..aOB(11, 'cacheLookup')
+    ..aInt64(12, 'cacheFillBytes')
+    ..aOS(13, 'serverIp')
     ..a<$google$protobuf.Duration>(14, 'latency', PbFieldType.OM,
         $google$protobuf.Duration.getDefault, $google$protobuf.Duration.create)
-    ..a<String>(15, 'protocol', PbFieldType.OS)
+    ..aOS(15, 'protocol')
     ..hasRequiredFields = false;
 
   HttpRequest() : super();
@@ -53,124 +53,124 @@ class HttpRequest extends GeneratedMessage {
     if (v is! HttpRequest) checkItemFailed(v, 'HttpRequest');
   }
 
-  String get requestMethod => $_get(0, 1, '');
+  String get requestMethod => $_getS(0, '');
   set requestMethod(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasRequestMethod() => $_has(0, 1);
+  bool hasRequestMethod() => $_has(0);
   void clearRequestMethod() => clearField(1);
 
-  String get requestUrl => $_get(1, 2, '');
+  String get requestUrl => $_getS(1, '');
   set requestUrl(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasRequestUrl() => $_has(1, 2);
+  bool hasRequestUrl() => $_has(1);
   void clearRequestUrl() => clearField(2);
 
-  Int64 get requestSize => $_get(2, 3, null);
+  Int64 get requestSize => $_getI64(2);
   set requestSize(Int64 v) {
-    $_setInt64(2, 3, v);
+    $_setInt64(2, v);
   }
 
-  bool hasRequestSize() => $_has(2, 3);
+  bool hasRequestSize() => $_has(2);
   void clearRequestSize() => clearField(3);
 
-  int get status => $_get(3, 4, 0);
+  int get status => $_get(3, 0);
   set status(int v) {
-    $_setUnsignedInt32(3, 4, v);
+    $_setUnsignedInt32(3, v);
   }
 
-  bool hasStatus() => $_has(3, 4);
+  bool hasStatus() => $_has(3);
   void clearStatus() => clearField(4);
 
-  Int64 get responseSize => $_get(4, 5, null);
+  Int64 get responseSize => $_getI64(4);
   set responseSize(Int64 v) {
-    $_setInt64(4, 5, v);
+    $_setInt64(4, v);
   }
 
-  bool hasResponseSize() => $_has(4, 5);
+  bool hasResponseSize() => $_has(4);
   void clearResponseSize() => clearField(5);
 
-  String get userAgent => $_get(5, 6, '');
+  String get userAgent => $_getS(5, '');
   set userAgent(String v) {
-    $_setString(5, 6, v);
+    $_setString(5, v);
   }
 
-  bool hasUserAgent() => $_has(5, 6);
+  bool hasUserAgent() => $_has(5);
   void clearUserAgent() => clearField(6);
 
-  String get remoteIp => $_get(6, 7, '');
+  String get remoteIp => $_getS(6, '');
   set remoteIp(String v) {
-    $_setString(6, 7, v);
+    $_setString(6, v);
   }
 
-  bool hasRemoteIp() => $_has(6, 7);
+  bool hasRemoteIp() => $_has(6);
   void clearRemoteIp() => clearField(7);
 
-  String get referer => $_get(7, 8, '');
+  String get referer => $_getS(7, '');
   set referer(String v) {
-    $_setString(7, 8, v);
+    $_setString(7, v);
   }
 
-  bool hasReferer() => $_has(7, 8);
+  bool hasReferer() => $_has(7);
   void clearReferer() => clearField(8);
 
-  bool get cacheHit => $_get(8, 9, false);
+  bool get cacheHit => $_get(8, false);
   set cacheHit(bool v) {
-    $_setBool(8, 9, v);
+    $_setBool(8, v);
   }
 
-  bool hasCacheHit() => $_has(8, 9);
+  bool hasCacheHit() => $_has(8);
   void clearCacheHit() => clearField(9);
 
-  bool get cacheValidatedWithOriginServer => $_get(9, 10, false);
+  bool get cacheValidatedWithOriginServer => $_get(9, false);
   set cacheValidatedWithOriginServer(bool v) {
-    $_setBool(9, 10, v);
+    $_setBool(9, v);
   }
 
-  bool hasCacheValidatedWithOriginServer() => $_has(9, 10);
+  bool hasCacheValidatedWithOriginServer() => $_has(9);
   void clearCacheValidatedWithOriginServer() => clearField(10);
 
-  bool get cacheLookup => $_get(10, 11, false);
+  bool get cacheLookup => $_get(10, false);
   set cacheLookup(bool v) {
-    $_setBool(10, 11, v);
+    $_setBool(10, v);
   }
 
-  bool hasCacheLookup() => $_has(10, 11);
+  bool hasCacheLookup() => $_has(10);
   void clearCacheLookup() => clearField(11);
 
-  Int64 get cacheFillBytes => $_get(11, 12, null);
+  Int64 get cacheFillBytes => $_getI64(11);
   set cacheFillBytes(Int64 v) {
-    $_setInt64(11, 12, v);
+    $_setInt64(11, v);
   }
 
-  bool hasCacheFillBytes() => $_has(11, 12);
+  bool hasCacheFillBytes() => $_has(11);
   void clearCacheFillBytes() => clearField(12);
 
-  String get serverIp => $_get(12, 13, '');
+  String get serverIp => $_getS(12, '');
   set serverIp(String v) {
-    $_setString(12, 13, v);
+    $_setString(12, v);
   }
 
-  bool hasServerIp() => $_has(12, 13);
+  bool hasServerIp() => $_has(12);
   void clearServerIp() => clearField(13);
 
-  $google$protobuf.Duration get latency => $_get(13, 14, null);
+  $google$protobuf.Duration get latency => $_getN(13);
   set latency($google$protobuf.Duration v) {
     setField(14, v);
   }
 
-  bool hasLatency() => $_has(13, 14);
+  bool hasLatency() => $_has(13);
   void clearLatency() => clearField(14);
 
-  String get protocol => $_get(14, 15, '');
+  String get protocol => $_getS(14, '');
   set protocol(String v) {
-    $_setString(14, 15, v);
+    $_setString(14, v);
   }
 
-  bool hasProtocol() => $_has(14, 15);
+  bool hasProtocol() => $_has(14);
   void clearProtocol() => clearField(15);
 }
 

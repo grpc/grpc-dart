@@ -12,7 +12,7 @@ import 'package:protobuf/protobuf.dart';
 
 class Timestamp extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Timestamp')
-    ..a<Int64>(1, 'seconds', PbFieldType.O6, Int64.ZERO)
+    ..aInt64(1, 'seconds')
     ..a<int>(2, 'nanos', PbFieldType.O3)
     ..hasRequiredFields = false;
 
@@ -36,20 +36,20 @@ class Timestamp extends GeneratedMessage {
     if (v is! Timestamp) checkItemFailed(v, 'Timestamp');
   }
 
-  Int64 get seconds => $_get(0, 1, null);
+  Int64 get seconds => $_getI64(0);
   set seconds(Int64 v) {
-    $_setInt64(0, 1, v);
+    $_setInt64(0, v);
   }
 
-  bool hasSeconds() => $_has(0, 1);
+  bool hasSeconds() => $_has(0);
   void clearSeconds() => clearField(1);
 
-  int get nanos => $_get(1, 2, 0);
+  int get nanos => $_get(1, 0);
   set nanos(int v) {
-    $_setUnsignedInt32(1, 2, v);
+    $_setUnsignedInt32(1, v);
   }
 
-  bool hasNanos() => $_has(1, 2);
+  bool hasNanos() => $_has(1);
   void clearNanos() => clearField(2);
 }
 

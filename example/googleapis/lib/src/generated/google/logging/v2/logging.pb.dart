@@ -10,12 +10,12 @@ import 'dart:core' show int, bool, double, String, List, override;
 import 'package:protobuf/protobuf.dart';
 
 import '../../api/monitored_resource.pb.dart' as $google$api;
-import 'log_entry.pb.dart';
 import '../../rpc/status.pb.dart' as $google$rpc;
+import 'log_entry.pb.dart';
 
 class DeleteLogRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('DeleteLogRequest')
-    ..a<String>(1, 'logName', PbFieldType.OS)
+    ..aOS(1, 'logName')
     ..hasRequiredFields = false;
 
   DeleteLogRequest() : super();
@@ -41,12 +41,12 @@ class DeleteLogRequest extends GeneratedMessage {
     if (v is! DeleteLogRequest) checkItemFailed(v, 'DeleteLogRequest');
   }
 
-  String get logName => $_get(0, 1, '');
+  String get logName => $_getS(0, '');
   set logName(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasLogName() => $_has(0, 1);
+  bool hasLogName() => $_has(0);
   void clearLogName() => clearField(1);
 }
 
@@ -56,8 +56,8 @@ class _ReadonlyDeleteLogRequest extends DeleteLogRequest
 class WriteLogEntriesRequest_LabelsEntry extends GeneratedMessage {
   static final BuilderInfo _i =
       new BuilderInfo('WriteLogEntriesRequest_LabelsEntry')
-        ..a<String>(1, 'key', PbFieldType.OS)
-        ..a<String>(2, 'value', PbFieldType.OS)
+        ..aOS(1, 'key')
+        ..aOS(2, 'value')
         ..hasRequiredFields = false;
 
   WriteLogEntriesRequest_LabelsEntry() : super();
@@ -86,20 +86,20 @@ class WriteLogEntriesRequest_LabelsEntry extends GeneratedMessage {
       checkItemFailed(v, 'WriteLogEntriesRequest_LabelsEntry');
   }
 
-  String get key => $_get(0, 1, '');
+  String get key => $_getS(0, '');
   set key(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasKey() => $_has(0, 1);
+  bool hasKey() => $_has(0);
   void clearKey() => clearField(1);
 
-  String get value => $_get(1, 2, '');
+  String get value => $_getS(1, '');
   set value(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasValue() => $_has(1, 2);
+  bool hasValue() => $_has(1);
   void clearValue() => clearField(2);
 }
 
@@ -108,7 +108,7 @@ class _ReadonlyWriteLogEntriesRequest_LabelsEntry
 
 class WriteLogEntriesRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('WriteLogEntriesRequest')
-    ..a<String>(1, 'logName', PbFieldType.OS)
+    ..aOS(1, 'logName')
     ..a<$google$api.MonitoredResource>(
         2,
         'resource',
@@ -123,7 +123,7 @@ class WriteLogEntriesRequest extends GeneratedMessage {
         WriteLogEntriesRequest_LabelsEntry.create)
     ..pp<LogEntry>(
         4, 'entries', PbFieldType.PM, LogEntry.$checkItem, LogEntry.create)
-    ..a<bool>(5, 'partialSuccess', PbFieldType.OB)
+    ..aOB(5, 'partialSuccess')
     ..hasRequiredFields = false;
 
   WriteLogEntriesRequest() : super();
@@ -151,32 +151,32 @@ class WriteLogEntriesRequest extends GeneratedMessage {
       checkItemFailed(v, 'WriteLogEntriesRequest');
   }
 
-  String get logName => $_get(0, 1, '');
+  String get logName => $_getS(0, '');
   set logName(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasLogName() => $_has(0, 1);
+  bool hasLogName() => $_has(0);
   void clearLogName() => clearField(1);
 
-  $google$api.MonitoredResource get resource => $_get(1, 2, null);
+  $google$api.MonitoredResource get resource => $_getN(1);
   set resource($google$api.MonitoredResource v) {
     setField(2, v);
   }
 
-  bool hasResource() => $_has(1, 2);
+  bool hasResource() => $_has(1);
   void clearResource() => clearField(2);
 
-  List<WriteLogEntriesRequest_LabelsEntry> get labels => $_get(2, 3, null);
+  List<WriteLogEntriesRequest_LabelsEntry> get labels => $_getN(2);
 
-  List<LogEntry> get entries => $_get(3, 4, null);
+  List<LogEntry> get entries => $_getN(3);
 
-  bool get partialSuccess => $_get(4, 5, false);
+  bool get partialSuccess => $_get(4, false);
   set partialSuccess(bool v) {
-    $_setBool(4, 5, v);
+    $_setBool(4, v);
   }
 
-  bool hasPartialSuccess() => $_has(4, 5);
+  bool hasPartialSuccess() => $_has(4);
   void clearPartialSuccess() => clearField(5);
 }
 
@@ -254,20 +254,20 @@ class WriteLogEntriesPartialErrors_LogEntryErrorsEntry
       checkItemFailed(v, 'WriteLogEntriesPartialErrors_LogEntryErrorsEntry');
   }
 
-  int get key => $_get(0, 1, 0);
+  int get key => $_get(0, 0);
   set key(int v) {
-    $_setUnsignedInt32(0, 1, v);
+    $_setUnsignedInt32(0, v);
   }
 
-  bool hasKey() => $_has(0, 1);
+  bool hasKey() => $_has(0);
   void clearKey() => clearField(1);
 
-  $google$rpc.Status get value => $_get(1, 2, null);
+  $google$rpc.Status get value => $_getN(1);
   set value($google$rpc.Status v) {
     setField(2, v);
   }
 
-  bool hasValue() => $_has(1, 2);
+  bool hasValue() => $_has(1);
   void clearValue() => clearField(2);
 }
 
@@ -312,7 +312,7 @@ class WriteLogEntriesPartialErrors extends GeneratedMessage {
   }
 
   List<WriteLogEntriesPartialErrors_LogEntryErrorsEntry> get logEntryErrors =>
-      $_get(0, 1, null);
+      $_getN(0);
 }
 
 class _ReadonlyWriteLogEntriesPartialErrors extends WriteLogEntriesPartialErrors
@@ -320,12 +320,12 @@ class _ReadonlyWriteLogEntriesPartialErrors extends WriteLogEntriesPartialErrors
 
 class ListLogEntriesRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('ListLogEntriesRequest')
-    ..p<String>(1, 'projectIds', PbFieldType.PS)
-    ..a<String>(2, 'filter', PbFieldType.OS)
-    ..a<String>(3, 'orderBy', PbFieldType.OS)
+    ..pPS(1, 'projectIds')
+    ..aOS(2, 'filter')
+    ..aOS(3, 'orderBy')
     ..a<int>(4, 'pageSize', PbFieldType.O3)
-    ..a<String>(5, 'pageToken', PbFieldType.OS)
-    ..p<String>(8, 'resourceNames', PbFieldType.PS)
+    ..aOS(5, 'pageToken')
+    ..pPS(8, 'resourceNames')
     ..hasRequiredFields = false;
 
   ListLogEntriesRequest() : super();
@@ -353,41 +353,41 @@ class ListLogEntriesRequest extends GeneratedMessage {
       checkItemFailed(v, 'ListLogEntriesRequest');
   }
 
-  List<String> get projectIds => $_get(0, 1, null);
+  List<String> get projectIds => $_getN(0);
 
-  String get filter => $_get(1, 2, '');
+  String get filter => $_getS(1, '');
   set filter(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasFilter() => $_has(1, 2);
+  bool hasFilter() => $_has(1);
   void clearFilter() => clearField(2);
 
-  String get orderBy => $_get(2, 3, '');
+  String get orderBy => $_getS(2, '');
   set orderBy(String v) {
-    $_setString(2, 3, v);
+    $_setString(2, v);
   }
 
-  bool hasOrderBy() => $_has(2, 3);
+  bool hasOrderBy() => $_has(2);
   void clearOrderBy() => clearField(3);
 
-  int get pageSize => $_get(3, 4, 0);
+  int get pageSize => $_get(3, 0);
   set pageSize(int v) {
-    $_setUnsignedInt32(3, 4, v);
+    $_setUnsignedInt32(3, v);
   }
 
-  bool hasPageSize() => $_has(3, 4);
+  bool hasPageSize() => $_has(3);
   void clearPageSize() => clearField(4);
 
-  String get pageToken => $_get(4, 5, '');
+  String get pageToken => $_getS(4, '');
   set pageToken(String v) {
-    $_setString(4, 5, v);
+    $_setString(4, v);
   }
 
-  bool hasPageToken() => $_has(4, 5);
+  bool hasPageToken() => $_has(4);
   void clearPageToken() => clearField(5);
 
-  List<String> get resourceNames => $_get(5, 8, null);
+  List<String> get resourceNames => $_getN(5);
 }
 
 class _ReadonlyListLogEntriesRequest extends ListLogEntriesRequest
@@ -397,7 +397,7 @@ class ListLogEntriesResponse extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('ListLogEntriesResponse')
     ..pp<LogEntry>(
         1, 'entries', PbFieldType.PM, LogEntry.$checkItem, LogEntry.create)
-    ..a<String>(2, 'nextPageToken', PbFieldType.OS)
+    ..aOS(2, 'nextPageToken')
     ..hasRequiredFields = false;
 
   ListLogEntriesResponse() : super();
@@ -425,14 +425,14 @@ class ListLogEntriesResponse extends GeneratedMessage {
       checkItemFailed(v, 'ListLogEntriesResponse');
   }
 
-  List<LogEntry> get entries => $_get(0, 1, null);
+  List<LogEntry> get entries => $_getN(0);
 
-  String get nextPageToken => $_get(1, 2, '');
+  String get nextPageToken => $_getS(1, '');
   set nextPageToken(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasNextPageToken() => $_has(1, 2);
+  bool hasNextPageToken() => $_has(1);
   void clearNextPageToken() => clearField(2);
 }
 
@@ -443,7 +443,7 @@ class ListMonitoredResourceDescriptorsRequest extends GeneratedMessage {
   static final BuilderInfo _i =
       new BuilderInfo('ListMonitoredResourceDescriptorsRequest')
         ..a<int>(1, 'pageSize', PbFieldType.O3)
-        ..a<String>(2, 'pageToken', PbFieldType.OS)
+        ..aOS(2, 'pageToken')
         ..hasRequiredFields = false;
 
   ListMonitoredResourceDescriptorsRequest() : super();
@@ -472,20 +472,20 @@ class ListMonitoredResourceDescriptorsRequest extends GeneratedMessage {
       checkItemFailed(v, 'ListMonitoredResourceDescriptorsRequest');
   }
 
-  int get pageSize => $_get(0, 1, 0);
+  int get pageSize => $_get(0, 0);
   set pageSize(int v) {
-    $_setUnsignedInt32(0, 1, v);
+    $_setUnsignedInt32(0, v);
   }
 
-  bool hasPageSize() => $_has(0, 1);
+  bool hasPageSize() => $_has(0);
   void clearPageSize() => clearField(1);
 
-  String get pageToken => $_get(1, 2, '');
+  String get pageToken => $_getS(1, '');
   set pageToken(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasPageToken() => $_has(1, 2);
+  bool hasPageToken() => $_has(1);
   void clearPageToken() => clearField(2);
 }
 
@@ -501,7 +501,7 @@ class ListMonitoredResourceDescriptorsResponse extends GeneratedMessage {
             PbFieldType.PM,
             $google$api.MonitoredResourceDescriptor.$checkItem,
             $google$api.MonitoredResourceDescriptor.create)
-        ..a<String>(2, 'nextPageToken', PbFieldType.OS)
+        ..aOS(2, 'nextPageToken')
         ..hasRequiredFields = false;
 
   ListMonitoredResourceDescriptorsResponse() : super();
@@ -532,14 +532,14 @@ class ListMonitoredResourceDescriptorsResponse extends GeneratedMessage {
   }
 
   List<$google$api.MonitoredResourceDescriptor> get resourceDescriptors =>
-      $_get(0, 1, null);
+      $_getN(0);
 
-  String get nextPageToken => $_get(1, 2, '');
+  String get nextPageToken => $_getS(1, '');
   set nextPageToken(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasNextPageToken() => $_has(1, 2);
+  bool hasNextPageToken() => $_has(1);
   void clearNextPageToken() => clearField(2);
 }
 
@@ -549,9 +549,9 @@ class _ReadonlyListMonitoredResourceDescriptorsResponse
 
 class ListLogsRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('ListLogsRequest')
-    ..a<String>(1, 'parent', PbFieldType.OS)
+    ..aOS(1, 'parent')
     ..a<int>(2, 'pageSize', PbFieldType.O3)
-    ..a<String>(3, 'pageToken', PbFieldType.OS)
+    ..aOS(3, 'pageToken')
     ..hasRequiredFields = false;
 
   ListLogsRequest() : super();
@@ -577,28 +577,28 @@ class ListLogsRequest extends GeneratedMessage {
     if (v is! ListLogsRequest) checkItemFailed(v, 'ListLogsRequest');
   }
 
-  String get parent => $_get(0, 1, '');
+  String get parent => $_getS(0, '');
   set parent(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasParent() => $_has(0, 1);
+  bool hasParent() => $_has(0);
   void clearParent() => clearField(1);
 
-  int get pageSize => $_get(1, 2, 0);
+  int get pageSize => $_get(1, 0);
   set pageSize(int v) {
-    $_setUnsignedInt32(1, 2, v);
+    $_setUnsignedInt32(1, v);
   }
 
-  bool hasPageSize() => $_has(1, 2);
+  bool hasPageSize() => $_has(1);
   void clearPageSize() => clearField(2);
 
-  String get pageToken => $_get(2, 3, '');
+  String get pageToken => $_getS(2, '');
   set pageToken(String v) {
-    $_setString(2, 3, v);
+    $_setString(2, v);
   }
 
-  bool hasPageToken() => $_has(2, 3);
+  bool hasPageToken() => $_has(2);
   void clearPageToken() => clearField(3);
 }
 
@@ -607,8 +607,8 @@ class _ReadonlyListLogsRequest extends ListLogsRequest
 
 class ListLogsResponse extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('ListLogsResponse')
-    ..a<String>(2, 'nextPageToken', PbFieldType.OS)
-    ..p<String>(3, 'logNames', PbFieldType.PS)
+    ..aOS(2, 'nextPageToken')
+    ..pPS(3, 'logNames')
     ..hasRequiredFields = false;
 
   ListLogsResponse() : super();
@@ -634,15 +634,15 @@ class ListLogsResponse extends GeneratedMessage {
     if (v is! ListLogsResponse) checkItemFailed(v, 'ListLogsResponse');
   }
 
-  String get nextPageToken => $_get(0, 2, '');
+  String get nextPageToken => $_getS(0, '');
   set nextPageToken(String v) {
-    $_setString(0, 2, v);
+    $_setString(0, v);
   }
 
-  bool hasNextPageToken() => $_has(0, 2);
+  bool hasNextPageToken() => $_has(0);
   void clearNextPageToken() => clearField(2);
 
-  List<String> get logNames => $_get(1, 3, null);
+  List<String> get logNames => $_getN(1);
 }
 
 class _ReadonlyListLogsResponse extends ListLogsResponse

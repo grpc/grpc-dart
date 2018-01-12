@@ -1,3 +1,8 @@
+## 0.2.1 - 2018-01-12
+
+* Updated generated code in examples using latest protoc compiler plugin.
+* Dart 2.0 fixes.
+
 ## 0.2.0 - 2017-12-15
 
 * Implemented support for per-RPC metadata providers. This can be used for
