@@ -11,7 +11,9 @@ use this package.
 # Status
 
 This package is currently in *beta*: It is available for general usage,
-and is considered feature complete. If you experience issues,
+and is considered feature complete.
+
+If you experience issues, or if you have feature requests,
 please [open an issue](https://github.com/dart-lang/grpc-dart/issues).
 
 # Notes
