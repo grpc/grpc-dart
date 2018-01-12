@@ -14,7 +14,7 @@ import '../protobuf/any.pb.dart' as $google$protobuf;
 class Status extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Status')
     ..a<int>(1, 'code', PbFieldType.O3)
-    ..a<String>(2, 'message', PbFieldType.OS)
+    ..aOS(2, 'message')
     ..pp<$google$protobuf.Any>(3, 'details', PbFieldType.PM,
         $google$protobuf.Any.$checkItem, $google$protobuf.Any.create)
     ..hasRequiredFields = false;
@@ -39,23 +39,23 @@ class Status extends GeneratedMessage {
     if (v is! Status) checkItemFailed(v, 'Status');
   }
 
-  int get code => $_get(0, 1, 0);
+  int get code => $_get(0, 0);
   set code(int v) {
-    $_setUnsignedInt32(0, 1, v);
+    $_setUnsignedInt32(0, v);
   }
 
-  bool hasCode() => $_has(0, 1);
+  bool hasCode() => $_has(0);
   void clearCode() => clearField(1);
 
-  String get message => $_get(1, 2, '');
+  String get message => $_getS(1, '');
   set message(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasMessage() => $_has(1, 2);
+  bool hasMessage() => $_has(1);
   void clearMessage() => clearField(2);
 
-  List<$google$protobuf.Any> get details => $_get(2, 3, null);
+  List<$google$protobuf.Any> get details => $_getN(2);
 }
 
 class _ReadonlyStatus extends Status with ReadonlyMessageMixin {}

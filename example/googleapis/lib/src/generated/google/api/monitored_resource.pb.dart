@@ -13,12 +13,12 @@ import 'label.pb.dart';
 
 class MonitoredResourceDescriptor extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('MonitoredResourceDescriptor')
-    ..a<String>(1, 'type', PbFieldType.OS)
-    ..a<String>(2, 'displayName', PbFieldType.OS)
-    ..a<String>(3, 'description', PbFieldType.OS)
+    ..aOS(1, 'type')
+    ..aOS(2, 'displayName')
+    ..aOS(3, 'description')
     ..pp<LabelDescriptor>(4, 'labels', PbFieldType.PM,
         LabelDescriptor.$checkItem, LabelDescriptor.create)
-    ..a<String>(5, 'name', PbFieldType.OS)
+    ..aOS(5, 'name')
     ..hasRequiredFields = false;
 
   MonitoredResourceDescriptor() : super();
@@ -47,38 +47,38 @@ class MonitoredResourceDescriptor extends GeneratedMessage {
       checkItemFailed(v, 'MonitoredResourceDescriptor');
   }
 
-  String get type => $_get(0, 1, '');
+  String get type => $_getS(0, '');
   set type(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasType() => $_has(0, 1);
+  bool hasType() => $_has(0);
   void clearType() => clearField(1);
 
-  String get displayName => $_get(1, 2, '');
+  String get displayName => $_getS(1, '');
   set displayName(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasDisplayName() => $_has(1, 2);
+  bool hasDisplayName() => $_has(1);
   void clearDisplayName() => clearField(2);
 
-  String get description => $_get(2, 3, '');
+  String get description => $_getS(2, '');
   set description(String v) {
-    $_setString(2, 3, v);
+    $_setString(2, v);
   }
 
-  bool hasDescription() => $_has(2, 3);
+  bool hasDescription() => $_has(2);
   void clearDescription() => clearField(3);
 
-  List<LabelDescriptor> get labels => $_get(3, 4, null);
+  List<LabelDescriptor> get labels => $_getN(3);
 
-  String get name => $_get(4, 5, '');
+  String get name => $_getS(4, '');
   set name(String v) {
-    $_setString(4, 5, v);
+    $_setString(4, v);
   }
 
-  bool hasName() => $_has(4, 5);
+  bool hasName() => $_has(4);
   void clearName() => clearField(5);
 }
 
@@ -87,8 +87,8 @@ class _ReadonlyMonitoredResourceDescriptor extends MonitoredResourceDescriptor
 
 class MonitoredResource_LabelsEntry extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('MonitoredResource_LabelsEntry')
-    ..a<String>(1, 'key', PbFieldType.OS)
-    ..a<String>(2, 'value', PbFieldType.OS)
+    ..aOS(1, 'key')
+    ..aOS(2, 'value')
     ..hasRequiredFields = false;
 
   MonitoredResource_LabelsEntry() : super();
@@ -117,20 +117,20 @@ class MonitoredResource_LabelsEntry extends GeneratedMessage {
       checkItemFailed(v, 'MonitoredResource_LabelsEntry');
   }
 
-  String get key => $_get(0, 1, '');
+  String get key => $_getS(0, '');
   set key(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasKey() => $_has(0, 1);
+  bool hasKey() => $_has(0);
   void clearKey() => clearField(1);
 
-  String get value => $_get(1, 2, '');
+  String get value => $_getS(1, '');
   set value(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasValue() => $_has(1, 2);
+  bool hasValue() => $_has(1);
   void clearValue() => clearField(2);
 }
 
@@ -139,7 +139,7 @@ class _ReadonlyMonitoredResource_LabelsEntry
 
 class MonitoredResource extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('MonitoredResource')
-    ..a<String>(1, 'type', PbFieldType.OS)
+    ..aOS(1, 'type')
     ..pp<MonitoredResource_LabelsEntry>(
         2,
         'labels',
@@ -171,15 +171,15 @@ class MonitoredResource extends GeneratedMessage {
     if (v is! MonitoredResource) checkItemFailed(v, 'MonitoredResource');
   }
 
-  String get type => $_get(0, 1, '');
+  String get type => $_getS(0, '');
   set type(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasType() => $_has(0, 1);
+  bool hasType() => $_has(0);
   void clearType() => clearField(1);
 
-  List<MonitoredResource_LabelsEntry> get labels => $_get(1, 2, null);
+  List<MonitoredResource_LabelsEntry> get labels => $_getN(1);
 }
 
 class _ReadonlyMonitoredResource extends MonitoredResource

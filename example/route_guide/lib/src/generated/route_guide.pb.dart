@@ -34,20 +34,20 @@ class Point extends GeneratedMessage {
     if (v is! Point) checkItemFailed(v, 'Point');
   }
 
-  int get latitude => $_get(0, 1, 0);
+  int get latitude => $_get(0, 0);
   set latitude(int v) {
-    $_setUnsignedInt32(0, 1, v);
+    $_setUnsignedInt32(0, v);
   }
 
-  bool hasLatitude() => $_has(0, 1);
+  bool hasLatitude() => $_has(0);
   void clearLatitude() => clearField(1);
 
-  int get longitude => $_get(1, 2, 0);
+  int get longitude => $_get(1, 0);
   set longitude(int v) {
-    $_setUnsignedInt32(1, 2, v);
+    $_setUnsignedInt32(1, v);
   }
 
-  bool hasLongitude() => $_has(1, 2);
+  bool hasLongitude() => $_has(1);
   void clearLongitude() => clearField(2);
 }
 
@@ -79,20 +79,20 @@ class Rectangle extends GeneratedMessage {
     if (v is! Rectangle) checkItemFailed(v, 'Rectangle');
   }
 
-  Point get lo => $_get(0, 1, null);
+  Point get lo => $_getN(0);
   set lo(Point v) {
     setField(1, v);
   }
 
-  bool hasLo() => $_has(0, 1);
+  bool hasLo() => $_has(0);
   void clearLo() => clearField(1);
 
-  Point get hi => $_get(1, 2, null);
+  Point get hi => $_getN(1);
   set hi(Point v) {
     setField(2, v);
   }
 
-  bool hasHi() => $_has(1, 2);
+  bool hasHi() => $_has(1);
   void clearHi() => clearField(2);
 }
 
@@ -100,7 +100,7 @@ class _ReadonlyRectangle extends Rectangle with ReadonlyMessageMixin {}
 
 class Feature extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Feature')
-    ..a<String>(1, 'name', PbFieldType.OS)
+    ..aOS(1, 'name')
     ..a<Point>(2, 'location', PbFieldType.OM, Point.getDefault, Point.create)
     ..hasRequiredFields = false;
 
@@ -124,20 +124,20 @@ class Feature extends GeneratedMessage {
     if (v is! Feature) checkItemFailed(v, 'Feature');
   }
 
-  String get name => $_get(0, 1, '');
+  String get name => $_getS(0, '');
   set name(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasName() => $_has(0, 1);
+  bool hasName() => $_has(0);
   void clearName() => clearField(1);
 
-  Point get location => $_get(1, 2, null);
+  Point get location => $_getN(1);
   set location(Point v) {
     setField(2, v);
   }
 
-  bool hasLocation() => $_has(1, 2);
+  bool hasLocation() => $_has(1);
   void clearLocation() => clearField(2);
 }
 
@@ -146,7 +146,7 @@ class _ReadonlyFeature extends Feature with ReadonlyMessageMixin {}
 class RouteNote extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('RouteNote')
     ..a<Point>(1, 'location', PbFieldType.OM, Point.getDefault, Point.create)
-    ..a<String>(2, 'message', PbFieldType.OS)
+    ..aOS(2, 'message')
     ..hasRequiredFields = false;
 
   RouteNote() : super();
@@ -169,20 +169,20 @@ class RouteNote extends GeneratedMessage {
     if (v is! RouteNote) checkItemFailed(v, 'RouteNote');
   }
 
-  Point get location => $_get(0, 1, null);
+  Point get location => $_getN(0);
   set location(Point v) {
     setField(1, v);
   }
 
-  bool hasLocation() => $_has(0, 1);
+  bool hasLocation() => $_has(0);
   void clearLocation() => clearField(1);
 
-  String get message => $_get(1, 2, '');
+  String get message => $_getS(1, '');
   set message(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasMessage() => $_has(1, 2);
+  bool hasMessage() => $_has(1);
   void clearMessage() => clearField(2);
 }
 
@@ -218,36 +218,36 @@ class RouteSummary extends GeneratedMessage {
     if (v is! RouteSummary) checkItemFailed(v, 'RouteSummary');
   }
 
-  int get pointCount => $_get(0, 1, 0);
+  int get pointCount => $_get(0, 0);
   set pointCount(int v) {
-    $_setUnsignedInt32(0, 1, v);
+    $_setUnsignedInt32(0, v);
   }
 
-  bool hasPointCount() => $_has(0, 1);
+  bool hasPointCount() => $_has(0);
   void clearPointCount() => clearField(1);
 
-  int get featureCount => $_get(1, 2, 0);
+  int get featureCount => $_get(1, 0);
   set featureCount(int v) {
-    $_setUnsignedInt32(1, 2, v);
+    $_setUnsignedInt32(1, v);
   }
 
-  bool hasFeatureCount() => $_has(1, 2);
+  bool hasFeatureCount() => $_has(1);
   void clearFeatureCount() => clearField(2);
 
-  int get distance => $_get(2, 3, 0);
+  int get distance => $_get(2, 0);
   set distance(int v) {
-    $_setUnsignedInt32(2, 3, v);
+    $_setUnsignedInt32(2, v);
   }
 
-  bool hasDistance() => $_has(2, 3);
+  bool hasDistance() => $_has(2);
   void clearDistance() => clearField(3);
 
-  int get elapsedTime => $_get(3, 4, 0);
+  int get elapsedTime => $_get(3, 0);
   set elapsedTime(int v) {
-    $_setUnsignedInt32(3, 4, v);
+    $_setUnsignedInt32(3, v);
   }
 
-  bool hasElapsedTime() => $_has(3, 4);
+  bool hasElapsedTime() => $_has(3);
   void clearElapsedTime() => clearField(4);
 }
 

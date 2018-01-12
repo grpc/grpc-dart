@@ -254,7 +254,7 @@ class ClientConnection {
     _connect();
   }
 
-  void _handleSocketClosed(Socket _) {
+  void _handleSocketClosed(_) {
     _cancelTimer();
     if (_state != ConnectionState.idle && _state != ConnectionState.shutdown) {
       // We were not planning to close the socket.

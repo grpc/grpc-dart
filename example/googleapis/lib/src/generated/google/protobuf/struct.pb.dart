@@ -15,7 +15,7 @@ export 'struct.pbenum.dart';
 
 class Struct_FieldsEntry extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Struct_FieldsEntry')
-    ..a<String>(1, 'key', PbFieldType.OS)
+    ..aOS(1, 'key')
     ..a<Value>(2, 'value', PbFieldType.OM, Value.getDefault, Value.create)
     ..hasRequiredFields = false;
 
@@ -43,20 +43,20 @@ class Struct_FieldsEntry extends GeneratedMessage {
     if (v is! Struct_FieldsEntry) checkItemFailed(v, 'Struct_FieldsEntry');
   }
 
-  String get key => $_get(0, 1, '');
+  String get key => $_getS(0, '');
   set key(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasKey() => $_has(0, 1);
+  bool hasKey() => $_has(0);
   void clearKey() => clearField(1);
 
-  Value get value => $_get(1, 2, null);
+  Value get value => $_getN(1);
   set value(Value v) {
     setField(2, v);
   }
 
-  bool hasValue() => $_has(1, 2);
+  bool hasValue() => $_has(1);
   void clearValue() => clearField(2);
 }
 
@@ -89,7 +89,7 @@ class Struct extends GeneratedMessage {
     if (v is! Struct) checkItemFailed(v, 'Struct');
   }
 
-  List<Struct_FieldsEntry> get fields => $_get(0, 1, null);
+  List<Struct_FieldsEntry> get fields => $_getN(0);
 }
 
 class _ReadonlyStruct extends Struct with ReadonlyMessageMixin {}
@@ -99,8 +99,8 @@ class Value extends GeneratedMessage {
     ..e<NullValue>(1, 'nullValue', PbFieldType.OE, NullValue.NULL_VALUE,
         NullValue.valueOf, NullValue.values)
     ..a<double>(2, 'numberValue', PbFieldType.OD)
-    ..a<String>(3, 'stringValue', PbFieldType.OS)
-    ..a<bool>(4, 'boolValue', PbFieldType.OB)
+    ..aOS(3, 'stringValue')
+    ..aOB(4, 'boolValue')
     ..a<Struct>(
         5, 'structValue', PbFieldType.OM, Struct.getDefault, Struct.create)
     ..a<ListValue>(
@@ -126,52 +126,52 @@ class Value extends GeneratedMessage {
     if (v is! Value) checkItemFailed(v, 'Value');
   }
 
-  NullValue get nullValue => $_get(0, 1, null);
+  NullValue get nullValue => $_getN(0);
   set nullValue(NullValue v) {
     setField(1, v);
   }
 
-  bool hasNullValue() => $_has(0, 1);
+  bool hasNullValue() => $_has(0);
   void clearNullValue() => clearField(1);
 
-  double get numberValue => $_get(1, 2, null);
+  double get numberValue => $_getN(1);
   set numberValue(double v) {
-    $_setDouble(1, 2, v);
+    $_setDouble(1, v);
   }
 
-  bool hasNumberValue() => $_has(1, 2);
+  bool hasNumberValue() => $_has(1);
   void clearNumberValue() => clearField(2);
 
-  String get stringValue => $_get(2, 3, '');
+  String get stringValue => $_getS(2, '');
   set stringValue(String v) {
-    $_setString(2, 3, v);
+    $_setString(2, v);
   }
 
-  bool hasStringValue() => $_has(2, 3);
+  bool hasStringValue() => $_has(2);
   void clearStringValue() => clearField(3);
 
-  bool get boolValue => $_get(3, 4, false);
+  bool get boolValue => $_get(3, false);
   set boolValue(bool v) {
-    $_setBool(3, 4, v);
+    $_setBool(3, v);
   }
 
-  bool hasBoolValue() => $_has(3, 4);
+  bool hasBoolValue() => $_has(3);
   void clearBoolValue() => clearField(4);
 
-  Struct get structValue => $_get(4, 5, null);
+  Struct get structValue => $_getN(4);
   set structValue(Struct v) {
     setField(5, v);
   }
 
-  bool hasStructValue() => $_has(4, 5);
+  bool hasStructValue() => $_has(4);
   void clearStructValue() => clearField(5);
 
-  ListValue get listValue => $_get(5, 6, null);
+  ListValue get listValue => $_getN(5);
   set listValue(ListValue v) {
     setField(6, v);
   }
 
-  bool hasListValue() => $_has(5, 6);
+  bool hasListValue() => $_has(5);
   void clearListValue() => clearField(6);
 }
 
@@ -202,7 +202,7 @@ class ListValue extends GeneratedMessage {
     if (v is! ListValue) checkItemFailed(v, 'ListValue');
   }
 
-  List<Value> get values => $_get(0, 1, null);
+  List<Value> get values => $_getN(0);
 }
 
 class _ReadonlyListValue extends ListValue with ReadonlyMessageMixin {}

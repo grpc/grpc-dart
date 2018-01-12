@@ -50,21 +50,21 @@ abstract class MetadataServiceBase extends Service {
   String get $name => 'grpc.Metadata';
 
   MetadataServiceBase() {
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<Record, Record>(
         'Echo',
         echo_Pre,
         false,
         false,
         (List<int> value) => new Record.fromBuffer(value),
         (Record value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<Number, Number>(
         'AddOne',
         addOne,
         true,
         true,
         (List<int> value) => new Number.fromBuffer(value),
         (Number value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<Empty, Number>(
         'Fibonacci',
         fibonacci_Pre,
         false,

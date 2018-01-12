@@ -15,7 +15,7 @@ export 'messages.pbenum.dart';
 
 class BoolValue extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('BoolValue')
-    ..a<bool>(1, 'value', PbFieldType.OB)
+    ..aOB(1, 'value')
     ..hasRequiredFields = false;
 
   BoolValue() : super();
@@ -38,12 +38,12 @@ class BoolValue extends GeneratedMessage {
     if (v is! BoolValue) checkItemFailed(v, 'BoolValue');
   }
 
-  bool get value => $_get(0, 1, false);
+  bool get value => $_get(0, false);
   set value(bool v) {
-    $_setBool(0, 1, v);
+    $_setBool(0, v);
   }
 
-  bool hasValue() => $_has(0, 1);
+  bool hasValue() => $_has(0);
   void clearValue() => clearField(1);
 }
 
@@ -76,20 +76,20 @@ class Payload extends GeneratedMessage {
     if (v is! Payload) checkItemFailed(v, 'Payload');
   }
 
-  PayloadType get type => $_get(0, 1, null);
+  PayloadType get type => $_getN(0);
   set type(PayloadType v) {
     setField(1, v);
   }
 
-  bool hasType() => $_has(0, 1);
+  bool hasType() => $_has(0);
   void clearType() => clearField(1);
 
-  List<int> get body => $_get(1, 2, null);
+  List<int> get body => $_getN(1);
   set body(List<int> v) {
-    $_setBytes(1, 2, v);
+    $_setBytes(1, v);
   }
 
-  bool hasBody() => $_has(1, 2);
+  bool hasBody() => $_has(1);
   void clearBody() => clearField(2);
 }
 
@@ -98,7 +98,7 @@ class _ReadonlyPayload extends Payload with ReadonlyMessageMixin {}
 class EchoStatus extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('EchoStatus')
     ..a<int>(1, 'code', PbFieldType.O3)
-    ..a<String>(2, 'message', PbFieldType.OS)
+    ..aOS(2, 'message')
     ..hasRequiredFields = false;
 
   EchoStatus() : super();
@@ -121,20 +121,20 @@ class EchoStatus extends GeneratedMessage {
     if (v is! EchoStatus) checkItemFailed(v, 'EchoStatus');
   }
 
-  int get code => $_get(0, 1, 0);
+  int get code => $_get(0, 0);
   set code(int v) {
-    $_setUnsignedInt32(0, 1, v);
+    $_setUnsignedInt32(0, v);
   }
 
-  bool hasCode() => $_has(0, 1);
+  bool hasCode() => $_has(0);
   void clearCode() => clearField(1);
 
-  String get message => $_get(1, 2, '');
+  String get message => $_getS(1, '');
   set message(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasMessage() => $_has(1, 2);
+  bool hasMessage() => $_has(1);
   void clearMessage() => clearField(2);
 }
 
@@ -147,8 +147,8 @@ class SimpleRequest extends GeneratedMessage {
     ..a<int>(2, 'responseSize', PbFieldType.O3)
     ..a<Payload>(
         3, 'payload', PbFieldType.OM, Payload.getDefault, Payload.create)
-    ..a<bool>(4, 'fillUsername', PbFieldType.OB)
-    ..a<bool>(5, 'fillOauthScope', PbFieldType.OB)
+    ..aOB(4, 'fillUsername')
+    ..aOB(5, 'fillOauthScope')
     ..a<BoolValue>(6, 'responseCompressed', PbFieldType.OM,
         BoolValue.getDefault, BoolValue.create)
     ..a<EchoStatus>(7, 'responseStatus', PbFieldType.OM, EchoStatus.getDefault,
@@ -179,68 +179,68 @@ class SimpleRequest extends GeneratedMessage {
     if (v is! SimpleRequest) checkItemFailed(v, 'SimpleRequest');
   }
 
-  PayloadType get responseType => $_get(0, 1, null);
+  PayloadType get responseType => $_getN(0);
   set responseType(PayloadType v) {
     setField(1, v);
   }
 
-  bool hasResponseType() => $_has(0, 1);
+  bool hasResponseType() => $_has(0);
   void clearResponseType() => clearField(1);
 
-  int get responseSize => $_get(1, 2, 0);
+  int get responseSize => $_get(1, 0);
   set responseSize(int v) {
-    $_setUnsignedInt32(1, 2, v);
+    $_setUnsignedInt32(1, v);
   }
 
-  bool hasResponseSize() => $_has(1, 2);
+  bool hasResponseSize() => $_has(1);
   void clearResponseSize() => clearField(2);
 
-  Payload get payload => $_get(2, 3, null);
+  Payload get payload => $_getN(2);
   set payload(Payload v) {
     setField(3, v);
   }
 
-  bool hasPayload() => $_has(2, 3);
+  bool hasPayload() => $_has(2);
   void clearPayload() => clearField(3);
 
-  bool get fillUsername => $_get(3, 4, false);
+  bool get fillUsername => $_get(3, false);
   set fillUsername(bool v) {
-    $_setBool(3, 4, v);
+    $_setBool(3, v);
   }
 
-  bool hasFillUsername() => $_has(3, 4);
+  bool hasFillUsername() => $_has(3);
   void clearFillUsername() => clearField(4);
 
-  bool get fillOauthScope => $_get(4, 5, false);
+  bool get fillOauthScope => $_get(4, false);
   set fillOauthScope(bool v) {
-    $_setBool(4, 5, v);
+    $_setBool(4, v);
   }
 
-  bool hasFillOauthScope() => $_has(4, 5);
+  bool hasFillOauthScope() => $_has(4);
   void clearFillOauthScope() => clearField(5);
 
-  BoolValue get responseCompressed => $_get(5, 6, null);
+  BoolValue get responseCompressed => $_getN(5);
   set responseCompressed(BoolValue v) {
     setField(6, v);
   }
 
-  bool hasResponseCompressed() => $_has(5, 6);
+  bool hasResponseCompressed() => $_has(5);
   void clearResponseCompressed() => clearField(6);
 
-  EchoStatus get responseStatus => $_get(6, 7, null);
+  EchoStatus get responseStatus => $_getN(6);
   set responseStatus(EchoStatus v) {
     setField(7, v);
   }
 
-  bool hasResponseStatus() => $_has(6, 7);
+  bool hasResponseStatus() => $_has(6);
   void clearResponseStatus() => clearField(7);
 
-  BoolValue get expectCompressed => $_get(7, 8, null);
+  BoolValue get expectCompressed => $_getN(7);
   set expectCompressed(BoolValue v) {
     setField(8, v);
   }
 
-  bool hasExpectCompressed() => $_has(7, 8);
+  bool hasExpectCompressed() => $_has(7);
   void clearExpectCompressed() => clearField(8);
 }
 
@@ -250,8 +250,8 @@ class SimpleResponse extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('SimpleResponse')
     ..a<Payload>(
         1, 'payload', PbFieldType.OM, Payload.getDefault, Payload.create)
-    ..a<String>(2, 'username', PbFieldType.OS)
-    ..a<String>(3, 'oauthScope', PbFieldType.OS)
+    ..aOS(2, 'username')
+    ..aOS(3, 'oauthScope')
     ..hasRequiredFields = false;
 
   SimpleResponse() : super();
@@ -277,28 +277,28 @@ class SimpleResponse extends GeneratedMessage {
     if (v is! SimpleResponse) checkItemFailed(v, 'SimpleResponse');
   }
 
-  Payload get payload => $_get(0, 1, null);
+  Payload get payload => $_getN(0);
   set payload(Payload v) {
     setField(1, v);
   }
 
-  bool hasPayload() => $_has(0, 1);
+  bool hasPayload() => $_has(0);
   void clearPayload() => clearField(1);
 
-  String get username => $_get(1, 2, '');
+  String get username => $_getS(1, '');
   set username(String v) {
-    $_setString(1, 2, v);
+    $_setString(1, v);
   }
 
-  bool hasUsername() => $_has(1, 2);
+  bool hasUsername() => $_has(1);
   void clearUsername() => clearField(2);
 
-  String get oauthScope => $_get(2, 3, '');
+  String get oauthScope => $_getS(2, '');
   set oauthScope(String v) {
-    $_setString(2, 3, v);
+    $_setString(2, v);
   }
 
-  bool hasOauthScope() => $_has(2, 3);
+  bool hasOauthScope() => $_has(2);
   void clearOauthScope() => clearField(3);
 }
 
@@ -338,20 +338,20 @@ class StreamingInputCallRequest extends GeneratedMessage {
       checkItemFailed(v, 'StreamingInputCallRequest');
   }
 
-  Payload get payload => $_get(0, 1, null);
+  Payload get payload => $_getN(0);
   set payload(Payload v) {
     setField(1, v);
   }
 
-  bool hasPayload() => $_has(0, 1);
+  bool hasPayload() => $_has(0);
   void clearPayload() => clearField(1);
 
-  BoolValue get expectCompressed => $_get(1, 2, null);
+  BoolValue get expectCompressed => $_getN(1);
   set expectCompressed(BoolValue v) {
     setField(2, v);
   }
 
-  bool hasExpectCompressed() => $_has(1, 2);
+  bool hasExpectCompressed() => $_has(1);
   void clearExpectCompressed() => clearField(2);
 }
 
@@ -389,12 +389,12 @@ class StreamingInputCallResponse extends GeneratedMessage {
       checkItemFailed(v, 'StreamingInputCallResponse');
   }
 
-  int get aggregatedPayloadSize => $_get(0, 1, 0);
+  int get aggregatedPayloadSize => $_get(0, 0);
   set aggregatedPayloadSize(int v) {
-    $_setUnsignedInt32(0, 1, v);
+    $_setUnsignedInt32(0, v);
   }
 
-  bool hasAggregatedPayloadSize() => $_has(0, 1);
+  bool hasAggregatedPayloadSize() => $_has(0);
   void clearAggregatedPayloadSize() => clearField(1);
 }
 
@@ -433,28 +433,28 @@ class ResponseParameters extends GeneratedMessage {
     if (v is! ResponseParameters) checkItemFailed(v, 'ResponseParameters');
   }
 
-  int get size => $_get(0, 1, 0);
+  int get size => $_get(0, 0);
   set size(int v) {
-    $_setUnsignedInt32(0, 1, v);
+    $_setUnsignedInt32(0, v);
   }
 
-  bool hasSize() => $_has(0, 1);
+  bool hasSize() => $_has(0);
   void clearSize() => clearField(1);
 
-  int get intervalUs => $_get(1, 2, 0);
+  int get intervalUs => $_get(1, 0);
   set intervalUs(int v) {
-    $_setUnsignedInt32(1, 2, v);
+    $_setUnsignedInt32(1, v);
   }
 
-  bool hasIntervalUs() => $_has(1, 2);
+  bool hasIntervalUs() => $_has(1);
   void clearIntervalUs() => clearField(2);
 
-  BoolValue get compressed => $_get(2, 3, null);
+  BoolValue get compressed => $_getN(2);
   set compressed(BoolValue v) {
     setField(3, v);
   }
 
-  bool hasCompressed() => $_has(2, 3);
+  bool hasCompressed() => $_has(2);
   void clearCompressed() => clearField(3);
 }
 
@@ -499,30 +499,30 @@ class StreamingOutputCallRequest extends GeneratedMessage {
       checkItemFailed(v, 'StreamingOutputCallRequest');
   }
 
-  PayloadType get responseType => $_get(0, 1, null);
+  PayloadType get responseType => $_getN(0);
   set responseType(PayloadType v) {
     setField(1, v);
   }
 
-  bool hasResponseType() => $_has(0, 1);
+  bool hasResponseType() => $_has(0);
   void clearResponseType() => clearField(1);
 
-  List<ResponseParameters> get responseParameters => $_get(1, 2, null);
+  List<ResponseParameters> get responseParameters => $_getN(1);
 
-  Payload get payload => $_get(2, 3, null);
+  Payload get payload => $_getN(2);
   set payload(Payload v) {
     setField(3, v);
   }
 
-  bool hasPayload() => $_has(2, 3);
+  bool hasPayload() => $_has(2);
   void clearPayload() => clearField(3);
 
-  EchoStatus get responseStatus => $_get(3, 7, null);
+  EchoStatus get responseStatus => $_getN(3);
   set responseStatus(EchoStatus v) {
     setField(7, v);
   }
 
-  bool hasResponseStatus() => $_has(3, 7);
+  bool hasResponseStatus() => $_has(3);
   void clearResponseStatus() => clearField(7);
 }
 
@@ -561,12 +561,12 @@ class StreamingOutputCallResponse extends GeneratedMessage {
       checkItemFailed(v, 'StreamingOutputCallResponse');
   }
 
-  Payload get payload => $_get(0, 1, null);
+  Payload get payload => $_getN(0);
   set payload(Payload v) {
     setField(1, v);
   }
 
-  bool hasPayload() => $_has(0, 1);
+  bool hasPayload() => $_has(0);
   void clearPayload() => clearField(1);
 }
 
@@ -601,12 +601,12 @@ class ReconnectParams extends GeneratedMessage {
     if (v is! ReconnectParams) checkItemFailed(v, 'ReconnectParams');
   }
 
-  int get maxReconnectBackoffMs => $_get(0, 1, 0);
+  int get maxReconnectBackoffMs => $_get(0, 0);
   set maxReconnectBackoffMs(int v) {
-    $_setUnsignedInt32(0, 1, v);
+    $_setUnsignedInt32(0, v);
   }
 
-  bool hasMaxReconnectBackoffMs() => $_has(0, 1);
+  bool hasMaxReconnectBackoffMs() => $_has(0);
   void clearMaxReconnectBackoffMs() => clearField(1);
 }
 
@@ -615,7 +615,7 @@ class _ReadonlyReconnectParams extends ReconnectParams
 
 class ReconnectInfo extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('ReconnectInfo')
-    ..a<bool>(1, 'passed', PbFieldType.OB)
+    ..aOB(1, 'passed')
     ..p<int>(2, 'backoffMs', PbFieldType.P3)
     ..hasRequiredFields = false;
 
@@ -641,15 +641,15 @@ class ReconnectInfo extends GeneratedMessage {
     if (v is! ReconnectInfo) checkItemFailed(v, 'ReconnectInfo');
   }
 
-  bool get passed => $_get(0, 1, false);
+  bool get passed => $_get(0, false);
   set passed(bool v) {
-    $_setBool(0, 1, v);
+    $_setBool(0, v);
   }
 
-  bool hasPassed() => $_has(0, 1);
+  bool hasPassed() => $_has(0);
   void clearPassed() => clearField(1);
 
-  List<int> get backoffMs => $_get(1, 2, null);
+  List<int> get backoffMs => $_getN(1);
 }
 
 class _ReadonlyReconnectInfo extends ReconnectInfo with ReadonlyMessageMixin {}

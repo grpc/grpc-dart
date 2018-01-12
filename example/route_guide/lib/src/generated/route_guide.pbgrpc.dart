@@ -62,28 +62,28 @@ abstract class RouteGuideServiceBase extends Service {
   String get $name => 'routeguide.RouteGuide';
 
   RouteGuideServiceBase() {
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<Point, Feature>(
         'GetFeature',
         getFeature_Pre,
         false,
         false,
         (List<int> value) => new Point.fromBuffer(value),
         (Feature value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<Rectangle, Feature>(
         'ListFeatures',
         listFeatures_Pre,
         false,
         true,
         (List<int> value) => new Rectangle.fromBuffer(value),
         (Feature value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<Point, RouteSummary>(
         'RecordRoute',
         recordRoute,
         true,
         false,
         (List<int> value) => new Point.fromBuffer(value),
         (RouteSummary value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod(
+    $addMethod(new ServiceMethod<RouteNote, RouteNote>(
         'RouteChat',
         routeChat,
         true,

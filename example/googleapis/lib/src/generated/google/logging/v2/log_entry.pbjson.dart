@@ -92,6 +92,7 @@ const LogEntry$json = const {
       '10': 'operation'
     },
     const {'1': 'trace', '3': 22, '4': 1, '5': 9, '10': 'trace'},
+    const {'1': 'span_id', '3': 27, '4': 1, '5': 9, '10': 'spanId'},
     const {
       '1': 'source_location',
       '3': 23,

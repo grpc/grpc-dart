@@ -11,7 +11,7 @@ import 'package:protobuf/protobuf.dart';
 
 class Record extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('Record')
-    ..a<String>(1, 'value', PbFieldType.OS)
+    ..aOS(1, 'value')
     ..hasRequiredFields = false;
 
   Record() : super();
@@ -34,12 +34,12 @@ class Record extends GeneratedMessage {
     if (v is! Record) checkItemFailed(v, 'Record');
   }
 
-  String get value => $_get(0, 1, '');
+  String get value => $_getS(0, '');
   set value(String v) {
-    $_setString(0, 1, v);
+    $_setString(0, v);
   }
 
-  bool hasValue() => $_has(0, 1);
+  bool hasValue() => $_has(0);
   void clearValue() => clearField(1);
 }
 
@@ -70,12 +70,12 @@ class Number extends GeneratedMessage {
     if (v is! Number) checkItemFailed(v, 'Number');
   }
 
-  int get value => $_get(0, 1, 0);
+  int get value => $_get(0, 0);
   set value(int v) {
-    $_setUnsignedInt32(0, 1, v);
+    $_setUnsignedInt32(0, v);
   }
 
-  bool hasValue() => $_has(0, 1);
+  bool hasValue() => $_has(0);
   void clearValue() => clearField(1);
 }
 
