@@ -1,7 +1,8 @@
-## 0.2.1 - 2018-01-12
+## 0.2.1 - 2018-01-18
 
 * Updated generated code in examples using latest protoc compiler plugin.
 * Dart 2.0 fixes.
+* Changed license to Apache 2.0.
 
 ## 0.2.0 - 2017-12-15
 
