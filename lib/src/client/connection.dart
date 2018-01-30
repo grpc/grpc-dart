@@ -133,7 +133,7 @@ class ClientConnection {
       _setState(ConnectionState.ready);
       _pendingCalls.forEach(_startCall);
       _pendingCalls.clear();
-    }).catchError(_handleTransientFailure);
+    }).catchError(_handleConnectionFailure);
   }
 
   void dispatchCall(ClientCall call) {
@@ -164,10 +164,13 @@ class ClientConnection {
     call.onConnectionReady(this);
   }
 
-  void _shutdownCall(ClientCall call) {
+  void _failCall(ClientCall call, dynamic error) {
     if (call.isCancelled) return;
-    call.onConnectionError(
-        new GrpcError.unavailable('Connection shutting down.'));
+    call.onConnectionError(error);
+  }
+
+  void _shutdownCall(ClientCall call) {
+    _failCall(call, 'Connection shutting down.');
   }
 
   /// Shuts down this connection.
@@ -232,20 +235,16 @@ class ClientConnection {
     return _pendingCalls.isNotEmpty;
   }
 
-  void _handleTransientFailure(error) {
+  void _handleConnectionFailure(error) {
     _transport = null;
     if (_state == ConnectionState.shutdown || _state == ConnectionState.idle) {
       return;
     }
     // TODO(jakobr): Log error.
     _cancelTimer();
-    if (!_hasPendingCalls()) {
-      _setState(ConnectionState.idle);
-      return;
-    }
-    _setState(ConnectionState.transientFailure);
-    _currentReconnectDelay = options.backoffStrategy(_currentReconnectDelay);
-    _timer = new Timer(_currentReconnectDelay, _handleReconnect);
+    _pendingCalls.forEach((call) => _failCall(call, error));
+    _pendingCalls.clear();
+    _setState(ConnectionState.idle);
   }
 
   void _handleReconnect() {
@@ -256,9 +255,23 @@ class ClientConnection {
 
   void _handleSocketClosed(_) {
     _cancelTimer();
-    if (_state != ConnectionState.idle && _state != ConnectionState.shutdown) {
-      // We were not planning to close the socket.
-      _handleTransientFailure('Socket closed');
+    _transport = null;
+
+    if (_state == ConnectionState.idle && _state == ConnectionState.shutdown) {
+      // All good.
+      return;
     }
+
+    // We were not planning to close the socket.
+    if (!_hasPendingCalls()) {
+      // No pending calls. Just hop to idle, and wait for a new RPC.
+      _setState(ConnectionState.idle);
+      return;
+    }
+
+    // We have pending RPCs. Reconnect after backoff delay.
+    _setState(ConnectionState.transientFailure);
+    _currentReconnectDelay = options.backoffStrategy(_currentReconnectDelay);
+    _timer = new Timer(_currentReconnectDelay, _handleReconnect);
   }
 }

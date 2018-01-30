@@ -76,10 +76,10 @@ class ClientCall<Q, R> implements Response {
   static Map<String, String> _sanitizeMetadata(Map<String, String> metadata) {
     final sanitizedMetadata = <String, String>{};
     metadata.forEach((String key, String value) {
-      final lowerCaseKey = key.toLowerCase();
+      final lowerCaseKey = key.trim().toLowerCase();
       if (!lowerCaseKey.startsWith(':') &&
           !_reservedHeaders.contains(lowerCaseKey)) {
-        sanitizedMetadata[lowerCaseKey] = value;
+        sanitizedMetadata[lowerCaseKey] = value.trim();
       }
     });
     return sanitizedMetadata;
@@ -92,8 +92,17 @@ class ClientCall<Q, R> implements Response {
       _sendRequest(connection, _sanitizeMetadata(options.metadata));
     } else {
       final metadata = new Map.from(options.metadata);
+      String audience;
+      if (connection.options.isSecure) {
+        final port = connection.port != 443 ? ':${connection.port}' : '';
+        final lastSlashPos = path.lastIndexOf('/');
+        final audiencePath =
+            lastSlashPos == -1 ? path : path.substring(0, lastSlashPos);
+        audience = 'https://${connection.authority}$port$audiencePath';
+      }
       Future
-          .forEach(options.metadataProviders, (provider) => provider(metadata))
+          .forEach(options.metadataProviders,
+              (provider) => provider(metadata, audience))
           .then((_) => _sendRequest(connection, _sanitizeMetadata(metadata)))
           .catchError(_onMetadataProviderError);
     }
@@ -104,7 +113,12 @@ class ClientCall<Q, R> implements Response {
   }
 
   void _sendRequest(ClientConnection connection, Map<String, String> metadata) {
-    _stream = connection.makeRequest(path, options.timeout, metadata);
+    try {
+      _stream = connection.makeRequest(path, options.timeout, metadata);
+    } catch (e) {
+      _terminateWithError(new GrpcError.unavailable('Error making call: $e'));
+      return;
+    }
     _requestSubscription = _requests
         .map(_method.requestSerializer)
         .map(GrpcHttpEncoder.frame)

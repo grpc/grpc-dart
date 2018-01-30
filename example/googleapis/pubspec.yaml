@@ -8,7 +8,6 @@ environment:
 
 dependencies:
   async: ^1.13.3
-  googleapis_auth: ^0.2.3+6
   grpc:
     path: ../../
   protobuf: ^0.7.0
