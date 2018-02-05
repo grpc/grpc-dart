@@ -98,10 +98,12 @@ class ChannelOptions {
 /// metadata to the RPC. If the function returns a [Future], the RPC will await
 /// completion of the returned [Future] before transmitting the request.
 ///
-/// The metadata provider is given the current metadata map (possibly modified
-/// by previous metadata providers), and is expected to modify the map before
-/// returning or before completing the returned [Future].
-typedef FutureOr<Null> MetadataProvider(Map<String, String> metadata);
+/// The metadata provider is given the current [metadata] map (possibly modified
+/// by previous metadata providers) and the [uri] that is being called, and is
+/// expected to modify the map before returning or before completing the
+/// returned [Future].
+typedef FutureOr<Null> MetadataProvider(
+    Map<String, String> metadata, String uri);
 
 /// Runtime options for an RPC.
 class CallOptions {

@@ -328,30 +328,22 @@ void main() {
     );
   }
 
-  test('Reconnect on connection error', () async {
+  test('Connection errors are reported', () async {
     final connectionStates = <ConnectionState>[];
     harness.connection.connectionError = 'Connection error';
-    int failureCount = 0;
     harness.connection.onStateChanged = (connection) {
       final state = connection.state;
       connectionStates.add(state);
-      if (state == ConnectionState.transientFailure) failureCount++;
-      if (failureCount == 2) {
-        harness.connection.connectionError = null;
-      }
     };
 
-    await makeUnaryCall();
+    final expectedException =
+        new GrpcError.unavailable('Error connecting: Connection error');
 
-    expect(failureCount, 2);
-    expect(connectionStates, [
-      ConnectionState.connecting,
-      ConnectionState.transientFailure,
-      ConnectionState.connecting,
-      ConnectionState.transientFailure,
-      ConnectionState.connecting,
-      ConnectionState.ready
-    ]);
+    await harness.expectThrows(
+        harness.client.unary(dummyValue), expectedException);
+
+    expect(
+        connectionStates, [ConnectionState.connecting, ConnectionState.idle]);
   });
 
   test('Connections time out if idle', () async {

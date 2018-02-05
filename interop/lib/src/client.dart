@@ -19,7 +19,6 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:grpc/grpc.dart';
-
 import 'package:interop/src/generated/empty.pb.dart';
 import 'package:interop/src/generated/messages.pb.dart';
 import 'package:interop/src/generated/test.pbgrpc.dart';
@@ -40,6 +39,17 @@ class Tester {
   String defaultServiceAccount;
   String oauthScope;
   String serviceAccountKeyFile;
+  String _serviceAccountJson;
+
+  String get serviceAccountJson =>
+      _serviceAccountJson ??= _readServiceAccountJson();
+
+  String _readServiceAccountJson() {
+    if (serviceAccountKeyFile?.isEmpty ?? true) {
+      throw 'Service account key file not specified.';
+    }
+    return new File(serviceAccountKeyFile).readAsStringSync();
+  }
 
   void set serverPort(String value) {
     if (value == null) {
@@ -61,6 +71,7 @@ class Tester {
     _useTestCA = value == 'true';
   }
 
+  ClientChannel channel;
   TestServiceClient client;
   UnimplementedServiceClient unimplementedServiceClient;
 
@@ -90,7 +101,7 @@ class Tester {
       options = new ChannelOptions.insecure();
     }
 
-    final channel =
+    channel =
         new ClientChannel(serverHost, port: _serverPort, options: options);
     client = new TestServiceClient(channel);
     unimplementedServiceClient = new UnimplementedServiceClient(channel);
@@ -124,6 +135,8 @@ class Tester {
         return emptyStream();
       case 'compute_engine_creds':
         return computeEngineCreds();
+      case 'service_account_creds':
+        return serviceAccountCreds();
       case 'jwt_token_creds':
         return jwtTokenCreds();
       case 'oauth2_auth_token':
@@ -458,7 +471,8 @@ class Tester {
         responses.map((response) => response.payload.body.length).toList();
 
     if (!new ListEquality().equals(responseLengths, expectedResponses)) {
-      throw 'Incorrect response lengths received (${responseLengths.join(', ')} != ${expectedResponses.join(', ')})';
+      throw 'Incorrect response lengths received (${responseLengths.join(
+          ', ')} != ${expectedResponses.join(', ')})';
     }
   }
 
@@ -571,7 +585,8 @@ class Tester {
     requests.add(index);
     await for (final response in responses) {
       if (index >= expectedResponses.length) {
-        throw 'Received too many responses. $index > ${expectedResponses.length}.';
+        throw 'Received too many responses. $index > ${expectedResponses
+            .length}.';
       }
       if (response.payload.body.length != expectedResponses[index]) {
         throw 'Response mismatch for response $index: '
@@ -638,6 +653,62 @@ class Tester {
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response message against a golden response
   Future<Null> computeEngineCreds() async {
+    final credentials = new ComputeEngineAuthenticator();
+    final clientWithCredentials =
+        new TestServiceClient(channel, options: credentials.toCallOptions);
+
+    final response = await _sendSimpleRequestForAuth(clientWithCredentials,
+        fillUsername: true, fillOauthScope: true);
+
+    final user = response.username;
+    final oauth = response.oauthScope;
+
+    if (user?.isEmpty ?? true) {
+      throw 'Username not received.';
+    }
+    if (oauth?.isEmpty ?? true) {
+      throw 'OAuth scope not received.';
+    }
+
+    if (!serviceAccountJson.contains(user)) {
+      throw 'Got user name $user, which is not a substring of $serviceAccountJson';
+    }
+    if (!oauthScope.contains(oauth)) {
+      throw 'Got OAuth scope $oauth, which is not a substring of $oauthScope';
+    }
+  }
+
+  /// This test is only for cloud-to-prod path.
+  ///
+  /// This test verifies unary calls succeed in sending messages while using
+  /// service account credentials.
+  ///
+  /// Test caller should set flag `--service_account_key_file` with the path to
+  /// json key file downloaded from https://console.developers.google.com.
+  /// Alternately, if using a usable auth implementation, she may specify the
+  /// file location in the environment variable GOOGLE_APPLICATION_CREDENTIALS.
+  ///
+  /// Procedure:
+  /// 1. Client configures the channel to use ServiceAccountCredentials
+  /// 2. Client calls UnaryCall with:
+  ///     {
+  ///       response_size: 314159
+  ///       payload: {
+  ///         body: 271828 bytes of zeros
+  ///       }
+  ///       fill_username: true
+  ///     }
+  ///
+  /// Client asserts:
+  /// * call was successful
+  /// * received SimpleResponse.username is not empty and is in the json key
+  ///   file used by the auth library. The client can optionally check the
+  ///   username matches the email address in the key file or equals the value
+  ///   of `--default_service_account` flag.
+  /// * response payload body is 314159 bytes in size
+  /// * clients are free to assert that the response payload body contents are
+  ///   zero and comparing the entire response message against a golden response
+  Future<Null> serviceAccountCreds() async {
     throw 'Not implemented';
   }
 
@@ -672,7 +743,19 @@ class Tester {
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response message against a golden response
   Future<Null> jwtTokenCreds() async {
-    throw 'Not implemented';
+    final credentials = new JwtServiceAccountAuthenticator(serviceAccountJson);
+    final clientWithCredentials =
+        new TestServiceClient(channel, options: credentials.toCallOptions);
+
+    final response = await _sendSimpleRequestForAuth(clientWithCredentials,
+        fillUsername: true);
+    final username = response.username;
+    if (username?.isEmpty ?? true) {
+      throw 'Username not received.';
+    }
+    if (!serviceAccountJson.contains(username)) {
+      throw 'Got user name $username, which is not a substring of $serviceAccountJson';
+    }
   }
 
   /// This test is only for cloud-to-prod path and some implementations may run
@@ -715,7 +798,30 @@ class Tester {
   ///   check against the json key file or GCE default service account email.
   /// * received SimpleResponse.oauth_scope is in `--oauth_scope`
   Future<Null> oauth2AuthToken() async {
-    throw 'Not implemented';
+    final credentials =
+        new ServiceAccountAuthenticator(serviceAccountJson, [oauthScope]);
+    final clientWithCredentials =
+        new TestServiceClient(channel, options: credentials.toCallOptions);
+
+    final response = await _sendSimpleRequestForAuth(clientWithCredentials,
+        fillUsername: true, fillOauthScope: true);
+
+    final user = response.username;
+    final oauth = response.oauthScope;
+
+    if (user?.isEmpty ?? true) {
+      throw 'Username not received.';
+    }
+    if (oauth?.isEmpty ?? true) {
+      throw 'OAuth scope not received.';
+    }
+
+    if (!serviceAccountJson.contains(user)) {
+      throw 'Got user name $user, which is not a substring of $serviceAccountJson';
+    }
+    if (!oauthScope.contains(oauth)) {
+      throw 'Got OAuth scope $oauth, which is not a substring of $oauthScope';
+    }
   }
 
   /// Similar to the other auth tests, this test is only for cloud-to-prod path.
@@ -747,7 +853,49 @@ class Tester {
   ///   file used by the auth library. The client can optionally check the
   ///   username matches the email address in the key file.
   Future<Null> perRpcCreds() async {
-    throw 'Not implemented';
+    final credentials =
+        new ServiceAccountAuthenticator(serviceAccountJson, [oauthScope]);
+
+    final response = await _sendSimpleRequestForAuth(client,
+        fillUsername: true,
+        fillOauthScope: true,
+        options: credentials.toCallOptions);
+
+    final user = response.username;
+    final oauth = response.oauthScope;
+
+    if (user?.isEmpty ?? true) {
+      throw 'Username not received.';
+    }
+    if (oauth?.isEmpty ?? true) {
+      throw 'OAuth scope not received.';
+    }
+
+    if (!serviceAccountJson.contains(user)) {
+      throw 'Got user name $user, which is not a substring of $serviceAccountJson';
+    }
+    if (!oauthScope.contains(oauth)) {
+      throw 'Got OAuth scope $oauth, which is not a substring of $oauthScope';
+    }
+  }
+
+  Future<SimpleResponse> _sendSimpleRequestForAuth(TestServiceClient client,
+      {bool fillUsername: false,
+      bool fillOauthScope: false,
+      CallOptions options}) async {
+    final payload = new Payload()..body = new Uint8List(271828);
+    final request = new SimpleRequest()
+      ..responseSize = 314159
+      ..payload = payload
+      ..fillUsername = fillUsername
+      ..fillOauthScope = fillOauthScope;
+    final response = await client.unaryCall(request, options: options);
+    final receivedBytes = response.payload.body.length;
+    if (receivedBytes != 314159) {
+      throw 'Response payload mismatch. Expected 314159 bytes, '
+          'got ${receivedBytes}.';
+    }
+    return response;
   }
 
   /// This test verifies that custom metadata in either binary or ascii format

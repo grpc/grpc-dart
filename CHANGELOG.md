@@ -1,3 +1,10 @@
+## 0.3.0 - 2018-02-05
+
+* Added authentication metadata providers, optimized for use with Google Cloud.
+* Added service URI to metadata provider API, needed for Json Web Token generation.
+* Added authenticated cloud-to-prod interoperability tests.
+* Refactored connection logic to throw initial connection errors early.
+
 ## 0.2.1 - 2018-01-18
 
 * Updated generated code in examples using latest protoc compiler plugin.
