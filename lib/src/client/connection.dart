@@ -19,7 +19,6 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
-import '../shared/status.dart';
 import '../shared/timeout.dart';
 
 import 'call.dart';
