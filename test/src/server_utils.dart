@@ -94,7 +94,7 @@ class TestServerStream extends ServerTransportStream {
   }
 
   @override
-  set onTerminated(void value(int)) {}
+  set onTerminated(void value(int x)) {}
 
   @override
   bool get canPush => true;
