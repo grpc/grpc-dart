@@ -670,8 +670,8 @@ class Tester {
       throw 'OAuth scope not received.';
     }
 
-    if (!serviceAccountJson.contains(user)) {
-      throw 'Got user name $user, which is not a substring of $serviceAccountJson';
+    if (user != defaultServiceAccount) {
+      throw 'Got user name $user, wanted $defaultServiceAccount';
     }
     if (!oauthScope.contains(oauth)) {
       throw 'Got OAuth scope $oauth, which is not a substring of $oauthScope';
