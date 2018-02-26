@@ -15,7 +15,6 @@
 
 import 'dart:async';
 
-import 'dart:io';
 import 'package:grpc/src/shared/streams.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
@@ -47,11 +46,9 @@ class FakeConnection extends ClientConnection {
 Duration testBackoff(Duration lastBackoff) => const Duration(milliseconds: 1);
 
 class FakeChannelOptions implements ChannelOptions {
-  String authority;
+  ChannelCredentials credentials = const ChannelCredentials.secure();
   Duration idleTimeout = const Duration(seconds: 1);
   BackoffStrategy backoffStrategy = testBackoff;
-  SecurityContext securityContext = new SecurityContext();
-  bool isSecure = true;
 }
 
 class FakeChannel extends ClientChannel {

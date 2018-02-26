@@ -40,8 +40,7 @@ Future<Null> main() async {
       serviceAccountFile.readAsStringSync(), scopes);
   final projectId = authenticator.projectId;
 
-  final channel = new ClientChannel('logging.googleapis.com',
-      options: const ChannelOptions.secure());
+  final channel = new ClientChannel('logging.googleapis.com');
   final logging =
       new LoggingServiceV2Client(channel, options: authenticator.toCallOptions);
 

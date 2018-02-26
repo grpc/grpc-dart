@@ -25,8 +25,9 @@ import 'generated/route_guide.pbgrpc.dart';
 class RouteGuideService extends RouteGuideServiceBase {
   final routeNotes = <Point, List<RouteNote>>{};
 
-  // getFeature handler. Returns a feature for the given location.
-  // The [context] object provides access to client metadata, cancellation, etc.
+  /// GetFeature handler. Returns a feature for the given location.
+  /// The [context] object provides access to client metadata, cancellation, etc.
+  @override
   Future<Feature> getFeature(grpc.ServiceCall call, Point request) async {
     return featuresDb.firstWhere((f) => f.location == request,
         orElse: () => new Feature()..location = request);
@@ -53,8 +54,9 @@ class RouteGuideService extends RouteGuideServiceBase {
         p.latitude <= r.hi.latitude;
   }
 
-  /// listFeatures handler. Returns a stream of features within the given
+  /// ListFeatures handler. Returns a stream of features within the given
   /// rectangle.
+  @override
   Stream<Feature> listFeatures(
       grpc.ServiceCall call, Rectangle request) async* {
     final normalizedRectangle = _normalize(request);
@@ -68,9 +70,10 @@ class RouteGuideService extends RouteGuideServiceBase {
     }
   }
 
-  /// recordRoute handler. Gets a stream of points, and responds with statistics
+  /// RecordRoute handler. Gets a stream of points, and responds with statistics
   /// about the "trip": number of points, number of known features visited,
   /// total distance traveled, and total time spent.
+  @override
   Future<RouteSummary> recordRoute(
       grpc.ServiceCall call, Stream<Point> request) async {
     int pointCount = 0;
@@ -100,9 +103,10 @@ class RouteGuideService extends RouteGuideServiceBase {
       ..elapsedTime = timer.elapsed.inSeconds;
   }
 
-  /// routeChat handler. Receives a stream of message/location pairs, and
+  /// RouteChat handler. Receives a stream of message/location pairs, and
   /// responds with a stream of all previous messages at each of those
   /// locations.
+  @override
   Stream<RouteNote> routeChat(
       grpc.ServiceCall call, Stream<RouteNote> request) async* {
     await for (var note in request) {
