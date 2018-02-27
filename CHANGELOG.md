@@ -1,3 +1,7 @@
+## 0.3.1 - 2018-02-27
+
+* Split out TLS credentials to a separate class.
+
 ## 0.3.0 - 2018-02-05
 
 * Added authentication metadata providers, optimized for use with Google Cloud.
