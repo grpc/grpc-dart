@@ -39,43 +39,40 @@ Duration defaultBackoffStrategy(Duration lastBackoff) {
   return nextBackoff < _maxBackoff ? nextBackoff : _maxBackoff;
 }
 
-/// Options controlling how connections are made on a [ClientChannel].
-class ChannelOptions {
+/// Handler for checking certificates that fail validation. If this handler
+/// returns `true`, the bad certificate is allowed, and the TLS handshake can
+/// continue. If the handler returns `false`, the TLS handshake fails, and the
+/// connection is aborted.
+typedef bool BadCertificateHandler(X509Certificate certificate, String host);
+
+/// Bad certificate handler that disables all certificate checks.
+/// DO NOT USE IN PRODUCTION!
+/// Can be used during development and testing to accept self-signed
+/// certificates, etc.
+bool allowBadCertificates(X509Certificate certificate, String host) => true;
+
+/// Options controlling TLS security settings on a [ClientChannel].
+class ChannelCredentials {
   final bool isSecure;
   final List<int> _certificateBytes;
   final String _certificatePassword;
   final String authority;
-  final Duration idleTimeout;
-  final BackoffStrategy backoffStrategy;
+  final BadCertificateHandler onBadCertificate;
 
-  const ChannelOptions._(
-      this.isSecure,
-      this._certificateBytes,
-      this._certificatePassword,
-      this.authority,
-      Duration idleTimeout,
-      BackoffStrategy backoffStrategy)
-      : this.idleTimeout = idleTimeout ?? defaultIdleTimeout,
-        this.backoffStrategy = backoffStrategy ?? defaultBackoffStrategy;
+  const ChannelCredentials._(this.isSecure, this._certificateBytes,
+      this._certificatePassword, this.authority, this.onBadCertificate);
 
   /// Disable TLS. RPCs are sent in clear text.
-  const ChannelOptions.insecure(
-      {Duration idleTimeout,
-      BackoffStrategy backoffStrategy =
-          defaultBackoffStrategy}) // Remove when dart-lang/sdk#31066 is fixed.
-      : this._(false, null, null, null, idleTimeout, backoffStrategy);
+  const ChannelCredentials.insecure() : this._(false, null, null, null, null);
 
-  /// Enable TLS and optionally specify the [certificate]s to trust. If
+  /// Enable TLS and optionally specify the [certificates] to trust. If
   /// [certificates] is not provided, the default trust store is used.
-  const ChannelOptions.secure(
-      {List<int> certificate,
+  const ChannelCredentials.secure(
+      {List<int> certificates,
       String password,
       String authority,
-      Duration idleTimeout,
-      BackoffStrategy backoffStrategy =
-          defaultBackoffStrategy}) // Remove when dart-lang/sdk#31066 is fixed.
-      : this._(true, certificate, password, authority, idleTimeout,
-            backoffStrategy);
+      BadCertificateHandler onBadCertificate})
+      : this._(true, certificates, password, authority, onBadCertificate);
 
   SecurityContext get securityContext {
     if (!isSecure) return null;
@@ -90,6 +87,22 @@ class ChannelOptions {
     }
     return context;
   }
+}
+
+/// Options controlling how connections are made on a [ClientChannel].
+class ChannelOptions {
+  final ChannelCredentials credentials;
+  final Duration idleTimeout;
+  final BackoffStrategy backoffStrategy;
+
+  const ChannelOptions(
+      {ChannelCredentials credentials,
+      Duration idleTimeout,
+      BackoffStrategy backoffStrategy =
+          defaultBackoffStrategy}) // Remove when dart-lang/sdk#31066 is fixed.
+      : this.credentials = credentials ?? const ChannelCredentials.secure(),
+        this.idleTimeout = idleTimeout ?? defaultIdleTimeout,
+        this.backoffStrategy = backoffStrategy ?? defaultBackoffStrategy;
 }
 
 /// Provides per-RPC metadata.

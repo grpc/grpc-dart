@@ -93,7 +93,7 @@ class ClientCall<Q, R> implements Response {
     } else {
       final metadata = new Map.from(options.metadata);
       String audience;
-      if (connection.options.isSecure) {
+      if (connection.options.credentials.isSecure) {
         final port = connection.port != 443 ? ':${connection.port}' : '';
         final lastSlashPos = path.lastIndexOf('/');
         final audiencePath =

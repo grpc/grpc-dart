@@ -100,7 +100,7 @@ class Server {
     new ServerHandler(lookupService, stream).handle();
   }
 
-  Future<Null> shutdown() {
+  Future<Null> shutdown() async {
     final done = _connections.map((connection) => connection.finish()).toList();
     if (_insecureServer != null) {
       done.add(_insecureServer.close());
@@ -108,6 +108,6 @@ class Server {
     if (_secureServer != null) {
       done.add(_secureServer.close());
     }
-    return Future.wait(done);
+    await Future.wait(done);
   }
 }

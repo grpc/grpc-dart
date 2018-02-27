@@ -38,7 +38,7 @@ class ClientChannel {
   bool _isShutdown = false;
 
   ClientChannel(this.host,
-      {this.port = 443, this.options = const ChannelOptions.secure()});
+      {this.port = 443, this.options = const ChannelOptions()});
 
   /// Shuts down this channel.
   ///

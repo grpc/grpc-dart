@@ -28,7 +28,9 @@ class Client {
 
   Future<Null> main(List<String> args) async {
     channel = new ClientChannel('127.0.0.1',
-        port: 8080, options: const ChannelOptions.insecure());
+        port: 8080,
+        options: const ChannelOptions(
+            credentials: const ChannelCredentials.insecure()));
     stub = new RouteGuideClient(channel,
         options: new CallOptions(timeout: new Duration(seconds: 30)));
     // Run all of the demos in order.

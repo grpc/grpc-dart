@@ -89,18 +89,19 @@ class Tester {
   }
 
   Future<Null> runTest() async {
-    ChannelOptions options;
+    ChannelCredentials credentials;
     if (_useTls) {
       List<int> trustedRoot;
       if (_useTestCA) {
         trustedRoot = new File('ca.pem').readAsBytesSync();
       }
-      options = new ChannelOptions.secure(
-          certificate: trustedRoot, authority: serverHostOverride);
+      credentials = new ChannelCredentials.secure(
+          certificates: trustedRoot, authority: serverHostOverride);
     } else {
-      options = new ChannelOptions.insecure();
+      credentials = const ChannelCredentials.insecure();
     }
 
+    final options = new ChannelOptions(credentials: credentials);
     channel =
         new ClientChannel(serverHost, port: _serverPort, options: options);
     client = new TestServiceClient(channel);

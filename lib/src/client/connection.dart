@@ -96,11 +96,11 @@ class ClientConnection {
     return headers;
   }
 
-  String get authority => options.authority ?? host;
+  String get authority => options.credentials.authority ?? host;
 
   @visibleForTesting
   Future<ClientTransportConnection> connectTransport() async {
-    final securityContext = options.securityContext;
+    final securityContext = options.credentials.securityContext;
 
     var socket = await Socket.connect(host, port);
     if (_state == ConnectionState.shutdown) {
@@ -109,7 +109,9 @@ class ClientConnection {
     }
     if (securityContext != null) {
       socket = await SecureSocket.secure(socket,
-          host: authority, context: securityContext);
+          host: authority,
+          context: securityContext,
+          onBadCertificate: _validateBadCertificate);
       if (_state == ConnectionState.shutdown) {
         socket.destroy();
         throw 'Shutting down';
@@ -117,6 +119,12 @@ class ClientConnection {
     }
     socket.done.then(_handleSocketClosed);
     return new ClientTransportConnection.viaSocket(socket);
+  }
+
+  bool _validateBadCertificate(X509Certificate certificate) {
+    final validator = options.credentials.onBadCertificate;
+    if (validator == null) return false;
+    return validator(certificate, authority);
   }
 
   void _connect() {
@@ -153,8 +161,8 @@ class ClientConnection {
 
   ClientTransportStream makeRequest(
       String path, Duration timeout, Map<String, String> metadata) {
-    final headers =
-        createCallHeaders(options.isSecure, authority, path, timeout, metadata);
+    final headers = createCallHeaders(
+        options.credentials.isSecure, authority, path, timeout, metadata);
     return _transport.makeRequest(headers);
   }
 
