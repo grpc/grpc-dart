@@ -91,9 +91,9 @@ class ChannelCredentials {
 
 /// Options controlling how connections are made on a [ClientChannel].
 class ChannelOptions {
+  final ChannelCredentials credentials;
   final Duration idleTimeout;
   final BackoffStrategy backoffStrategy;
-  final ChannelCredentials credentials;
 
   const ChannelOptions(
       {ChannelCredentials credentials,
