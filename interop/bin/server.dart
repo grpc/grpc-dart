@@ -127,17 +127,16 @@ Future<Null> main(List<String> args) async {
 
   final services = [new TestService()];
 
-  Server server;
+  final server = new Server(services);
+
+  ServerTlsCredentials tlsCredentials;
   if (arguments['use_tls'] == 'true') {
     final certificate = new File(arguments['tls_cert_file']).readAsBytes();
     final privateKey = new File(arguments['tls_key_file']).readAsBytes();
-    server = new Server.secure(services,
+    tlsCredentials = new ServerTlsCredentials(
         certificate: await certificate,
-        privateKey: await privateKey,
-        port: port);
-  } else {
-    server = new Server.insecure(services, port: port);
+        privateKey: await privateKey);
   }
-  await server.serve();
-  print('Server listening on port $port...');
+  await server.serve(port: port, security: tlsCredentials);
+  print('Server listening on port ${server.port}...');
 }

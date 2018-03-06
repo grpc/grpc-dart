@@ -110,7 +110,7 @@ class ServerHarness {
   Server server;
 
   ServerHarness() {
-    server = new Server.insecure([service]);
+    server = new Server([service]);
   }
 
   static ServiceMethod<int, int> createMethod(String name,

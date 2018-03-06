@@ -23,40 +23,23 @@ import '../shared/security.dart';
 import 'handler.dart';
 import 'service.dart';
 
-/// A gRPC server.
-///
-/// Listens for incoming RPCs, dispatching them to the right [Service] handler.
-class Server {
-  final Map<String, Service> _services = {};
-  final int port;
-  final SecurityContext _securityContext;
+class ServerTlsCredentials {
+  final List<int> certificate;
+  final String certificatePassword;
+  final List<int> privateKey;
+  final String privateKeyPassword;
 
-  ServerSocket _insecureServer;
-  SecureServerSocket _secureServer;
-  final _connections = <ServerTransportConnection>[];
-
-  Server._(List<Service> services, this.port, this._securityContext) {
-    for (final service in services) {
-      _services[service.$name] = service;
-    }
-  }
-
-  /// Create a server for the given [services] with no transport security,
-  /// listening on [port].
-  factory Server.insecure(List<Service> services, {int port}) {
-    return new Server._(services, port ?? 80, null);
-  }
-
-  /// Create a secure server for the given [services], listening on [port].
+  /// TLS credentials for a [Server].
   ///
   /// If the [certificate] or [privateKey] is encrypted, the password must also
   /// be provided.
-  factory Server.secure(List<Service> services,
-      {List<int> certificate,
-      String certificatePassword,
-      List<int> privateKey,
-      String privateKeyPassword,
-      int port}) {
+  ServerTlsCredentials(
+      {this.certificate,
+      this.certificatePassword,
+      this.privateKey,
+      this.privateKeyPassword});
+
+  SecurityContext get securityContext {
     final context = createSecurityContext(true);
     if (privateKey != null) {
       context.usePrivateKeyBytes(privateKey, password: privateKeyPassword);
@@ -65,20 +48,52 @@ class Server {
       context.useCertificateChainBytes(certificate,
           password: certificatePassword);
     }
-    return new Server._(services, port ?? 443, context);
+    return context;
+  }
+}
+
+/// A gRPC server.
+///
+/// Listens for incoming RPCs, dispatching them to the right [Service] handler.
+class Server {
+  final Map<String, Service> _services = {};
+
+  ServerSocket _insecureServer;
+  SecureServerSocket _secureServer;
+  final _connections = <ServerTransportConnection>[];
+
+  /// Create a server for the given [services].
+  Server(List<Service> services) {
+    for (final service in services) {
+      _services[service.$name] = service;
+    }
+  }
+
+  /// Return the port that the server is listening on.
+  ///
+  /// This is only valid when the server is serving, ie. after [serve] has been
+  /// called, and before [shutdown] is called.
+  int get port {
+    if (_secureServer != null) return _secureServer.port;
+    if (_insecureServer != null) return _insecureServer.port;
+    return null;
   }
 
   Service lookupService(String service) => _services[service];
 
-  Future<Null> serve() async {
+  Future<Null> serve(
+      {dynamic address, int port, ServerTlsCredentials security}) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
     Stream<Socket> server;
-    if (_securityContext != null) {
-      _secureServer =
-          await SecureServerSocket.bind('0.0.0.0', port, _securityContext);
+    if (security != null) {
+      _secureServer = await SecureServerSocket.bind(
+          address ?? InternetAddress.ANY_IP_V4,
+          port ?? 443,
+          security.securityContext);
       server = _secureServer;
     } else {
-      _insecureServer = await ServerSocket.bind('0.0.0.0', port);
+      _insecureServer = await ServerSocket.bind(
+          address ?? InternetAddress.ANY_IP_V4, port ?? 80);
       server = _insecureServer;
     }
     server.listen((socket) {
@@ -109,5 +124,7 @@ class Server {
       done.add(_secureServer.close());
     }
     await Future.wait(done);
+    _insecureServer = null;
+    _secureServer = null;
   }
 }
