@@ -1,7 +1,7 @@
 The [Dart](https://www.dartlang.org/) implementation of
 [gRPC](https://grpc.io/): A high performance, open source, general RPC framework that puts mobile and HTTP/2 first.
 
-[![Build Status](https://travis-ci.org/dart-lang/grpc-dart.svg?branch=master)](https://travis-ci.org/dart-lang/grpc-dart)
+[![Build Status](https://travis-ci.org/grpc/grpc-dart.svg?branch=master)](https://travis-ci.org/grpc/grpc-dart)
 
 # Usage
 
