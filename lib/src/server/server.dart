@@ -69,10 +69,8 @@ class Server {
     }
   }
 
-  /// Return the port that the server is listening on.
-  ///
-  /// This is only valid when the server is serving, ie. after [serve] has been
-  /// called, and before [shutdown] is called.
+  /// The port that the server is listening on, or `null` if the server is not
+  /// active.
   int get port {
     if (_secureServer != null) return _secureServer.port;
     if (_insecureServer != null) return _insecureServer.port;
