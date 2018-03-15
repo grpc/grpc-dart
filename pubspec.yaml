@@ -8,7 +8,7 @@ environment:
   sdk: '>=1.24.3 <2.0.0'
 
 dependencies:
-  async: ^1.13.3
+  async: '>=1.13.3 <3.0.0'
   googleapis_auth: ^0.2.3+6
   meta: ^1.0.5
   http: ^0.11.3+16
