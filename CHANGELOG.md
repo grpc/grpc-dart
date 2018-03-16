@@ -1,3 +1,9 @@
+## 0.4.0 - 2018-03-16
+
+* Moved TLS credentials for server into a separate class.
+* Added support for specifying the address for the server, and support for
+  serving on an ephemeral port.
+
 ## 0.3.1 - 2018-02-27
 
 * Split out TLS credentials to a separate class.
