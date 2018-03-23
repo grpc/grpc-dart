@@ -31,16 +31,19 @@ If you have made changes to the message or service definition in
 you will need to have protoc version 3.0.0 or higher and the Dart protoc plugin
 version 0.7.9 or higher on your PATH.
 
-To install protoc, see the instructions on
-[the Protocol Buffers website](https://developers.google.com/protocol-buffers/).
+To install protoc with Dart support, take these steps:
 
-The easiest way to get the Dart protoc plugin is by running
+1. Install the `protoc` matching your development operating system from
+[the Protocol Buffers releases page](https://github.com/google/protobuf/releases)
+(e.g. `protoc-3.5.1-osx-x86_64.zip` for macOS).
 
-```sh
-$ pub global activate protoc_plugin
-```
+1. Get the Dart protoc plugin is by running
 
-and follow the directions to add `~/.pub-cache/bin` to your PATH, if you haven't
+    ```sh
+    $ pub global activate protoc_plugin
+    ```
+
+1. Add `~/.pub-cache/bin` to your PATH, if you haven't
 already done so.
 
 You can now regenerate the Dart files by running
