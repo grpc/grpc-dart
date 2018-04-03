@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   args: ^0.13.0
-  async: ^1.13.3
+  async: '>=1.13.3 <3.0.0'
   collection: ^1.14.2
   grpc:
     path: ../

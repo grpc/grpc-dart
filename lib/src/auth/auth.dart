@@ -29,7 +29,7 @@ abstract class BaseAuthenticator {
   auth.AccessToken _accessToken;
   String _lastUri;
 
-  Future authenticate(Map<String, String> metadata, String uri) async {
+  Future<Null> authenticate(Map<String, String> metadata, String uri) async {
     if (uri == null) {
       throw new GrpcError.unauthenticated(
           'Credentials require secure transport.');
@@ -54,13 +54,13 @@ abstract class BaseAuthenticator {
 
   CallOptions get toCallOptions => new CallOptions(providers: [authenticate]);
 
-  Future obtainAccessCredentials(String uri);
+  Future<Null> obtainAccessCredentials(String uri);
 }
 
 abstract class HttpBasedAuthenticator extends BaseAuthenticator {
-  Future _call;
+  Future<Null> _call;
 
-  Future obtainAccessCredentials(String uri) {
+  Future<Null> obtainAccessCredentials(String uri) {
     if (_call == null) {
       final authClient = new http.Client();
       _call = obtainCredentialsWithClient(authClient, uri).then((credentials) {
@@ -114,7 +114,7 @@ class JwtServiceAccountAuthenticator extends BaseAuthenticator {
 
   String get projectId => _projectId;
 
-  Future obtainAccessCredentials(String uri) async {
+  Future<Null> obtainAccessCredentials(String uri) async {
     _accessToken = _jwtTokenFor(_serviceAccountCredentials, _keyId, uri);
   }
 }

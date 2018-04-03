@@ -113,53 +113,13 @@ class ServerHandler extends ServiceCall {
     _startStreamingRequest();
   }
 
-  Future<T> _toSingleFuture<T>(Stream<T> stream) {
-    T _ensureOnlyOneRequest(T previous, T element) {
-      if (previous != null) {
-        throw new GrpcError.unimplemented('More than one request received');
-      }
-      return element;
-    }
-
-    T _ensureOneRequest(T value) {
-      if (value == null)
-        throw new GrpcError.unimplemented('No requests received');
-      return value;
-    }
-
-    final future =
-        stream.fold(null, _ensureOnlyOneRequest).then(_ensureOneRequest);
-    // Make sure errors on the future aren't unhandled, but return the original
-    // future so the request handler can also get the error.
-    future.catchError((_) {});
-    return future;
-  }
-
   void _startStreamingRequest() {
     _incomingSubscription.pause();
-    _requests = new StreamController(
-        onListen: _incomingSubscription.resume,
-        onPause: _incomingSubscription.pause,
-        onResume: _incomingSubscription.resume);
+    _requests = _descriptor.createRequestStream(_incomingSubscription);
     _incomingSubscription.onData(_onDataActive);
 
     _service.$onMetadata(this);
-    if (_descriptor.streamingResponse) {
-      if (_descriptor.streamingRequest) {
-        _responses = _descriptor.handler(this, _requests.stream);
-      } else {
-        _responses =
-            _descriptor.handler(this, _toSingleFuture(_requests.stream));
-      }
-    } else {
-      Future response;
-      if (_descriptor.streamingRequest) {
-        response = _descriptor.handler(this, _requests.stream);
-      } else {
-        response = _descriptor.handler(this, _toSingleFuture(_requests.stream));
-      }
-      _responses = response.asStream();
-    }
+    _responses = _descriptor.handle(this, _requests.stream);
 
     _responseSubscription = _responses.listen(_onResponse,
         onError: _onResponseError,
@@ -213,7 +173,7 @@ class ServerHandler extends ServiceCall {
     final data = message as GrpcData;
     var request;
     try {
-      request = _descriptor.requestDeserializer(data.data);
+      request = _descriptor.deserialize(data.data);
     } catch (error) {
       final grpcError =
           new GrpcError.internal('Error deserializing request: $error');
@@ -231,7 +191,7 @@ class ServerHandler extends ServiceCall {
 
   void _onResponse(response) {
     try {
-      final bytes = _descriptor.responseSerializer(response);
+      final bytes = _descriptor.serialize(response);
       if (!_headersSent) {
         sendHeaders();
       }
