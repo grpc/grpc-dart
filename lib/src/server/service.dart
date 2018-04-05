@@ -39,7 +39,7 @@ class ServiceMethod<Q, R> {
       this.responseSerializer);
 
   StreamController<Q> createRequestStream(StreamSubscription incoming) =>
-      new StreamController(
+      new StreamController<Q>(
           onListen: incoming.resume,
           onPause: incoming.pause,
           onResume: incoming.resume);

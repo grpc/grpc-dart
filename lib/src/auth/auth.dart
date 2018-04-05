@@ -72,11 +72,13 @@ abstract class HttpBasedAuthenticator extends BaseAuthenticator {
     return _call;
   }
 
-  Future obtainCredentialsWithClient(http.Client client, String uri);
+  Future<auth.AccessCredentials> obtainCredentialsWithClient(
+      http.Client client, String uri);
 }
 
 class ComputeEngineAuthenticator extends HttpBasedAuthenticator {
-  Future obtainCredentialsWithClient(http.Client client, String uri) =>
+  Future<auth.AccessCredentials> obtainCredentialsWithClient(
+          http.Client client, String uri) =>
       auth.obtainAccessCredentialsViaMetadataServer(client);
 }
 
@@ -94,7 +96,8 @@ class ServiceAccountAuthenticator extends HttpBasedAuthenticator {
 
   String get projectId => _projectId;
 
-  Future obtainCredentialsWithClient(http.Client client, String uri) =>
+  Future<auth.AccessCredentials> obtainCredentialsWithClient(
+          http.Client client, String uri) =>
       auth.obtainAccessCredentialsViaServiceAccount(
           _serviceAccountCredentials, _scopes, client);
 }
