@@ -37,7 +37,7 @@ To install protoc with Dart support, take these steps:
 [the Protocol Buffers releases page](https://github.com/google/protobuf/releases)
 (e.g. `protoc-3.5.1-osx-x86_64.zip` for macOS).
 
-1. Get the Dart protoc plugin is by running
+1. Get the Dart protoc plugin by running
 
     ```sh
     $ pub global activate protoc_plugin
