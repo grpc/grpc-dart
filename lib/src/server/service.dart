@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
+
+import '../shared/status.dart';
 import 'call.dart';
 
 /// Definition of a gRPC service method.
@@ -34,6 +37,56 @@ class ServiceMethod<Q, R> {
       this.streamingResponse,
       this.requestDeserializer,
       this.responseSerializer);
+
+  StreamController<Q> createRequestStream(StreamSubscription incoming) =>
+      new StreamController<Q>(
+          onListen: incoming.resume,
+          onPause: incoming.pause,
+          onResume: incoming.resume);
+
+  Q deserialize(List<int> data) => requestDeserializer(data);
+
+  List<int> serialize(dynamic response) => responseSerializer(response as R);
+
+  Stream<R> handle(ServiceCall call, Stream<Q> requests) {
+    if (streamingResponse) {
+      if (streamingRequest) {
+        return handler(call, requests);
+      } else {
+        return handler(call, _toSingleFuture(requests));
+      }
+    } else {
+      Future<R> response;
+      if (streamingRequest) {
+        response = handler(call, requests);
+      } else {
+        response = handler(call, _toSingleFuture(requests));
+      }
+      return response.asStream();
+    }
+  }
+
+  Future<Q> _toSingleFuture(Stream<Q> stream) {
+    Q _ensureOnlyOneRequest(Q previous, Q element) {
+      if (previous != null) {
+        throw new GrpcError.unimplemented('More than one request received');
+      }
+      return element;
+    }
+
+    Q _ensureOneRequest(Q value) {
+      if (value == null)
+        throw new GrpcError.unimplemented('No requests received');
+      return value;
+    }
+
+    final future =
+        stream.fold(null, _ensureOnlyOneRequest).then(_ensureOneRequest);
+    // Make sure errors on the future aren't unhandled, but return the original
+    // future so the request handler can also get the error.
+    future.catchError((_) {});
+    return future;
+  }
 }
 
 /// Definition of a gRPC service.

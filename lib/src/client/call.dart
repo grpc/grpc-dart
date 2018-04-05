@@ -91,7 +91,7 @@ class ClientCall<Q, R> implements Response {
     if (options.metadataProviders.isEmpty) {
       _sendRequest(connection, _sanitizeMetadata(options.metadata));
     } else {
-      final metadata = new Map.from(options.metadata);
+      final metadata = new Map<String, String>.from(options.metadata);
       String audience;
       if (connection.options.credentials.isSecure) {
         final port = connection.port != 443 ? ':${connection.port}' : '';
