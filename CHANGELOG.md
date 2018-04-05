@@ -1,3 +1,7 @@
+## 0.4.1 - 2018-04-04
+
+* Fixes for supporting Dart 2.
+
 ## 0.4.0 - 2018-03-16
 
 * Moved TLS credentials for server into a separate class.
