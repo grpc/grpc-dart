@@ -136,7 +136,6 @@ Future<Null> main(List<String> args) async {
     tlsCredentials = new ServerTlsCredentials(
         certificate: await certificate, privateKey: await privateKey);
   }
-  await server.serve(
-      address: 'localhost', port: port, security: tlsCredentials);
+  await server.serve(port: port, security: tlsCredentials);
   print('Server listening on port ${server.port}...');
 }

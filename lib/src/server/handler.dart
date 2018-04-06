@@ -246,26 +246,26 @@ class ServerHandler extends ServiceCall {
   void sendTrailers({int status = 0, String message}) {
     _timeoutTimer?.cancel();
 
-    final outogingTrailersMap = <String, String>{};
+    final outgoingTrailersMap = <String, String>{};
     if (!_headersSent) {
       // TODO(jakobr): Should come from package:http2?
-      outogingTrailersMap[':status'] = '200';
-      outogingTrailersMap['content-type'] = 'application/grpc';
+      outgoingTrailersMap[':status'] = '200';
+      outgoingTrailersMap['content-type'] = 'application/grpc';
 
       _customHeaders..remove(':status')..remove('content-type');
-      outogingTrailersMap.addAll(_customHeaders);
+      outgoingTrailersMap.addAll(_customHeaders);
       _customHeaders = null;
     }
     _customTrailers..remove(':status')..remove('content-type');
-    outogingTrailersMap.addAll(_customTrailers);
+    outgoingTrailersMap.addAll(_customTrailers);
     _customTrailers = null;
-    outogingTrailersMap['grpc-status'] = status.toString();
+    outgoingTrailersMap['grpc-status'] = status.toString();
     if (message != null) {
-      outogingTrailersMap['grpc-message'] = message;
+      outgoingTrailersMap['grpc-message'] = message;
     }
 
     final outgoingTrailers = <Header>[];
-    outogingTrailersMap.forEach(
+    outgoingTrailersMap.forEach(
         (key, value) => outgoingTrailers.add(new Header.ascii(key, value)));
     _stream.sendHeaders(outgoingTrailers, endStream: true);
     // We're done!
