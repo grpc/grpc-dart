@@ -5,8 +5,7 @@ The [Dart](https://www.dartlang.org/) implementation of
 
 # Usage
 
-See the [route_guide example](example/route_guide/) for an example on how to
-use this package.
+See the [Dart gRPC Quickstart](https://grpc.io/docs/quickstart/dart.html).
 
 # Status
 
