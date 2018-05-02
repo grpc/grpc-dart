@@ -8,8 +8,8 @@ import 'dart:async';
 
 import 'package:grpc/grpc.dart';
 
-import '../../protobuf/empty.pb.dart' as $google$protobuf;
 import 'logging.pb.dart';
+import '../../protobuf/empty.pb.dart' as $google$protobuf;
 export 'logging.pb.dart';
 
 class LoggingServiceV2Client extends Client {
@@ -132,28 +132,28 @@ abstract class LoggingServiceV2ServiceBase extends Service {
   }
 
   Future<$google$protobuf.Empty> deleteLog_Pre(
-      ServiceCall call, Future<DeleteLogRequest> request) async {
+      ServiceCall call, Future request) async {
     return deleteLog(call, await request);
   }
 
   Future<WriteLogEntriesResponse> writeLogEntries_Pre(
-      ServiceCall call, Future<WriteLogEntriesRequest> request) async {
+      ServiceCall call, Future request) async {
     return writeLogEntries(call, await request);
   }
 
   Future<ListLogEntriesResponse> listLogEntries_Pre(
-      ServiceCall call, Future<ListLogEntriesRequest> request) async {
+      ServiceCall call, Future request) async {
     return listLogEntries(call, await request);
   }
 
   Future<ListMonitoredResourceDescriptorsResponse>
-      listMonitoredResourceDescriptors_Pre(ServiceCall call,
-          Future<ListMonitoredResourceDescriptorsRequest> request) async {
+      listMonitoredResourceDescriptors_Pre(
+          ServiceCall call, Future request) async {
     return listMonitoredResourceDescriptors(call, await request);
   }
 
   Future<ListLogsResponse> listLogs_Pre(
-      ServiceCall call, Future<ListLogsRequest> request) async {
+      ServiceCall call, Future request) async {
     return listLogs(call, await request);
   }
 

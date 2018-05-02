@@ -507,7 +507,7 @@ class StreamingOutputCallRequest extends GeneratedMessage {
   bool hasResponseType() => $_has(0);
   void clearResponseType() => clearField(1);
 
-  List<ResponseParameters> get responseParameters => $_getN(1);
+  List<ResponseParameters> get responseParameters => $_getList(1);
 
   Payload get payload => $_getN(2);
   set payload(Payload v) {
@@ -649,7 +649,7 @@ class ReconnectInfo extends GeneratedMessage {
   bool hasPassed() => $_has(0);
   void clearPassed() => clearField(1);
 
-  List<int> get backoffMs => $_getN(1);
+  List<int> get backoffMs => $_getList(1);
 }
 
 class _ReadonlyReconnectInfo extends ReconnectInfo with ReadonlyMessageMixin {}
