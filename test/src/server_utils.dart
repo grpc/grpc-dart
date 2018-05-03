@@ -78,6 +78,19 @@ class TestService extends Service {
   }
 }
 
+class TestInterceptor extends Interceptor {
+  GrpcError Function(ServiceCall call) unaryHandler;
+
+  @override
+  GrpcError handle(ServiceCall call) {
+    if (unaryHandler == null) {
+      return null;
+    }
+
+    return unaryHandler(call);
+  }
+}
+
 class TestServerStream extends ServerTransportStream {
   final Stream<StreamMessage> incomingMessages;
   final StreamSink<StreamMessage> outgoingMessages;
@@ -107,10 +120,12 @@ class ServerHarness {
   final toServer = new StreamController<StreamMessage>();
   final fromServer = new StreamController<StreamMessage>();
   final service = new TestService();
+  final interceptor = new TestInterceptor();
+
   Server server;
 
   ServerHarness() {
-    server = new Server([service]);
+    server = new Server([service], interceptors: [interceptor]);
   }
 
   static ServiceMethod<int, int> createMethod(String name,

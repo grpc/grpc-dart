@@ -277,4 +277,18 @@ void main() {
       ..toServer.close();
     await harness.fromServer.done;
   });
+
+  test('Server returns error if interceptor blocks request', () async {
+    GrpcError interceptorHandler(ServiceCall call) {
+      return new GrpcError.unauthenticated('Request is unauthenticated');
+    }
+
+    harness
+      ..interceptor.unaryHandler = interceptorHandler
+      ..expectErrorResponse(
+          StatusCode.unauthenticated, 'Request is unauthenticated')
+      ..sendRequestHeader('/Test/Unary');
+
+    await harness.fromServer.done;
+  });
 }
