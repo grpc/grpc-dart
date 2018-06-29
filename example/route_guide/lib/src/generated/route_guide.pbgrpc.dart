@@ -92,14 +92,12 @@ abstract class RouteGuideServiceBase extends Service {
         (RouteNote value) => value.writeToBuffer()));
   }
 
-  Future<Feature> getFeature_Pre(
-      ServiceCall call, Future<Point> request) async {
+  Future<Feature> getFeature_Pre(ServiceCall call, Future request) async {
     return getFeature(call, await request);
   }
 
-  Stream<Feature> listFeatures_Pre(
-      ServiceCall call, Future<Rectangle> request) async* {
-    yield* listFeatures(call, await request);
+  Stream<Feature> listFeatures_Pre(ServiceCall call, Future request) async* {
+    yield* listFeatures(call, (await request) as Rectangle);
   }
 
   Future<Feature> getFeature(ServiceCall call, Point request);
