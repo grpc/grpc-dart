@@ -73,12 +73,12 @@ abstract class MetadataServiceBase extends Service {
         (Number value) => value.writeToBuffer()));
   }
 
-  Future<Record> echo_Pre(ServiceCall call, Future request) async {
+  Future<Record> echo_Pre(ServiceCall call, Future<Record> request) async {
     return echo(call, await request);
   }
 
-  Stream<Number> fibonacci_Pre(ServiceCall call, Future request) async* {
-    yield* fibonacci(call, (await request) as Empty);
+  Stream<Number> fibonacci_Pre(ServiceCall call, Future<Empty> request) async* {
+    yield* fibonacci(call, await request);
   }
 
   Future<Record> echo(ServiceCall call, Record request);

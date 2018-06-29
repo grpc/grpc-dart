@@ -71,7 +71,7 @@ class MonitoredResourceDescriptor extends GeneratedMessage {
   bool hasDescription() => $_has(2);
   void clearDescription() => clearField(3);
 
-  List<LabelDescriptor> get labels => $_getList(3);
+  List<LabelDescriptor> get labels => $_getN(3);
 
   String get name => $_getS(4, '');
   set name(String v) {
@@ -179,7 +179,7 @@ class MonitoredResource extends GeneratedMessage {
   bool hasType() => $_has(0);
   void clearType() => clearField(1);
 
-  List<MonitoredResource_LabelsEntry> get labels => $_getList(1);
+  List<MonitoredResource_LabelsEntry> get labels => $_getN(1);
 }
 
 class _ReadonlyMonitoredResource extends MonitoredResource

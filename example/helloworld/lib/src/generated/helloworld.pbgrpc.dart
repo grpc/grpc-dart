@@ -41,7 +41,8 @@ abstract class GreeterServiceBase extends Service {
         (HelloReply value) => value.writeToBuffer()));
   }
 
-  Future<HelloReply> sayHello_Pre(ServiceCall call, Future request) async {
+  Future<HelloReply> sayHello_Pre(
+      ServiceCall call, Future<HelloRequest> request) async {
     return sayHello(call, await request);
   }
 

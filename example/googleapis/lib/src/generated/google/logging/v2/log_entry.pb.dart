@@ -202,7 +202,7 @@ class LogEntry extends GeneratedMessage {
   bool hasSeverity() => $_has(7);
   void clearSeverity() => clearField(10);
 
-  List<LogEntry_LabelsEntry> get labels => $_getList(8);
+  List<LogEntry_LabelsEntry> get labels => $_getN(8);
 
   String get logName => $_getS(9, '');
   set logName(String v) {

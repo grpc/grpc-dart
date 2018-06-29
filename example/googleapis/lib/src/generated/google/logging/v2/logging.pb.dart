@@ -10,8 +10,8 @@ import 'dart:core' show int, bool, double, String, List, override;
 import 'package:protobuf/protobuf.dart';
 
 import '../../api/monitored_resource.pb.dart' as $google$api;
-import 'log_entry.pb.dart';
 import '../../rpc/status.pb.dart' as $google$rpc;
+import 'log_entry.pb.dart';
 
 class DeleteLogRequest extends GeneratedMessage {
   static final BuilderInfo _i = new BuilderInfo('DeleteLogRequest')
@@ -167,9 +167,9 @@ class WriteLogEntriesRequest extends GeneratedMessage {
   bool hasResource() => $_has(1);
   void clearResource() => clearField(2);
 
-  List<WriteLogEntriesRequest_LabelsEntry> get labels => $_getList(2);
+  List<WriteLogEntriesRequest_LabelsEntry> get labels => $_getN(2);
 
-  List<LogEntry> get entries => $_getList(3);
+  List<LogEntry> get entries => $_getN(3);
 
   bool get partialSuccess => $_get(4, false);
   set partialSuccess(bool v) {
@@ -312,7 +312,7 @@ class WriteLogEntriesPartialErrors extends GeneratedMessage {
   }
 
   List<WriteLogEntriesPartialErrors_LogEntryErrorsEntry> get logEntryErrors =>
-      $_getList(0);
+      $_getN(0);
 }
 
 class _ReadonlyWriteLogEntriesPartialErrors extends WriteLogEntriesPartialErrors
@@ -353,7 +353,7 @@ class ListLogEntriesRequest extends GeneratedMessage {
       checkItemFailed(v, 'ListLogEntriesRequest');
   }
 
-  List<String> get projectIds => $_getList(0);
+  List<String> get projectIds => $_getN(0);
 
   String get filter => $_getS(1, '');
   set filter(String v) {
@@ -387,7 +387,7 @@ class ListLogEntriesRequest extends GeneratedMessage {
   bool hasPageToken() => $_has(4);
   void clearPageToken() => clearField(5);
 
-  List<String> get resourceNames => $_getList(5);
+  List<String> get resourceNames => $_getN(5);
 }
 
 class _ReadonlyListLogEntriesRequest extends ListLogEntriesRequest
@@ -425,7 +425,7 @@ class ListLogEntriesResponse extends GeneratedMessage {
       checkItemFailed(v, 'ListLogEntriesResponse');
   }
 
-  List<LogEntry> get entries => $_getList(0);
+  List<LogEntry> get entries => $_getN(0);
 
   String get nextPageToken => $_getS(1, '');
   set nextPageToken(String v) {
@@ -532,7 +532,7 @@ class ListMonitoredResourceDescriptorsResponse extends GeneratedMessage {
   }
 
   List<$google$api.MonitoredResourceDescriptor> get resourceDescriptors =>
-      $_getList(0);
+      $_getN(0);
 
   String get nextPageToken => $_getS(1, '');
   set nextPageToken(String v) {
@@ -642,7 +642,7 @@ class ListLogsResponse extends GeneratedMessage {
   bool hasNextPageToken() => $_has(0);
   void clearNextPageToken() => clearField(2);
 
-  List<String> get logNames => $_getList(1);
+  List<String> get logNames => $_getN(1);
 }
 
 class _ReadonlyListLogsResponse extends ListLogsResponse

@@ -89,7 +89,7 @@ class Struct extends GeneratedMessage {
     if (v is! Struct) checkItemFailed(v, 'Struct');
   }
 
-  List<Struct_FieldsEntry> get fields => $_getList(0);
+  List<Struct_FieldsEntry> get fields => $_getN(0);
 }
 
 class _ReadonlyStruct extends Struct with ReadonlyMessageMixin {}
@@ -202,7 +202,7 @@ class ListValue extends GeneratedMessage {
     if (v is! ListValue) checkItemFailed(v, 'ListValue');
   }
 
-  List<Value> get values => $_getList(0);
+  List<Value> get values => $_getN(0);
 }
 
 class _ReadonlyListValue extends ListValue with ReadonlyMessageMixin {}

@@ -55,7 +55,7 @@ class Status extends GeneratedMessage {
   bool hasMessage() => $_has(1);
   void clearMessage() => clearField(2);
 
-  List<$google$protobuf.Any> get details => $_getList(2);
+  List<$google$protobuf.Any> get details => $_getN(2);
 }
 
 class _ReadonlyStatus extends Status with ReadonlyMessageMixin {}
