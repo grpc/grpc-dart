@@ -278,17 +278,59 @@ void main() {
     await harness.fromServer.done;
   });
 
-  test('Server returns error if interceptor blocks request', () async {
-    GrpcError interceptorHandler(ServiceCall call) {
-      return new GrpcError.unauthenticated('Request is unauthenticated');
-    }
+  group('Server with interceptor', () {
+    test('processes calls if interceptor allows request', () async {
+      const expectedRequest = 5;
+      const expectedResponse = 7;
+      Future<int> methodHandler(ServiceCall call, Future<int> request) async {
+        expect(await request, expectedRequest);
+        return expectedResponse;
+      }
 
-    harness
-      ..interceptor.unaryHandler = interceptorHandler
-      ..expectErrorResponse(
-          StatusCode.unauthenticated, 'Request is unauthenticated')
-      ..sendRequestHeader('/Test/Unary');
+      GrpcError interceptorHandler(ServiceCall call, ServiceMethod method) {
+        if (method.name == "Unary") {
+          return null;
+        }
+        return new GrpcError.unauthenticated('Request is unauthenticated');
+      }
 
-    await harness.fromServer.done;
+      harness
+        ..interceptor.handler = interceptorHandler
+        ..service.unaryHandler = methodHandler
+        ..runTest('/Test/Unary', [expectedRequest], [expectedResponse]);
+
+      await harness.fromServer.done;
+    });
+
+    test('returns error if interceptor blocks request', () async {
+      GrpcError interceptorHandler(ServiceCall call, ServiceMethod method) {
+        if (method.name == "Unary") {
+          return new GrpcError.unauthenticated('Request is unauthenticated');
+        }
+        return null;
+      }
+
+      harness
+        ..interceptor.handler = interceptorHandler
+        ..expectErrorResponse(
+            StatusCode.unauthenticated, 'Request is unauthenticated')
+        ..sendRequestHeader('/Test/Unary');
+
+      await harness.fromServer.done;
+    });
+
+    test('returns internal error if interceptor throws exception', () async {
+      GrpcError interceptorHandler(ServiceCall call, ServiceMethod method) {
+        throw new Exception('Reason is unknown');
+      }
+
+      harness
+        ..interceptor.handler = interceptorHandler
+        ..expectErrorResponse(
+            StatusCode.internal, 'Exception: Reason is unknown')
+        ..sendRequestHeader('/Test/Unary');
+
+      await harness.fromServer.done;
+    });
   });
 }

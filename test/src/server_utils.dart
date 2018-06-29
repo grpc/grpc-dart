@@ -78,16 +78,15 @@ class TestService extends Service {
   }
 }
 
-class TestInterceptor extends Interceptor {
-  GrpcError Function(ServiceCall call) unaryHandler;
+class TestInterceptor {
+  Interceptor handler;
 
-  @override
-  GrpcError handle(ServiceCall call) {
-    if (unaryHandler == null) {
+  GrpcError call(ServiceCall call, ServiceMethod method) {
+    if (handler == null) {
       return null;
     }
 
-    return unaryHandler(call);
+    return handler(call, method);
   }
 }
 
@@ -125,7 +124,7 @@ class ServerHarness {
   Server server;
 
   ServerHarness() {
-    server = new Server([service], interceptors: [interceptor]);
+    server = new Server(<Service>[service], <Interceptor>[interceptor]);
   }
 
   static ServiceMethod<int, int> createMethod(String name,

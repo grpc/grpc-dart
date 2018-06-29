@@ -29,7 +29,7 @@ import 'service.dart';
 class ServerHandler extends ServiceCall {
   final ServerTransportStream _stream;
   final Service Function(String service) _serviceLookup;
-  final Iterable<Interceptor> _interceptors;
+  final List<Interceptor> _interceptors;
 
   StreamSubscription<GrpcMessage> _incomingSubscription;
 
@@ -53,7 +53,8 @@ class ServerHandler extends ServiceCall {
   bool _isTimedOut = false;
   Timer _timeoutTimer;
 
-  ServerHandler(this._serviceLookup, this._stream, this._interceptors);
+  ServerHandler(this._serviceLookup, this._stream,
+      [this._interceptors = const <Interceptor>[]]);
 
   DateTime get deadline => _deadline;
 
@@ -129,11 +130,16 @@ class ServerHandler extends ServiceCall {
   }
 
   GrpcError _applyInterceptors() {
-    for (final interceptor in _interceptors) {
-      final error = interceptor.handle(this);
-      if (error != null) {
-        return error;
+    try {
+      for (final interceptor in _interceptors) {
+        final error = interceptor(this, this._descriptor);
+        if (error != null) {
+          return error;
+        }
       }
+    } catch (error) {
+      final grpcError = new GrpcError.internal(error.toString());
+      return grpcError;
     }
     return null;
   }

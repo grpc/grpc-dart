@@ -58,7 +58,7 @@ class ServerTlsCredentials {
 /// Listens for incoming RPCs, dispatching them to the right [Service] handler.
 class Server {
   final Map<String, Service> _services = {};
-  final Iterable<Interceptor> _interceptors;
+  final List<Interceptor> _interceptors;
 
   ServerSocket _insecureServer;
   SecureServerSocket _secureServer;
@@ -66,7 +66,7 @@ class Server {
 
   /// Create a server for the given [services].
   Server(List<Service> services,
-      {Iterable<Interceptor> interceptors = const []})
+      [List<Interceptor> interceptors = const <Interceptor>[]])
       : _interceptors = interceptors {
     for (final service in services) {
       _services[service.$name] = service;
