@@ -177,23 +177,23 @@ abstract class TestServiceBase extends Service {
         (StreamingOutputCallResponse value) => value.writeToBuffer()));
   }
 
-  Future<Empty> emptyCall_Pre(ServiceCall call, Future request) async {
+  Future<Empty> emptyCall_Pre(ServiceCall call, Future<Empty> request) async {
     return emptyCall(call, await request);
   }
 
-  Future<SimpleResponse> unaryCall_Pre(ServiceCall call, Future request) async {
+  Future<SimpleResponse> unaryCall_Pre(
+      ServiceCall call, Future<SimpleRequest> request) async {
     return unaryCall(call, await request);
   }
 
   Future<SimpleResponse> cacheableUnaryCall_Pre(
-      ServiceCall call, Future request) async {
+      ServiceCall call, Future<SimpleRequest> request) async {
     return cacheableUnaryCall(call, await request);
   }
 
   Stream<StreamingOutputCallResponse> streamingOutputCall_Pre(
-      ServiceCall call, Future request) async* {
-    yield* streamingOutputCall(
-        call, (await request) as StreamingOutputCallRequest);
+      ServiceCall call, Future<StreamingOutputCallRequest> request) async* {
+    yield* streamingOutputCall(call, await request);
   }
 
   Future<Empty> emptyCall(ServiceCall call, Empty request);
@@ -241,7 +241,8 @@ abstract class UnimplementedServiceBase extends Service {
         (Empty value) => value.writeToBuffer()));
   }
 
-  Future<Empty> unimplementedCall_Pre(ServiceCall call, Future request) async {
+  Future<Empty> unimplementedCall_Pre(
+      ServiceCall call, Future<Empty> request) async {
     return unimplementedCall(call, await request);
   }
 
@@ -294,11 +295,13 @@ abstract class ReconnectServiceBase extends Service {
         (ReconnectInfo value) => value.writeToBuffer()));
   }
 
-  Future<Empty> start_Pre(ServiceCall call, Future request) async {
+  Future<Empty> start_Pre(
+      ServiceCall call, Future<ReconnectParams> request) async {
     return start(call, await request);
   }
 
-  Future<ReconnectInfo> stop_Pre(ServiceCall call, Future request) async {
+  Future<ReconnectInfo> stop_Pre(
+      ServiceCall call, Future<Empty> request) async {
     return stop(call, await request);
   }
 
