@@ -123,8 +123,8 @@ class ClientHarness {
     stream = new MockStream();
     fromClient = new StreamController();
     toClient = new StreamController();
-    when(transport.makeRequest(any)).thenReturn(stream);
-    when(transport.onActiveStateChanged = captureAny).thenReturn(null);
+    when(transport.makeRequest(typed(any))).thenReturn(stream);
+    when(transport.onActiveStateChanged = typed(captureAny)).thenReturn(null);
     when(stream.outgoingMessages).thenReturn(fromClient.sink);
     when(stream.incomingMessages).thenAnswer((_) => toClient.stream);
     client = new TestClient(channel);
