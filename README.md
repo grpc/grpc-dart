@@ -22,3 +22,4 @@ This library requires Dart SDK version 1.24.3 or later.
 It currently supports the the [Flutter](https://flutter.io/) and
 [VM/Server](https://www.dartlang.org/dart-vm) platforms. The potential
 addition of gRPC-Web is tracked in [issue 43](https://github.com/grpc/grpc-dart/issues/43).
+.
