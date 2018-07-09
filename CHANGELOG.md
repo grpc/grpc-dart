@@ -4,6 +4,8 @@
 * Fixed tests to pass in Dart 2.
 * Added support for Interceptors ([issue #79](https://github.com/grpc/grpc-dart/issues/79)); thanks to [@mogol](https://github.com/mogol) for contributing!
 
+* Implemented interceptors.
+
 ## 0.4.1 - 2018-04-04
 
 * Fixes for supporting Dart 2.
