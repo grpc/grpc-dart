@@ -1,6 +1,7 @@
-## 0.5.0 - 2018-06-29
+## 0.5.0 - 2018-07-09
 
 * Implemented interceptors.
+* Dart 1 support dropped.
 
 ## 0.4.1 - 2018-04-04
 
