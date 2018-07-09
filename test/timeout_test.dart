@@ -121,7 +121,7 @@ void main() {
         Invoker.current.addOutstandingCallback();
         try {
           expect(call.isTimedOut, isFalse);
-          await new Future.delayed(new Duration(milliseconds: 1));
+          await new Future.delayed(new Duration(milliseconds: 2));
           expect(call.isTimedOut, isTrue);
           try {
             await request;
