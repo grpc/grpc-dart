@@ -1,4 +1,4 @@
-## 0.5.0 - 2018-06-10
+## 0.5.0 - 2018-07-10
 
 * Breaking change: The package now exclusively supports Dart 2.
 * Fixed tests to pass in Dart 2.
