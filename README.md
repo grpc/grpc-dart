@@ -17,7 +17,7 @@ please [open an issue](https://github.com/dart-lang/grpc-dart/issues).
 
 # Notes
 
-This library requires Dart SDK version 1.24.3 or later.
+This library requires Dart SDK version 2.0 or later.
 
 It currently supports the the [Flutter](https://flutter.io/) and
 [VM/Server](https://www.dartlang.org/dart-vm) platforms. The potential
