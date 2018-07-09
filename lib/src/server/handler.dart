@@ -22,12 +22,14 @@ import '../shared/streams.dart';
 import '../shared/timeout.dart';
 
 import 'call.dart';
+import 'interceptor.dart';
 import 'service.dart';
 
 /// Handles an incoming gRPC call.
 class ServerHandler extends ServiceCall {
   final ServerTransportStream _stream;
   final Service Function(String service) _serviceLookup;
+  final List<Interceptor> _interceptors;
 
   StreamSubscription<GrpcMessage> _incomingSubscription;
 
@@ -51,14 +53,19 @@ class ServerHandler extends ServiceCall {
   bool _isTimedOut = false;
   Timer _timeoutTimer;
 
-  ServerHandler(this._serviceLookup, this._stream);
+  ServerHandler(this._serviceLookup, this._stream,
+      [this._interceptors = const <Interceptor>[]]);
 
   DateTime get deadline => _deadline;
+
   bool get isCanceled => _isCanceled;
+
   bool get isTimedOut => _isTimedOut;
 
   Map<String, String> get clientMetadata => _clientMetadata;
+
   Map<String, String> get headers => _customHeaders;
+
   Map<String, String> get trailers => _customTrailers;
 
   void handle() {
@@ -103,6 +110,7 @@ class ServerHandler extends ServiceCall {
     }
     final serviceName = pathSegments[1];
     final methodName = pathSegments[2];
+
     _service = _serviceLookup(serviceName);
     _descriptor = _service?.$lookupMethod(methodName);
     if (_descriptor == null) {
@@ -110,7 +118,30 @@ class ServerHandler extends ServiceCall {
       _sinkIncoming();
       return;
     }
+
+    final error = _applyInterceptors();
+    if (error != null) {
+      _sendError(error);
+      _sinkIncoming();
+      return;
+    }
+
     _startStreamingRequest();
+  }
+
+  GrpcError _applyInterceptors() {
+    try {
+      for (final interceptor in _interceptors) {
+        final error = interceptor(this, this._descriptor);
+        if (error != null) {
+          return error;
+        }
+      }
+    } catch (error) {
+      final grpcError = new GrpcError.internal(error.toString());
+      return grpcError;
+    }
+    return null;
   }
 
   void _startStreamingRequest() {

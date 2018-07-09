@@ -21,6 +21,7 @@ import 'package:http2/transport.dart';
 import '../shared/security.dart';
 
 import 'handler.dart';
+import 'interceptor.dart';
 import 'service.dart';
 
 class ServerTlsCredentials {
@@ -57,13 +58,16 @@ class ServerTlsCredentials {
 /// Listens for incoming RPCs, dispatching them to the right [Service] handler.
 class Server {
   final Map<String, Service> _services = {};
+  final List<Interceptor> _interceptors;
 
   ServerSocket _insecureServer;
   SecureServerSocket _secureServer;
   final _connections = <ServerTransportConnection>[];
 
   /// Create a server for the given [services].
-  Server(List<Service> services) {
+  Server(List<Service> services,
+      [List<Interceptor> interceptors = const <Interceptor>[]])
+      : _interceptors = interceptors {
     for (final service in services) {
       _services[service.$name] = service;
     }
@@ -110,7 +114,7 @@ class Server {
   }
 
   void serveStream(ServerTransportStream stream) {
-    new ServerHandler(lookupService, stream).handle();
+    new ServerHandler(lookupService, stream, _interceptors).handle();
   }
 
   Future<Null> shutdown() async {

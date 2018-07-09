@@ -25,6 +25,7 @@ export 'src/client/options.dart';
 
 export 'src/server/call.dart';
 export 'src/server/handler.dart';
+export 'src/server/interceptor.dart';
 export 'src/server/server.dart';
 export 'src/server/service.dart';
 
