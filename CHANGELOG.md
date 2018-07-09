@@ -2,7 +2,7 @@
 
 * Breaking change: The package now exclusively support Dart.
 * Fixed tests to pass in Dart 2.
-* Added support for Interceptors ([issue #79](https://github.com/grpc/grpc-dart/issues/79)); thanks to [mogol@](https://github.com/mogol) for contributing!
+* Added support for Interceptors ([issue #79](https://github.com/grpc/grpc-dart/issues/79)); thanks to [@mogol](https://github.com/mogol) for contributing!
 
 ## 0.4.1 - 2018-04-04
 
