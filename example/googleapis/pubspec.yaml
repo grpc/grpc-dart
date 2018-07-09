@@ -1,6 +1,5 @@
 name: googleapis
 description: Dart gRPC client sample for Google APIs
-version: 0.0.1
 homepage: https://github.com/dart-lang/grpc-dart
 
 environment:
