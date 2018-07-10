@@ -1,6 +1,8 @@
-## 0.5.0 - 2018-06-29
+## 0.5.0 - 2018-07-10
 
-* Implemented interceptors.
+* Breaking change: The package now exclusively supports Dart 2.
+* Fixed tests to pass in Dart 2.
+* Added support for Interceptors ([issue #79](https://github.com/grpc/grpc-dart/issues/79)); thanks to [@mogol](https://github.com/mogol) for contributing!
 
 ## 0.4.1 - 2018-04-04
 
