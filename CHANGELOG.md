@@ -1,3 +1,7 @@
+## 0.6.0 - 2018-07-12
+
+* Dart SDK upper constraint raised to declare compatability with Dart 2.0 stable.
+
 ## 0.5.0 - 2018-07-10
 
 * Breaking change: The package now exclusively supports Dart 2.
