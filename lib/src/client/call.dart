@@ -100,8 +100,7 @@ class ClientCall<Q, R> implements Response {
             lastSlashPos == -1 ? path : path.substring(0, lastSlashPos);
         audience = 'https://${connection.authority}$port$audiencePath';
       }
-      Future
-          .forEach(options.metadataProviders,
+      Future.forEach(options.metadataProviders,
               (provider) => provider(metadata, audience))
           .then((_) => _sendRequest(connection, _sanitizeMetadata(metadata)))
           .catchError(_onMetadataProviderError);

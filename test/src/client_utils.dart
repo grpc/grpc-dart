@@ -123,7 +123,8 @@ class ClientHarness {
     stream = new MockStream();
     fromClient = new StreamController();
     toClient = new StreamController();
-    when(transport.makeRequest(any, endStream: anyNamed('endStream'))).thenReturn(stream);
+    when(transport.makeRequest(any, endStream: anyNamed('endStream')))
+        .thenReturn(stream);
     when(transport.onActiveStateChanged = captureAny).thenReturn(null);
     when(stream.outgoingMessages).thenReturn(fromClient.sink);
     when(stream.incomingMessages).thenAnswer((_) => toClient.stream);
@@ -152,9 +153,7 @@ class ClientHarness {
 
   void signalIdle() {
     final ActiveStateHandler handler =
-        verify(transport.onActiveStateChanged = captureAny)
-            .captured
-            .single;
+        verify(transport.onActiveStateChanged = captureAny).captured.single;
     expect(handler, isNotNull);
     handler(false);
   }

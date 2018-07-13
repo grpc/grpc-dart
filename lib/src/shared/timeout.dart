@@ -26,13 +26,13 @@ String toTimeoutString(Duration duration) {
   } else if (timeout < cutoff) {
     return '${timeout}u';
   } else if (timeout < cutoff * 1000) {
-    return '${timeout~/1000}m';
+    return '${timeout ~/ 1000}m';
   } else if (timeout < cutoff * 1000 * 1000) {
-    return '${timeout~/1000000}S';
+    return '${timeout ~/ 1000000}S';
   } else if (timeout < cutoff * 1000 * 1000 * 60) {
-    return '${timeout~/60000000}M';
+    return '${timeout ~/ 60000000}M';
   } else {
-    return '${timeout~/3600000000}H';
+    return '${timeout ~/ 3600000000}H';
   }
 }
 
