@@ -1,4 +1,4 @@
-## 0.6.1 - 2018-07-13
+## 0.6.0+1 - 2018-07-13
 
 * Updated implementation to use new Dart 2 APIs using
 [dart2_fix](https://github.com/dart-lang/dart2_fix).
