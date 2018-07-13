@@ -14,7 +14,7 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:math' show PI, atan2, cos, max, min, sin, sqrt;
+import 'dart:math' show atan2, cos, max, min, pi, sin, sqrt;
 
 import 'package:grpc/grpc.dart' as grpc;
 
@@ -120,7 +120,7 @@ class RouteGuideService extends RouteGuideServiceBase {
   /// This code was taken from http://www.movable-type.co.uk/scripts/latlong.html.
   double _distance(Point start, Point end) {
     double toRadians(double num) {
-      return num * PI / 180;
+      return num * pi / 180;
     }
 
     final lat1 = start.latitude / coordFactor;

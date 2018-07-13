@@ -27,7 +27,7 @@ int mockDecode(List<int> value) => value.length;
 
 Map<String, String> headersToMap(List<Header> headers) =>
     new Map.fromIterable(headers,
-        key: (h) => ASCII.decode(h.name), value: (h) => ASCII.decode(h.value));
+        key: (h) => ascii.decode(h.name), value: (h) => ascii.decode(h.value));
 
 void validateRequestHeaders(List<Header> headers,
     {String path,
@@ -80,20 +80,20 @@ void validateResponseTrailers(Map<String, String> trailers,
 
 GrpcMetadata validateMetadataMessage(StreamMessage message,
     {bool endStream = false}) {
-  expect(message, new isInstanceOf<HeadersStreamMessage>());
+  expect(message, new TypeMatcher<HeadersStreamMessage>());
   expect(message.endStream, endStream);
 
   final decoded = new GrpcHttpDecoder().convert(message);
-  expect(decoded, new isInstanceOf<GrpcMetadata>());
+  expect(decoded, new TypeMatcher<GrpcMetadata>());
   return decoded;
 }
 
 GrpcData validateDataMessage(StreamMessage message, {bool endStream = false}) {
-  expect(message, new isInstanceOf<DataStreamMessage>());
+  expect(message, new TypeMatcher<DataStreamMessage>());
   expect(message.endStream, endStream);
 
   final decoded = new GrpcHttpDecoder().convert(message);
-  expect(decoded, new isInstanceOf<GrpcData>());
+  expect(decoded, new TypeMatcher<GrpcData>());
   return decoded;
 }
 

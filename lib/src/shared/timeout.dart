@@ -41,8 +41,7 @@ String toTimeoutString(Duration duration) {
 Duration fromTimeoutString(String timeout) {
   if (timeout == null) return null;
   if (timeout.length < 2) return null;
-  final value =
-      int.parse(timeout.substring(0, timeout.length - 1), onError: (_) => null);
+  final value = int.tryParse(timeout.substring(0, timeout.length - 1));
   if (value == null) return null;
   switch (timeout[timeout.length - 1]) {
     case 'n':
