@@ -1,3 +1,7 @@
+## 0.6.1 - 2018-07-13
+
+* More fixes to update to Dart 2 core library APIs.
+
 ## 0.6.0+1 - 2018-07-13
 
 * Updated implementation to use new Dart 2 APIs using

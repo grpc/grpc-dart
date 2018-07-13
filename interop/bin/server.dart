@@ -61,7 +61,7 @@ class TestService extends TestServiceBase {
   Future<SimpleResponse> cacheableUnaryCall(
       ServiceCall call, SimpleRequest request) async {
     final timestamp = new DateTime.now().microsecond * 1000;
-    final responsePayload = new Payload()..body = ASCII.encode('$timestamp');
+    final responsePayload = new Payload()..body = ascii.encode('$timestamp');
     return new SimpleResponse()..payload = responsePayload;
   }
 
