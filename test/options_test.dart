@@ -18,7 +18,7 @@ import 'dart:io';
 import 'package:grpc/grpc.dart';
 import 'package:test/test.dart';
 
-const isTlsException = const isInstanceOf<TlsException>();
+const isTlsException = const TypeMatcher<TlsException>();
 
 void main() {
   group('Certificates', () {
