@@ -1,3 +1,8 @@
+## 0.6.1 - 2018-07-13
+
+* Updated implementation to use new Dart 2 APIs using
+[dart2_fix](https://github.com/dart-lang/dart2_fix).
+
 ## 0.6.0 - 2018-07-12
 
 * Dart SDK upper constraint raised to declare compatability with Dart 2.0 stable.
