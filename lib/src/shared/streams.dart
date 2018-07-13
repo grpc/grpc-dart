@@ -157,7 +157,7 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
     final headers = <String, String>{};
     for (var header in chunk.headers) {
       // TODO(jakobr): Handle duplicate header names correctly.
-      headers[ASCII.decode(header.name)] = ASCII.decode(header.value);
+      headers[ascii.decode(header.name)] = ascii.decode(header.value);
     }
     // TODO(jakobr): Check :status, go to error mode if not 2xx.
     _out.add(new GrpcMetadata(headers));

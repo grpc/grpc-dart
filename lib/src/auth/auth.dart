@@ -88,7 +88,7 @@ class ServiceAccountAuthenticator extends HttpBasedAuthenticator {
   String _projectId;
 
   ServiceAccountAuthenticator(String serviceAccountJson, this._scopes) {
-    final serviceAccount = JSON.decode(serviceAccountJson);
+    final serviceAccount = jsonDecode(serviceAccountJson);
     _serviceAccountCredentials =
         new auth.ServiceAccountCredentials.fromJson(serviceAccount);
     _projectId = serviceAccount['project_id'];
@@ -108,7 +108,7 @@ class JwtServiceAccountAuthenticator extends BaseAuthenticator {
   String _keyId;
 
   JwtServiceAccountAuthenticator(String serviceAccountJson) {
-    final serviceAccount = JSON.decode(serviceAccountJson);
+    final serviceAccount = jsonDecode(serviceAccountJson);
     _serviceAccountCredentials =
         new auth.ServiceAccountCredentials.fromJson(serviceAccount);
     _projectId = serviceAccount['project_id'];
@@ -148,13 +148,13 @@ auth.AccessToken _jwtTokenFor(
     claims['scope'] = scopes.join(' ');
   }
 
-  final headerBase64 = _base64url(ASCII.encode(JSON.encode(header)));
-  final claimsBase64 = _base64url(UTF8.encode(JSON.encode(claims)));
+  final headerBase64 = _base64url(ascii.encode(jsonEncode(header)));
+  final claimsBase64 = _base64url(utf8.encode(jsonEncode(claims)));
 
   final data = '$headerBase64.$claimsBase64';
 
   final signer = new RS256Signer(credentials.privateRSAKey);
-  final signature = signer.sign(ASCII.encode(data));
+  final signature = signer.sign(ascii.encode(data));
 
   final jwt = '$data.${_base64url(signature)}';
 
@@ -163,5 +163,5 @@ auth.AccessToken _jwtTokenFor(
 }
 
 String _base64url(List<int> bytes) {
-  return BASE64URL.encode(bytes).replaceAll('=', '');
+  return base64Url.encode(bytes).replaceAll('=', '');
 }
