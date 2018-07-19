@@ -24,7 +24,7 @@ final List<Feature> featuresDb = _readDatabase();
 
 List<Feature> _readDatabase() {
   final dbData = new File('data/route_guide_db.json').readAsStringSync();
-  final List db = JSON.decode(dbData);
+  final List db = jsonDecode(dbData);
   return db.map((entry) {
     final location = new Point()
       ..latitude = entry['location']['latitude']

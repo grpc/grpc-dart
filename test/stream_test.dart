@@ -50,7 +50,7 @@ void main() {
         expect(message.data, expected);
       }
 
-      expect(converted[0], new isInstanceOf<GrpcMetadata>());
+      expect(converted[0], new TypeMatcher<GrpcMetadata>());
       verify(converted[1], [48, 49, 50, 51, 52, 53, 54, 55, 56, 57]);
       verify(converted[2], [97, 98, 99, 100]);
       verify(converted[3], [65]);
@@ -132,11 +132,11 @@ void main() {
         ..close();
       final converted = await result;
       expect(converted.length, 3);
-      expect(converted[0], new isInstanceOf<GrpcMetadata>());
-      expect(converted[1], new isInstanceOf<GrpcData>());
+      expect(converted[0], new TypeMatcher<GrpcMetadata>());
+      expect(converted[1], new TypeMatcher<GrpcData>());
       var data = converted[1] as GrpcData;
       expect(data.data.length, 2);
-      expect(converted[2], new isInstanceOf<GrpcData>());
+      expect(converted[2], new TypeMatcher<GrpcData>());
       data = converted[2] as GrpcData;
       expect(data.data.length, 0);
     });
