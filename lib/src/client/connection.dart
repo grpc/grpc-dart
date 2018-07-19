@@ -92,7 +92,7 @@ class ClientConnection {
       _userAgent,
     ]);
     metadata?.forEach((key, value) {
-      headers.add(new Header(utf8.encode(key), utf8.encode(value)));
+      headers.add(new Header(ascii.encode(key), utf8.encode(value)));
     });
     return headers;
   }
