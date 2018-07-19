@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:http2/transport.dart';
@@ -78,8 +79,8 @@ class ClientConnection {
     final headers = [
       _methodPost,
       useTls ? _schemeHttps : _schemeHttp,
-      new Header.ascii(':path', path),
-      new Header.ascii(':authority', authority),
+      new Header(ascii.encode(':path'), utf8.encode(path)),
+      new Header(ascii.encode(':authority'), utf8.encode(authority)),
     ];
     if (timeout != null) {
       headers.add(new Header.ascii('grpc-timeout', toTimeoutString(timeout)));
@@ -91,7 +92,7 @@ class ClientConnection {
       _userAgent,
     ]);
     metadata?.forEach((key, value) {
-      headers.add(new Header.ascii(key, value));
+      headers.add(new Header(utf8.encode(key), utf8.encode(value)));
     });
     return headers;
   }
