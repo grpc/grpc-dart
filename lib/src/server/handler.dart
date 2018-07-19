@@ -269,8 +269,8 @@ class ServerHandler extends ServiceCall {
     _customHeaders = null;
 
     final outgoingHeaders = <Header>[];
-    outgoingHeadersMap.forEach(
-        (key, value) => outgoingHeaders.add(new Header(utf8.encode(key), utf8.encode(value))));
+    outgoingHeadersMap.forEach((key, value) =>
+        outgoingHeaders.add(new Header(utf8.encode(key), utf8.encode(value))));
     _stream.sendHeaders(outgoingHeaders);
     _headersSent = true;
   }
@@ -297,8 +297,8 @@ class ServerHandler extends ServiceCall {
     }
 
     final outgoingTrailers = <Header>[];
-    outgoingTrailersMap.forEach(
-        (key, value) => outgoingTrailers.add(new Header(utf8.encode(key), utf8.encode(value))));
+    outgoingTrailersMap.forEach((key, value) =>
+        outgoingTrailers.add(new Header(utf8.encode(key), utf8.encode(value))));
     _stream.sendHeaders(outgoingTrailers, endStream: true);
     // We're done!
     _cancelResponseSubscription();
