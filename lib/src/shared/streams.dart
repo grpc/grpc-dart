@@ -60,7 +60,7 @@ class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
     if (input is GrpcMetadata) {
       final headers = <Header>[];
       input.metadata.forEach((key, value) {
-        headers.add(new Header(utf8.encode(key), utf8.encode(value)));
+        headers.add(new Header(ascii.encode(key), utf8.encode(value)));
       });
       return new HeadersStreamMessage(headers);
     } else if (input is GrpcData) {
