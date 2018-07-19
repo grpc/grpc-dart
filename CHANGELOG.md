@@ -1,3 +1,7 @@
+## 0.6.2 - 2018-07-19
+
+* Allow for non-ascii header values.
+
 ## 0.6.1 - 2018-07-13
 
 * More fixes to update to Dart 2 core library APIs.
