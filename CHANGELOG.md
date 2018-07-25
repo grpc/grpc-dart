@@ -1,3 +1,7 @@
+## 0.6.3 - 2018-07-25
+
+* Make fields of `StatusCode` const rather than final.
+
 ## 0.6.2 - 2018-07-19
 
 * Allow for non-ascii header values.
