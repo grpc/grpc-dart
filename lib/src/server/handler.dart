@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:http2/transport.dart';
 
@@ -268,8 +269,8 @@ class ServerHandler extends ServiceCall {
     _customHeaders = null;
 
     final outgoingHeaders = <Header>[];
-    outgoingHeadersMap.forEach(
-        (key, value) => outgoingHeaders.add(new Header.ascii(key, value)));
+    outgoingHeadersMap.forEach((key, value) =>
+        outgoingHeaders.add(new Header(ascii.encode(key), utf8.encode(value))));
     _stream.sendHeaders(outgoingHeaders);
     _headersSent = true;
   }
@@ -296,8 +297,8 @@ class ServerHandler extends ServiceCall {
     }
 
     final outgoingTrailers = <Header>[];
-    outgoingTrailersMap.forEach(
-        (key, value) => outgoingTrailers.add(new Header.ascii(key, value)));
+    outgoingTrailersMap.forEach((key, value) =>
+        outgoingTrailers.add(new Header(ascii.encode(key), utf8.encode(value))));
     _stream.sendHeaders(outgoingTrailers, endStream: true);
     // We're done!
     _cancelResponseSubscription();
