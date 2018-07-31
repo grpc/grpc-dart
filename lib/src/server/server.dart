@@ -89,13 +89,13 @@ class Server {
     Stream<Socket> server;
     if (security != null) {
       _secureServer = await SecureServerSocket.bind(
-          address ?? InternetAddress.anyIPv4,
+          address ?? InternetAddress.ANY_IP_V4,
           port ?? 443,
           security.securityContext);
       server = _secureServer;
     } else {
       _insecureServer = await ServerSocket.bind(
-          address ?? InternetAddress.anyIPv4, port ?? 80);
+          address ?? InternetAddress.ANY_IP_V4, port ?? 80);
       server = _insecureServer;
     }
     server.listen((socket) {
