@@ -15,8 +15,6 @@
 
 import 'dart:async';
 
-import 'package:http2/transport.dart';
-
 import '../shared/status.dart';
 import '../shared/streams.dart';
 
@@ -24,6 +22,7 @@ import 'common.dart';
 import 'connection.dart';
 import 'method.dart';
 import 'options.dart';
+import 'transport/transport.dart';
 
 const _reservedHeaders = const [
   'content-type',
@@ -45,9 +44,9 @@ class ClientCall<Q, R> implements Response {
 
   Map<String, String> _headerMetadata;
 
-  TransportStream _stream;
+  GrpcTransportStream _stream;
   StreamController<R> _responses;
-  StreamSubscription<StreamMessage> _requestSubscription;
+  StreamSubscription<List<int>> _requestSubscription;
   StreamSubscription<GrpcMessage> _responseSubscription;
 
   bool isCancelled = false;
@@ -120,8 +119,6 @@ class ClientCall<Q, R> implements Response {
     }
     _requestSubscription = _requests
         .map(_method.requestSerializer)
-        .map(GrpcHttpEncoder.frame)
-        .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
         .handleError(_onRequestError)
         .listen(_stream.outgoingMessages.add,
             onError: _stream.outgoingMessages.addError,
@@ -143,13 +140,10 @@ class ClientCall<Q, R> implements Response {
     if (_stream != null &&
         _responses.hasListener &&
         _responseSubscription == null) {
-      _responseSubscription = _stream.incomingMessages
-          .transform(new GrpcHttpDecoder())
-          .transform(grpcDecompressor())
-          .listen(_onResponseData,
-              onError: _onResponseError,
-              onDone: _onResponseDone,
-              cancelOnError: true);
+      _responseSubscription = _stream.incomingMessages.listen(_onResponseData,
+          onError: _onResponseError,
+          onDone: _onResponseDone,
+          cancelOnError: true);
       if (_responses.isPaused) {
         _responseSubscription.pause();
       }

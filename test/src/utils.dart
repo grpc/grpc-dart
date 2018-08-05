@@ -29,26 +29,25 @@ Map<String, String> headersToMap(List<Header> headers) =>
     new Map.fromIterable(headers,
         key: (h) => ascii.decode(h.name), value: (h) => ascii.decode(h.value));
 
-void validateRequestHeaders(List<Header> headers,
+void validateRequestHeaders(Map<String, String> headers,
     {String path,
     String authority = 'test',
     String timeout,
     Map<String, String> customHeaders}) {
-  final headerMap = headersToMap(headers);
-  expect(headerMap[':method'], 'POST');
-  expect(headerMap[':scheme'], 'https');
+  expect(headers[':method'], 'POST');
+  expect(headers[':scheme'], 'https');
   if (path != null) {
-    expect(headerMap[':path'], path);
+    expect(headers[':path'], path);
   }
-  expect(headerMap[':authority'], authority);
-  expect(headerMap['grpc-timeout'], timeout);
-  expect(headerMap['content-type'], 'application/grpc');
-  expect(headerMap['te'], 'trailers');
-  expect(headerMap['grpc-accept-encoding'], 'identity');
-  expect(headerMap['user-agent'], startsWith('dart-grpc/'));
+  expect(headers[':authority'], authority);
+  expect(headers['grpc-timeout'], timeout);
+  expect(headers['content-type'], 'application/grpc');
+  expect(headers['te'], 'trailers');
+  expect(headers['grpc-accept-encoding'], 'identity');
+  expect(headers['user-agent'], startsWith('dart-grpc/'));
 
   customHeaders?.forEach((key, value) {
-    expect(headerMap[key], value);
+    expect(headers[key], value);
   });
 }
 

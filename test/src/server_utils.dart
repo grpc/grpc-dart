@@ -20,6 +20,7 @@ import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 
 import 'package:grpc/grpc.dart';
+import 'package:grpc/src/client/transport/http2_transport.dart';
 
 import 'utils.dart';
 
@@ -170,7 +171,7 @@ class ServerHarness {
       {String authority = 'test',
       Map<String, String> metadata,
       Duration timeout}) {
-    final headers = ClientConnection.createCallHeaders(
+    final headers = Http2Transport.createCallHeaders(
         true, authority, path, timeout, metadata);
     toServer.add(new HeadersStreamMessage(headers));
   }

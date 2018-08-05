@@ -76,8 +76,8 @@ void main() {
     });
 
     test('Calls time out if deadline is exceeded', () async {
-      void handleRequest(StreamMessage message) {
-        validateDataMessage(message);
+      void handleRequest(List<int> message) {
+        validateClientDataMessage(message);
         Invoker.current.addOutstandingCallback();
         new Future.delayed(new Duration(milliseconds: 1)).then((_) {
           try {

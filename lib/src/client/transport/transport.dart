@@ -13,24 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'src/auth/auth.dart';
+import 'dart:async';
 
-export 'src/client/call.dart';
-export 'src/client/channel.dart';
-export 'src/client/client.dart';
-export 'src/client/common.dart';
-export 'src/client/connection.dart';
-export 'src/client/method.dart';
-export 'src/client/options.dart';
-export 'src/client/transport/transport.dart';
+import '../../shared/streams.dart';
 
-export 'src/server/call.dart';
-export 'src/server/handler.dart';
-export 'src/server/interceptor.dart';
-export 'src/server/server.dart';
-export 'src/server/service.dart';
+typedef void SocketClosedHandler();
+typedef void ActiveStateHandler(bool isActive);
 
-export 'src/shared/security.dart';
-export 'src/shared/status.dart';
-export 'src/shared/streams.dart';
-export 'src/shared/timeout.dart';
+abstract class GrpcTransportStream {
+  int get id;
+  Stream<GrpcMessage> get incomingMessages;
+  StreamSink<List<int>> get outgoingMessages;
+
+  void terminate();
+}
+
+abstract class Transport {
+  ActiveStateHandler onActiveStateChanged;
+  SocketClosedHandler onSocketClosed;
+
+  Future<Null> connect();
+  GrpcTransportStream makeRequest(
+      String path, Duration timeout, Map<String, String> metadata);
+  Future<Null> finish();
+  Future<Null> terminate();
+}
