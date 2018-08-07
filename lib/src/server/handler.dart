@@ -299,7 +299,9 @@ class ServerHandler extends ServiceCall {
     final outgoingTrailers = <Header>[];
     outgoingTrailersMap.forEach((key, value) =>
         outgoingTrailers.add(new Header(ascii.encode(key), utf8.encode(value))));
-    _stream.sendHeaders(outgoingTrailers, endStream: true);
+    if (_stream.canPush) {
+      _stream.sendHeaders(outgoingTrailers, endStream: true);
+    }
     // We're done!
     _cancelResponseSubscription();
     _sinkIncoming();
