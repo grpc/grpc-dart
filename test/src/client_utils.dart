@@ -55,6 +55,7 @@ Duration testBackoff(Duration lastBackoff) => const Duration(milliseconds: 1);
 
 class FakeChannelOptions implements ChannelOptions {
   ChannelCredentials credentials = const ChannelCredentials.secure();
+  TransportType transportType = TransportType.Http2;
   Duration idleTimeout = const Duration(seconds: 1);
   BackoffStrategy backoffStrategy = testBackoff;
 }

@@ -22,6 +22,7 @@ import 'call.dart';
 import 'options.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
+import 'transport/web_transport.dart';
 
 enum ConnectionState {
   /// Actively trying to connect.
@@ -66,7 +67,16 @@ class ClientConnection {
 
   @visibleForTesting
   Future<Transport> connectTransport() async {
-    final transport = Http2Transport(host, port, options);
+    Transport transport;
+    switch(options.transportType) {
+      case TransportType.Http2:
+        transport = Http2Transport(host, port, options);
+        break;
+      case TransportType.GrpcWeb:
+        transport = GrpcWebTransport(host, port, options);
+        break;
+    }
+    
     await transport.connect();
     return transport;
   }

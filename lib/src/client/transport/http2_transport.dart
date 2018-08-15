@@ -22,7 +22,6 @@ import 'package:http2/transport.dart';
 import '../../shared/streams.dart';
 import '../../shared/timeout.dart';
 
-import '../call.dart';
 import '../options.dart';
 
 import 'transport.dart';

@@ -51,6 +51,13 @@ typedef bool BadCertificateHandler(X509Certificate certificate, String host);
 /// certificates, etc.
 bool allowBadCertificates(X509Certificate certificate, String host) => true;
 
+/// Transport type. Use Http2 for vm whenever possible, GrpcWeb in browsers that do
+/// not support Http2
+enum TransportType {
+  Http2,
+  GrpcWeb
+}
+
 /// Options controlling TLS security settings on a [ClientChannel].
 class ChannelCredentials {
   final bool isSecure;
@@ -93,15 +100,18 @@ class ChannelCredentials {
 class ChannelOptions {
   final ChannelCredentials credentials;
   final Duration idleTimeout;
+  final TransportType transportType;
   final BackoffStrategy backoffStrategy;
-
+  
   const ChannelOptions(
       {ChannelCredentials credentials,
       Duration idleTimeout,
+      TransportType transportType = TransportType.Http2,
       BackoffStrategy backoffStrategy =
           defaultBackoffStrategy}) // Remove when dart-lang/sdk#31066 is fixed.
       : this.credentials = credentials ?? const ChannelCredentials.secure(),
         this.idleTimeout = idleTimeout ?? defaultIdleTimeout,
+        this.transportType = transportType ?? transportType,
         this.backoffStrategy = backoffStrategy ?? defaultBackoffStrategy;
 }
 
