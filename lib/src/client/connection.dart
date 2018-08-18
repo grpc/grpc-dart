@@ -22,7 +22,8 @@ import 'call.dart';
 import 'options.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
-import 'transport/web_transport.dart';
+import 'transport/web_transport_stub.dart' 
+  if(dart.library.html) 'transport/web_transport.dart';
 
 enum ConnectionState {
   /// Actively trying to connect.

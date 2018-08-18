@@ -14,16 +14,16 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:html';
 import 'dart:typed_data';
 
 import '../../shared/streams.dart';
-import '../../shared/timeout.dart';
 
 import '../options.dart';
 
 import 'transport.dart';
+
+const int readyStateDone = 4;
 
 class GrpcWebTransportStream extends GrpcTransportStream {
   HttpRequest _request;
@@ -80,7 +80,10 @@ class GrpcWebTransportStream extends GrpcTransportStream {
 
         final byteSource = _request.response as ByteBuffer;
         _incomingProcessor.add(byteSource);
-        _incomingProcessor.close();
+
+        if(_request.readyState == readyStateDone) {
+          _incomingProcessor.close();
+        }
       }
     });
   }
