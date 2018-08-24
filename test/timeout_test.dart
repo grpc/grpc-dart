@@ -16,13 +16,11 @@
 import 'dart:async';
 
 import 'package:grpc/grpc.dart';
-import 'package:http2/transport.dart';
 import 'package:test/src/backend/invoker.dart';
 import 'package:test/test.dart';
 
 import 'src/client_utils.dart';
 import 'src/server_utils.dart';
-import 'src/utils.dart';
 
 void main() {
   const dummyValue = 0;

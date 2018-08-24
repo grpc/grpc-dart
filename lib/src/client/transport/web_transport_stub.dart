@@ -23,12 +23,12 @@ class GrpcWebTransport extends Transport {
   GrpcWebTransport(String host, int port, ChannelOptions options);
 
   @override
-  Future<Null> connect() {
+  Future<void> connect() {
     return Future.value();
   }
 
   @override
-  Future<Null> finish() {
+  Future<void> finish() {
     return Future.value();
   }
 
@@ -38,7 +38,7 @@ class GrpcWebTransport extends Transport {
   }
 
   @override
-  Future<Null> terminate() {
+  Future<void> terminate() {
     return Future.value();
   }
 

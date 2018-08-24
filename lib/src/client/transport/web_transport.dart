@@ -23,23 +23,16 @@ import '../options.dart';
 
 import 'transport.dart';
 
-const int readyStateDone = 4;
-
 class GrpcWebTransportStream extends GrpcTransportStream {
   HttpRequest _request;
+  int _requestBytesRead = 0;
   StreamController<ByteBuffer> _incomingProcessor;
   StreamController<GrpcMessage> _incomingMessages;
   StreamController<List<int>> _outgoingMessages;
 
-  // TODO: implement id
-  @override
-  int get id => null;
-
-  // TODO: implement incomingMessages
   @override
   Stream<GrpcMessage> get incomingMessages => _incomingMessages.stream;
 
-  // TODO: implement outgoingMessages
   @override
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
 
@@ -68,29 +61,46 @@ class GrpcWebTransportStream extends GrpcTransportStream {
         return;
       }
 
-      if(contentType.startsWith('application/grpc')) {
-        if(_request.response == null) {
-          return;
-        }
+      if(_request.readyState == HttpRequest.HEADERS_RECEIVED) {
+        if(contentType.startsWith('application/grpc')) {
+          if(_request.response == null) {
+            return;
+          }
 
-        // Force a metadata message with headers
-        final headers = new GrpcMetadata(_request.responseHeaders);
-        _incomingMessages.add(headers);
-
-
-        final byteSource = _request.response as ByteBuffer;
-        _incomingProcessor.add(byteSource);
-
-        if(_request.readyState == readyStateDone) {
-          _incomingProcessor.close();
+          // Force a metadata message with headers
+          final headers = new GrpcMetadata(_request.responseHeaders);
+          _incomingMessages.add(headers);
         }
       }
+
+      if(_request.readyState == HttpRequest.DONE) {
+        _incomingProcessor.close();
+        _outgoingMessages.close();
+      }
+    });
+
+    _request.onProgress.listen((data) {
+      final responeString = _request.response as String;
+      final rawText = (responeString).substring(_requestBytesRead);
+      _requestBytesRead = responeString.length;
+      final bytes = _stringToArrayBuffer(rawText);
+      _incomingProcessor.add(bytes);
     });
   }
 
   @override
   void terminate() {
     // TODO: implement terminate
+  }
+
+  ByteBuffer _stringToArrayBuffer(String str) {
+    final codePoints = new Uint8List(str.length);
+    var arrayIndex = 0;
+    for (var i = 0; i < str.length; i++) {
+      final codePoint = str.codeUnitAt(i);
+      codePoints[arrayIndex++] = codePoint & 0xFF;
+    }
+    return codePoints.buffer;
   }
 }
 
@@ -104,12 +114,12 @@ class GrpcWebTransport extends Transport {
   GrpcWebTransport(this.host, this.port, this.options);
 
   @override
-  Future<Null> connect() {
+  Future<void> connect() async {
     
   }
 
   @override
-  Future<Null> finish() {
+  Future<void> finish() async {
     // TODO: implement finish
   }
 
@@ -124,13 +134,14 @@ class GrpcWebTransport extends Transport {
     _request.setRequestHeader('Content-Type', 'application/grpc-web+proto');
     _request.setRequestHeader('X-User-Agent', 'grpc-web-dart/0.1');
     _request.setRequestHeader('X-Grpc-Web', '1');
-    _request.responseType = 'arraybuffer';
+    _request.overrideMimeType('text/plain; charset=x-user-defined');
+    _request.responseType = 'text';
     
     return GrpcWebTransportStream(_request);
   }
 
   @override
-  Future<Null> terminate() {
+  Future<void> terminate() async {
     // TODO: implement terminate
   }
 

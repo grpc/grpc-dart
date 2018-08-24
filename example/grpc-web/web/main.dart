@@ -52,7 +52,7 @@ void main() {
   });
 }
 
-Future<Null> repeatEcho(EchoServiceClient service, String message, int count) async {
+Future<void> repeatEcho(EchoServiceClient service, String message, int count) async {
   int responseCount = 0;
   final request = ServerStreamingEchoRequest()
     ..message = message
@@ -65,7 +65,7 @@ Future<Null> repeatEcho(EchoServiceClient service, String message, int count) as
     }, onDone: () => print('Closed connection to server.'));
 }
 
-Future<Null> echo(EchoServiceClient service, String message) async {
+Future<void> echo(EchoServiceClient service, String message) async {
   final response = await service.echo(new EchoRequest()..message = message);
   print('Response from GRPC-Web: ${response.message}');
 }

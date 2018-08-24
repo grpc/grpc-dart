@@ -94,10 +94,6 @@ class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
   Sink<StreamMessage> startChunkedConversion(Sink<GrpcMessage> sink) {
     return new _GrpcMessageConversionSink(sink);
   }
-
-  static List<int> frame(List<int> bytePayload) {
-
-  }
 }
 
 class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {

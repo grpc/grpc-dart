@@ -1,5 +1,5 @@
 # Description
-The grpc-web example shows how to use the Dart gRPC library with a gRPC-Web capible server. 
+The grpc-web example shows how to use the Dart gRPC library with a gRPC-Web capable server. 
 
 This is meant to be used with the echo example provided by the grpc-web repository. The definition of the service is given in echo.proto. 
 

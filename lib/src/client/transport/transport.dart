@@ -21,7 +21,6 @@ typedef void SocketClosedHandler();
 typedef void ActiveStateHandler(bool isActive);
 
 abstract class GrpcTransportStream {
-  int get id;
   Stream<GrpcMessage> get incomingMessages;
   StreamSink<List<int>> get outgoingMessages;
 
@@ -32,9 +31,9 @@ abstract class Transport {
   ActiveStateHandler onActiveStateChanged;
   SocketClosedHandler onSocketClosed;
 
-  Future<Null> connect();
+  Future<void> connect();
   GrpcTransportStream makeRequest(
       String path, Duration timeout, Map<String, String> metadata);
-  Future<Null> finish();
-  Future<Null> terminate();
+  Future<void> finish();
+  Future<void> terminate();
 }

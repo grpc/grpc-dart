@@ -31,8 +31,6 @@ class Http2TransportStream extends GrpcTransportStream {
   StreamController<GrpcMessage> _incomingMessages;
   StreamController<List<int>> _outgoingMessages;
 
-  int get id => _transportStream.id;
-
   Stream<GrpcMessage> get incomingMessages => _incomingMessages.stream;
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
 
@@ -108,7 +106,7 @@ class Http2Transport extends Transport {
     return headers;
   }
 
-  Future<Null> connect() async {
+  Future<void> connect() async {
     final securityContext = options.credentials.securityContext;
 
     var socket = await Socket.connect(host, port);
@@ -138,11 +136,11 @@ class Http2Transport extends Transport {
     return new Http2TransportStream(stream);
   }
 
-  Future<Null> finish() async {
+  Future<void> finish() async {
     await _transport.finish();
   }
 
-  Future<Null> terminate() async {
+  Future<void> terminate() async {
     await _transport.terminate();
   }
 
