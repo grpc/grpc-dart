@@ -24,7 +24,7 @@ void main() {
     port: 8080,
     options: const ChannelOptions(
       credentials: const ChannelCredentials.insecure(),
-      transportType: TransportType.GrpcWeb
+      transportType: TransportType.Xhr
     ));
   final service = EchoServiceClient(channel);
 

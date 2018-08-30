@@ -18,8 +18,8 @@ import 'dart:async';
 import 'package:grpc/grpc.dart';
 import 'package:test/test.dart';
 
-import 'src/client_utils.dart';
-import 'src/utils.dart';
+import '../src/client_utils.dart';
+import '../src/utils.dart';
 
 void main() {
   const dummyValue = 0;

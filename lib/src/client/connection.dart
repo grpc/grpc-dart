@@ -18,12 +18,13 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 
+import '../shared/status.dart';
 import 'call.dart';
 import 'options.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
-import 'transport/web_transport_stub.dart' 
-  if(dart.library.html) 'transport/web_transport.dart';
+import 'transport/xhr_transport_stub.dart' 
+  if(dart.library.html) 'transport/xhr_transport.dart';
 
 enum ConnectionState {
   /// Actively trying to connect.
@@ -73,19 +74,15 @@ class ClientConnection {
       case TransportType.Http2:
         transport = Http2Transport(host, port, options);
         break;
-      case TransportType.GrpcWeb:
-        transport = GrpcWebTransport(host, port, options);
+      case TransportType.Xhr:
+        transport = XhrTransport(host, port, options);
         break;
+      case TransportType.Websocket:
+        throw GrpcError.unimplemented("Websocket support for grpc-web is not currently supported");
     }
     
     await transport.connect();
     return transport;
-  }
-
-  bool _validateBadCertificate(X509Certificate certificate) {
-    final validator = options.credentials.onBadCertificate;
-    if (validator == null) return false;
-    return validator(certificate, authority);
   }
 
   void _connect() {

@@ -23,7 +23,7 @@ import '../options.dart';
 
 import 'transport.dart';
 
-class GrpcWebTransportStream extends GrpcTransportStream {
+class XhrTransportStream extends GrpcTransportStream {
   HttpRequest _request;
   int _requestBytesRead = 0;
   StreamController<ByteBuffer> _incomingProcessor;
@@ -36,7 +36,7 @@ class GrpcWebTransportStream extends GrpcTransportStream {
   @override
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
 
-  GrpcWebTransportStream(this._request) {
+  XhrTransportStream(this._request) {
     _incomingProcessor = new StreamController();
     _incomingMessages = new StreamController();
     _outgoingMessages = new StreamController();
@@ -104,14 +104,14 @@ class GrpcWebTransportStream extends GrpcTransportStream {
   }
 }
 
-class GrpcWebTransport extends Transport {
+class XhrTransport extends Transport {
   final String host;
   final int port;
   final ChannelOptions options;
 
   HttpRequest _request;
 
-  GrpcWebTransport(this.host, this.port, this.options);
+  XhrTransport(this.host, this.port, this.options);
 
   @override
   Future<void> connect() async {
@@ -137,7 +137,7 @@ class GrpcWebTransport extends Transport {
     _request.overrideMimeType('text/plain; charset=x-user-defined');
     _request.responseType = 'text';
     
-    return GrpcWebTransportStream(_request);
+    return XhrTransportStream(_request);
   }
 
   @override

@@ -18,6 +18,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http2/transport.dart';
+import 'package:meta/meta.dart';
 
 import '../../shared/streams.dart';
 import '../../shared/timeout.dart';
@@ -53,8 +54,11 @@ class Http2TransportStream extends GrpcTransportStream {
             cancelOnError: true);
   }
 
-  void _onRequestError() {}
+  void _onRequestError() {
+    // TODO: Implement errors on requests
+  }
 
+  @override
   void terminate() {
     _transportStream.terminate();
     _incomingMessages.close();
@@ -77,7 +81,8 @@ class Http2Transport extends Transport {
   final int port;
   final ChannelOptions options;
 
-  ClientTransportConnection _transport;
+  @visibleForTesting
+  ClientTransportConnection transport;
 
   Http2Transport(this.host, this.port, this.options);
 
@@ -106,42 +111,39 @@ class Http2Transport extends Transport {
     return headers;
   }
 
+  @override
   Future<void> connect() async {
     final securityContext = options.credentials.securityContext;
 
     var socket = await Socket.connect(host, port);
-    // if (_state == ConnectionState.shutdown) {
-    //   socket.destroy();
-    //   throw 'Shutting down';
-    // }
     if (securityContext != null) {
       socket = await SecureSocket.secure(socket,
           host: authority,
           context: securityContext,
           onBadCertificate: _validateBadCertificate);
-      // if (_state == ConnectionState.shutdown) {
-      //   socket.destroy();
-      //   throw 'Shutting down';
-      // }
     }
     socket.done.then(_handleSocketClosed);
-    _transport = ClientTransportConnection.viaSocket(socket);
+    transport = ClientTransportConnection.viaSocket(socket);
   }
 
+  @override
   GrpcTransportStream makeRequest(
       String path, Duration timeout, Map<String, String> metadata) {
     final headers = createCallHeaders(
         options.credentials.isSecure, authority, path, timeout, metadata);
-    final stream = _transport.makeRequest(headers);
+    final stream = transport.makeRequest(headers);
     return new Http2TransportStream(stream);
   }
 
+  @override
   Future<void> finish() async {
-    await _transport.finish();
+    await transport.finish();
   }
 
+  @override
   Future<void> terminate() async {
-    await _transport.terminate();
+    await transport.terminate();
+
   }
 
   bool _validateBadCertificate(X509Certificate certificate) {

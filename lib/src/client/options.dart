@@ -55,7 +55,8 @@ bool allowBadCertificates(X509Certificate certificate, String host) => true;
 /// not support Http2
 enum TransportType {
   Http2,
-  GrpcWeb
+  Xhr,
+  Websocket
 }
 
 /// Options controlling TLS security settings on a [ClientChannel].

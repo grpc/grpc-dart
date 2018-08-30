@@ -19,8 +19,8 @@ import '../options.dart';
 
 import 'transport.dart';
 
-class GrpcWebTransport extends Transport {
-  GrpcWebTransport(String host, int port, ChannelOptions options);
+class XhrTransport extends Transport {
+  XhrTransport(String host, int port, ChannelOptions options);
 
   @override
   Future<void> connect() {
