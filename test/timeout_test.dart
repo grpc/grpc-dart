@@ -143,5 +143,5 @@ void main() {
             timeout: new Duration(microseconds: 1));
       await harness.fromServer.done;
     });
-  });
+  }, testOn: 'vm');
 }

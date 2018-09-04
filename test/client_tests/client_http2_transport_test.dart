@@ -12,6 +12,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+@TestOn('vm')
 
 import 'dart:async';
 
@@ -59,10 +60,16 @@ class MockHttp2Transport extends Http2Transport {
       return mockClientStream;
     });
   }
+
+  @override
+  Future<void> terminate() async {
+    fromClient.close();
+    toClient.close();
+  }
 }
 
 void main() {
-  MockHttp2Transport transport = new MockHttp2Transport(
+  final MockHttp2Transport transport = new MockHttp2Transport(
       'host',
       9999,
       ChannelOptions(
@@ -74,8 +81,7 @@ void main() {
   });
 
   tearDown(() {
-    transport.fromClient.close();
-    transport.toClient.close();
+    transport.terminate();
   });
 
   test('Make request passes proper headers', () async {
@@ -101,9 +107,10 @@ void main() {
       "parameter_2": "value_2"
     };
 
-    final stream = transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    final stream =
+        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
 
-    transport.fromClient.stream.listen((message){
+    transport.fromClient.stream.listen((message) {
       final dataMessage = validateDataMessage(message);
       expect(dataMessage.data.length, 10);
     });
@@ -117,21 +124,21 @@ void main() {
       "parameter_2": "value_2"
     };
 
-    final stream = transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    final stream =
+        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
 
     stream.incomingMessages.listen((message) {
       expect(message, TypeMatcher<GrpcMetadata>());
-      if(message is GrpcMetadata) {
+      if (message is GrpcMetadata) {
         message.metadata.forEach((key, value) {
           expect(value, metadata[key]);
         });
       }
     });
-    
+
     final httpMessage = GrpcHttpEncoder().convert(GrpcMetadata(metadata));
     transport.toClient.add(httpMessage);
   });
-
 
   test('StreamMessages deserializes data properly', () async {
     final metadata = <String, String>{
@@ -139,15 +146,16 @@ void main() {
       "parameter_2": "value_2"
     };
 
-    final stream = transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    final stream =
+        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
     final data = List<int>.filled(10, 0);
     stream.incomingMessages.listen((message) {
       expect(message, TypeMatcher<GrpcData>());
-      if(message is GrpcData) {
+      if (message is GrpcData) {
         expect(message.data, equals(data));
       }
     });
-    
+
     final httpMessage = GrpcHttpEncoder().convert(GrpcData(data));
     transport.toClient.add(httpMessage);
   });

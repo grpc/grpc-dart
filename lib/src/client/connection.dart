@@ -23,8 +23,8 @@ import 'call.dart';
 import 'options.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
-import 'transport/xhr_transport_stub.dart' 
-  if(dart.library.html) 'transport/xhr_transport.dart';
+import 'transport/xhr_transport_stub.dart'
+    if (dart.library.html) 'transport/xhr_transport.dart';
 
 enum ConnectionState {
   /// Actively trying to connect.
@@ -70,7 +70,7 @@ class ClientConnection {
   @visibleForTesting
   Future<Transport> connectTransport() async {
     Transport transport;
-    switch(options.transportType) {
+    switch (options.transportType) {
       case TransportType.Http2:
         transport = Http2Transport(host, port, options);
         break;
@@ -78,9 +78,10 @@ class ClientConnection {
         transport = XhrTransport(host, port, options);
         break;
       case TransportType.Websocket:
-        throw GrpcError.unimplemented("Websocket support for grpc-web is not currently supported");
+        throw GrpcError.unimplemented(
+            "Websocket support for grpc-web is not currently supported");
     }
-    
+
     await transport.connect();
     return transport;
   }

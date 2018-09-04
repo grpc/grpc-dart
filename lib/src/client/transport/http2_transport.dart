@@ -143,7 +143,6 @@ class Http2Transport extends Transport {
   @override
   Future<void> terminate() async {
     await transport.terminate();
-
   }
 
   bool _validateBadCertificate(X509Certificate certificate) {

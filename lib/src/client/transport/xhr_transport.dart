@@ -17,6 +17,8 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
+
 import '../../shared/streams.dart';
 
 import '../options.dart';
@@ -51,7 +53,6 @@ class XhrTransportStream extends GrpcTransportStream {
     _outgoingMessages.stream
       .map(GrpcHttpEncoder.frame)
       .listen((data) {
-        //final encoded = base64Encode(data);
         _request.send(data);
       });
 
@@ -123,19 +124,24 @@ class XhrTransport extends Transport {
     // TODO: implement finish
   }
 
+  @visibleForTesting
+  void initializeRequest(HttpRequest request, Map<String, String> metadata) {
+    for(final header in metadata.keys) {
+      request.setRequestHeader(header, metadata[header]);
+    }
+    request.setRequestHeader('Content-Type', 'application/grpc-web+proto');
+    request.setRequestHeader('X-User-Agent', 'grpc-web-dart/0.1');
+    request.setRequestHeader('X-Grpc-Web', '1');
+    request.overrideMimeType('text/plain; charset=x-user-defined');
+    request.responseType = 'text';
+  }
+
   @override
   GrpcTransportStream makeRequest(String path, Duration timeout, Map<String, String> metadata) {
     _request = HttpRequest();
     _request.open('POST', '${host}:${port}${path}');
 
-    for(final header in metadata.keys) {
-      _request.setRequestHeader(header, metadata[header]);
-    }
-    _request.setRequestHeader('Content-Type', 'application/grpc-web+proto');
-    _request.setRequestHeader('X-User-Agent', 'grpc-web-dart/0.1');
-    _request.setRequestHeader('X-Grpc-Web', '1');
-    _request.overrideMimeType('text/plain; charset=x-user-defined');
-    _request.responseType = 'text';
+    initializeRequest(_request, metadata);
     
     return XhrTransportStream(_request);
   }
