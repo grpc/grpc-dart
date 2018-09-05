@@ -14,7 +14,6 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:meta/meta.dart';
 
@@ -23,7 +22,9 @@ import 'call.dart';
 import 'options.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
+// ignore: uri_does_not_exist
 import 'transport/xhr_transport_stub.dart'
+    // ignore: uri_does_not_exist
     if (dart.library.html) 'transport/xhr_transport.dart';
 
 enum ConnectionState {
