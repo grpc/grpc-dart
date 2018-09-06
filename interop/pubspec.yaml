@@ -3,7 +3,7 @@ description: Dart gRPC interoperability test suite.
 homepage: https://github.com/dart-lang/grpc-dart
 
 environment:
-  sdk: '>=2.0.0-dev.58.0 <3.0.0'
+  sdk: '>=2.0.0 <3.0.0'
 
 dependencies:
   args: ^1.5.0
