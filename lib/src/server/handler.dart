@@ -93,7 +93,7 @@ class ServerHandler extends ServiceCall {
 
   // -- Idle state, incoming data --
 
-  void _onDataIdle(GrpcMessage message) {
+  void _onDataIdle(GrpcMessage message) async {
     if (message is! GrpcMetadata) {
       _sendError(new GrpcError.unimplemented('Expected header frame'));
       _sinkIncoming();
@@ -120,7 +120,7 @@ class ServerHandler extends ServiceCall {
       return;
     }
 
-    final error = _applyInterceptors();
+    final error = await _applyInterceptors();
     if (error != null) {
       _sendError(error);
       _sinkIncoming();
@@ -130,10 +130,10 @@ class ServerHandler extends ServiceCall {
     _startStreamingRequest();
   }
 
-  GrpcError _applyInterceptors() {
+  Future<GrpcError> _applyInterceptors() async {
     try {
       for (final interceptor in _interceptors) {
-        final error = interceptor(this, this._descriptor);
+        final error = await interceptor(this, this._descriptor);
         if (error != null) {
           return error;
         }
