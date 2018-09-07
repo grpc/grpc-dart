@@ -9,4 +9,7 @@ dependencies:
   async: '>=1.13.3 <3.0.0'
   grpc:
     path: ../../
-  protobuf: ^0.9.0
+  protobuf: ^0.10.1
+
+dev_dependencies:
+  test: ^1.3.0
