@@ -10,7 +10,7 @@
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:8080",
             "pathMapping": {
-                "/": "${workspaceFolder}/example/grpc-web/web",
+                "/": "${workspaceFolder}/test",
                 "/packages/grpc_web/": "${workspaceFolder}/example/grpc-web/lib",
                 "/packages/grpc": "${workspaceFolder}/lib"
             }

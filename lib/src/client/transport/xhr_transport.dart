@@ -52,9 +52,7 @@ class XhrTransportStream extends GrpcTransportStream {
 
     _outgoingMessages.stream
       .map(GrpcHttpEncoder.frame)
-      .listen((data) {
-        _request.send(data);
-      });
+      .listen((data) => _request.send(data));
 
     _request.onReadyStateChange.listen((data) {
       final contentType = _request.getResponseHeader('Content-Type');
@@ -90,8 +88,10 @@ class XhrTransportStream extends GrpcTransportStream {
   }
 
   @override
-  void terminate() {
-    // TODO: implement terminate
+  Future<void> terminate() async {
+    await _incomingProcessor.close();
+    await _outgoingMessages.close();
+    _request.abort();
   }
 
   ByteBuffer _stringToArrayBuffer(String str) {

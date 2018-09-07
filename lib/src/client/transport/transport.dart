@@ -24,7 +24,7 @@ abstract class GrpcTransportStream {
   Stream<GrpcMessage> get incomingMessages;
   StreamSink<List<int>> get outgoingMessages;
 
-  void terminate();
+  Future<void> terminate();
 }
 
 abstract class Transport {

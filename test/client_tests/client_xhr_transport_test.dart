@@ -92,57 +92,125 @@ void main() {
 
     final data = List.filled(10, 0);
     stream.outgoingMessages.add(data);
-
+    await stream.terminate();
+    
     final expectedData = GrpcHttpEncoder.frame(data);
-    verify(mockRequest.send(captureAny));
-    //expect(.captured.single, expectedData);
+    expect(verify(mockRequest.send(captureAny)).captured.single, expectedData);
   });
 
-  // test('StreamMessages deserializes headers properly', () async {
-  //   final metadata = <String, String>{
-  //     "parameter_1": "value_1",
-  //     "parameter_2": "value_2"
-  //   };
+  test('Stream handles headers properly', () async {
+    final metadata = <String, String>{
+      "parameter_1": "value_1",
+      "parameter_2": "value_2"
+    };
 
-  //   final mockRequest = new MockHttpRequest();
-  //   final transport = new MockXhrTransport(mockRequest);
+    final mockRequest = new MockHttpRequest();
+    final transport = new MockXhrTransport(mockRequest);
 
-  //   final stream =
-  //       transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    final stream =
+        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
 
-  //   stream.incomingMessages.listen((message) {
-  //     expect(message, TypeMatcher<GrpcMetadata>());
-  //     if (message is GrpcMetadata) {
-  //       message.metadata.forEach((key, value) {
-  //         expect(value, metadata[key]);
-  //       });
-  //     }
-  //   });
+    stream.incomingMessages.listen((message) {
+      expect(message, TypeMatcher<GrpcMetadata>());
+      if (message is GrpcMetadata) {
+        message.metadata.forEach((key, value) {
+          expect(value, metadata[key]);
+        });
+      }
+    });
+  });
 
-  //   final httpMessage = GrpcHttpEncoder().convert(GrpcMetadata(metadata));
-  //   transport.readyStateChangeStream.add(event)
-  // });
+  test('Stream deserializes data properly', () async {
+    final metadata = <String, String>{
+      "parameter_1": "value_1",
+      "parameter_2": "value_2"
+    };
 
-  // test('StreamMessages deserializes data properly', () async {
-  //   final metadata = <String, String>{
-  //     "parameter_1": "value_1",
-  //     "parameter_2": "value_2"
-  //   };
+    final mockRequest = new MockHttpRequest();
+    final transport = new MockXhrTransport(mockRequest);
 
-  //   final mockRequest = new MockHttpRequest();
-  //   final transport = new MockXhrTransport(mockRequest);
+    final stream =
+        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    final data = List<int>.filled(10, 224);
+    final encoded = GrpcHttpEncoder.frame(data);
+    final encodedString = String.fromCharCodes(encoded);
 
-  //   final stream =
-  //       transport.makeRequest('test_path', Duration(seconds: 10), metadata);
-  //   final data = List<int>.filled(10, 0);
-  //   stream.incomingMessages.listen((message) {
-  //     expect(message, TypeMatcher<GrpcData>());
-  //     if (message is GrpcData) {
-  //       expect(message.data, equals(data));
-  //     }
-  //   });
+    bool dataVerified = false;
+    stream.incomingMessages.listen((message) {
+      if (message is GrpcData) {
+        dataVerified = true;
+        expect(message.data, equals(data));
+      }
+    });
 
-  //   final httpMessage = GrpcHttpEncoder().convert(GrpcData(data));
-  //   transport.toClient.add(httpMessage);
-  // });
+    when(mockRequest.getResponseHeader('Content-Type')).thenReturn('application/grpc+proto');
+    when(mockRequest.responseHeaders).thenReturn(metadata);
+    when(mockRequest.readyState).thenReturn(HttpRequest.HEADERS_RECEIVED);
+    when(mockRequest.response).thenReturn(encodedString);
+    transport.readyStateChangeStream.add(null);
+    transport.progressStream.add(null);
+
+    // Wait for all streams to process
+    await Future.sync(() {});
+
+    await stream.terminate();
+    expect(dataVerified, true);
+  });
+
+  test('Stream recieves multiple messages', () async {
+    final metadata = <String, String>{
+      "parameter_1": "value_1",
+      "parameter_2": "value_2"
+    };
+
+    final mockRequest = new MockHttpRequest();
+    final transport = new MockXhrTransport(mockRequest);
+
+    final stream =
+        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+
+    final data = <List<int>>[
+      List<int>.filled(10, 224),
+      List<int>.filled(5, 124)
+    ];
+    final encoded = data.map((d) => GrpcHttpEncoder.frame(d));
+    final encodedStrings = encoded.map((e) => String.fromCharCodes(e)).toList();
+    // to start - expected response is the first message
+    var expectedResponse = encodedStrings[0];
+
+    final expectedMessages = <GrpcMessage>[
+      new GrpcMetadata(metadata),
+      new GrpcData(data[0]),
+      new GrpcData(data[1])
+    ];
+    stream.incomingMessages.listen((message) {
+      final expectedMessage = expectedMessages.removeAt(0);
+      expect(message.runtimeType, expectedMessage.runtimeType);
+      if (message is GrpcMetadata) {
+        expect(message.metadata, (expectedMessage as GrpcMetadata).metadata);
+      } else if (message is GrpcData) {
+        expect(message.data, (expectedMessage as GrpcData).data);
+      }
+    });
+
+    when(mockRequest.getResponseHeader('Content-Type')).thenReturn('application/grpc+proto');
+    when(mockRequest.responseHeaders).thenReturn(metadata);
+    when(mockRequest.readyState).thenReturn(HttpRequest.HEADERS_RECEIVED);
+    when(mockRequest.response).thenAnswer((_) => expectedResponse);
+    transport.readyStateChangeStream.add(null);
+    transport.progressStream.add(null);
+    // Wait for all streams to process
+    await Future.sync(() {});
+
+    // After the first call, expected response should now be both responses together
+    expectedResponse = encodedStrings[0] + encodedStrings[1];
+    transport.progressStream.add(null);
+
+    // Wait for all streams to process
+    await Future.sync(() {});
+    
+    await stream.terminate();
+    expect(expectedMessages.isEmpty, isTrue);
+  });
+
 }

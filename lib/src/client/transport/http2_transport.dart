@@ -59,10 +59,10 @@ class Http2TransportStream extends GrpcTransportStream {
   }
 
   @override
-  void terminate() {
+  Future<void> terminate() async {
+    await _incomingMessages.close();
+    await _outgoingMessages.close();
     _transportStream.terminate();
-    _incomingMessages.close();
-    _outgoingMessages.close();
   }
 }
 
