@@ -99,6 +99,8 @@ class ServerHandler extends ServiceCall {
       _sinkIncoming();
       return;
     }
+    _incomingSubscription.pause();
+
     final headerMessage = message
         as GrpcMetadata; // TODO(jakobr): Cast should not be necessary here.
     _clientMetadata = headerMessage.metadata;
@@ -146,7 +148,6 @@ class ServerHandler extends ServiceCall {
   }
 
   void _startStreamingRequest() {
-    _incomingSubscription.pause();
     _requests = _descriptor.createRequestStream(_incomingSubscription);
     _incomingSubscription.onData(_onDataActive);
 
@@ -297,8 +298,8 @@ class ServerHandler extends ServiceCall {
     }
 
     final outgoingTrailers = <Header>[];
-    outgoingTrailersMap.forEach((key, value) =>
-        outgoingTrailers.add(new Header(ascii.encode(key), utf8.encode(value))));
+    outgoingTrailersMap.forEach((key, value) => outgoingTrailers
+        .add(new Header(ascii.encode(key), utf8.encode(value))));
     _stream.sendHeaders(outgoingTrailers, endStream: true);
     // We're done!
     _cancelResponseSubscription();

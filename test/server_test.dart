@@ -350,5 +350,22 @@ void main() {
       test('with async interceptor',
           () => doTest((call, method) async => interceptor(call, method)));
     });
+
+    test("don't fail if interceptor await 2 times", () async {
+      final Interceptor interceptor = (call, method) async {
+        await Future.value();
+        await Future.value();
+        throw new Exception('Reason is unknown');
+      };
+
+      harness
+        ..interceptor.handler = interceptor
+        ..expectErrorResponse(
+            StatusCode.internal, 'Exception: Reason is unknown')
+        ..sendRequestHeader('/Test/Unary')
+        ..sendData(1);
+
+      await harness.fromServer.done;
+    });
   });
 }
