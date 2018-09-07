@@ -1,8 +1,9 @@
 language: dart
 sudo: false
 
-# Run against the dev channel.
+# Run against both the dev and channel.
 dart:
+  - stable
   - dev
 
 # Define test tasks to run.
