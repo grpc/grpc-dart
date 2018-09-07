@@ -219,16 +219,12 @@ class GrpcWebDecoder extends Converter<ByteBuffer, GrpcMessage> {
   }
 }
 
-enum _GrpcWebParseState {
-    Init,
-    Length,
-    Message
-}
+enum _GrpcWebParseState { Init, Length, Message }
 
 class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
   static const int frameTypeData = 0x00;
   static const int frameTypeTrailers = 0x80;
-  
+
   final Sink<GrpcMessage> _out;
 
   final _dataHeader = new Uint8List(4);
@@ -238,13 +234,13 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
   int _frameType;
   int _dataOffset = 0;
   Uint8List _data;
-  
+
   _GrpcWebConversionSink(this._out);
 
   int _parseFrameType(List<int> chunkData) {
     final frameType = chunkData[_chunkOffset];
     _chunkOffset++;
-    if(frameType != frameTypeData && frameType != frameTypeTrailers) {
+    if (frameType != frameTypeData && frameType != frameTypeTrailers) {
       throw GrpcError.unimplemented('Invalid frame type: ${frameType}');
     }
     _state = _GrpcWebParseState.Length;
@@ -257,38 +253,40 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
     final headerRemaining = _dataHeader.lengthInBytes - _dataOffset;
     final chunkRemaining = chunkLength - _chunkOffset;
     final toCopy = min(headerRemaining, chunkRemaining);
-    _dataHeader.setRange(_dataOffset, _dataOffset + toCopy, chunkData, _chunkOffset);
+    _dataHeader.setRange(
+        _dataOffset, _dataOffset + toCopy, chunkData, _chunkOffset);
     _dataOffset += toCopy;
     _chunkOffset += toCopy;
-    if(_dataOffset == _dataHeader.lengthInBytes) {
+    if (_dataOffset == _dataHeader.lengthInBytes) {
       final dataLength = _dataHeader.buffer.asByteData().getUint32(0);
       _dataOffset = 0;
       _state = _GrpcWebParseState.Message;
-      if(dataLength == 0) {
+      if (dataLength == 0) {
         // empty message
         _finishMessage();
       }
 
-      _data = new Uint8List(dataLength);      
+      _data = new Uint8List(dataLength);
     }
   }
 
   void _parseMessage(List<int> chunkData) {
     final dataRemaining = _data.lengthInBytes - _dataOffset;
-    if(dataRemaining > 0) {
+    if (dataRemaining > 0) {
       final chunkRemaining = chunkData.length - _chunkOffset;
       final toCopy = min(dataRemaining, chunkRemaining);
-      _data.setRange(_dataOffset, _dataOffset + toCopy, chunkData, _chunkOffset);
+      _data.setRange(
+          _dataOffset, _dataOffset + toCopy, chunkData, _chunkOffset);
       _dataOffset += toCopy;
       _chunkOffset += toCopy;
     }
-    if(_dataOffset == _data.lengthInBytes) {
+    if (_dataOffset == _data.lengthInBytes) {
       _finishMessage();
     }
   }
 
   void _finishMessage() {
-    switch(_frameType) {
+    switch (_frameType) {
       case frameTypeData:
         _out.add(new GrpcData(_data, isCompressed: false));
         break;
@@ -298,7 +296,7 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
         _out.add(new GrpcMetadata(headers));
         break;
     }
-    _state = _GrpcWebParseState.Init;    
+    _state = _GrpcWebParseState.Init;
     _data = null;
     _dataOffset = 0;
   }
@@ -306,9 +304,9 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
   Map<String, String> _parseHttp1Headers(String stringData) {
     final chunks = stringData.trim().split('\r\n');
     final headers = <String, String>{};
-    for(final chunk in chunks) {
+    for (final chunk in chunks) {
       final pos = chunk.indexOf(':');
-      headers[chunk.substring(0, pos).trim()] = chunk.substring(pos+1).trim();
+      headers[chunk.substring(0, pos).trim()] = chunk.substring(pos + 1).trim();
     }
     return headers;
   }
@@ -317,8 +315,8 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
   void add(ByteBuffer chunk) {
     _chunkOffset = 0;
     final chunkData = chunk.asUint8List();
-    while(_chunkOffset < chunk.lengthInBytes) {
-      switch(_state) {
+    while (_chunkOffset < chunk.lengthInBytes) {
+      switch (_state) {
         case _GrpcWebParseState.Init:
           _frameType = _parseFrameType(chunkData);
           break;

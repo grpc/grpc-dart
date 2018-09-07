@@ -33,7 +33,8 @@ class XhrTransport extends Transport {
   }
 
   @override
-  GrpcTransportStream makeRequest(String path, Duration timeout, Map<String, String> metadata) {
+  GrpcTransportStream makeRequest(
+      String path, Duration timeout, Map<String, String> metadata) {
     return null;
   }
 
@@ -41,5 +42,4 @@ class XhrTransport extends Transport {
   Future<void> terminate() {
     return Future.value();
   }
-
 }

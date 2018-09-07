@@ -28,19 +28,21 @@ import 'package:test/test.dart';
 class MockHttpRequest extends Mock implements HttpRequest {}
 
 class MockXhrTransport extends XhrTransport {
-  StreamController<Event> readyStateChangeStream = new StreamController<Event>();
-  StreamController<ProgressEvent> progressStream = new StreamController<ProgressEvent>();
+  StreamController<Event> readyStateChangeStream =
+      new StreamController<Event>();
+  StreamController<ProgressEvent> progressStream =
+      new StreamController<ProgressEvent>();
 
   MockHttpRequest mockRequest;
 
   MockXhrTransport(this.mockRequest)
-    : super("test", 8080, new ChannelOptions()) {
-
-    }
+      : super("test", 8080, new ChannelOptions()) {}
 
   @override
-  GrpcTransportStream makeRequest(String path, Duration timeout, Map<String, String> metadata) {
-    when(mockRequest.onReadyStateChange).thenAnswer((_) => readyStateChangeStream.stream);
+  GrpcTransportStream makeRequest(
+      String path, Duration timeout, Map<String, String> metadata) {
+    when(mockRequest.onReadyStateChange)
+        .thenAnswer((_) => readyStateChangeStream.stream);
     when(mockRequest.onProgress).thenAnswer((_) => progressStream.stream);
 
     initializeRequest(mockRequest, metadata);
@@ -56,10 +58,7 @@ class MockXhrTransport extends XhrTransport {
 }
 
 void main() {
-
-  setUp(() {
-
-  });
+  setUp(() {});
 
   test('Make request sends correct headers', () async {
     final metadata = <String, String>{
@@ -72,7 +71,8 @@ void main() {
 
     transport.makeRequest('path', Duration(seconds: 10), metadata);
 
-    verify(mockRequest.setRequestHeader('Content-Type', 'application/grpc-web+proto'));
+    verify(mockRequest.setRequestHeader(
+        'Content-Type', 'application/grpc-web+proto'));
     verify(mockRequest.setRequestHeader('X-User-Agent', 'grpc-web-dart/0.1'));
     verify(mockRequest.setRequestHeader('X-Grpc-Web', '1'));
     verify(mockRequest.overrideMimeType('text/plain; charset=x-user-defined'));
@@ -88,12 +88,13 @@ void main() {
     final mockRequest = new MockHttpRequest();
     final transport = new MockXhrTransport(mockRequest);
 
-    final stream = transport.makeRequest('path', Duration(seconds: 10), metadata);
+    final stream =
+        transport.makeRequest('path', Duration(seconds: 10), metadata);
 
     final data = List.filled(10, 0);
     stream.outgoingMessages.add(data);
     await stream.terminate();
-    
+
     final expectedData = GrpcHttpEncoder.frame(data);
     expect(verify(mockRequest.send(captureAny)).captured.single, expectedData);
   });
@@ -143,7 +144,8 @@ void main() {
       }
     });
 
-    when(mockRequest.getResponseHeader('Content-Type')).thenReturn('application/grpc+proto');
+    when(mockRequest.getResponseHeader('Content-Type'))
+        .thenReturn('application/grpc+proto');
     when(mockRequest.responseHeaders).thenReturn(metadata);
     when(mockRequest.readyState).thenReturn(HttpRequest.HEADERS_RECEIVED);
     when(mockRequest.response).thenReturn(encodedString);
@@ -193,7 +195,8 @@ void main() {
       }
     });
 
-    when(mockRequest.getResponseHeader('Content-Type')).thenReturn('application/grpc+proto');
+    when(mockRequest.getResponseHeader('Content-Type'))
+        .thenReturn('application/grpc+proto');
     when(mockRequest.responseHeaders).thenReturn(metadata);
     when(mockRequest.readyState).thenReturn(HttpRequest.HEADERS_RECEIVED);
     when(mockRequest.response).thenAnswer((_) => expectedResponse);
@@ -208,9 +211,8 @@ void main() {
 
     // Wait for all streams to process
     await Future.sync(() {});
-    
+
     await stream.terminate();
     expect(expectedMessages.isEmpty, isTrue);
   });
-
 }

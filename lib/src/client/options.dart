@@ -53,11 +53,7 @@ bool allowBadCertificates(X509Certificate certificate, String host) => true;
 
 /// Transport type. Use Http2 for vm whenever possible, GrpcWeb in browsers that do
 /// not support Http2
-enum TransportType {
-  Http2,
-  Xhr,
-  Websocket
-}
+enum TransportType { Http2, Xhr, Websocket }
 
 /// Options controlling TLS security settings on a [ClientChannel].
 class ChannelCredentials {
@@ -103,7 +99,7 @@ class ChannelOptions {
   final Duration idleTimeout;
   final TransportType transportType;
   final BackoffStrategy backoffStrategy;
-  
+
   const ChannelOptions(
       {ChannelCredentials credentials,
       Duration idleTimeout,

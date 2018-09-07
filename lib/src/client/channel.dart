@@ -22,8 +22,6 @@ import 'connection.dart';
 import 'method.dart';
 import 'options.dart';
 
-
-
 /// A channel to a virtual RPC endpoint.
 ///
 /// For each RPC, the channel picks a [ClientConnection] to dispatch the call.

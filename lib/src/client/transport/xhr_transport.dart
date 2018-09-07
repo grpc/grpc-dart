@@ -44,25 +44,25 @@ class XhrTransportStream extends GrpcTransportStream {
     _outgoingMessages = new StreamController();
 
     _incomingProcessor.stream
-      .transform(new GrpcWebDecoder())
-      .transform(grpcDecompressor())
-      .listen(_incomingMessages.add,
-        onError: _incomingMessages.addError,
-        onDone: _incomingMessages.close);
+        .transform(new GrpcWebDecoder())
+        .transform(grpcDecompressor())
+        .listen(_incomingMessages.add,
+            onError: _incomingMessages.addError,
+            onDone: _incomingMessages.close);
 
     _outgoingMessages.stream
-      .map(GrpcHttpEncoder.frame)
-      .listen((data) => _request.send(data));
+        .map(GrpcHttpEncoder.frame)
+        .listen((data) => _request.send(data));
 
     _request.onReadyStateChange.listen((data) {
       final contentType = _request.getResponseHeader('Content-Type');
-      if(contentType == null) {
+      if (contentType == null) {
         return;
       }
 
-      if(_request.readyState == HttpRequest.HEADERS_RECEIVED) {
-        if(contentType.startsWith('application/grpc')) {
-          if(_request.response == null) {
+      if (_request.readyState == HttpRequest.HEADERS_RECEIVED) {
+        if (contentType.startsWith('application/grpc')) {
+          if (_request.response == null) {
             return;
           }
 
@@ -72,7 +72,7 @@ class XhrTransportStream extends GrpcTransportStream {
         }
       }
 
-      if(_request.readyState == HttpRequest.DONE) {
+      if (_request.readyState == HttpRequest.DONE) {
         _incomingProcessor.close();
         _outgoingMessages.close();
       }
@@ -115,9 +115,7 @@ class XhrTransport extends Transport {
   XhrTransport(this.host, this.port, this.options);
 
   @override
-  Future<void> connect() async {
-    
-  }
+  Future<void> connect() async {}
 
   @override
   Future<void> finish() async {
@@ -126,7 +124,7 @@ class XhrTransport extends Transport {
 
   @visibleForTesting
   void initializeRequest(HttpRequest request, Map<String, String> metadata) {
-    for(final header in metadata.keys) {
+    for (final header in metadata.keys) {
       request.setRequestHeader(header, metadata[header]);
     }
     request.setRequestHeader('Content-Type', 'application/grpc-web+proto');
@@ -137,12 +135,13 @@ class XhrTransport extends Transport {
   }
 
   @override
-  GrpcTransportStream makeRequest(String path, Duration timeout, Map<String, String> metadata) {
+  GrpcTransportStream makeRequest(
+      String path, Duration timeout, Map<String, String> metadata) {
     _request = HttpRequest();
     _request.open('POST', '${host}:${port}${path}');
 
     initializeRequest(_request, metadata);
-    
+
     return XhrTransportStream(_request);
   }
 
@@ -150,5 +149,4 @@ class XhrTransport extends Transport {
   Future<void> terminate() async {
     // TODO: implement terminate
   }
-
 }
