@@ -1,5 +1,7 @@
 language: dart
-sudo: false
+
+# necessary to avoid chrome sandboxing issues
+sudo: required
 
 # Run against the dev channel.
 dart:
