@@ -1,3 +1,7 @@
+## 0.6.5
+
+* Interceptors are now async.
+
 ## 0.6.4
 
 * Update dependencies to be compatible with Dart 2.
