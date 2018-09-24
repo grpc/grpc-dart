@@ -46,6 +46,7 @@ class FakeConnection extends ClientConnection {
 Duration testBackoff(Duration lastBackoff) => const Duration(milliseconds: 1);
 
 class FakeChannelOptions implements ChannelOptions {
+  Http2Options http2 = const Http2Options();
   ChannelCredentials credentials = const ChannelCredentials.secure();
   Duration idleTimeout = const Duration(seconds: 1);
   BackoffStrategy backoffStrategy = testBackoff;

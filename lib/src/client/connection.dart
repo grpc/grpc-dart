@@ -101,13 +101,27 @@ class ClientConnection {
 
   @visibleForTesting
   Future<ClientTransportConnection> connectTransport() async {
-    final securityContext = options.credentials.securityContext;
+    final settings = options.http2.settings;
+
+    final connect = options.http2.connect;
+    if (connect != null) {
+      final streams = await connect(host, port);
+      if (_state == ConnectionState.shutdown) {
+        streams.outgoing.close();
+        throw 'Shutting down';
+      }
+      streams.done.then(_handleSocketClosed);
+      return new ClientTransportConnection.viaStreams(
+          streams.incoming, streams.outgoing,
+          settings: settings);
+    }
 
     var socket = await Socket.connect(host, port);
     if (_state == ConnectionState.shutdown) {
       socket.destroy();
       throw 'Shutting down';
     }
+    final securityContext = options.credentials.securityContext;
     if (securityContext != null) {
       socket = await SecureSocket.secure(socket,
           host: authority,
@@ -119,7 +133,7 @@ class ClientConnection {
       }
     }
     socket.done.then(_handleSocketClosed);
-    return new ClientTransportConnection.viaSocket(socket);
+    return new ClientTransportConnection.viaSocket(socket, settings: settings);
   }
 
   bool _validateBadCertificate(X509Certificate certificate) {

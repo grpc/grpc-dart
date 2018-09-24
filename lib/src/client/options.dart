@@ -18,7 +18,26 @@ import 'dart:io';
 
 import 'dart:math';
 
+import 'package:http2/transport.dart';
+
 import '../shared/security.dart';
+
+class Http2Streams {
+  final Stream<List<int>> incoming;
+  final StreamSink<List<int>> outgoing;
+  final Future done;
+
+  Http2Streams(this.incoming, this.outgoing, this.done);
+}
+
+typedef Http2Connect = Future<Http2Streams> Function(String host, int port);
+
+class Http2Options {
+  final Http2Connect connect;
+  final ClientSettings settings;
+
+  const Http2Options({this.connect, this.settings});
+}
 
 const defaultIdleTimeout = const Duration(minutes: 5);
 
@@ -91,16 +110,19 @@ class ChannelCredentials {
 
 /// Options controlling how connections are made on a [ClientChannel].
 class ChannelOptions {
+  final Http2Options http2;
   final ChannelCredentials credentials;
   final Duration idleTimeout;
   final BackoffStrategy backoffStrategy;
 
   const ChannelOptions(
-      {ChannelCredentials credentials,
+      {Http2Options http2,
+      ChannelCredentials credentials,
       Duration idleTimeout,
       BackoffStrategy backoffStrategy =
           defaultBackoffStrategy}) // Remove when dart-lang/sdk#31066 is fixed.
-      : this.credentials = credentials ?? const ChannelCredentials.secure(),
+      : this.http2 = http2 ?? const Http2Options(),
+        this.credentials = credentials ?? const ChannelCredentials.secure(),
         this.idleTimeout = idleTimeout ?? defaultIdleTimeout,
         this.backoffStrategy = backoffStrategy ?? defaultBackoffStrategy;
 }
