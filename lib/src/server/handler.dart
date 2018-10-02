@@ -93,12 +93,14 @@ class ServerHandler extends ServiceCall {
 
   // -- Idle state, incoming data --
 
-  void _onDataIdle(GrpcMessage message) {
+  void _onDataIdle(GrpcMessage message) async {
     if (message is! GrpcMetadata) {
       _sendError(new GrpcError.unimplemented('Expected header frame'));
       _sinkIncoming();
       return;
     }
+    _incomingSubscription.pause();
+
     final headerMessage = message
         as GrpcMetadata; // TODO(jakobr): Cast should not be necessary here.
     _clientMetadata = headerMessage.metadata;
@@ -120,7 +122,7 @@ class ServerHandler extends ServiceCall {
       return;
     }
 
-    final error = _applyInterceptors();
+    final error = await _applyInterceptors();
     if (error != null) {
       _sendError(error);
       _sinkIncoming();
@@ -130,10 +132,10 @@ class ServerHandler extends ServiceCall {
     _startStreamingRequest();
   }
 
-  GrpcError _applyInterceptors() {
+  Future<GrpcError> _applyInterceptors() async {
     try {
       for (final interceptor in _interceptors) {
-        final error = interceptor(this, this._descriptor);
+        final error = await interceptor(this, this._descriptor);
         if (error != null) {
           return error;
         }
@@ -146,7 +148,6 @@ class ServerHandler extends ServiceCall {
   }
 
   void _startStreamingRequest() {
-    _incomingSubscription.pause();
     _requests = _descriptor.createRequestStream(_incomingSubscription);
     _incomingSubscription.onData(_onDataActive);
 
@@ -297,8 +298,8 @@ class ServerHandler extends ServiceCall {
     }
 
     final outgoingTrailers = <Header>[];
-    outgoingTrailersMap.forEach((key, value) =>
-        outgoingTrailers.add(new Header(ascii.encode(key), utf8.encode(value))));
+    outgoingTrailersMap.forEach((key, value) => outgoingTrailers
+        .add(new Header(ascii.encode(key), utf8.encode(value))));
     _stream.sendHeaders(outgoingTrailers, endStream: true);
     // We're done!
     _cancelResponseSubscription();
