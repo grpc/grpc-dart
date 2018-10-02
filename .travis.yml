@@ -2,7 +2,9 @@ language: dart
 
 # necessary to avoid chrome sandboxing issues
 sudo: required
-
+addons:
+  chrome: stable
+  
 # Run against the dev channel.
 dart:
   - dev
