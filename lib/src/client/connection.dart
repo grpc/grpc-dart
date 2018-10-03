@@ -108,6 +108,7 @@ class ClientConnection {
       final streams = await connect(host, port);
       if (_state == ConnectionState.shutdown) {
         streams.outgoing.close();
+        streams.incoming.drain();
         throw 'Shutting down';
       }
       streams.done.then(_handleSocketClosed);

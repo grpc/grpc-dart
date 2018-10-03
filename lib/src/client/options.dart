@@ -25,15 +25,13 @@ import '../shared/security.dart';
 class Http2Streams {
   final Stream<List<int>> incoming;
   final StreamSink<List<int>> outgoing;
-  final Future done;
+  final Future<void> done;
 
   Http2Streams(this.incoming, this.outgoing, this.done);
 }
 
-typedef Http2Connect = Future<Http2Streams> Function(String host, int port);
-
 class Http2Options {
-  final Http2Connect connect;
+  final FutureOr<Http2Streams> Function(String host, int port) connect;
   final ClientSettings settings;
 
   const Http2Options({this.connect, this.settings});
