@@ -4,7 +4,7 @@ The grpc-web example shows how to use the Dart gRPC library with a gRPC-Web capa
 This is meant to be used with the echo example provided by the grpc-web repository. The definition of the service is given in echo.proto. 
 
 # Prerequistes
-You will need a clone of the grpc-web repository to run the example server.
+You will need a clone of the [grpc-web](https://github.com/grpc/grpc-web) repository to run the example server.
 
 You will also need the dart 'webdev' tool, which you can get by running:
 

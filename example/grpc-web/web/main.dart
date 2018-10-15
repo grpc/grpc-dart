@@ -1,4 +1,4 @@
-// Copyright (c) 2017, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2018, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,11 +21,10 @@ import 'package:grpc_web/src/generated/echo.pbgrpc.dart';
 
 void main() {
   final channel = new ClientChannel('http://localhost',
-    port: 8080,
-    options: const ChannelOptions(
-      credentials: const ChannelCredentials.insecure(),
-      transportType: TransportType.Xhr
-    ));
+      port: 8080,
+      options: const ChannelOptions(
+          credentials: const ChannelCredentials.insecure(),
+          transportType: TransportType.Xhr));
   final service = EchoServiceClient(channel);
 
   final button = querySelector("#send") as ButtonElement;
@@ -34,8 +33,7 @@ void main() {
     final value = msg.value.trim();
     msg.value = '';
 
-    if (value.isEmpty) 
-      return false;
+    if (value.isEmpty) return false;
 
     if (value.indexOf(' ') > 0) {
       final countStr = value.substring(0, value.indexOf(' '));
@@ -52,17 +50,17 @@ void main() {
   });
 }
 
-Future<void> repeatEcho(EchoServiceClient service, String message, int count) async {
+void repeatEcho(EchoServiceClient service, String message, int count) {
   int responseCount = 0;
   final request = ServerStreamingEchoRequest()
     ..message = message
     ..messageCount = count
     ..messageInterval = 500;
-  service.serverStreamingEcho(request)
-    .listen((response) {
-      print("Response from GRPC-Web Streaming: ${response.message} - ${responseCount}");
-      responseCount++;
-    }, onDone: () => print('Closed connection to server.'));
+  service.serverStreamingEcho(request).listen((response) {
+    print(
+        "Response from GRPC-Web Streaming: ${response.message} - ${responseCount}");
+    responseCount++;
+  }, onDone: () => print('Closed connection to server.'));
 }
 
 Future<void> echo(EchoServiceClient service, String message) async {

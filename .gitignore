@@ -2,6 +2,7 @@
 .dart_tool/
 .packages
 .pub/
+.vscode/
 build/
 
 # Remove the following pattern if you wish to check in your lock file

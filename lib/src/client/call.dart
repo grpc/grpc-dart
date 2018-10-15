@@ -1,4 +1,4 @@
-// Copyright (c) 2017, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2018, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");

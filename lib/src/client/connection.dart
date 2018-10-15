@@ -20,12 +20,12 @@ import 'package:meta/meta.dart';
 import '../shared/status.dart';
 import 'call.dart';
 import 'options.dart';
-import 'transport/http2_transport.dart';
+
+import 'transport/http2_transport_stub.dart'
+  if (dart.library.io) 'transport/http2_transport.dart';
 import 'transport/transport.dart';
-// ignore: uri_does_not_exist
 import 'transport/xhr_transport_stub.dart'
-    // ignore: uri_does_not_exist
-    if (dart.library.html) 'transport/xhr_transport.dart';
+  if (dart.library.html) 'transport/xhr_transport.dart';
 
 enum ConnectionState {
   /// Actively trying to connect.

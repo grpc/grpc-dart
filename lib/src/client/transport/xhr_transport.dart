@@ -1,4 +1,4 @@
-// Copyright (c) 2017, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2018, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -79,10 +79,11 @@ class XhrTransportStream extends GrpcTransportStream {
     });
 
     _request.onProgress.listen((data) {
-      final responeString = _request.response as String;
-      final rawText = (responeString).substring(_requestBytesRead);
-      _requestBytesRead = responeString.length;
-      final bytes = _stringToArrayBuffer(rawText);
+      // use response over responseText as most browsers don't support
+      // using responseText during an onProgress event.
+      final responseString = _request.response as String;
+      final bytes = Uint8List.fromList(responseString.substring(_requestBytesRead).codeUnits).buffer;
+      _requestBytesRead = responseString.length;
       _incomingProcessor.add(bytes);
     });
   }
@@ -92,16 +93,6 @@ class XhrTransportStream extends GrpcTransportStream {
     await _incomingProcessor.close();
     await _outgoingMessages.close();
     _request.abort();
-  }
-
-  ByteBuffer _stringToArrayBuffer(String str) {
-    final codePoints = new Uint8List(str.length);
-    var arrayIndex = 0;
-    for (var i = 0; i < str.length; i++) {
-      final codePoint = str.codeUnitAt(i);
-      codePoints[arrayIndex++] = codePoint & 0xFF;
-    }
-    return codePoints.buffer;
   }
 }
 
@@ -130,6 +121,7 @@ class XhrTransport extends Transport {
     request.setRequestHeader('Content-Type', 'application/grpc-web+proto');
     request.setRequestHeader('X-User-Agent', 'grpc-web-dart/0.1');
     request.setRequestHeader('X-Grpc-Web', '1');
+    // Overriding the mimetype allows us to stream and parse the data
     request.overrideMimeType('text/plain; charset=x-user-defined');
     request.responseType = 'text';
   }

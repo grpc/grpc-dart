@@ -15,25 +15,31 @@
 
 import 'dart:async';
 
-import '../../shared/streams.dart';
+import '../options.dart';
 
-typedef void SocketClosedHandler();
-typedef void ActiveStateHandler(bool isActive);
+import 'transport.dart';
 
-abstract class GrpcTransportStream {
-  Stream<GrpcMessage> get incomingMessages;
-  StreamSink<List<int>> get outgoingMessages;
+class Http2Transport extends Transport {
+  Http2Transport(String host, int port, ChannelOptions options);
 
-  Future<void> terminate();
-}
+  @override
+  Future<void> connect() {
+    return Future.value();
+  }
 
-abstract class Transport {
-  ActiveStateHandler onActiveStateChanged;
-  SocketClosedHandler onSocketClosed;
+  @override
+  Future<void> finish() {
+    return Future.value();
+  }
 
-  Future<void> connect();
+  @override
   GrpcTransportStream makeRequest(
-      String path, Duration timeout, Map<String, String> metadata);
-  Future<void> finish();
-  Future<void> terminate();
+      String path, Duration timeout, Map<String, String> metadata) {
+    return null;
+  }
+
+  @override
+  Future<void> terminate() {
+    return Future.value();
+  }
 }
