@@ -279,7 +279,7 @@ void main() {
   });
 
   group('Server with interceptor', () {
-    test('processes calls if interceptor allows request', () async {
+    group('processes calls if interceptor allows request', () {
       const expectedRequest = 5;
       const expectedResponse = 7;
       Future<int> methodHandler(ServiceCall call, Future<int> request) async {
@@ -287,48 +287,83 @@ void main() {
         return expectedResponse;
       }
 
-      GrpcError interceptorHandler(ServiceCall call, ServiceMethod method) {
+      final Interceptor interceptor = (call, method) {
         if (method.name == "Unary") {
           return null;
         }
         return new GrpcError.unauthenticated('Request is unauthenticated');
+      };
+
+      Future<void> doTest(Interceptor handler) async {
+        harness
+          ..interceptor.handler = handler
+          ..service.unaryHandler = methodHandler
+          ..runTest('/Test/Unary', [expectedRequest], [expectedResponse]);
+
+        await harness.fromServer.done;
       }
 
-      harness
-        ..interceptor.handler = interceptorHandler
-        ..service.unaryHandler = methodHandler
-        ..runTest('/Test/Unary', [expectedRequest], [expectedResponse]);
-
-      await harness.fromServer.done;
+      test('with sync interceptor', () => doTest(interceptor));
+      test('with async interceptor',
+          () => doTest((call, method) async => interceptor(call, method)));
     });
 
-    test('returns error if interceptor blocks request', () async {
-      GrpcError interceptorHandler(ServiceCall call, ServiceMethod method) {
+    group('returns error if interceptor blocks request', () {
+      final Interceptor interceptor = (call, method) {
         if (method.name == "Unary") {
           return new GrpcError.unauthenticated('Request is unauthenticated');
         }
         return null;
+      };
+
+      Future<void> doTest(Interceptor handler) async {
+        harness
+          ..interceptor.handler = handler
+          ..expectErrorResponse(
+              StatusCode.unauthenticated, 'Request is unauthenticated')
+          ..sendRequestHeader('/Test/Unary');
+
+        await harness.fromServer.done;
       }
 
-      harness
-        ..interceptor.handler = interceptorHandler
-        ..expectErrorResponse(
-            StatusCode.unauthenticated, 'Request is unauthenticated')
-        ..sendRequestHeader('/Test/Unary');
-
-      await harness.fromServer.done;
+      test('with sync interceptor', () => doTest(interceptor));
+      test('with async interceptor',
+          () => doTest((call, method) async => interceptor(call, method)));
     });
 
-    test('returns internal error if interceptor throws exception', () async {
-      GrpcError interceptorHandler(ServiceCall call, ServiceMethod method) {
+    group('returns internal error if interceptor throws exception', () {
+      final Interceptor interceptor = (call, method) {
         throw new Exception('Reason is unknown');
+      };
+
+      Future<void> doTest(Interceptor handler) async {
+        harness
+          ..interceptor.handler = handler
+          ..expectErrorResponse(
+              StatusCode.internal, 'Exception: Reason is unknown')
+          ..sendRequestHeader('/Test/Unary');
+
+        await harness.fromServer.done;
       }
 
+      test('with sync interceptor', () => doTest(interceptor));
+      test('with async interceptor',
+          () => doTest((call, method) async => interceptor(call, method)));
+    });
+
+    test("don't fail if interceptor await 2 times", () async {
+      final Interceptor interceptor = (call, method) async {
+        await Future.value();
+        await Future.value();
+        throw new Exception('Reason is unknown');
+      };
+
       harness
-        ..interceptor.handler = interceptorHandler
+        ..interceptor.handler = interceptor
         ..expectErrorResponse(
             StatusCode.internal, 'Exception: Reason is unknown')
-        ..sendRequestHeader('/Test/Unary');
+        ..sendRequestHeader('/Test/Unary')
+        ..sendData(1);
 
       await harness.fromServer.done;
     });

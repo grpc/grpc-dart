@@ -81,7 +81,7 @@ class TestService extends Service {
 class TestInterceptor {
   Interceptor handler;
 
-  GrpcError call(ServiceCall call, ServiceMethod method) {
+  FutureOr<GrpcError> call(ServiceCall call, ServiceMethod method) {
     if (handler == null) {
       return null;
     }
