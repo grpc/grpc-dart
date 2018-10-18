@@ -5,8 +5,9 @@ sudo: required
 addons:
   chrome: stable
   
-# Run against the dev channel.
+# Run against both the dev and stable channel.
 dart:
+  - stable
   - dev
 
 # Define test tasks to run.
