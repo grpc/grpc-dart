@@ -22,6 +22,7 @@ export 'src/client/common.dart';
 export 'src/client/connection.dart';
 export 'src/client/method.dart';
 export 'src/client/options.dart';
+export 'src/client/transport/http2_credentials.dart';
 export 'src/client/transport/transport.dart';
 
 export 'src/server/call.dart';

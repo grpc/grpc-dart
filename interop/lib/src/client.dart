@@ -95,7 +95,7 @@ class Tester {
       if (_useTestCA) {
         trustedRoot = new File('ca.pem').readAsBytesSync();
       }
-      credentials = new ChannelCredentials.secure(
+      credentials = new Http2ChannelCredentials.secure(
           certificates: trustedRoot, authority: serverHostOverride);
     } else {
       credentials = const ChannelCredentials.insecure();

@@ -15,31 +15,36 @@
 
 import 'dart:async';
 
-import '../options.dart';
+import 'package:meta/meta.dart';
 
 import 'transport.dart';
 
 class XhrTransport extends Transport {
-  XhrTransport(String host, int port, ChannelOptions options);
+  XhrTransport(String host, int ports);
 
   @override
   Future<void> connect() {
-    return Future.value();
+    _throw();
   }
 
   @override
   Future<void> finish() {
-    return Future.value();
+    _throw();
   }
 
   @override
   GrpcTransportStream makeRequest(
       String path, Duration timeout, Map<String, String> metadata) {
-    return null;
+    _throw();
   }
 
   @override
   Future<void> terminate() {
-    return Future.value();
+    _throw();
+  }
+
+  @alwaysThrows
+  void _throw() {
+    throw UnsupportedError('Xhr is not supported on this platform');
   }
 }

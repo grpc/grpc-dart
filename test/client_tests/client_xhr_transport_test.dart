@@ -19,7 +19,6 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:grpc/grpc.dart';
-import 'package:grpc/src/client/options.dart';
 import 'package:grpc/src/client/transport/xhr_transport.dart';
 import 'package:mockito/mockito.dart';
 
@@ -28,15 +27,13 @@ import 'package:test/test.dart';
 class MockHttpRequest extends Mock implements HttpRequest {}
 
 class MockXhrTransport extends XhrTransport {
-  StreamController<Event> readyStateChangeStream =
-      new StreamController<Event>();
+  StreamController<Event> readyStateChangeStream = StreamController<Event>();
   StreamController<ProgressEvent> progressStream =
-      new StreamController<ProgressEvent>();
+      StreamController<ProgressEvent>();
 
   MockHttpRequest mockRequest;
 
-  MockXhrTransport(this.mockRequest)
-      : super("test", 8080, new ChannelOptions()) {}
+  MockXhrTransport(this.mockRequest) : super('test', 8080) {}
 
   @override
   GrpcTransportStream makeRequest(
@@ -58,16 +55,14 @@ class MockXhrTransport extends XhrTransport {
 }
 
 void main() {
-  setUp(() {});
-
   test('Make request sends correct headers', () async {
     final metadata = <String, String>{
-      "parameter_1": "value_1",
-      "parameter_2": "value_2"
+      'parameter_1': 'value_1',
+      'parameter_2': 'value_2'
     };
 
-    final mockRequest = new MockHttpRequest();
-    final transport = new MockXhrTransport(mockRequest);
+    final mockRequest = MockHttpRequest();
+    final transport = MockXhrTransport(mockRequest);
 
     transport.makeRequest('path', Duration(seconds: 10), metadata);
 
@@ -81,12 +76,12 @@ void main() {
 
   test('Sent data converted to stream properly', () async {
     final metadata = <String, String>{
-      "parameter_1": "value_1",
-      "parameter_2": "value_2"
+      'parameter_1': 'value_1',
+      'parameter_2': 'value_2'
     };
 
-    final mockRequest = new MockHttpRequest();
-    final transport = new MockXhrTransport(mockRequest);
+    final mockRequest = MockHttpRequest();
+    final transport = MockXhrTransport(mockRequest);
 
     final stream =
         transport.makeRequest('path', Duration(seconds: 10), metadata);
@@ -101,12 +96,12 @@ void main() {
 
   test('Stream handles headers properly', () async {
     final metadata = <String, String>{
-      "parameter_1": "value_1",
-      "parameter_2": "value_2"
+      'parameter_1': 'value_1',
+      'parameter_2': 'value_2'
     };
 
-    final mockRequest = new MockHttpRequest();
-    final transport = new MockXhrTransport(mockRequest);
+    final mockRequest = MockHttpRequest();
+    final transport = MockXhrTransport(mockRequest);
 
     final stream =
         transport.makeRequest('test_path', Duration(seconds: 10), metadata);
@@ -123,12 +118,12 @@ void main() {
 
   test('Stream deserializes data properly', () async {
     final metadata = <String, String>{
-      "parameter_1": "value_1",
-      "parameter_2": "value_2"
+      'parameter_1': 'value_1',
+      'parameter_2': 'value_2'
     };
 
-    final mockRequest = new MockHttpRequest();
-    final transport = new MockXhrTransport(mockRequest);
+    final mockRequest = MockHttpRequest();
+    final transport = MockXhrTransport(mockRequest);
 
     final stream =
         transport.makeRequest('test_path', Duration(seconds: 10), metadata);
@@ -161,12 +156,12 @@ void main() {
 
   test('Stream recieves multiple messages', () async {
     final metadata = <String, String>{
-      "parameter_1": "value_1",
-      "parameter_2": "value_2"
+      'parameter_1': 'value_1',
+      'parameter_2': 'value_2'
     };
 
-    final mockRequest = new MockHttpRequest();
-    final transport = new MockXhrTransport(mockRequest);
+    final mockRequest = MockHttpRequest();
+    final transport = MockXhrTransport(mockRequest);
 
     final stream =
         transport.makeRequest('test_path', Duration(seconds: 10), metadata);
@@ -181,9 +176,9 @@ void main() {
     var expectedResponse = encodedStrings[0];
 
     final expectedMessages = <GrpcMessage>[
-      new GrpcMetadata(metadata),
-      new GrpcData(data[0]),
-      new GrpcData(data[1])
+      GrpcMetadata(metadata),
+      GrpcData(data[0]),
+      GrpcData(data[1])
     ];
     stream.incomingMessages.listen((message) {
       final expectedMessage = expectedMessages.removeAt(0);

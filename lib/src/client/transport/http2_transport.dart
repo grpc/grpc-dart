@@ -25,6 +25,7 @@ import '../../shared/timeout.dart';
 
 import '../options.dart';
 
+import 'http2_credentials.dart';
 import 'transport.dart';
 
 class Http2TransportStream extends GrpcTransportStream {
@@ -113,14 +114,17 @@ class Http2Transport extends Transport {
 
   @override
   Future<void> connect() async {
-    final securityContext = options.credentials.securityContext;
-
     var socket = await Socket.connect(host, port);
-    if (securityContext != null) {
-      socket = await SecureSocket.secure(socket,
-          host: authority,
-          context: securityContext,
-          onBadCertificate: _validateBadCertificate);
+
+    final credentials = options.credentials;
+    if (credentials is Http2ChannelCredentials) {
+      final securityContext = credentials.securityContext;
+      if (securityContext != null) {
+        socket = await SecureSocket.secure(socket,
+            host: authority,
+            context: securityContext,
+            onBadCertificate: _validateBadCertificate);
+      }
     }
     socket.done.then(_handleSocketClosed);
     transport = ClientTransportConnection.viaSocket(socket);
@@ -146,9 +150,14 @@ class Http2Transport extends Transport {
   }
 
   bool _validateBadCertificate(X509Certificate certificate) {
-    final validator = options.credentials.onBadCertificate;
-    if (validator == null) return false;
-    return validator(certificate, authority);
+    final credentials = options.credentials;
+    if (credentials is Http2ChannelCredentials) {
+      final validator = credentials.onBadCertificate;
+
+      if (validator == null) return false;
+      return validator(certificate, authority);
+    }
+    return false;
   }
 
   void _handleSocketClosed(_) {

@@ -22,10 +22,10 @@ import 'call.dart';
 import 'options.dart';
 
 import 'transport/http2_transport_stub.dart'
-  if (dart.library.io) 'transport/http2_transport.dart';
+    if (dart.library.io) 'transport/http2_transport.dart';
 import 'transport/transport.dart';
 import 'transport/xhr_transport_stub.dart'
-  if (dart.library.html) 'transport/xhr_transport.dart';
+    if (dart.library.html) 'transport/xhr_transport.dart';
 
 enum ConnectionState {
   /// Actively trying to connect.
@@ -76,7 +76,7 @@ class ClientConnection {
         transport = Http2Transport(host, port, options);
         break;
       case TransportType.Xhr:
-        transport = XhrTransport(host, port, options);
+        transport = XhrTransport(host, port);
         break;
       case TransportType.Websocket:
         throw GrpcError.unimplemented(

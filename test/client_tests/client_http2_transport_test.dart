@@ -17,6 +17,7 @@
 import 'dart:async';
 
 import 'package:grpc/grpc.dart';
+import 'package:grpc/src/client/transport/http2_credentials.dart';
 import 'package:grpc/src/client/transport/http2_transport.dart';
 
 import 'package:http2/transport.dart';
@@ -73,7 +74,7 @@ void main() {
       'host',
       9999,
       ChannelOptions(
-          credentials: new ChannelCredentials.secure(authority: 'test'),
+          credentials: new Http2ChannelCredentials.secure(authority: 'test'),
           transportType: TransportType.Http2));
 
   setUp(() {

@@ -20,9 +20,6 @@ import 'dart:typed_data';
 import 'package:meta/meta.dart';
 
 import '../../shared/streams.dart';
-
-import '../options.dart';
-
 import 'transport.dart';
 
 class XhrTransportStream extends GrpcTransportStream {
@@ -39,12 +36,12 @@ class XhrTransportStream extends GrpcTransportStream {
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
 
   XhrTransportStream(this._request) {
-    _incomingProcessor = new StreamController();
-    _incomingMessages = new StreamController();
-    _outgoingMessages = new StreamController();
+    _incomingProcessor = StreamController();
+    _incomingMessages = StreamController();
+    _outgoingMessages = StreamController();
 
     _incomingProcessor.stream
-        .transform(new GrpcWebDecoder())
+        .transform(GrpcWebDecoder())
         .transform(grpcDecompressor())
         .listen(_incomingMessages.add,
             onError: _incomingMessages.addError,
@@ -67,7 +64,7 @@ class XhrTransportStream extends GrpcTransportStream {
           }
 
           // Force a metadata message with headers
-          final headers = new GrpcMetadata(_request.responseHeaders);
+          final headers = GrpcMetadata(_request.responseHeaders);
           _incomingMessages.add(headers);
         }
       }
@@ -78,11 +75,13 @@ class XhrTransportStream extends GrpcTransportStream {
       }
     });
 
-    _request.onProgress.listen((data) {
+    _request.onProgress.listen((_) {
       // use response over responseText as most browsers don't support
       // using responseText during an onProgress event.
       final responseString = _request.response as String;
-      final bytes = Uint8List.fromList(responseString.substring(_requestBytesRead).codeUnits).buffer;
+      final bytes = Uint8List.fromList(
+              responseString.substring(_requestBytesRead).codeUnits)
+          .buffer;
       _requestBytesRead = responseString.length;
       _incomingProcessor.add(bytes);
     });
@@ -99,19 +98,16 @@ class XhrTransportStream extends GrpcTransportStream {
 class XhrTransport extends Transport {
   final String host;
   final int port;
-  final ChannelOptions options;
 
   HttpRequest _request;
 
-  XhrTransport(this.host, this.port, this.options);
+  XhrTransport(this.host, this.port);
 
   @override
   Future<void> connect() async {}
 
   @override
-  Future<void> finish() async {
-    // TODO: implement finish
-  }
+  Future<void> finish() async {}
 
   @visibleForTesting
   void initializeRequest(HttpRequest request, Map<String, String> metadata) {
@@ -138,7 +134,5 @@ class XhrTransport extends Transport {
   }
 
   @override
-  Future<void> terminate() async {
-    // TODO: implement terminate
-  }
+  Future<void> terminate() async {}
 }

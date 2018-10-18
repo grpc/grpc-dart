@@ -22,8 +22,8 @@ import 'package:grpc_web/src/generated/echo.pbgrpc.dart';
 void main() {
   final channel = new ClientChannel('http://localhost',
       port: 8080,
-      options: const ChannelOptions(
-          credentials: const ChannelCredentials.insecure(),
+      options: ChannelOptions(
+          credentials: ChannelCredentials.insecure(),
           transportType: TransportType.Xhr));
   final service = EchoServiceClient(channel);
 
