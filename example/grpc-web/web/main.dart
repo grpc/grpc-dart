@@ -16,6 +16,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:grpc/grpc.dart';
+import 'package:grpc_web/app.dart';
 import 'package:grpc_web/src/generated/echo.pb.dart';
 import 'package:grpc_web/src/generated/echo.pbgrpc.dart';
 
@@ -26,10 +27,11 @@ void main() {
           credentials: ChannelCredentials.insecure(),
           transportType: TransportType.Xhr));
   final service = EchoServiceClient(channel);
+  final app = EchoApp(service);
 
-  final button = querySelector("#send") as ButtonElement;
+  final button = querySelector('#send') as ButtonElement;
   button.onClick.listen((e) async {
-    final msg = querySelector("#msg") as TextInputElement;
+    final msg = querySelector('#msg') as TextInputElement;
     final value = msg.value.trim();
     msg.value = '';
 
@@ -40,30 +42,13 @@ void main() {
       final count = int.tryParse(countStr);
 
       if (count != null) {
-        repeatEcho(service, value.substring(value.indexOf(' ') + 1), count);
+        app.repeatEcho(
+            value.substring(value.indexOf(' ') + 1), count);
       } else {
-        echo(service, value);
+        app.echo(value);
       }
     } else {
-      echo(service, value);
+      app.echo(value);
     }
   });
-}
-
-void repeatEcho(EchoServiceClient service, String message, int count) {
-  int responseCount = 0;
-  final request = ServerStreamingEchoRequest()
-    ..message = message
-    ..messageCount = count
-    ..messageInterval = 500;
-  service.serverStreamingEcho(request).listen((response) {
-    print(
-        "Response from GRPC-Web Streaming: ${response.message} - ${responseCount}");
-    responseCount++;
-  }, onDone: () => print('Closed connection to server.'));
-}
-
-Future<void> echo(EchoServiceClient service, String message) async {
-  final response = await service.echo(new EchoRequest()..message = message);
-  print('Response from GRPC-Web: ${response.message}');
 }
