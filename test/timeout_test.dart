@@ -17,7 +17,6 @@ import 'dart:async';
 
 import 'package:grpc/grpc.dart';
 import 'package:http2/transport.dart';
-import 'package:test/src/backend/invoker.dart';
 import 'package:test/test.dart';
 
 import 'src/client_utils.dart';
@@ -78,8 +77,9 @@ void main() {
     test('Calls time out if deadline is exceeded', () async {
       void handleRequest(StreamMessage message) {
         validateDataMessage(message);
-        Invoker.current.addOutstandingCallback();
-        new Future.delayed(new Duration(milliseconds: 1)).then((_) {
+        final Future delay = new Future.delayed(new Duration(milliseconds: 2));
+        expect(delay, completes);
+        delay.then((_) {
           try {
             harness
               ..sendResponseHeader()
@@ -87,8 +87,6 @@ void main() {
               ..sendResponseTrailer();
           } catch (error) {
             expect(error, isStateError);
-          } finally {
-            Invoker.current.removeOutstandingCallback();
           }
         });
       }
@@ -118,10 +116,11 @@ void main() {
 
     test('Calls time out if deadline is exceeded', () async {
       Future<int> methodHandler(ServiceCall call, Future<int> request) async {
-        Invoker.current.addOutstandingCallback();
         try {
           expect(call.isTimedOut, isFalse);
-          await new Future.delayed(new Duration(milliseconds: 2));
+          Future delay = new Future.delayed(new Duration(milliseconds: 2));
+          expect(delay, completes);
+          await delay;
           expect(call.isTimedOut, isTrue);
           try {
             await request;
@@ -132,8 +131,6 @@ void main() {
           fail('Did not throw');
         } catch (error, stack) {
           registerException(error, stack);
-        } finally {
-          Invoker.current.removeOutstandingCallback();
         }
         return dummyValue;
       }
