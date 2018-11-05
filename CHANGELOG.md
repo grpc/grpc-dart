@@ -1,3 +1,7 @@
+## 0.6.7
+
+* Support package:test 1.5.
+
 ## 0.6.6
 
 * Support `package:http` `>=0.11.3+17 <0.13.0`.
