@@ -1,3 +1,8 @@
+## 0.6.8
+
+* Calling `terminate()` or `shutdown()` on a channel doesn't throw error if the
+channel is not yet open.
+
 ## 0.6.7
 
 * Support package:test 1.5.
