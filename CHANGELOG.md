@@ -1,3 +1,17 @@
+## 0.6.8
+
+* Calling `terminate()` or `shutdown()` on a channel doesn't throw error if the
+channel is not yet open.
+
+## 0.6.7
+
+* Support package:test 1.5.
+
+## 0.6.6
+
+* Support `package:http` `>=0.11.3+17 <0.13.0`.
+* Update `package:googleapis_auth` to `^0.2.5+3`.
+
 ## 0.6.5
 
 * Interceptors are now async.
