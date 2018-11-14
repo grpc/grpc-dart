@@ -22,16 +22,30 @@ import 'package:http2/transport.dart';
 
 import '../shared/security.dart';
 
+/// Underline streams used by http2 transport.
 class Http2Streams {
   final Stream<List<int>> incoming;
   final StreamSink<List<int>> outgoing;
+
+  /// Get a future that will complete when the [incoming] closes, or
+  /// when an error occurs.
   final Future<void> done;
 
   Http2Streams(this.incoming, this.outgoing, this.done);
 }
 
+/// Options for creating http2 transport.
 class Http2Options {
+  /// An optional connect function for creating underline streams.
+  ///
+  /// If connect is not provided, [Socket.connect] is used. The returned
+  /// [Socket] is secured by TLS, if [ChannelOptions.credentials] is secure.
+  ///
+  /// If connect is provided, no TLS handshake happens on the returned
+  /// streams, even if [ChannelOptions.credentials] is secure.
   final FutureOr<Http2Streams> Function(String host, int port) connect;
+
+  /// Optional settings for creating [ClientTransportConnection].
   final ClientSettings settings;
 
   const Http2Options({this.connect, this.settings});
