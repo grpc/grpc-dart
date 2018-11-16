@@ -27,28 +27,32 @@ class Http2Streams {
   final Stream<List<int>> incoming;
   final StreamSink<List<int>> outgoing;
 
-  /// Get a future that will complete when the [incoming] closes, or
-  /// when an error occurs.
-  final Future<void> done;
-
-  Http2Streams(this.incoming, this.outgoing, this.done);
+  Http2Streams(this.incoming, this.outgoing);
 }
 
-/// Options for creating http2 transport.
-class Http2Options {
-  /// An optional connect function for creating underline streams.
-  ///
-  /// If connect is not provided, [Socket.connect] is used. The returned
-  /// [Socket] is secured by TLS, if [ChannelOptions.credentials] is secure.
-  ///
-  /// If connect is provided, no TLS handshake happens on the returned
-  /// streams, even if [ChannelOptions.credentials] is secure.
-  final FutureOr<Http2Streams> Function(String host, int port) connect;
+typedef Connect = FutureOr<Http2Streams> Function(
+    String host, int port, ChannelCredentials credentials);
 
-  /// Optional settings for creating [ClientTransportConnection].
-  final ClientSettings settings;
+FutureOr<Http2Streams> defaultConnect(
+    String host, int port, ChannelCredentials credentials) async {
+  var socket = await Socket.connect(host, port);
+  final securityContext = credentials.securityContext;
 
-  const Http2Options({this.connect, this.settings});
+  if (securityContext != null) {
+    final authority = credentials.authority ?? host;
+
+    bool onBadCertificate(X509Certificate certificate) {
+      final validator = credentials.onBadCertificate;
+      return validator != null && validator(certificate, authority);
+    }
+
+    socket = await SecureSocket.secure(socket,
+        host: authority,
+        context: securityContext,
+        onBadCertificate: onBadCertificate);
+  }
+
+  return Http2Streams(socket, socket);
 }
 
 const defaultIdleTimeout = const Duration(minutes: 5);
@@ -122,18 +126,30 @@ class ChannelCredentials {
 
 /// Options controlling how connections are made on a [ClientChannel].
 class ChannelOptions {
-  final Http2Options http2;
+  /// An optional connect function for creating [ClientTransportConnection].
+  ///
+  /// If connect is not provided, [Socket.connect] is used. The returned
+  /// [Socket] is secured by TLS, if [credentials] is secure.
+  ///
+  /// If connect is provided, no TLS handshake happens on the returned
+  /// streams, even if [credentials] is secure.
+  final Connect connect;
+
+  /// Optional settings for creating [ClientTransportConnection].
+  final ClientSettings transport;
+
   final ChannelCredentials credentials;
   final Duration idleTimeout;
   final BackoffStrategy backoffStrategy;
 
   const ChannelOptions(
-      {Http2Options http2,
+      {Connect connect,
+      this.transport,
       ChannelCredentials credentials,
       Duration idleTimeout,
       BackoffStrategy backoffStrategy =
           defaultBackoffStrategy}) // Remove when dart-lang/sdk#31066 is fixed.
-      : this.http2 = http2 ?? const Http2Options(),
+      : this.connect = connect ?? defaultConnect,
         this.credentials = credentials ?? const ChannelCredentials.secure(),
         this.idleTimeout = idleTimeout ?? defaultIdleTimeout,
         this.backoffStrategy = backoffStrategy ?? defaultBackoffStrategy;

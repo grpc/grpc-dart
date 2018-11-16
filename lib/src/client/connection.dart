@@ -20,6 +20,7 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
+import '../shared/status.dart';
 import '../shared/timeout.dart';
 
 import 'call.dart';
@@ -101,46 +102,16 @@ class ClientConnection {
 
   @visibleForTesting
   Future<ClientTransportConnection> connectTransport() async {
-    final settings = options.http2.settings;
-
-    final connect = options.http2.connect;
-    if (connect != null) {
-      final streams = await connect(host, port);
-      if (_state == ConnectionState.shutdown) {
-        streams.outgoing.close();
-        streams.incoming.drain();
-        throw 'Shutting down';
-      }
-      streams.done.then(_handleSocketClosed);
-      return new ClientTransportConnection.viaStreams(
-          streams.incoming, streams.outgoing,
-          settings: settings);
-    }
-
-    var socket = await Socket.connect(host, port);
+    final streams = await options.connect(host, port, options.credentials);
     if (_state == ConnectionState.shutdown) {
-      socket.destroy();
-      throw 'Shutting down';
+      streams.outgoing.close();
+      streams.incoming.drain();
+      throw GrpcError.unavailable('Channel shutting down.');
     }
-    final securityContext = options.credentials.securityContext;
-    if (securityContext != null) {
-      socket = await SecureSocket.secure(socket,
-          host: authority,
-          context: securityContext,
-          onBadCertificate: _validateBadCertificate);
-      if (_state == ConnectionState.shutdown) {
-        socket.destroy();
-        throw 'Shutting down';
-      }
-    }
-    socket.done.then(_handleSocketClosed);
-    return new ClientTransportConnection.viaSocket(socket, settings: settings);
-  }
-
-  bool _validateBadCertificate(X509Certificate certificate) {
-    final validator = options.credentials.onBadCertificate;
-    if (validator == null) return false;
-    return validator(certificate, authority);
+    streams.outgoing.done.then(_handleSocketClosed);
+    return new ClientTransportConnection.viaStreams(
+        streams.incoming, streams.outgoing,
+        settings: options.transport);
   }
 
   void _connect() {
