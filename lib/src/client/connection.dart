@@ -15,7 +15,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
