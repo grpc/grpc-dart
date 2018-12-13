@@ -1,3 +1,7 @@
+## 0.6.8+1
+
+* Removes stray files that where published by accident in version 0.6.8.
+
 ## 0.6.8
 
 * Calling `terminate()` or `shutdown()` on a channel doesn't throw error if the
