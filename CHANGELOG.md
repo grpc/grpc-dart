@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Graduate package to 1.0.
+
 ## 0.6.8+1
 
 * Removes stray files that where published by accident in version 0.6.8.
