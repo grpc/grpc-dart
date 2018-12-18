@@ -10,9 +10,6 @@ See the [Dart gRPC Quickstart](https://grpc.io/docs/quickstart/dart.html).
 
 # Status
 
-This package is currently in *beta*: It is available for general usage,
-and is considered feature complete.
-
 If you experience issues, or if you have feature requests,
 please [open an issue](https://github.com/dart-lang/grpc-dart/issues).
 
