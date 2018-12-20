@@ -28,7 +28,7 @@ class GreeterService extends GreeterServiceBase {
   }
 }
 
-Future<Null> main(List<String> args) async {
+Future<void> main(List<String> args) async {
   final server = new Server([new GreeterService()]);
   await server.serve(port: 50051);
   print('Server listening on port ${server.port}...');

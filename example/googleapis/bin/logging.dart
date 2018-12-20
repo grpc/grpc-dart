@@ -23,7 +23,7 @@ import 'package:googleapis/src/generated/google/logging/type/log_severity.pb.dar
 import 'package:googleapis/src/generated/google/logging/v2/log_entry.pb.dart';
 import 'package:googleapis/src/generated/google/logging/v2/logging.pbgrpc.dart';
 
-Future<Null> main() async {
+Future<void> main() async {
   final serviceAccountFile = new File('logging-service-account.json');
   if (!serviceAccountFile.existsSync()) {
     print('File logging-service-account.json not found. Please follow the '

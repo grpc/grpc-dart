@@ -116,7 +116,7 @@ class TestService extends TestServiceBase {
   }
 }
 
-Future<Null> main(List<String> args) async {
+Future<void> main(List<String> args) async {
   final argumentParser = new ArgParser();
   argumentParser.addOption('port', defaultsTo: '8080');
   argumentParser.addOption('use_tls', defaultsTo: 'false');
