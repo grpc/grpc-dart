@@ -312,7 +312,7 @@ void main() {
     );
   });
 
-  Future<Null> makeUnaryCall() async {
+  Future<void> makeUnaryCall() async {
     void handleRequest(StreamMessage message) {
       harness
         ..sendResponseHeader()

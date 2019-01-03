@@ -76,7 +76,7 @@ class MetadataService extends MetadataServiceBase {
 }
 
 class Server {
-  Future<Null> main(List<String> args) async {
+  Future<void> main(List<String> args) async {
     final server = new grpc.Server([new MetadataService()]);
     await server.serve(port: 8080);
     print('Server listening on port ${server.port}...');
