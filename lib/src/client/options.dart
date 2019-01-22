@@ -115,7 +115,7 @@ class ChannelOptions {
 /// by previous metadata providers) and the [uri] that is being called, and is
 /// expected to modify the map before returning or before completing the
 /// returned [Future].
-typedef FutureOr<Null> MetadataProvider(
+typedef FutureOr<void> MetadataProvider(
     Map<String, String> metadata, String uri);
 
 /// Runtime options for an RPC.

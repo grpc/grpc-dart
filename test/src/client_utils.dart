@@ -158,7 +158,7 @@ class ClientHarness {
     handler(false);
   }
 
-  Future<Null> runTest(
+  Future<void> runTest(
       {Future clientCall,
       dynamic expectedResult,
       String expectedPath,
@@ -192,7 +192,7 @@ class ClientHarness {
     await clientSubscription.cancel();
   }
 
-  Future<Null> expectThrows(Future future, dynamic exception) async {
+  Future<void> expectThrows(Future future, dynamic exception) async {
     try {
       await future;
       fail('Did not throw');
@@ -201,7 +201,7 @@ class ClientHarness {
     }
   }
 
-  Future<Null> runFailureTest(
+  Future<void> runFailureTest(
       {Future clientCall,
       dynamic expectedException,
       String expectedPath,
