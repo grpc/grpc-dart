@@ -1,3 +1,7 @@
+## 1.0.0+1
+
+* Support package:http2  1.0.0.
+
 ## 1.0.0
 
 * Graduate package to 1.0.
