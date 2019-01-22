@@ -1,3 +1,7 @@
+## 1.0.0+1
+
+* Extend dependency range of http2 to include version 1.0.0.
+
 ## 1.0.0
 
 * Graduate package to 1.0.
