@@ -13,8 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// The minimal exports for generated files to define server and client base
-/// classes.
+/// Exports the minimum api to define server and client stubs.
+///
+/// Mainly intended to be imported by generated code.
 library service_api;
 
 export 'src/client/channel.dart' show ClientChannel;
