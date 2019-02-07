@@ -23,9 +23,7 @@ import 'package:grpc_web/src/generated/echo.pbgrpc.dart';
 void main() {
   final channel = new ClientChannel('http://localhost',
       port: 8080,
-      options: ChannelOptions(
-          credentials: ChannelCredentials.insecure(),
-          transportType: TransportType.Xhr));
+      options: ChannelOptions(credentials: ChannelCredentials.insecure()));
   final service = EchoServiceClient(channel);
   final app = EchoApp(service);
 
@@ -42,8 +40,7 @@ void main() {
       final count = int.tryParse(countStr);
 
       if (count != null) {
-        app.repeatEcho(
-            value.substring(value.indexOf(' ') + 1), count);
+        app.repeatEcho(value.substring(value.indexOf(' ') + 1), count);
       } else {
         app.echo(value);
       }

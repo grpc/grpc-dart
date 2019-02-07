@@ -16,6 +16,7 @@
 import 'dart:async';
 
 import 'package:grpc/grpc.dart';
+import 'package:grpc/src/shared/message.dart';
 import 'package:test/test.dart';
 
 import '../src/client_utils.dart';

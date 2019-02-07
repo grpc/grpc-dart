@@ -44,9 +44,9 @@ class MockHttp2Transport extends Http2Transport {
 
   @override
   Future<void> connect() async {
-    transport = MockTransport();
+    transportConnection = MockTransport();
 
-    when(transport.makeRequest(any)).thenAnswer((call) {
+    when(transportConnection.makeRequest(any)).thenAnswer((call) {
       if (onVerifyHeaders != null) {
         onVerifyHeaders(call.positionalArguments[0]);
       }
@@ -74,8 +74,7 @@ void main() {
       'host',
       9999,
       ChannelOptions(
-          credentials: new Http2ChannelCredentials.secure(authority: 'test'),
-          transportType: TransportType.Http2));
+          credentials: new Http2ChannelCredentials.secure(authority: 'test')));
 
   setUp(() {
     transport.connect();

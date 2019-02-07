@@ -114,9 +114,15 @@ class TestService extends TestServiceBase {
     final bufferedResponses = await request.map(_responseForRequest).toList();
     yield* new Stream.fromIterable(bufferedResponses);
   }
+
+  @override
+  Future<Empty> unimplementedCall(ServiceCall call, Empty request) {
+    // TODO: implement unimplementedCall
+    return null;
+  }
 }
 
-Future<Null> main(List<String> args) async {
+Future<void> main(List<String> args) async {
   final argumentParser = new ArgParser();
   argumentParser.addOption('port', defaultsTo: '8080');
   argumentParser.addOption('use_tls', defaultsTo: 'false');

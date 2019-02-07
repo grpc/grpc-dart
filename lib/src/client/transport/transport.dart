@@ -15,7 +15,7 @@
 
 import 'dart:async';
 
-import '../../shared/streams.dart';
+import '../../shared/message.dart';
 
 typedef void SocketClosedHandler();
 typedef void ActiveStateHandler(bool isActive);

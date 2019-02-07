@@ -21,7 +21,7 @@ import 'package:grpc/grpc.dart';
 import 'package:helloworld/src/generated/helloworld.pb.dart';
 import 'package:helloworld/src/generated/helloworld.pbgrpc.dart';
 
-Future<Null> main(List<String> args) async {
+Future<void> main(List<String> args) async {
   final channel = new ClientChannel('localhost',
       port: 50051,
       options: const ChannelOptions(

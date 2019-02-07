@@ -23,7 +23,7 @@ class Client {
   ClientChannel channel;
   MetadataClient stub;
 
-  Future<Null> main(List<String> args) async {
+  Future<void> main(List<String> args) async {
     channel = new ClientChannel('127.0.0.1',
         port: 8080,
         options: const ChannelOptions(
@@ -42,7 +42,7 @@ class Client {
   ///
   /// Send custom metadata with a RPC, and print out the received response and
   /// metadata.
-  Future<Null> runEcho() async {
+  Future<void> runEcho() async {
     final request = new Record()..value = 'Kaj';
     final call = stub.echo(request,
         options: new CallOptions(metadata: {'peer': 'Verner'}));
@@ -61,7 +61,7 @@ class Client {
   /// Same as the echo demo, but demonstrating per-client custom metadata, as
   /// well as a per-call metadata. The server will delay the response for the
   /// requested duration, during which the client will cancel the RPC.
-  Future<Null> runEchoDelayCancel() async {
+  Future<void> runEchoDelayCancel() async {
     final stubWithCustomOptions = new MetadataClient(channel,
         options: new CallOptions(metadata: {'peer': 'Verner'}));
     final request = new Record()..value = 'Kaj';
@@ -87,7 +87,7 @@ class Client {
   ///
   /// Makes a bi-directional RPC, sends 4 requests, and cancels the RPC after
   /// receiving 3 responses.
-  Future<Null> runAddOneCancel() async {
+  Future<void> runAddOneCancel() async {
     final numbers = new StreamController<int>();
     final call =
         stub.addOne(numbers.stream.map((value) => new Number()..value = value));
@@ -111,7 +111,7 @@ class Client {
   ///
   /// Call an RPC that returns a stream of Fibonacci numbers. Cancel the call
   /// after receiving more than 5 responses.
-  Future<Null> runFibonacciCancel() async {
+  Future<void> runFibonacciCancel() async {
     final call = stub.fibonacci(new Empty());
     int count = 0;
     try {
@@ -132,7 +132,7 @@ class Client {
   ///
   /// Call an RPC that returns a stream of Fibonacci numbers, and specify an RPC
   /// timeout of 2 seconds.
-  Future<Null> runFibonacciTimeout() async {
+  Future<void> runFibonacciTimeout() async {
     final call = stub.fibonacci(new Empty(),
         options: new CallOptions(timeout: new Duration(seconds: 2)));
     int count = 0;

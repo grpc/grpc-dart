@@ -19,10 +19,11 @@ import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 
-import '../../shared/streams.dart';
+import '../../shared/message.dart';
 import 'transport.dart';
+import 'web_streams.dart';
 
-class XhrTransportStream extends GrpcTransportStream {
+class XhrTransportStream implements GrpcTransportStream {
   HttpRequest _request;
   int _requestBytesRead = 0;
   StreamController<ByteBuffer> _incomingProcessor;
@@ -48,7 +49,7 @@ class XhrTransportStream extends GrpcTransportStream {
             onDone: _incomingMessages.close);
 
     _outgoingMessages.stream
-        .map(GrpcHttpEncoder.frame)
+        .map(frame)
         .listen((data) => _request.send(data));
 
     _request.onReadyStateChange.listen((data) {
@@ -136,3 +137,4 @@ class XhrTransport extends Transport {
   @override
   Future<void> terminate() async {}
 }
+
