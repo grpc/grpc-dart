@@ -24,5 +24,4 @@ export 'src/client/common.dart' show ResponseFuture, ResponseStream;
 export 'src/client/method.dart' show ClientMethod;
 export 'src/client/options.dart' show CallOptions;
 export 'src/server/call.dart' show ServiceCall;
-export 'src/server/server.dart' show Server;
 export 'src/server/service.dart' show Service, ServiceMethod;
