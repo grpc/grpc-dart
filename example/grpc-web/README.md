@@ -39,9 +39,9 @@ You can then navigate to http://localhost:9000/ to try out the example.
 # Regenerate the stubs
 
 If you have made changes to the message or service definition in
-`protos/helloworld.proto` and need to regenerate the corresponding Dart files,
+`protos/echo.proto` and need to regenerate the corresponding Dart files,
 you will need to have protoc version 3.0.0 or higher and the Dart protoc plugin
-version 0.7.9 or higher on your PATH.
+version 17.0.0 or higher on your PATH.
 
 To install protoc, see the instructions on
 [the Protocol Buffers website](https://developers.google.com/protocol-buffers/).
