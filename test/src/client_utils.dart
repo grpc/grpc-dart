@@ -39,12 +39,19 @@ class MockStream extends Mock implements GrpcTransportStream {}
 class FakeConnection extends ClientConnection {
   var connectionError;
 
-  FakeConnection(String host, Transport transport, ChannelOptions options)
-      : super(host, 443, options, (_, _, _) async {
-    if (connectionError != null) throw connectionError;
-    return transport;
-  });
+  FakeConnection._(String host, Transport transport, ChannelOptions options,
+      ConnectTransport connectTransport)
+      : super(host, 443, options, connectTransport);
 
+  factory FakeConnection(
+      String host, Transport transport, ChannelOptions options) {
+    FakeConnection f;
+    f = FakeConnection._(host, transport, options, (_, _1, _2) async {
+      if (f.connectionError != null) throw f.connectionError;
+      return transport;
+    });
+    return f;
+  }
 }
 
 Duration testBackoff(Duration lastBackoff) => const Duration(milliseconds: 1);

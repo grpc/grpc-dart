@@ -16,6 +16,7 @@
 import 'dart:convert';
 
 import 'package:grpc/src/shared/streams.dart';
+import 'package:grpc/src/shared/message.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 
