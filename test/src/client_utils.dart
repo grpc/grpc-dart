@@ -48,6 +48,7 @@ Duration testBackoff(Duration lastBackoff) => const Duration(milliseconds: 1);
 class FakeChannelOptions implements ChannelOptions {
   ChannelCredentials credentials = const ChannelCredentials.secure();
   Duration idleTimeout = const Duration(seconds: 1);
+  String userAgent = 'dart-grpc/1.0.0 test';
   BackoffStrategy backoffStrategy = testBackoff;
 }
 

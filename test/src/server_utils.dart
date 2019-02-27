@@ -171,7 +171,12 @@ class ServerHarness {
       Map<String, String> metadata,
       Duration timeout}) {
     final headers = ClientConnection.createCallHeaders(
-        true, authority, path, timeout, metadata);
+        useTls: true,
+        authority: authority,
+        path: path,
+        userAgent: 'dart-grpc/1.0.0 test',
+        timeout: timeout,
+        metadata: metadata);
     toServer.add(new HeadersStreamMessage(headers));
   }
 
