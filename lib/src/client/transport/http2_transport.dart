@@ -20,6 +20,7 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
+import '../../shared/message.dart';
 import '../../shared/streams.dart';
 import '../../shared/timeout.dart';
 
@@ -46,7 +47,7 @@ class Http2TransportStream extends GrpcTransportStream {
         .pipe(_incomingMessages);
 
     _outgoingMessages.stream
-        .map(GrpcHttpEncoder.frame)
+        .map(frame)
         .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
         .handleError(_onRequestError)
         .listen(_transportStream.outgoingMessages.add,
@@ -83,7 +84,7 @@ class Http2Transport extends Transport {
   final ChannelOptions options;
 
   @visibleForTesting
-  ClientTransportConnection transport;
+  ClientTransportConnection transportConnection;
 
   Http2Transport(this.host, this.port, this.options);
 
@@ -127,7 +128,7 @@ class Http2Transport extends Transport {
       }
     }
     socket.done.then(_handleSocketClosed);
-    transport = ClientTransportConnection.viaSocket(socket);
+    transportConnection = ClientTransportConnection.viaSocket(socket);
   }
 
   @override
@@ -135,18 +136,18 @@ class Http2Transport extends Transport {
       String path, Duration timeout, Map<String, String> metadata) {
     final headers = createCallHeaders(
         options.credentials.isSecure, authority, path, timeout, metadata);
-    final stream = transport.makeRequest(headers);
+    final stream = transportConnection.makeRequest(headers);
     return new Http2TransportStream(stream);
   }
 
   @override
   Future<void> finish() async {
-    await transport.finish();
+    await transportConnection.finish();
   }
 
   @override
   Future<void> terminate() async {
-    await transport.terminate();
+    await transportConnection.terminate();
   }
 
   bool _validateBadCertificate(X509Certificate certificate) {

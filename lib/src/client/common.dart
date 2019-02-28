@@ -38,7 +38,7 @@ abstract class Response {
 
   /// Cancel this gRPC call. Any remaining request objects will not be sent, and
   /// no further responses will be received.
-  Future<Null> cancel();
+  Future<void> cancel();
 }
 
 /// A gRPC response producing a single value.
@@ -83,5 +83,5 @@ abstract class _ResponseMixin<Q, R> implements Response {
   Future<Map<String, String>> get trailers => _call.trailers;
 
   @override
-  Future<Null> cancel() => _call.cancel();
+  Future<void> cancel() => _call.cancel();
 }

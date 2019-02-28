@@ -16,7 +16,7 @@
 import 'dart:async';
 
 import '../shared/status.dart';
-import '../shared/streams.dart';
+import '../shared/message.dart';
 
 import 'common.dart';
 import 'connection.dart';
@@ -271,14 +271,14 @@ class ClientCall<Q, R> implements Response {
   Future<Map<String, String>> get trailers => _trailers.future;
 
   @override
-  Future<Null> cancel() {
+  Future<void> cancel() {
     if (!_responses.isClosed) {
       _responses.addError(new GrpcError.cancelled('Cancelled by client.'));
     }
     return _terminate();
   }
 
-  Future<Null> _terminate() async {
+  Future<void> _terminate() async {
     isCancelled = true;
     _timeoutTimer?.cancel();
     // Don't await _responses.close() here. It'll only complete once the done
@@ -296,7 +296,7 @@ class ClientCall<Q, R> implements Response {
     await Future.wait(futures);
   }
 
-  Future<Null> _safeTerminate() {
+  Future<void> _safeTerminate() {
     return _terminate().catchError((_) {});
   }
 }

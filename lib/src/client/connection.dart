@@ -15,17 +15,14 @@
 
 import 'dart:async';
 
+import 'package:grpc/src/client/channel.dart';
 import 'package:meta/meta.dart';
 
 import '../shared/status.dart';
 import 'call.dart';
 import 'options.dart';
 
-import 'transport/http2_transport_stub.dart'
-    if (dart.library.io) 'transport/http2_transport.dart';
 import 'transport/transport.dart';
-import 'transport/xhr_transport_stub.dart'
-    if (dart.library.html) 'transport/xhr_transport.dart';
 
 enum ConnectionState {
   /// Actively trying to connect.
@@ -51,6 +48,7 @@ class ClientConnection {
   final String host;
   final int port;
   final ChannelOptions options;
+  final ConnectTransport connectTransport;
 
   ConnectionState _state = ConnectionState.idle;
   void Function(ClientConnection connection) onStateChanged;
@@ -62,30 +60,11 @@ class ClientConnection {
   Timer _timer;
   Duration _currentReconnectDelay;
 
-  ClientConnection(this.host, this.port, this.options);
+  ClientConnection(this.host, this.port, this.options, this.connectTransport);
 
   ConnectionState get state => _state;
 
   String get authority => options.credentials.authority ?? host;
-
-  @visibleForTesting
-  Future<Transport> connectTransport() async {
-    Transport transport;
-    switch (options.transportType) {
-      case TransportType.Http2:
-        transport = Http2Transport(host, port, options);
-        break;
-      case TransportType.Xhr:
-        transport = XhrTransport(host, port);
-        break;
-      case TransportType.Websocket:
-        throw GrpcError.unimplemented(
-            "Websocket support for grpc-web is not currently supported");
-    }
-
-    await transport.connect();
-    return transport;
-  }
 
   void _connect() {
     if (_state != ConnectionState.idle &&
@@ -93,7 +72,7 @@ class ClientConnection {
       return;
     }
     _setState(ConnectionState.connecting);
-    connectTransport().then((transport) {
+    connectTransport(host, port, options).then((transport) {
       _currentReconnectDelay = null;
       _transport = transport;
       _transport.onActiveStateChanged = _handleActiveStateChanged;
@@ -143,7 +122,7 @@ class ClientConnection {
   ///
   /// No further calls may be made on this connection, but existing calls
   /// are allowed to finish.
-  Future<Null> shutdown() async {
+  Future<void> shutdown() async {
     if (_state == ConnectionState.shutdown) return null;
     _setShutdownState();
     await _transport?.finish();
@@ -153,7 +132,7 @@ class ClientConnection {
   ///
   /// All open calls are terminated immediately, and no further calls may be
   /// made on this connection.
-  Future<Null> terminate() async {
+  Future<void> terminate() async {
     _setShutdownState();
     await _transport?.terminate();
   }

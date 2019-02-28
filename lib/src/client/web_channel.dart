@@ -1,4 +1,4 @@
-// Copyright (c) 2018, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2019, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,38 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
-
+import 'package:grpc/src/client/options.dart';
+import 'package:grpc/src/client/transport/transport.dart';
+import 'package:grpc/src/client/transport/xhr_transport.dart';
 import 'package:meta/meta.dart';
 
-import 'transport.dart';
+import 'channel.dart';
 
-class XhrTransport extends Transport {
-  XhrTransport(String host, int ports);
+@visibleForTesting
+Future<Transport> connectXhrTransport(
+    String host, int port, ChannelOptions _) async {
+  return XhrTransport(host, port)..connect();
+}
 
-  @override
-  Future<void> connect() {
-    _throw();
-  }
-
-  @override
-  Future<void> finish() {
-    _throw();
-  }
-
-  @override
-  GrpcTransportStream makeRequest(
-      String path, Duration timeout, Map<String, String> metadata) {
-    _throw();
-  }
-
-  @override
-  Future<void> terminate() {
-    _throw();
-  }
-
-  @alwaysThrows
-  void _throw() {
-    throw UnsupportedError('Xhr is not supported on this platform');
-  }
+class GrpcWebClientChannel extends ClientChannel {
+  GrpcWebClientChannel.xhr(String host,
+      {int port = 443}) : super(host, connectXhrTransport, port: port);
 }

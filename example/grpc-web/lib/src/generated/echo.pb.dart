@@ -1,57 +1,33 @@
 ///
 //  Generated code. Do not modify.
+//  source: echo.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
+// ignore_for_file: non_constant_identifier_names,library_prefixes,unused_import
 
 // ignore: UNUSED_SHOWN_NAME
-import 'dart:core' show int, bool, double, String, List, override;
+import 'dart:core' show int, bool, double, String, List, Map, override;
 
-import 'package:protobuf/protobuf.dart';
+import 'package:protobuf/protobuf.dart' as $pb;
 
-class Empty extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Empty')
-    ..hasRequiredFields = false
-  ;
-
-  Empty() : super();
-  Empty.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
-  Empty.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
-  Empty clone() => new Empty()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static Empty create() => new Empty();
-  static PbList<Empty> createRepeated() => new PbList<Empty>();
-  static Empty getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyEmpty();
-    return _defaultInstance;
-  }
-  static Empty _defaultInstance;
-  static void $checkItem(Empty v) {
-    if (v is! Empty) checkItemFailed(v, 'Empty');
-  }
-}
-
-class _ReadonlyEmpty extends Empty with ReadonlyMessageMixin {}
-
-class EchoRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('EchoRequest')
+class EchoRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = new $pb.BuilderInfo('EchoRequest', package: const $pb.PackageName('grpc.gateway.testing'))
     ..aOS(1, 'message')
     ..hasRequiredFields = false
   ;
 
   EchoRequest() : super();
-  EchoRequest.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
-  EchoRequest.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  EchoRequest.fromBuffer(List<int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  EchoRequest.fromJson(String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
   EchoRequest clone() => new EchoRequest()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
+  EchoRequest copyWith(void Function(EchoRequest) updates) => super.copyWith((message) => updates(message as EchoRequest));
+  $pb.BuilderInfo get info_ => _i;
   static EchoRequest create() => new EchoRequest();
-  static PbList<EchoRequest> createRepeated() => new PbList<EchoRequest>();
-  static EchoRequest getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyEchoRequest();
-    return _defaultInstance;
-  }
+  EchoRequest createEmptyInstance() => create();
+  static $pb.PbList<EchoRequest> createRepeated() => new $pb.PbList<EchoRequest>();
+  static EchoRequest getDefault() => _defaultInstance ??= create()..freeze();
   static EchoRequest _defaultInstance;
   static void $checkItem(EchoRequest v) {
-    if (v is! EchoRequest) checkItemFailed(v, 'EchoRequest');
+    if (v is! EchoRequest) $pb.checkItemFailed(v, _i.qualifiedMessageName);
   }
 
   String get message => $_getS(0, '');
@@ -60,66 +36,54 @@ class EchoRequest extends GeneratedMessage {
   void clearMessage() => clearField(1);
 }
 
-class _ReadonlyEchoRequest extends EchoRequest with ReadonlyMessageMixin {}
-
-class EchoResponse extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('EchoResponse')
+class EchoResponse extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = new $pb.BuilderInfo('EchoResponse', package: const $pb.PackageName('grpc.gateway.testing'))
     ..aOS(1, 'message')
-    ..a<int>(2, 'messageCount', PbFieldType.O3)
     ..hasRequiredFields = false
   ;
 
   EchoResponse() : super();
-  EchoResponse.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
-  EchoResponse.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  EchoResponse.fromBuffer(List<int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  EchoResponse.fromJson(String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
   EchoResponse clone() => new EchoResponse()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
+  EchoResponse copyWith(void Function(EchoResponse) updates) => super.copyWith((message) => updates(message as EchoResponse));
+  $pb.BuilderInfo get info_ => _i;
   static EchoResponse create() => new EchoResponse();
-  static PbList<EchoResponse> createRepeated() => new PbList<EchoResponse>();
-  static EchoResponse getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyEchoResponse();
-    return _defaultInstance;
-  }
+  EchoResponse createEmptyInstance() => create();
+  static $pb.PbList<EchoResponse> createRepeated() => new $pb.PbList<EchoResponse>();
+  static EchoResponse getDefault() => _defaultInstance ??= create()..freeze();
   static EchoResponse _defaultInstance;
   static void $checkItem(EchoResponse v) {
-    if (v is! EchoResponse) checkItemFailed(v, 'EchoResponse');
+    if (v is! EchoResponse) $pb.checkItemFailed(v, _i.qualifiedMessageName);
   }
 
   String get message => $_getS(0, '');
   set message(String v) { $_setString(0, v); }
   bool hasMessage() => $_has(0);
   void clearMessage() => clearField(1);
-
-  int get messageCount => $_get(1, 0);
-  set messageCount(int v) { $_setSignedInt32(1, v); }
-  bool hasMessageCount() => $_has(1);
-  void clearMessageCount() => clearField(2);
 }
 
-class _ReadonlyEchoResponse extends EchoResponse with ReadonlyMessageMixin {}
-
-class ServerStreamingEchoRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ServerStreamingEchoRequest')
+class ServerStreamingEchoRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = new $pb.BuilderInfo('ServerStreamingEchoRequest', package: const $pb.PackageName('grpc.gateway.testing'))
     ..aOS(1, 'message')
-    ..a<int>(2, 'messageCount', PbFieldType.O3)
-    ..a<int>(3, 'messageInterval', PbFieldType.O3)
+    ..a<int>(2, 'messageCount', $pb.PbFieldType.O3)
+    ..a<int>(3, 'messageInterval', $pb.PbFieldType.O3)
     ..hasRequiredFields = false
   ;
 
   ServerStreamingEchoRequest() : super();
-  ServerStreamingEchoRequest.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
-  ServerStreamingEchoRequest.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  ServerStreamingEchoRequest.fromBuffer(List<int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  ServerStreamingEchoRequest.fromJson(String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
   ServerStreamingEchoRequest clone() => new ServerStreamingEchoRequest()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
+  ServerStreamingEchoRequest copyWith(void Function(ServerStreamingEchoRequest) updates) => super.copyWith((message) => updates(message as ServerStreamingEchoRequest));
+  $pb.BuilderInfo get info_ => _i;
   static ServerStreamingEchoRequest create() => new ServerStreamingEchoRequest();
-  static PbList<ServerStreamingEchoRequest> createRepeated() => new PbList<ServerStreamingEchoRequest>();
-  static ServerStreamingEchoRequest getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyServerStreamingEchoRequest();
-    return _defaultInstance;
-  }
+  ServerStreamingEchoRequest createEmptyInstance() => create();
+  static $pb.PbList<ServerStreamingEchoRequest> createRepeated() => new $pb.PbList<ServerStreamingEchoRequest>();
+  static ServerStreamingEchoRequest getDefault() => _defaultInstance ??= create()..freeze();
   static ServerStreamingEchoRequest _defaultInstance;
   static void $checkItem(ServerStreamingEchoRequest v) {
-    if (v is! ServerStreamingEchoRequest) checkItemFailed(v, 'ServerStreamingEchoRequest');
+    if (v is! ServerStreamingEchoRequest) $pb.checkItemFailed(v, _i.qualifiedMessageName);
   }
 
   String get message => $_getS(0, '');
@@ -138,28 +102,25 @@ class ServerStreamingEchoRequest extends GeneratedMessage {
   void clearMessageInterval() => clearField(3);
 }
 
-class _ReadonlyServerStreamingEchoRequest extends ServerStreamingEchoRequest with ReadonlyMessageMixin {}
-
-class ServerStreamingEchoResponse extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ServerStreamingEchoResponse')
+class ServerStreamingEchoResponse extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = new $pb.BuilderInfo('ServerStreamingEchoResponse', package: const $pb.PackageName('grpc.gateway.testing'))
     ..aOS(1, 'message')
     ..hasRequiredFields = false
   ;
 
   ServerStreamingEchoResponse() : super();
-  ServerStreamingEchoResponse.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
-  ServerStreamingEchoResponse.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  ServerStreamingEchoResponse.fromBuffer(List<int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  ServerStreamingEchoResponse.fromJson(String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
   ServerStreamingEchoResponse clone() => new ServerStreamingEchoResponse()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
+  ServerStreamingEchoResponse copyWith(void Function(ServerStreamingEchoResponse) updates) => super.copyWith((message) => updates(message as ServerStreamingEchoResponse));
+  $pb.BuilderInfo get info_ => _i;
   static ServerStreamingEchoResponse create() => new ServerStreamingEchoResponse();
-  static PbList<ServerStreamingEchoResponse> createRepeated() => new PbList<ServerStreamingEchoResponse>();
-  static ServerStreamingEchoResponse getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyServerStreamingEchoResponse();
-    return _defaultInstance;
-  }
+  ServerStreamingEchoResponse createEmptyInstance() => create();
+  static $pb.PbList<ServerStreamingEchoResponse> createRepeated() => new $pb.PbList<ServerStreamingEchoResponse>();
+  static ServerStreamingEchoResponse getDefault() => _defaultInstance ??= create()..freeze();
   static ServerStreamingEchoResponse _defaultInstance;
   static void $checkItem(ServerStreamingEchoResponse v) {
-    if (v is! ServerStreamingEchoResponse) checkItemFailed(v, 'ServerStreamingEchoResponse');
+    if (v is! ServerStreamingEchoResponse) $pb.checkItemFailed(v, _i.qualifiedMessageName);
   }
 
   String get message => $_getS(0, '');
@@ -167,66 +128,4 @@ class ServerStreamingEchoResponse extends GeneratedMessage {
   bool hasMessage() => $_has(0);
   void clearMessage() => clearField(1);
 }
-
-class _ReadonlyServerStreamingEchoResponse extends ServerStreamingEchoResponse with ReadonlyMessageMixin {}
-
-class ClientStreamingEchoRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ClientStreamingEchoRequest')
-    ..aOS(1, 'message')
-    ..hasRequiredFields = false
-  ;
-
-  ClientStreamingEchoRequest() : super();
-  ClientStreamingEchoRequest.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
-  ClientStreamingEchoRequest.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
-  ClientStreamingEchoRequest clone() => new ClientStreamingEchoRequest()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static ClientStreamingEchoRequest create() => new ClientStreamingEchoRequest();
-  static PbList<ClientStreamingEchoRequest> createRepeated() => new PbList<ClientStreamingEchoRequest>();
-  static ClientStreamingEchoRequest getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyClientStreamingEchoRequest();
-    return _defaultInstance;
-  }
-  static ClientStreamingEchoRequest _defaultInstance;
-  static void $checkItem(ClientStreamingEchoRequest v) {
-    if (v is! ClientStreamingEchoRequest) checkItemFailed(v, 'ClientStreamingEchoRequest');
-  }
-
-  String get message => $_getS(0, '');
-  set message(String v) { $_setString(0, v); }
-  bool hasMessage() => $_has(0);
-  void clearMessage() => clearField(1);
-}
-
-class _ReadonlyClientStreamingEchoRequest extends ClientStreamingEchoRequest with ReadonlyMessageMixin {}
-
-class ClientStreamingEchoResponse extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ClientStreamingEchoResponse')
-    ..a<int>(1, 'messageCount', PbFieldType.O3)
-    ..hasRequiredFields = false
-  ;
-
-  ClientStreamingEchoResponse() : super();
-  ClientStreamingEchoResponse.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
-  ClientStreamingEchoResponse.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
-  ClientStreamingEchoResponse clone() => new ClientStreamingEchoResponse()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static ClientStreamingEchoResponse create() => new ClientStreamingEchoResponse();
-  static PbList<ClientStreamingEchoResponse> createRepeated() => new PbList<ClientStreamingEchoResponse>();
-  static ClientStreamingEchoResponse getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyClientStreamingEchoResponse();
-    return _defaultInstance;
-  }
-  static ClientStreamingEchoResponse _defaultInstance;
-  static void $checkItem(ClientStreamingEchoResponse v) {
-    if (v is! ClientStreamingEchoResponse) checkItemFailed(v, 'ClientStreamingEchoResponse');
-  }
-
-  int get messageCount => $_get(0, 0);
-  set messageCount(int v) { $_setSignedInt32(0, v); }
-  bool hasMessageCount() => $_has(0);
-  void clearMessageCount() => clearField(1);
-}
-
-class _ReadonlyClientStreamingEchoResponse extends ClientStreamingEchoResponse with ReadonlyMessageMixin {}
 

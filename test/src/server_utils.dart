@@ -15,6 +15,7 @@
 
 import 'dart:async';
 
+import 'package:grpc/src/shared/message.dart';
 import 'package:grpc/src/shared/streams.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
@@ -178,7 +179,7 @@ class ServerHarness {
 
   void sendData(int value) {
     toServer
-        .add(new DataStreamMessage(GrpcHttpEncoder.frame(mockEncode(value))));
+        .add(new DataStreamMessage(frame(mockEncode(value))));
   }
 
   void runTest(String path, List<int> requests, List<int> expectedResponses) {

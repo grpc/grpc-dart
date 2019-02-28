@@ -36,9 +36,6 @@ Duration defaultBackoffStrategy(Duration lastBackoff) {
   return nextBackoff < _maxBackoff ? nextBackoff : _maxBackoff;
 }
 
-/// Transport type. Http2 is for VM use, Xhr and Websocket are for web browser use.
-enum TransportType { Http2, Xhr, Websocket }
-
 /// Options controlling TLS security settings on a [ClientChannel].
 class ChannelCredentials {
   final bool isSecure;
@@ -55,13 +52,11 @@ class ChannelCredentials {
 class ChannelOptions {
   final ChannelCredentials credentials;
   final Duration idleTimeout;
-  final TransportType transportType;
   final BackoffStrategy backoffStrategy;
 
   const ChannelOptions({
     ChannelCredentials credentials,
     this.idleTimeout = defaultIdleTimeout,
-    this.transportType = TransportType.Http2,
     this.backoffStrategy = defaultBackoffStrategy,
   }) : this.credentials = credentials ?? const ChannelCredentials.insecure();
 }
@@ -76,7 +71,7 @@ class ChannelOptions {
 /// by previous metadata providers) and the [uri] that is being called, and is
 /// expected to modify the map before returning or before completing the
 /// returned [Future].
-typedef FutureOr<Null> MetadataProvider(
+typedef FutureOr<void> MetadataProvider(
     Map<String, String> metadata, String uri);
 
 /// Runtime options for an RPC.

@@ -20,6 +20,7 @@ import 'dart:html';
 
 import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/transport/xhr_transport.dart';
+import 'package:grpc/src/shared/message.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:test/test.dart';
@@ -90,7 +91,7 @@ void main() {
     stream.outgoingMessages.add(data);
     await stream.terminate();
 
-    final expectedData = GrpcHttpEncoder.frame(data);
+    final expectedData = frame(data);
     expect(verify(mockRequest.send(captureAny)).captured.single, expectedData);
   });
 
@@ -128,7 +129,7 @@ void main() {
     final stream =
         transport.makeRequest('test_path', Duration(seconds: 10), metadata);
     final data = List<int>.filled(10, 224);
-    final encoded = GrpcHttpEncoder.frame(data);
+    final encoded = frame(data);
     final encodedString = String.fromCharCodes(encoded);
 
     bool dataVerified = false;
@@ -170,7 +171,7 @@ void main() {
       List<int>.filled(10, 224),
       List<int>.filled(5, 124)
     ];
-    final encoded = data.map((d) => GrpcHttpEncoder.frame(d));
+    final encoded = data.map((d) => frame(d));
     final encodedStrings = encoded.map((e) => String.fromCharCodes(e)).toList();
     // to start - expected response is the first message
     var expectedResponse = encodedStrings[0];

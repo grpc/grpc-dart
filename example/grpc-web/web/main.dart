@@ -12,20 +12,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import 'dart:async';
 import 'dart:html';
 
-import 'package:grpc/grpc.dart';
+import 'package:grpc/grpc_web.dart';
 import 'package:grpc_web/app.dart';
-import 'package:grpc_web/src/generated/echo.pb.dart';
 import 'package:grpc_web/src/generated/echo.pbgrpc.dart';
 
 void main() {
-  final channel = new ClientChannel('http://localhost',
-      port: 8080,
-      options: ChannelOptions(
-          credentials: ChannelCredentials.insecure(),
-          transportType: TransportType.Xhr));
+  final channel = new GrpcWebClientChannel.xhr('http://localhost',
+      port: 8080);
   final service = EchoServiceClient(channel);
   final app = EchoApp(service);
 
@@ -42,8 +37,7 @@ void main() {
       final count = int.tryParse(countStr);
 
       if (count != null) {
-        app.repeatEcho(
-            value.substring(value.indexOf(' ') + 1), count);
+        app.repeatEcho(value.substring(value.indexOf(' ') + 1), count);
       } else {
         app.echo(value);
       }

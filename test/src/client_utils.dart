@@ -15,7 +15,7 @@
 
 import 'dart:async';
 
-import 'package:grpc/src/shared/streams.dart';
+import 'package:grpc/src/shared/message.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -37,17 +37,20 @@ class MockTransport extends Mock implements Transport {}
 class MockStream extends Mock implements GrpcTransportStream {}
 
 class FakeConnection extends ClientConnection {
-  final Transport transport;
-
   var connectionError;
 
-  FakeConnection(String host, this.transport, ChannelOptions options)
-      : super(host, 443, options);
+  FakeConnection._(String host, Transport transport, ChannelOptions options,
+      ConnectTransport connectTransport)
+      : super(host, 443, options, connectTransport);
 
-  @override
-  Future<Transport> connectTransport() async {
-    if (connectionError != null) throw connectionError;
-    return transport;
+  factory FakeConnection(
+      String host, Transport transport, ChannelOptions options) {
+    FakeConnection f;
+    f = FakeConnection._(host, transport, options, (_, _1, _2) async {
+      if (f.connectionError != null) throw f.connectionError;
+      return transport;
+    });
+    return f;
   }
 }
 
@@ -55,7 +58,6 @@ Duration testBackoff(Duration lastBackoff) => const Duration(milliseconds: 1);
 
 class FakeChannelOptions implements ChannelOptions {
   ChannelCredentials credentials = const Http2ChannelCredentials.secure();
-  TransportType transportType = TransportType.Http2;
   Duration idleTimeout = const Duration(seconds: 1);
   BackoffStrategy backoffStrategy = testBackoff;
 }
@@ -163,7 +165,7 @@ class ClientHarness {
     handler(false);
   }
 
-  Future<Null> runTest(
+  Future<void> runTest(
       {Future clientCall,
       dynamic expectedResult,
       String expectedPath,
@@ -202,7 +204,7 @@ class ClientHarness {
     await clientSubscription.cancel();
   }
 
-  Future<Null> expectThrows(Future future, dynamic exception) async {
+  Future<void> expectThrows(Future future, dynamic exception) async {
     try {
       await future;
       fail('Did not throw');
@@ -211,7 +213,7 @@ class ClientHarness {
     }
   }
 
-  Future<Null> runFailureTest(
+  Future<void> runFailureTest(
       {Future clientCall,
       dynamic expectedException,
       String expectedPath,
