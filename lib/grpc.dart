@@ -16,12 +16,15 @@
 export 'src/auth/auth.dart';
 
 export 'src/client/call.dart';
-export 'src/client/channel.dart';
+export 'src/client/channel.dart' hide ClientChannel;
 export 'src/client/client.dart';
 export 'src/client/common.dart';
 export 'src/client/connection.dart';
+export 'src/client/http2_channel.dart' show ClientChannel;
 export 'src/client/method.dart';
 export 'src/client/options.dart';
+export 'src/client/transport/http2_credentials.dart';
+export 'src/client/transport/transport.dart';
 
 export 'src/server/call.dart';
 export 'src/server/handler.dart';
@@ -29,6 +32,7 @@ export 'src/server/interceptor.dart';
 export 'src/server/server.dart';
 export 'src/server/service.dart';
 
+export 'src/shared/message.dart';
 export 'src/shared/security.dart';
 export 'src/shared/status.dart';
 export 'src/shared/streams.dart';

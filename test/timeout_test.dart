@@ -16,12 +16,10 @@
 import 'dart:async';
 
 import 'package:grpc/grpc.dart';
-import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 
 import 'src/client_utils.dart';
 import 'src/server_utils.dart';
-import 'src/utils.dart';
 
 void main() {
   const dummyValue = 0;
@@ -75,8 +73,8 @@ void main() {
     });
 
     test('Calls time out if deadline is exceeded', () async {
-      void handleRequest(StreamMessage message) {
-        validateDataMessage(message);
+      void handleRequest(List<int> message) {
+        validateClientDataMessage(message);
         final Future delay = new Future.delayed(new Duration(milliseconds: 2));
         expect(delay, completes);
         delay.then((_) {
@@ -142,5 +140,5 @@ void main() {
             timeout: new Duration(microseconds: 1));
       await harness.fromServer.done;
     });
-  });
+  }, testOn: 'vm');
 }

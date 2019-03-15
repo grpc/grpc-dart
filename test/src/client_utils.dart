@@ -15,8 +15,7 @@
 
 import 'dart:async';
 
-import 'package:grpc/src/shared/streams.dart';
-import 'package:http2/transport.dart';
+import 'package:grpc/src/shared/message.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -24,29 +23,41 @@ import 'package:grpc/grpc.dart';
 
 import 'utils.dart';
 
-class MockTransport extends Mock implements ClientTransportConnection {}
+typedef void ClientTestMessageHandler(List<int> message);
 
-class MockStream extends Mock implements ClientTransportStream {}
+GrpcData validateClientDataMessage(List<int> message) {
+  final decoded = new GrpcData(message);
+
+  expect(decoded, new TypeMatcher<GrpcData>());
+  return decoded;
+}
+
+class MockTransport extends Mock implements Transport {}
+
+class MockStream extends Mock implements GrpcTransportStream {}
 
 class FakeConnection extends ClientConnection {
-  final ClientTransportConnection transport;
-
   var connectionError;
 
-  FakeConnection(String host, this.transport, ChannelOptions options)
-      : super(host, 443, options);
+  FakeConnection._(String host, Transport transport, ChannelOptions options,
+      ConnectTransport connectTransport)
+      : super(host, 443, options, connectTransport);
 
-  @override
-  Future<ClientTransportConnection> connectTransport() async {
-    if (connectionError != null) throw connectionError;
-    return transport;
+  factory FakeConnection(
+      String host, Transport transport, ChannelOptions options) {
+    FakeConnection f;
+    f = FakeConnection._(host, transport, options, (_, _1, _2) async {
+      if (f.connectionError != null) throw f.connectionError;
+      return transport;
+    });
+    return f;
   }
 }
 
 Duration testBackoff(Duration lastBackoff) => const Duration(milliseconds: 1);
 
 class FakeChannelOptions implements ChannelOptions {
-  ChannelCredentials credentials = const ChannelCredentials.secure();
+  ChannelCredentials credentials = const Http2ChannelCredentials.secure();
   Duration idleTimeout = const Duration(seconds: 1);
   BackoffStrategy backoffStrategy = testBackoff;
 }
@@ -61,8 +72,6 @@ class FakeChannel extends ClientChannel {
   @override
   Future<ClientConnection> getConnection() async => connection;
 }
-
-typedef ServerMessageHandler = void Function(StreamMessage message);
 
 class TestClient extends Client {
   static final _$unary =
@@ -110,8 +119,8 @@ class ClientHarness {
   FakeChannelOptions channelOptions;
   MockStream stream;
 
-  StreamController<StreamMessage> fromClient;
-  StreamController<StreamMessage> toClient;
+  StreamController<List<int>> fromClient;
+  StreamController<GrpcMessage> toClient;
 
   TestClient client;
 
@@ -123,8 +132,7 @@ class ClientHarness {
     stream = new MockStream();
     fromClient = new StreamController();
     toClient = new StreamController();
-    when(transport.makeRequest(any, endStream: anyNamed('endStream')))
-        .thenReturn(stream);
+    when(transport.makeRequest(any, any, any)).thenReturn(stream);
     when(transport.onActiveStateChanged = captureAny).thenReturn(null);
     when(stream.outgoingMessages).thenReturn(fromClient.sink);
     when(stream.incomingMessages).thenAnswer((_) => toClient.stream);
@@ -136,18 +144,17 @@ class ClientHarness {
     toClient.close();
   }
 
-  void sendResponseHeader({List<Header> headers = const []}) {
-    toClient.add(new HeadersStreamMessage(headers));
+  void sendResponseHeader({Map<String, String> headers = const {}}) {
+    toClient.add(new GrpcMetadata(headers));
   }
 
   void sendResponseValue(int value) {
-    toClient
-        .add(new DataStreamMessage(GrpcHttpEncoder.frame(mockEncode(value))));
+    toClient.add(new GrpcData(mockEncode(value)));
   }
 
   void sendResponseTrailer(
-      {List<Header> headers = const [], bool closeStream = true}) {
-    toClient.add(new HeadersStreamMessage(headers, endStream: true));
+      {Map<String, String> headers = const {}, bool closeStream = true}) {
+    toClient.add(new GrpcMetadata(headers));
     if (closeStream) toClient.close();
   }
 
@@ -164,11 +171,11 @@ class ClientHarness {
       String expectedPath,
       Duration expectedTimeout,
       Map<String, String> expectedCustomHeaders,
-      List<MessageHandler> serverHandlers = const [],
+      List<ClientTestMessageHandler> serverHandlers = const [],
       Function doneHandler,
       bool expectDone = true}) async {
     int serverHandlerIndex = 0;
-    void handleServerMessage(StreamMessage message) {
+    void handleServerMessage(List<int> message) {
       serverHandlers[serverHandlerIndex++](message);
     }
 
@@ -182,12 +189,17 @@ class ClientHarness {
       expect(result, expectedResult);
     }
 
-    final List<Header> capturedHeaders =
-        verify(transport.makeRequest(captureAny)).captured.single;
-    validateRequestHeaders(capturedHeaders,
-        path: expectedPath,
-        timeout: toTimeoutString(expectedTimeout),
-        customHeaders: expectedCustomHeaders);
+    final capturedParameters =
+        verify(transport.makeRequest(captureAny, captureAny, captureAny))
+            .captured;
+    if (expectedPath != null) {
+      expect(capturedParameters[0], expectedPath);
+    }
+    expect(capturedParameters[1], expectedTimeout);
+    final Map<String, String> headers = capturedParameters[2];
+    headers?.forEach((key, value) {
+      expect(expectedCustomHeaders[key], value);
+    });
 
     await clientSubscription.cancel();
   }
@@ -207,7 +219,7 @@ class ClientHarness {
       String expectedPath,
       Duration expectedTimeout,
       Map<String, String> expectedCustomHeaders,
-      List<MessageHandler> serverHandlers = const [],
+      List<ClientTestMessageHandler> serverHandlers = const [],
       bool expectDone = true}) async {
     return runTest(
       clientCall: expectThrows(clientCall, expectedException),

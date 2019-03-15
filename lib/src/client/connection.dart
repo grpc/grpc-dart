@@ -14,16 +14,15 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 
-import 'package:http2/transport.dart';
+import 'package:grpc/src/client/channel.dart';
 import 'package:meta/meta.dart';
 
-import '../shared/timeout.dart';
-
+import '../shared/status.dart';
 import 'call.dart';
 import 'options.dart';
+
+import 'transport/transport.dart';
 
 enum ConnectionState {
   /// Actively trying to connect.
@@ -46,87 +45,26 @@ enum ConnectionState {
 ///
 /// RPCs made on a connection are always sent to the same endpoint.
 class ClientConnection {
-  static final _methodPost = new Header.ascii(':method', 'POST');
-  static final _schemeHttp = new Header.ascii(':scheme', 'http');
-  static final _schemeHttps = new Header.ascii(':scheme', 'https');
-  static final _contentTypeGrpc =
-      new Header.ascii('content-type', 'application/grpc');
-  static final _teTrailers = new Header.ascii('te', 'trailers');
-  static final _grpcAcceptEncoding =
-      new Header.ascii('grpc-accept-encoding', 'identity');
-  static final _userAgent = new Header.ascii('user-agent', 'dart-grpc/0.2.0');
-
   final String host;
   final int port;
   final ChannelOptions options;
+  final ConnectTransport connectTransport;
 
   ConnectionState _state = ConnectionState.idle;
   void Function(ClientConnection connection) onStateChanged;
   final _pendingCalls = <ClientCall>[];
 
-  ClientTransportConnection _transport;
+  Transport _transport;
 
   /// Used for idle and reconnect timeout, depending on [_state].
   Timer _timer;
   Duration _currentReconnectDelay;
 
-  ClientConnection(this.host, this.port, this.options);
+  ClientConnection(this.host, this.port, this.options, this.connectTransport);
 
   ConnectionState get state => _state;
 
-  static List<Header> createCallHeaders(bool useTls, String authority,
-      String path, Duration timeout, Map<String, String> metadata) {
-    final headers = [
-      _methodPost,
-      useTls ? _schemeHttps : _schemeHttp,
-      new Header(ascii.encode(':path'), utf8.encode(path)),
-      new Header(ascii.encode(':authority'), utf8.encode(authority)),
-    ];
-    if (timeout != null) {
-      headers.add(new Header.ascii('grpc-timeout', toTimeoutString(timeout)));
-    }
-    headers.addAll([
-      _contentTypeGrpc,
-      _teTrailers,
-      _grpcAcceptEncoding,
-      _userAgent,
-    ]);
-    metadata?.forEach((key, value) {
-      headers.add(new Header(ascii.encode(key), utf8.encode(value)));
-    });
-    return headers;
-  }
-
   String get authority => options.credentials.authority ?? host;
-
-  @visibleForTesting
-  Future<ClientTransportConnection> connectTransport() async {
-    final securityContext = options.credentials.securityContext;
-
-    var socket = await Socket.connect(host, port);
-    if (_state == ConnectionState.shutdown) {
-      socket.destroy();
-      throw 'Shutting down';
-    }
-    if (securityContext != null) {
-      socket = await SecureSocket.secure(socket,
-          host: authority,
-          context: securityContext,
-          onBadCertificate: _validateBadCertificate);
-      if (_state == ConnectionState.shutdown) {
-        socket.destroy();
-        throw 'Shutting down';
-      }
-    }
-    socket.done.then(_handleSocketClosed);
-    return new ClientTransportConnection.viaSocket(socket);
-  }
-
-  bool _validateBadCertificate(X509Certificate certificate) {
-    final validator = options.credentials.onBadCertificate;
-    if (validator == null) return false;
-    return validator(certificate, authority);
-  }
 
   void _connect() {
     if (_state != ConnectionState.idle &&
@@ -134,10 +72,11 @@ class ClientConnection {
       return;
     }
     _setState(ConnectionState.connecting);
-    connectTransport().then((transport) {
+    connectTransport(host, port, options).then((transport) {
       _currentReconnectDelay = null;
       _transport = transport;
       _transport.onActiveStateChanged = _handleActiveStateChanged;
+      _transport.onSocketClosed = _handleSocketClosed;
       _setState(ConnectionState.ready);
       _pendingCalls.forEach(_startCall);
       _pendingCalls.clear();
@@ -160,11 +99,9 @@ class ClientConnection {
     }
   }
 
-  ClientTransportStream makeRequest(
+  GrpcTransportStream makeRequest(
       String path, Duration timeout, Map<String, String> metadata) {
-    final headers = createCallHeaders(
-        options.credentials.isSecure, authority, path, timeout, metadata);
-    return _transport.makeRequest(headers);
+    return _transport.makeRequest(path, timeout, metadata);
   }
 
   void _startCall(ClientCall call) {
@@ -261,7 +198,7 @@ class ClientConnection {
     _connect();
   }
 
-  void _handleSocketClosed(_) {
+  void _handleSocketClosed() {
     _cancelTimer();
     _transport = null;
 

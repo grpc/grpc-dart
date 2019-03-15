@@ -13,15 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Exports the minimum api to define server and client stubs.
-///
-/// Mainly intended to be imported by generated code.
-library service_api;
+export 'src/auth/auth.dart';
 
-export 'src/client/channel.dart' show ClientChannel;
-export 'src/client/client.dart' show Client;
-export 'src/client/common.dart' show ResponseFuture, ResponseStream;
-export 'src/client/method.dart' show ClientMethod;
-export 'src/client/options.dart' show CallOptions;
-export 'src/server/call.dart' show ServiceCall;
-export 'src/server/service.dart' show Service, ServiceMethod;
+export 'src/client/call.dart';
+export 'src/client/channel.dart' hide ClientChannel;
+export 'src/client/client.dart';
+export 'src/client/common.dart';
+export 'src/client/connection.dart';
+export 'src/client/method.dart';
+export 'src/client/options.dart';
+export 'src/client/transport/transport.dart';
+export 'src/client/web_channel.dart' show GrpcWebClientChannel;
+
+export 'src/shared/status.dart';
+export 'src/shared/streams.dart';
+export 'src/shared/timeout.dart';

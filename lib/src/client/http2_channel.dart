@@ -13,15 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Exports the minimum api to define server and client stubs.
-///
-/// Mainly intended to be imported by generated code.
-library service_api;
+import 'package:meta/meta.dart';
 
-export 'src/client/channel.dart' show ClientChannel;
-export 'src/client/client.dart' show Client;
-export 'src/client/common.dart' show ResponseFuture, ResponseStream;
-export 'src/client/method.dart' show ClientMethod;
-export 'src/client/options.dart' show CallOptions;
-export 'src/server/call.dart' show ServiceCall;
-export 'src/server/service.dart' show Service, ServiceMethod;
+import 'channel.dart' as channel;
+import 'options.dart';
+import 'transport/transport.dart';
+import 'transport/http2_transport.dart';
+
+@visibleForTesting
+Future<Transport> connectTransport(
+    String host, int port, ChannelOptions options) async {
+  return Http2Transport(host, port, options)..connect();
+}
+
+class ClientChannel extends channel.ClientChannel {
+  ClientChannel(String host,
+      {int port = 443, ChannelOptions options = const ChannelOptions()})
+      : super(host, connectTransport, port: port, options: options);
+}

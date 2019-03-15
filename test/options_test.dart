@@ -12,6 +12,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+@TestOn('vm')
 
 import 'dart:io';
 
@@ -27,14 +28,14 @@ void main() {
           await new File('test/data/certstore.p12').readAsBytes();
 
       final missingPassword =
-          new ChannelCredentials.secure(certificates: certificates);
+          new Http2ChannelCredentials.secure(certificates: certificates);
       expect(() => missingPassword.securityContext, throwsA(isTlsException));
 
-      final wrongPassword = new ChannelCredentials.secure(
+      final wrongPassword = new Http2ChannelCredentials.secure(
           certificates: certificates, password: 'wrong');
       expect(() => wrongPassword.securityContext, throwsA(isTlsException));
 
-      final correctPassword = new ChannelCredentials.secure(
+      final correctPassword = new Http2ChannelCredentials.secure(
           certificates: certificates, password: 'correct');
       expect(correctPassword.securityContext, isNotNull);
     });

@@ -21,23 +21,28 @@ import 'call.dart';
 import 'connection.dart';
 import 'method.dart';
 import 'options.dart';
+import 'transport/transport.dart';
+
+typedef ConnectTransport = Future<Transport> Function(
+    String host, int port, ChannelOptions options);
 
 /// A channel to a virtual RPC endpoint.
 ///
 /// For each RPC, the channel picks a [ClientConnection] to dispatch the call.
 /// RPCs on the same channel may be sent to different connections, depending on
 /// load balancing settings.
-class ClientChannel {
+abstract class ClientChannel {
   final String host;
   final int port;
   final ChannelOptions options;
+  final ConnectTransport connectTransport;
 
   // TODO(jakobr): Multiple connections, load balancing.
   ClientConnection _connection;
 
   bool _isShutdown = false;
 
-  ClientChannel(this.host,
+  ClientChannel(this.host, this.connectTransport,
       {this.port = 443, this.options = const ChannelOptions()});
 
   /// Shuts down this channel.
@@ -64,7 +69,7 @@ class ClientChannel {
   /// The connection may be shared between multiple RPCs.
   Future<ClientConnection> getConnection() async {
     if (_isShutdown) throw new GrpcError.unavailable('Channel shutting down.');
-    return _connection ??= new ClientConnection(host, port, options);
+    return _connection ??= new ClientConnection(host, port, options, connectTransport);
   }
 
   /// Initiates a new RPC on this connection.
