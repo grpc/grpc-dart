@@ -18,7 +18,6 @@ import 'dart:convert';
 
 import 'package:http2/transport.dart';
 
-import '../shared/message.dart';
 import '../shared/status.dart';
 import '../shared/streams.dart';
 import '../shared/timeout.dart';
@@ -229,7 +228,7 @@ class ServerHandler extends ServiceCall {
       if (!_headersSent) {
         sendHeaders();
       }
-      _stream.sendData(frame(bytes));
+      _stream.sendData(GrpcHttpEncoder.frame(bytes));
     } catch (error) {
       final grpcError =
           new GrpcError.internal('Error sending response: $error');

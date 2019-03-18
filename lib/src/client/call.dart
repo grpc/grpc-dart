@@ -1,4 +1,4 @@
-// Copyright (c) 2018, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2017, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,15 @@
 
 import 'dart:async';
 
+import 'package:http2/transport.dart';
+
 import '../shared/status.dart';
-import '../shared/message.dart';
+import '../shared/streams.dart';
 
 import 'common.dart';
 import 'connection.dart';
 import 'method.dart';
 import 'options.dart';
-import 'transport/transport.dart';
 
 const _reservedHeaders = const [
   'content-type',
@@ -44,9 +45,9 @@ class ClientCall<Q, R> implements Response {
 
   Map<String, String> _headerMetadata;
 
-  GrpcTransportStream _stream;
+  TransportStream _stream;
   StreamController<R> _responses;
-  StreamSubscription<List<int>> _requestSubscription;
+  StreamSubscription<StreamMessage> _requestSubscription;
   StreamSubscription<GrpcMessage> _responseSubscription;
 
   bool isCancelled = false;
@@ -119,6 +120,8 @@ class ClientCall<Q, R> implements Response {
     }
     _requestSubscription = _requests
         .map(_method.requestSerializer)
+        .map(GrpcHttpEncoder.frame)
+        .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
         .handleError(_onRequestError)
         .listen(_stream.outgoingMessages.add,
             onError: _stream.outgoingMessages.addError,
@@ -140,10 +143,13 @@ class ClientCall<Q, R> implements Response {
     if (_stream != null &&
         _responses.hasListener &&
         _responseSubscription == null) {
-      _responseSubscription = _stream.incomingMessages.listen(_onResponseData,
-          onError: _onResponseError,
-          onDone: _onResponseDone,
-          cancelOnError: true);
+      _responseSubscription = _stream.incomingMessages
+          .transform(new GrpcHttpDecoder())
+          .transform(grpcDecompressor())
+          .listen(_onResponseData,
+              onError: _onResponseError,
+              onDone: _onResponseDone,
+              cancelOnError: true);
       if (_responses.isPaused) {
         _responseSubscription.pause();
       }

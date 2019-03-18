@@ -1,11 +1,7 @@
 language: dart
+sudo: false
 
-# necessary to avoid chrome sandboxing issues
-sudo: required
-addons:
-  chrome: stable
-  
-# Run against both the dev and stable channel.
+# Run against both the dev and channel.
 dart:
   - stable
   - dev
@@ -13,7 +9,6 @@ dart:
 # Define test tasks to run.
 dart_task:
   - test: --platform vm
-  - test: --platform chrome
 
 # Only run one instance of the formatter and the analyzer, rather than running
 # them against each Dart version.

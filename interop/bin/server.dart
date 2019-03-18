@@ -114,12 +114,6 @@ class TestService extends TestServiceBase {
     final bufferedResponses = await request.map(_responseForRequest).toList();
     yield* new Stream.fromIterable(bufferedResponses);
   }
-
-  @override
-  Future<Empty> unimplementedCall(ServiceCall call, Empty request) {
-    // TODO: implement unimplementedCall
-    return null;
-  }
 }
 
 Future<void> main(List<String> args) async {
