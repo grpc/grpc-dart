@@ -20,7 +20,7 @@ class GreeterClient extends Client {
   GreeterClient(ClientChannel channel, {CallOptions options})
       : super(channel, options: options);
 
-  Future<HelloReply> sayHello(HelloRequest request,
+  ResponseFuture<HelloReply> sayHello(HelloRequest request,
       {CallOptions options}) {
     final call = $createCall(_$sayHello, new Stream.fromIterable([request]),
         options: options);
