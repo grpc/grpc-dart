@@ -103,13 +103,13 @@ class Server {
       _connections.add(connection);
       // TODO(jakobr): Set active state handlers, close connection after idle
       // timeout.
-      final handlers = <ServerHandler>[];
+      var isConnectionClosed = false;
       connection.incomingStreams.listen((stream) {
-        handlers.add(serveStream(stream));
+        serveStream(stream, () => isConnectionClosed);
       }, onError: (error) {
         print('Connection error: $error');
       }, onDone: () {
-        handlers.forEach((e) => e.isConnectionClosed = true);
+        isConnectionClosed = true;
         _connections.remove(connection);
       });
     }, onError: (error) {
@@ -117,8 +117,9 @@ class Server {
     });
   }
 
-  ServerHandler serveStream(ServerTransportStream stream) {
-    return new ServerHandler(lookupService, stream, _interceptors)..handle();
+  void serveStream(ServerTransportStream stream, bool isConnectionClosed()) {
+    new ServerHandler(lookupService, stream, isConnectionClosed, _interceptors)
+        .handle();
   }
 
   Future<void> shutdown() async {

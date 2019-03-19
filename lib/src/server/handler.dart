@@ -54,9 +54,9 @@ class ServerHandler extends ServiceCall {
   bool _isTimedOut = false;
   Timer _timeoutTimer;
 
-  bool isConnectionClosed = false;
+  final bool Function() isConnectionClosed;
 
-  ServerHandler(this._serviceLookup, this._stream,
+  ServerHandler(this._serviceLookup, this._stream, this.isConnectionClosed,
       [this._interceptors = const <Interceptor>[]]);
 
   DateTime get deadline => _deadline;
@@ -258,7 +258,7 @@ class ServerHandler extends ServiceCall {
   }
 
   void sendHeaders() {
-    if (isConnectionClosed) return;
+    if (isConnectionClosed()) return;
 
     if (_headersSent) throw new GrpcError.internal('Headers already sent');
 
@@ -281,7 +281,7 @@ class ServerHandler extends ServiceCall {
   }
 
   void sendTrailers({int status = 0, String message}) {
-    if (isConnectionClosed) return;
+    if (isConnectionClosed()) return;
 
     _timeoutTimer?.cancel();
 
@@ -355,7 +355,7 @@ class ServerHandler extends ServiceCall {
   }
 
   void _sendError(GrpcError error) {
-    if (isConnectionClosed) return;
+    if (isConnectionClosed()) return;
 
     sendTrailers(status: error.code, message: error.message);
   }
