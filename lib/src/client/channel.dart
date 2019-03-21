@@ -69,7 +69,8 @@ abstract class ClientChannel {
   /// The connection may be shared between multiple RPCs.
   Future<ClientConnection> getConnection() async {
     if (_isShutdown) throw new GrpcError.unavailable('Channel shutting down.');
-    return _connection ??= new ClientConnection(host, port, options, connectTransport);
+    return _connection ??=
+        new ClientConnection(host, port, options, connectTransport);
   }
 
   /// Initiates a new RPC on this connection.

@@ -16,9 +16,7 @@
 import 'dart:async';
 
 import 'package:grpc/src/client/channel.dart';
-import 'package:meta/meta.dart';
 
-import '../shared/status.dart';
 import 'call.dart';
 import 'options.dart';
 
@@ -99,9 +97,9 @@ class ClientConnection {
     }
   }
 
-  GrpcTransportStream makeRequest(
-      String path, Duration timeout, Map<String, String> metadata) {
-    return _transport.makeRequest(path, timeout, metadata);
+  GrpcTransportStream makeRequest(String path, Duration timeout,
+      Map<String, String> metadata, ErrorHandler onRequestFailure) {
+    return _transport.makeRequest(path, timeout, metadata, onRequestFailure);
   }
 
   void _startCall(ClientCall call) {
