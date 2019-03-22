@@ -112,7 +112,8 @@ class ClientCall<Q, R> implements Response {
 
   void _sendRequest(ClientConnection connection, Map<String, String> metadata) {
     try {
-      _stream = connection.makeRequest(path, options.timeout, metadata);
+      _stream = connection.makeRequest(
+          path, options.timeout, metadata, _onRequestError);
     } catch (e) {
       _terminateWithError(new GrpcError.unavailable('Error making call: $e'));
       return;
@@ -249,7 +250,7 @@ class ClientCall<Q, R> implements Response {
   /// Error handler for the requests stream. Something went wrong while trying
   /// to send the request to the server. Abort the request, and forward the
   /// error to the user code on the [_responses] stream.
-  void _onRequestError(error) {
+  void _onRequestError(error, [StackTrace stackTrace]) {
     if (error is! GrpcError) {
       error = new GrpcError.unknown(error.toString());
     }

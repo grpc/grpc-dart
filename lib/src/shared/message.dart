@@ -52,12 +52,12 @@ List<int> frame(List<int> payload) {
 StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor() =>
     new StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
         handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
-          if (value is GrpcData) {
-            if (value.isCompressed) {
-              // TODO(dart-lang/grpc-dart#6): Actually handle decompression.
-              sink.add(new GrpcData(value.data, isCompressed: false));
-              return;
-            }
-          }
-          sink.add(value);
-        });
+      if (value is GrpcData) {
+        if (value.isCompressed) {
+          // TODO(dart-lang/grpc-dart#6): Actually handle decompression.
+          sink.add(new GrpcData(value.data, isCompressed: false));
+          return;
+        }
+      }
+      sink.add(value);
+    });

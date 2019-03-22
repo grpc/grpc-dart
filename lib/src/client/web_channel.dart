@@ -27,6 +27,6 @@ Future<Transport> connectXhrTransport(
 }
 
 class GrpcWebClientChannel extends ClientChannel {
-  GrpcWebClientChannel.xhr(String host,
-      {int port = 443}) : super(host, connectXhrTransport, port: port);
+  GrpcWebClientChannel.xhr(String host, {int port = 443})
+      : super(host, connectXhrTransport, port: port);
 }

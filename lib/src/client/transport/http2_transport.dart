@@ -30,17 +30,15 @@ import 'http2_credentials.dart';
 import 'transport.dart';
 
 class Http2TransportStream extends GrpcTransportStream {
-  TransportStream _transportStream;
-  StreamController<GrpcMessage> _incomingMessages;
-  StreamController<List<int>> _outgoingMessages;
+  final TransportStream _transportStream;
+  final StreamController<GrpcMessage> _incomingMessages = StreamController();
+  final StreamController<List<int>> _outgoingMessages = StreamController();
+  final ErrorHandler _onError;
 
   Stream<GrpcMessage> get incomingMessages => _incomingMessages.stream;
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
 
-  Http2TransportStream(this._transportStream) {
-    _incomingMessages = new StreamController();
-    _outgoingMessages = new StreamController();
-
+  Http2TransportStream(this._transportStream, this._onError) {
     _transportStream.incomingMessages
         .transform(new GrpcHttpDecoder())
         .transform(grpcDecompressor())
@@ -56,8 +54,8 @@ class Http2TransportStream extends GrpcTransportStream {
             cancelOnError: true);
   }
 
-  void _onRequestError() {
-    // TODO: Implement errors on requests
+  void _onRequestError(error) {
+    _onError(error);
   }
 
   @override
@@ -132,12 +130,12 @@ class Http2Transport extends Transport {
   }
 
   @override
-  GrpcTransportStream makeRequest(
-      String path, Duration timeout, Map<String, String> metadata) {
+  GrpcTransportStream makeRequest(String path, Duration timeout,
+      Map<String, String> metadata, ErrorHandler onError) {
     final headers = createCallHeaders(
         options.credentials.isSecure, authority, path, timeout, metadata);
     final stream = transportConnection.makeRequest(headers);
-    return new Http2TransportStream(stream);
+    return new Http2TransportStream(stream, onError);
   }
 
   @override

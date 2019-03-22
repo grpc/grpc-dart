@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
@@ -157,4 +156,3 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
     _out.close();
   }
 }
-

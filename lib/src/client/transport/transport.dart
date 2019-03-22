@@ -19,6 +19,7 @@ import '../../shared/message.dart';
 
 typedef void SocketClosedHandler();
 typedef void ActiveStateHandler(bool isActive);
+typedef void ErrorHandler(error);
 
 abstract class GrpcTransportStream {
   Stream<GrpcMessage> get incomingMessages;
@@ -32,8 +33,8 @@ abstract class Transport {
   SocketClosedHandler onSocketClosed;
 
   Future<void> connect();
-  GrpcTransportStream makeRequest(
-      String path, Duration timeout, Map<String, String> metadata);
+  GrpcTransportStream makeRequest(String path, Duration timeout,
+      Map<String, String> metadata, ErrorHandler onRequestFailure);
   Future<void> finish();
   Future<void> terminate();
 }

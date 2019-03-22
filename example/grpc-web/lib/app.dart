@@ -11,8 +11,13 @@ class EchoApp {
   Future<void> echo(String message) async {
     _addLeftMessage(message);
 
-    final response = await _service.echo(new EchoRequest()..message = message);
-    _addRightMessage(response.message);
+    try {
+      final response =
+          await _service.echo(new EchoRequest()..message = message);
+      _addRightMessage(response.message);
+    } catch (error) {
+      _addRightMessage(error.toString());
+    }
   }
 
   void repeatEcho(String message, int count) {
@@ -23,6 +28,8 @@ class EchoApp {
       ..messageInterval = 500;
     _service.serverStreamingEcho(request).listen((response) {
       _addRightMessage(response.message);
+    }, onError: (error) {
+      _addRightMessage(error.toString());
     }, onDone: () => print('Closed connection to server.'));
   }
 
