@@ -15,8 +15,8 @@
 
 import 'dart:async';
 
-import '../shared/status.dart';
 import '../shared/message.dart';
+import '../shared/status.dart';
 
 import 'common.dart';
 import 'connection.dart';

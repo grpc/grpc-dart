@@ -14,9 +14,9 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'package:meta/meta.dart';
-
 import 'dart:math';
+
+import 'package:meta/meta.dart';
 
 const defaultIdleTimeout = const Duration(minutes: 5);
 

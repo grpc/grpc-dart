@@ -13,12 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
 import 'package:meta/meta.dart';
 
 import 'channel.dart' as channel;
 import 'options.dart';
-import 'transport/transport.dart';
 import 'transport/http2_transport.dart';
+import 'transport/transport.dart';
 
 @visibleForTesting
 Future<Transport> connectTransport(
