@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
+
 import 'package:grpc/src/client/options.dart';
 import 'package:grpc/src/client/transport/transport.dart';
 import 'package:grpc/src/client/transport/xhr_transport.dart';
