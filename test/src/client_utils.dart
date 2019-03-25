@@ -19,6 +19,8 @@ import 'package:grpc/src/shared/message.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
+import 'package:grpc/src/client/transport/transport.dart';
+import 'package:grpc/src/client/channel.dart' show ConnectTransport;
 import 'package:grpc/grpc.dart';
 
 import 'utils.dart';

@@ -13,18 +13,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'src/auth/auth.dart';
+export 'src/auth/auth.dart'
+    show
+        BaseAuthenticator,
+        HttpBasedAuthenticator,
+        ComputeEngineAuthenticator,
+        JwtServiceAccountAuthenticator;
 
-export 'src/client/call.dart';
-export 'src/client/channel.dart' hide ClientChannel;
-export 'src/client/client.dart';
-export 'src/client/common.dart';
-export 'src/client/connection.dart';
-export 'src/client/method.dart';
-export 'src/client/options.dart';
+export 'src/client/call.dart' show ClientCall;
+
+export 'src/client/client.dart' show Client;
+export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
+export 'src/client/connection.dart' show ClientConnection;
+export 'src/client/method.dart' show ClientMethod;
+export 'src/client/options.dart'
+    show
+        defaultIdleTimeout,
+        BackoffStrategy,
+        defaultBackoffStrategy,
+        ChannelCredentials,
+        ChannelOptions,
+        MetadataProvider,
+        CallOptions;
+
 export 'src/client/transport/transport.dart';
 export 'src/client/web_channel.dart' show GrpcWebClientChannel;
 
-export 'src/shared/status.dart';
-export 'src/shared/streams.dart';
-export 'src/shared/timeout.dart';
+export 'src/shared/status.dart' show StatusCode, GrpcError;
+export 'src/shared/streams.dart' show GrpcHttpEncoder, GrpcHttpDecoder;
+export 'src/shared/timeout.dart' show toTimeoutString, fromTimeoutString;
