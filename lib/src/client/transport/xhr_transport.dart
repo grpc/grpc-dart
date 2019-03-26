@@ -161,7 +161,7 @@ class XhrTransport extends Transport {
   GrpcTransportStream makeRequest(String path, Duration timeout,
       Map<String, String> metadata, ErrorHandler onError) {
     _request = HttpRequest();
-    _request.open('POST', '${uri.resolve(path)}');
+    _request.open('POST', uri.resolve(path).toString());
 
     initializeRequest(_request, metadata);
 
