@@ -30,7 +30,9 @@ class GrpcWebClientChannel extends ClientChannelBase {
       : super();
 
   Future<Transport> _connectXhrTransport() async {
-    return XhrTransport(uri)..connect();
+    final result = XhrTransport(uri);
+    await result.connect();
+    return result;
   }
 
   @override
