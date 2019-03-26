@@ -95,7 +95,7 @@ class Tester {
       if (_useTestCA) {
         trustedRoot = new File('ca.pem').readAsBytesSync();
       }
-      credentials = new Http2ChannelCredentials.secure(
+      credentials = new ChannelCredentials.secure(
           certificates: trustedRoot, authority: serverHostOverride);
     } else {
       credentials = const ChannelCredentials.insecure();
@@ -472,8 +472,7 @@ class Tester {
         responses.map((response) => response.payload.body.length).toList();
 
     if (!new ListEquality().equals(responseLengths, expectedResponses)) {
-      throw 'Incorrect response lengths received (${responseLengths.join(
-          ', ')} != ${expectedResponses.join(', ')})';
+      throw 'Incorrect response lengths received (${responseLengths.join(', ')} != ${expectedResponses.join(', ')})';
     }
   }
 
@@ -586,8 +585,7 @@ class Tester {
     requests.add(index);
     await for (final response in responses) {
       if (index >= expectedResponses.length) {
-        throw 'Received too many responses. $index > ${expectedResponses
-            .length}.';
+        throw 'Received too many responses. $index > ${expectedResponses.length}.';
       }
       if (response.payload.body.length != expectedResponses[index]) {
         throw 'Response mismatch for response $index: '

@@ -21,10 +21,6 @@ import 'call.dart';
 import 'connection.dart';
 import 'method.dart';
 import 'options.dart';
-import 'transport/transport.dart';
-
-typedef ConnectTransport = Future<Transport> Function(
-    String host, int port, ChannelOptions options);
 
 /// A channel to a virtual RPC endpoint.
 ///
@@ -32,48 +28,54 @@ typedef ConnectTransport = Future<Transport> Function(
 /// RPCs on the same channel may be sent to different connections, depending on
 /// load balancing settings.
 abstract class ClientChannel {
-  final String host;
-  final int port;
-  final ChannelOptions options;
-  final ConnectTransport connectTransport;
+  /// Shuts down this channel.
+  ///
+  /// No further RPCs can be made on this channel. RPCs already in progress will
+  /// be allowed to complete.
+  Future<void> shutdown();
 
+  /// Terminates this channel.
+  ///
+  /// RPCs already in progress will be terminated. No further RPCs can be made
+  /// on this channel.
+  Future<void> terminate();
+
+  /// Initiates a new RPC on this connection.
+  ClientCall<Q, R> createCall<Q, R>(
+      ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options);
+}
+
+abstract class ClientChannelBase implements ClientChannel {
   // TODO(jakobr): Multiple connections, load balancing.
   ClientConnection _connection;
 
   bool _isShutdown = false;
 
-  ClientChannel(this.host, this.connectTransport,
-      {this.port = 443, this.options = const ChannelOptions()});
+  ClientChannelBase();
 
-  /// Shuts down this channel.
-  ///
-  /// No further RPCs can be made on this channel. RPCs already in progress will
-  /// be allowed to complete.
+  @override
   Future<void> shutdown() async {
     if (_isShutdown) return;
     _isShutdown = true;
     if (_connection != null) await _connection.shutdown();
   }
 
-  /// Terminates this channel.
-  ///
-  /// RPCs already in progress will be terminated. No further RPCs can be made
-  /// on this channel.
+  @override
   Future<void> terminate() async {
     _isShutdown = true;
     if (_connection != null) await _connection.terminate();
   }
+
+  ClientConnection createConnection();
 
   /// Returns a connection to this [Channel]'s RPC endpoint.
   ///
   /// The connection may be shared between multiple RPCs.
   Future<ClientConnection> getConnection() async {
     if (_isShutdown) throw new GrpcError.unavailable('Channel shutting down.');
-    return _connection ??=
-        new ClientConnection(host, port, options, connectTransport);
+    return _connection ??= createConnection();
   }
 
-  /// Initiates a new RPC on this connection.
   ClientCall<Q, R> createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
     final call = new ClientCall(method, requests, options);

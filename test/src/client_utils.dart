@@ -15,13 +15,19 @@
 
 import 'dart:async';
 
+import 'package:grpc/src/client/call.dart';
+import 'package:grpc/src/client/channel.dart';
+import 'package:grpc/src/client/channel.dart';
+import 'package:grpc/src/client/client.dart';
+import 'package:grpc/src/client/common.dart';
+import 'package:grpc/src/client/connection.dart';
+import 'package:grpc/src/client/method.dart';
+import 'package:grpc/src/client/options.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:grpc/src/client/transport/transport.dart';
-import 'package:grpc/src/client/channel.dart' show ConnectTransport;
-import 'package:grpc/grpc.dart';
 
 import 'utils.dart';
 
@@ -42,13 +48,13 @@ class FakeConnection extends ClientConnection {
   var connectionError;
 
   FakeConnection._(String host, Transport transport, ChannelOptions options,
-      ConnectTransport connectTransport)
-      : super(host, 443, options, connectTransport);
+      Future<Transport> Function() connectTransport)
+      : super(options, connectTransport);
 
   factory FakeConnection(
       String host, Transport transport, ChannelOptions options) {
     FakeConnection f;
-    f = FakeConnection._(host, transport, options, (_, _1, _2) async {
+    f = FakeConnection._(host, transport, options, () async {
       if (f.connectionError != null) throw f.connectionError;
       return transport;
     });
@@ -59,20 +65,18 @@ class FakeConnection extends ClientConnection {
 Duration testBackoff(Duration lastBackoff) => const Duration(milliseconds: 1);
 
 class FakeChannelOptions implements ChannelOptions {
-  ChannelCredentials credentials = const Http2ChannelCredentials.secure();
   Duration idleTimeout = const Duration(seconds: 1);
   BackoffStrategy backoffStrategy = testBackoff;
 }
 
-class FakeChannel extends ClientChannel {
+class FakeChannel extends ClientChannelBase {
   final ClientConnection connection;
   final FakeChannelOptions options;
 
-  FakeChannel(String host, this.connection, this.options)
-      : super(host, options: options);
+  FakeChannel(String host, this.connection, this.options);
 
   @override
-  Future<ClientConnection> getConnection() async => connection;
+  ClientConnection createConnection() => connection;
 }
 
 class TestClient extends Client {
@@ -134,7 +138,7 @@ class ClientHarness {
     stream = new MockStream();
     fromClient = new StreamController();
     toClient = new StreamController();
-    when(transport.makeRequest(any, any, any)).thenReturn(stream);
+    when(transport.makeRequest(any, any, any, any)).thenReturn(stream);
     when(transport.onActiveStateChanged = captureAny).thenReturn(null);
     when(stream.outgoingMessages).thenReturn(fromClient.sink);
     when(stream.incomingMessages).thenAnswer((_) => toClient.stream);
@@ -191,9 +195,9 @@ class ClientHarness {
       expect(result, expectedResult);
     }
 
-    final capturedParameters =
-        verify(transport.makeRequest(captureAny, captureAny, captureAny))
-            .captured;
+    final capturedParameters = verify(transport.makeRequest(
+            captureAny, captureAny, captureAny, captureAny))
+        .captured;
     if (expectedPath != null) {
       expect(capturedParameters[0], expectedPath);
     }

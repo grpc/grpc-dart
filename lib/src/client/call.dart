@@ -59,8 +59,6 @@ class ClientCall<Q, R> implements Response {
     }
   }
 
-  String get path => _method.path;
-
   void onConnectionError(error) {
     _terminateWithError(new GrpcError.unavailable('Error connecting: $error'));
   }
@@ -91,16 +89,10 @@ class ClientCall<Q, R> implements Response {
       _sendRequest(connection, _sanitizeMetadata(options.metadata));
     } else {
       final metadata = new Map<String, String>.from(options.metadata);
-      String audience;
-      if (connection.options.credentials.isSecure) {
-        final port = connection.port != 443 ? ':${connection.port}' : '';
-        final lastSlashPos = path.lastIndexOf('/');
-        final audiencePath =
-            lastSlashPos == -1 ? path : path.substring(0, lastSlashPos);
-        audience = 'https://${connection.authority}$port$audiencePath';
-      }
-      Future.forEach(options.metadataProviders,
-              (provider) => provider(metadata, audience))
+      Future.forEach(
+              options.metadataProviders,
+              (provider) => provider(
+                  metadata, "${connection.authority}${audiencePath(_method)}"))
           .then((_) => _sendRequest(connection, _sanitizeMetadata(metadata)))
           .catchError(_onMetadataProviderError);
     }
@@ -113,7 +105,7 @@ class ClientCall<Q, R> implements Response {
   void _sendRequest(ClientConnection connection, Map<String, String> metadata) {
     try {
       _stream = connection.makeRequest(
-          path, options.timeout, metadata, _onRequestError);
+          _method.path, options.timeout, metadata, _onRequestError);
     } catch (e) {
       _terminateWithError(new GrpcError.unavailable('Error making call: $e'));
       return;

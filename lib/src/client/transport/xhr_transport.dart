@@ -130,12 +130,13 @@ class XhrTransportStream implements GrpcTransportStream {
 }
 
 class XhrTransport extends Transport {
-  final String host;
-  final int port;
+  final Uri uri;
 
   HttpRequest _request;
 
-  XhrTransport(this.host, this.port);
+  XhrTransport(this.uri);
+
+  String get authority => uri.authority;
 
   @override
   Future<void> connect() async {}
@@ -160,7 +161,7 @@ class XhrTransport extends Transport {
   GrpcTransportStream makeRequest(String path, Duration timeout,
       Map<String, String> metadata, ErrorHandler onError) {
     _request = HttpRequest();
-    _request.open('POST', '${host}:${port}${path}');
+    _request.open('POST', '${uri.resolve(path)}');
 
     initializeRequest(_request, metadata);
 
