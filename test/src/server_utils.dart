@@ -178,8 +178,7 @@ class ServerHarness {
   }
 
   void sendData(int value) {
-    toServer
-        .add(new DataStreamMessage(frame(mockEncode(value))));
+    toServer.add(new DataStreamMessage(frame(mockEncode(value))));
   }
 
   void runTest(String path, List<int> requests, List<int> expectedResponses) {
