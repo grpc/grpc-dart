@@ -17,6 +17,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http2/transport.dart';
+import 'package:meta/meta.dart';
 
 import '../shared/security.dart';
 
@@ -101,11 +102,19 @@ class Server {
     server.listen((socket) {
       final connection = new ServerTransportConnection.viaSocket(socket);
       _connections.add(connection);
+      ServerHandler_ handler;
       // TODO(jakobr): Set active state handlers, close connection after idle
       // timeout.
-      connection.incomingStreams.listen(serveStream, onError: (error) {
+      connection.incomingStreams.listen((stream) {
+        handler = serveStream_(stream);
+      }, onError: (error) {
         print('Connection error: $error');
       }, onDone: () {
+        // TODO(sigurdm): This is not correct behavior in the presence of
+        // half-open tcp streams.
+        // Half-open streams seems to not be fully supported by package:http2.
+        // https://github.com/dart-lang/http2/issues/42
+        handler?.cancel();
         _connections.remove(connection);
       });
     }, onError: (error) {
@@ -113,8 +122,15 @@ class Server {
     });
   }
 
+  @visibleForTesting
+  ServerHandler_ serveStream_(ServerTransportStream stream) {
+    return new ServerHandler_(lookupService, stream, _interceptors)..handle();
+  }
+
+  @Deprecated(
+      'This is internal functionality, and will be removed in next major version.')
   void serveStream(ServerTransportStream stream) {
-    new ServerHandler(lookupService, stream, _interceptors).handle();
+    serveStream_(stream);
   }
 
   Future<void> shutdown() async {
