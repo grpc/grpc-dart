@@ -23,10 +23,6 @@ import 'method.dart';
 import 'options.dart';
 
 /// A channel to a virtual RPC endpoint.
-///
-/// For each RPC, the channel picks a [ClientConnection] to dispatch the call.
-/// RPCs on the same channel may be sent to different connections, depending on
-/// load balancing settings.
 abstract class ClientChannel {
   /// Shuts down this channel.
   ///
@@ -45,6 +41,7 @@ abstract class ClientChannel {
       ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options);
 }
 
+/// Auxiliary base class implementing much of ClientChannel.
 abstract class ClientChannelBase implements ClientChannel {
   // TODO(jakobr): Multiple connections, load balancing.
   ClientConnection _connection;

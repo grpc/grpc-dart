@@ -21,6 +21,11 @@ import 'transport/http2_credentials.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
 
+/// A channel to a virtual gRPC endpoint.
+///
+/// For each RPC, the channel picks a [ClientConnection] to dispatch the call.
+/// RPCs on the same channel may be sent to different connections, depending on
+/// load balancing settings.
 class ClientChannel extends ClientChannelBase {
   final String host;
   final int port;
