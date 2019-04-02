@@ -24,9 +24,7 @@ import '../../shared/message.dart';
 import '../../shared/streams.dart';
 import '../../shared/timeout.dart';
 
-import '../options.dart';
-
-import 'http2_credentials.dart';
+import 'http2_credentials.dart' as http2_credentials;
 import 'transport.dart';
 
 class Http2TransportStream extends GrpcTransportStream {
@@ -79,14 +77,14 @@ class Http2Transport extends Transport {
 
   final String host;
   final int port;
-  final ChannelOptions options;
+  final http2_credentials.ChannelCredentials credentials;
 
   @visibleForTesting
   ClientTransportConnection transportConnection;
 
-  Http2Transport(this.host, this.port, this.options);
+  Http2Transport(this.host, this.port, this.credentials);
 
-  String get authority => options.credentials.authority ?? host;
+  String get authority => credentials.authority ?? "$host:$port";
 
   static List<Header> createCallHeaders(bool useTls, String authority,
       String path, Duration timeout, Map<String, String> metadata) {
@@ -115,15 +113,12 @@ class Http2Transport extends Transport {
   Future<void> connect() async {
     var socket = await Socket.connect(host, port);
 
-    final credentials = options.credentials;
-    if (credentials is Http2ChannelCredentials) {
-      final securityContext = credentials.securityContext;
-      if (securityContext != null) {
-        socket = await SecureSocket.secure(socket,
-            host: authority,
-            context: securityContext,
-            onBadCertificate: _validateBadCertificate);
-      }
+    final securityContext = credentials.securityContext;
+    if (securityContext != null) {
+      socket = await SecureSocket.secure(socket,
+          host: authority,
+          context: securityContext,
+          onBadCertificate: _validateBadCertificate);
     }
     socket.done.then(_handleSocketClosed);
     transportConnection = ClientTransportConnection.viaSocket(socket);
@@ -133,7 +128,7 @@ class Http2Transport extends Transport {
   GrpcTransportStream makeRequest(String path, Duration timeout,
       Map<String, String> metadata, ErrorHandler onError) {
     final headers = createCallHeaders(
-        options.credentials.isSecure, authority, path, timeout, metadata);
+        credentials.isSecure, authority, path, timeout, metadata);
     final stream = transportConnection.makeRequest(headers);
     return new Http2TransportStream(stream, onError);
   }
@@ -149,14 +144,11 @@ class Http2Transport extends Transport {
   }
 
   bool _validateBadCertificate(X509Certificate certificate) {
-    final credentials = options.credentials;
-    if (credentials is Http2ChannelCredentials) {
-      final validator = credentials.onBadCertificate;
+    final credentials = this.credentials;
+    final validator = credentials.onBadCertificate;
 
-      if (validator == null) return false;
-      return validator(certificate, authority);
-    }
-    return false;
+    if (validator == null) return false;
+    return validator(certificate, authority);
   }
 
   void _handleSocketClosed(_) {

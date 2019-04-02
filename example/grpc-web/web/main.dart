@@ -19,8 +19,7 @@ import 'package:grpc_web/app.dart';
 import 'package:grpc_web/src/generated/echo.pbgrpc.dart';
 
 void main() {
-  final channel = new GrpcWebClientChannel.xhr('http://localhost',
-      port: 8080);
+  final channel = new GrpcWebClientChannel.xhr(Uri.parse('http://localhost:8080'));
   final service = EchoServiceClient(channel);
   final app = EchoApp(service);
 

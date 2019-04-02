@@ -21,3 +21,11 @@ class ClientMethod<Q, R> {
 
   ClientMethod(this.path, this.requestSerializer, this.responseDeserializer);
 }
+
+// TODO(sigurdm): Find out why we do this.
+String audiencePath(ClientMethod method) {
+  final lastSlashPos = method.path.lastIndexOf('/');
+  return lastSlashPos == -1
+      ? method.path
+      : method.path.substring(0, lastSlashPos);
+}

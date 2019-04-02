@@ -16,7 +16,7 @@
 import 'dart:io';
 
 import '../../shared/security.dart';
-import '../options.dart';
+import '../options.dart' as options;
 
 /// Handler for checking certificates that fail validation. If this handler
 /// returns `true`, the bad certificate is allowed, and the TLS handshake can
@@ -30,23 +30,37 @@ typedef bool BadCertificateHandler(X509Certificate certificate, String host);
 /// certificates, etc.
 bool allowBadCertificates(X509Certificate certificate, String host) => true;
 
-class Http2ChannelCredentials extends ChannelCredentials {
+class git ci ChannelOptions extends options.ChannelOptions {
+  final ChannelCredentials credentials;
+
+  const ChannelOptions({
+    this.credentials,
+    Duration idleTimeout = options.defaultIdleTimeout,
+    options.BackoffStrategy backoffStrategy = options.defaultBackoffStrategy,
+  }) : super(idleTimeout: idleTimeout, backoffStrategy: backoffStrategy);
+}
+
+class ChannelCredentials {
+  final bool isSecure;
+  final String authority;
+
   final List<int> _certificateBytes;
   final String _certificatePassword;
   final BadCertificateHandler onBadCertificate;
 
-  const Http2ChannelCredentials._(bool isSecure, String authority,
-      this._certificateBytes, this._certificatePassword, this.onBadCertificate)
-      : super(isSecure, authority);
+  const ChannelCredentials._(this.isSecure, this.authority,
+      this._certificateBytes, this._certificatePassword, this.onBadCertificate);
 
   /// Enable TLS and optionally specify the [certificates] to trust. If
   /// [certificates] is not provided, the default trust store is used.
-  const Http2ChannelCredentials.secure(
+  const ChannelCredentials.secure(
       {List<int> certificates,
       String password,
       String authority,
       BadCertificateHandler onBadCertificate})
       : this._(true, authority, certificates, password, onBadCertificate);
+
+  const ChannelCredentials.insecure() : this._(false, null, null, null, null);
 
   SecurityContext get securityContext {
     if (!isSecure) return null;

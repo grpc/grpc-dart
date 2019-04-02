@@ -28,24 +28,25 @@ import 'package:test/test.dart';
 class MockHttpRequest extends Mock implements HttpRequest {}
 
 class MockXhrTransport extends XhrTransport {
-  StreamController<Event> readyStateChangeStream = StreamController<Event>();
-  StreamController<ProgressEvent> progressStream =
+  final StreamController<Event> readyStateChangeStream =
+      StreamController<Event>();
+  final StreamController<ProgressEvent> progressStream =
       StreamController<ProgressEvent>();
 
   MockHttpRequest mockRequest;
 
-  MockXhrTransport(this.mockRequest) : super('test', 8080) {}
+  MockXhrTransport(this.mockRequest) : super(Uri.parse('test:8080'));
 
   @override
-  GrpcTransportStream makeRequest(
-      String path, Duration timeout, Map<String, String> metadata) {
+  GrpcTransportStream makeRequest(String path, Duration timeout,
+      Map<String, String> metadata, ErrorHandler onError) {
     when(mockRequest.onReadyStateChange)
         .thenAnswer((_) => readyStateChangeStream.stream);
     when(mockRequest.onProgress).thenAnswer((_) => progressStream.stream);
 
     initializeRequest(mockRequest, metadata);
 
-    return XhrTransportStream(mockRequest);
+    return XhrTransportStream(mockRequest, onError);
   }
 
   @override
@@ -65,7 +66,8 @@ void main() {
     final mockRequest = MockHttpRequest();
     final transport = MockXhrTransport(mockRequest);
 
-    transport.makeRequest('path', Duration(seconds: 10), metadata);
+    transport.makeRequest('path', Duration(seconds: 10), metadata,
+        (error) => fail(error.toString()));
 
     verify(mockRequest.setRequestHeader(
         'Content-Type', 'application/grpc-web+proto'));
@@ -84,8 +86,8 @@ void main() {
     final mockRequest = MockHttpRequest();
     final transport = MockXhrTransport(mockRequest);
 
-    final stream =
-        transport.makeRequest('path', Duration(seconds: 10), metadata);
+    final stream = transport.makeRequest('path', Duration(seconds: 10),
+        metadata, (error) => fail(error.toString()));
 
     final data = List.filled(10, 0);
     stream.outgoingMessages.add(data);
@@ -104,8 +106,8 @@ void main() {
     final mockRequest = MockHttpRequest();
     final transport = MockXhrTransport(mockRequest);
 
-    final stream =
-        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    final stream = transport.makeRequest('test_path', Duration(seconds: 10),
+        metadata, (error) => fail(error.toString()));
 
     stream.incomingMessages.listen((message) {
       expect(message, TypeMatcher<GrpcMetadata>());
@@ -126,8 +128,8 @@ void main() {
     final mockRequest = MockHttpRequest();
     final transport = MockXhrTransport(mockRequest);
 
-    final stream =
-        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    final stream = transport.makeRequest('test_path', Duration(seconds: 10),
+        metadata, (error) => fail(error.toString()));
     final data = List<int>.filled(10, 224);
     final encoded = frame(data);
     final encodedString = String.fromCharCodes(encoded);
@@ -164,8 +166,8 @@ void main() {
     final mockRequest = MockHttpRequest();
     final transport = MockXhrTransport(mockRequest);
 
-    final stream =
-        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    final stream = transport.makeRequest('test_path', Duration(seconds: 10),
+        metadata, (error) => fail(error.toString()));
 
     final data = <List<int>>[
       List<int>.filled(10, 224),

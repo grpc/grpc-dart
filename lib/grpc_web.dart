@@ -31,7 +31,6 @@ export 'src/client/options.dart'
         defaultIdleTimeout,
         BackoffStrategy,
         defaultBackoffStrategy,
-        ChannelCredentials,
         ChannelOptions,
         MetadataProvider,
         CallOptions;

@@ -16,8 +16,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:meta/meta.dart';
-
 const defaultIdleTimeout = const Duration(minutes: 5);
 
 typedef Duration BackoffStrategy(Duration lastBackoff);
@@ -36,29 +34,15 @@ Duration defaultBackoffStrategy(Duration lastBackoff) {
   return nextBackoff < _maxBackoff ? nextBackoff : _maxBackoff;
 }
 
-/// Options controlling TLS security settings on a [ClientChannel].
-class ChannelCredentials {
-  final bool isSecure;
-  final String authority;
-
-  @visibleForOverriding
-  const ChannelCredentials(this.isSecure, this.authority);
-
-  /// Disable TLS. RPCs are sent in clear text.
-  const ChannelCredentials.insecure() : this(false, null);
-}
-
 /// Options controlling how connections are made on a [ClientChannel].
 class ChannelOptions {
-  final ChannelCredentials credentials;
   final Duration idleTimeout;
   final BackoffStrategy backoffStrategy;
 
   const ChannelOptions({
-    ChannelCredentials credentials,
     this.idleTimeout = defaultIdleTimeout,
     this.backoffStrategy = defaultBackoffStrategy,
-  }) : this.credentials = credentials ?? const ChannelCredentials.insecure();
+  });
 }
 
 /// Provides per-RPC metadata.

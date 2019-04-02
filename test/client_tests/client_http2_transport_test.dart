@@ -39,8 +39,8 @@ class MockHttp2Transport extends Http2Transport {
   StreamController<StreamMessage> fromClient;
   StreamController<StreamMessage> toClient;
 
-  MockHttp2Transport(String host, int port, ChannelOptions options)
-      : super(host, port, options);
+  MockHttp2Transport(String host, int port, ChannelCredentials credentials)
+      : super(host, port, credentials);
 
   @override
   Future<void> connect() async {
@@ -71,10 +71,7 @@ class MockHttp2Transport extends Http2Transport {
 
 void main() {
   final MockHttp2Transport transport = new MockHttp2Transport(
-      'host',
-      9999,
-      ChannelOptions(
-          credentials: new Http2ChannelCredentials.secure(authority: 'test')));
+      'host', 9999, ChannelCredentials.secure(authority: 'test'));
 
   setUp(() {
     transport.connect();
@@ -98,7 +95,8 @@ void main() {
           timeout: toTimeoutString(Duration(seconds: 10)));
     };
 
-    transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    transport.makeRequest('test_path', Duration(seconds: 10), metadata,
+        (error) => fail(error.toString()));
   });
 
   test('Sent data converted to StreamMessages properly', () async {
@@ -107,8 +105,8 @@ void main() {
       "parameter_2": "value_2"
     };
 
-    final stream =
-        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    final stream = transport.makeRequest('test_path', Duration(seconds: 10),
+        metadata, (error) => fail(error.toString()));
 
     transport.fromClient.stream.listen((message) {
       final dataMessage = validateDataMessage(message);
@@ -124,8 +122,8 @@ void main() {
       "parameter_2": "value_2"
     };
 
-    final stream =
-        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    final stream = transport.makeRequest('test_path', Duration(seconds: 10),
+        metadata, (error) => fail(error.toString()));
 
     stream.incomingMessages.listen((message) {
       expect(message, TypeMatcher<GrpcMetadata>());
@@ -146,8 +144,8 @@ void main() {
       "parameter_2": "value_2"
     };
 
-    final stream =
-        transport.makeRequest('test_path', Duration(seconds: 10), metadata);
+    final stream = transport.makeRequest('test_path', Duration(seconds: 10),
+        metadata, (error) => fail(error.toString()));
     final data = List<int>.filled(10, 0);
     stream.incomingMessages.listen((message) {
       expect(message, TypeMatcher<GrpcData>());

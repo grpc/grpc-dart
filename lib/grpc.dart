@@ -32,14 +32,15 @@ export 'src/client/options.dart'
         defaultIdleTimeout,
         BackoffStrategy,
         defaultBackoffStrategy,
-        ChannelCredentials,
-        ChannelOptions,
         MetadataProvider,
         CallOptions;
 
-// TODO(sigurdm): Get rid of Http2ChannelCredentials.
 export 'src/client/transport/http2_credentials.dart'
-    show BadCertificateHandler, allowBadCertificates, Http2ChannelCredentials;
+    show
+        BadCertificateHandler,
+        allowBadCertificates,
+        ChannelCredentials,
+        ChannelOptions;
 
 export 'src/server/call.dart' show ServiceCall;
 export 'src/server/handler.dart' show ServerHandler;

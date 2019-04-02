@@ -39,14 +39,9 @@ enum ConnectionState {
   shutdown
 }
 
-/// A connection to a single RPC endpoint.
-///
-/// RPCs made on a connection are always sent to the same endpoint.
 class ClientConnection {
-  final String host;
-  final int port;
   final ChannelOptions options;
-  final ConnectTransport connectTransport;
+  final Future<Transport> Function() _connectTransport;
 
   ConnectionState _state = ConnectionState.idle;
   void Function(ClientConnection connection) onStateChanged;
@@ -57,12 +52,11 @@ class ClientConnection {
   /// Used for idle and reconnect timeout, depending on [_state].
   Timer _timer;
   Duration _currentReconnectDelay;
+  String get authority => _transport.authority;
 
-  ClientConnection(this.host, this.port, this.options, this.connectTransport);
+  ClientConnection(this.options, this._connectTransport);
 
   ConnectionState get state => _state;
-
-  String get authority => options.credentials.authority ?? host;
 
   void _connect() {
     if (_state != ConnectionState.idle &&
@@ -70,7 +64,7 @@ class ClientConnection {
       return;
     }
     _setState(ConnectionState.connecting);
-    connectTransport(host, port, options).then((transport) {
+    _connectTransport().then((transport) {
       _currentReconnectDelay = null;
       _transport = transport;
       _transport.onActiveStateChanged = _handleActiveStateChanged;

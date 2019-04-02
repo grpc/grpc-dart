@@ -16,7 +16,7 @@
 
 import 'dart:io';
 
-import 'package:grpc/grpc.dart';
+import 'package:grpc/src/client/transport/http2_credentials.dart';
 import 'package:test/test.dart';
 
 const isTlsException = const TypeMatcher<TlsException>();
@@ -28,14 +28,14 @@ void main() {
           await new File('test/data/certstore.p12').readAsBytes();
 
       final missingPassword =
-          new Http2ChannelCredentials.secure(certificates: certificates);
+          ChannelCredentials.secure(certificates: certificates);
       expect(() => missingPassword.securityContext, throwsA(isTlsException));
 
-      final wrongPassword = new Http2ChannelCredentials.secure(
+      final wrongPassword = ChannelCredentials.secure(
           certificates: certificates, password: 'wrong');
       expect(() => wrongPassword.securityContext, throwsA(isTlsException));
 
-      final correctPassword = new Http2ChannelCredentials.secure(
+      final correctPassword = ChannelCredentials.secure(
           certificates: certificates, password: 'correct');
       expect(correctPassword.securityContext, isNotNull);
     });

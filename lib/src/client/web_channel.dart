@@ -15,20 +15,28 @@
 
 import 'dart:async';
 
-import 'package:grpc/src/client/options.dart';
-import 'package:grpc/src/client/transport/transport.dart';
-import 'package:grpc/src/client/transport/xhr_transport.dart';
-import 'package:meta/meta.dart';
-
 import 'channel.dart';
+import 'connection.dart';
+import 'options.dart';
+import 'transport/transport.dart';
+import 'transport/xhr_transport.dart';
 
-@visibleForTesting
-Future<Transport> connectXhrTransport(
-    String host, int port, ChannelOptions _) async {
-  return XhrTransport(host, port)..connect();
-}
+/// A channel to a grpc-web endpoint.
+class GrpcWebClientChannel extends ClientChannelBase {
+  final Uri uri;
+  ChannelOptions options;
 
-class GrpcWebClientChannel extends ClientChannel {
-  GrpcWebClientChannel.xhr(String host, {int port = 443})
-      : super(host, connectXhrTransport, port: port);
+  GrpcWebClientChannel.xhr(this.uri, {this.options: const ChannelOptions()})
+      : super();
+
+  Future<Transport> _connectXhrTransport() async {
+    final result = XhrTransport(uri);
+    await result.connect();
+    return result;
+  }
+
+  @override
+  ClientConnection createConnection() {
+    return ClientConnection(options, _connectXhrTransport);
+  }
 }

@@ -14,21 +14,35 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'package:meta/meta.dart';
 
-import 'channel.dart' as channel;
-import 'options.dart';
+import 'channel.dart';
+import 'connection.dart';
+import 'transport/http2_credentials.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
 
-@visibleForTesting
-Future<Transport> connectTransport(
-    String host, int port, ChannelOptions options) async {
-  return Http2Transport(host, port, options)..connect();
-}
+/// A channel to a virtual gRPC endpoint.
+///
+/// For each RPC, the channel picks a [ClientConnection] to dispatch the call.
+/// RPCs on the same channel may be sent to different connections, depending on
+/// load balancing settings.
+class ClientChannel extends ClientChannelBase {
+  final String host;
+  final int port;
+  final ChannelOptions options;
 
-class ClientChannel extends channel.ClientChannel {
-  ClientChannel(String host,
-      {int port = 443, ChannelOptions options = const ChannelOptions()})
-      : super(host, connectTransport, port: port, options: options);
+  ClientChannel(this.host,
+      {this.port = 443, this.options = const ChannelOptions()})
+      : super();
+
+  Future<Transport> _connectTransport() async {
+    final result = Http2Transport(host, port, options.credentials);
+    await result.connect();
+    return result;
+  }
+
+  @override
+  ClientConnection createConnection() {
+    return ClientConnection(options, _connectTransport);
+  }
 }
