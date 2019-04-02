@@ -111,8 +111,8 @@ class Server {
         print('Connection error: $error');
       }, onDone: () {
         // TODO(sigurdm): This is not correct behavior in the presence of
-        // half-open tcp streams.
-        // Half-open streams seems to not be fully supported by package:http2.
+        // half-closed tcp streams.
+        // Half-closed  streams seems to not be fully supported by package:http2.
         // https://github.com/dart-lang/http2/issues/42
         handler?.cancel();
         _connections.remove(connection);
