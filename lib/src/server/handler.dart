@@ -27,7 +27,7 @@ import 'interceptor.dart';
 import 'service.dart';
 
 /// Handles an incoming gRPC call.
-class ServerHandler extends ServiceCall {
+class ServerHandler_ extends ServiceCall {
   final ServerTransportStream _stream;
   final Service Function(String service) _serviceLookup;
   final List<Interceptor> _interceptors;
@@ -54,8 +54,7 @@ class ServerHandler extends ServiceCall {
   bool _isTimedOut = false;
   Timer _timeoutTimer;
 
-  ServerHandler(this._serviceLookup, this._stream,
-      [this._interceptors = const <Interceptor>[]]);
+  ServerHandler_(this._serviceLookup, this._stream, this._interceptors);
 
   DateTime get deadline => _deadline;
 
@@ -70,11 +69,7 @@ class ServerHandler extends ServiceCall {
   Map<String, String> get trailers => _customTrailers;
 
   void handle() {
-    _stream.onTerminated = (int errorCode) {
-      _isCanceled = true;
-      _timeoutTimer?.cancel();
-      _cancelResponseSubscription();
-    };
+    _stream.onTerminated = (_) => cancel();
 
     _incomingSubscription = _stream.incomingMessages
         .transform(new GrpcHttpDecoder())
@@ -351,4 +346,19 @@ class ServerHandler extends ServiceCall {
   void _sendError(GrpcError error) {
     sendTrailers(status: error.code, message: error.message);
   }
+
+  void cancel() {
+    _isCanceled = true;
+    _timeoutTimer?.cancel();
+    _cancelResponseSubscription();
+  }
+}
+
+@Deprecated(
+    'This is an internal class, and will not be part of the public interface in next major version.')
+// TODO(sigurdm): Remove this class from grpc.dart exports.
+class ServerHandler extends ServerHandler_ {
+  ServerHandler(Service Function(String service) serviceLookup, stream,
+      [List<Interceptor> interceptors = const <Interceptor>[]])
+      : super(serviceLookup, stream, interceptors);
 }

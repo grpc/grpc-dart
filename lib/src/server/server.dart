@@ -17,6 +17,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http2/transport.dart';
+import 'package:meta/meta.dart';
 
 import '../shared/security.dart';
 
@@ -83,7 +84,7 @@ class Server {
 
   Service lookupService(String service) => _services[service];
 
-  Future<Null> serve(
+  Future<void> serve(
       {dynamic address, int port, ServerTlsCredentials security}) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
     Stream<Socket> server;
@@ -101,11 +102,19 @@ class Server {
     server.listen((socket) {
       final connection = new ServerTransportConnection.viaSocket(socket);
       _connections.add(connection);
+      ServerHandler_ handler;
       // TODO(jakobr): Set active state handlers, close connection after idle
       // timeout.
-      connection.incomingStreams.listen(serveStream, onError: (error) {
+      connection.incomingStreams.listen((stream) {
+        handler = serveStream_(stream);
+      }, onError: (error) {
         print('Connection error: $error');
       }, onDone: () {
+        // TODO(sigurdm): This is not correct behavior in the presence of
+        // half-closed tcp streams.
+        // Half-closed  streams seems to not be fully supported by package:http2.
+        // https://github.com/dart-lang/http2/issues/42
+        handler?.cancel();
         _connections.remove(connection);
       });
     }, onError: (error) {
@@ -113,11 +122,18 @@ class Server {
     });
   }
 
-  void serveStream(ServerTransportStream stream) {
-    new ServerHandler(lookupService, stream, _interceptors).handle();
+  @visibleForTesting
+  ServerHandler_ serveStream_(ServerTransportStream stream) {
+    return new ServerHandler_(lookupService, stream, _interceptors)..handle();
   }
 
-  Future<Null> shutdown() async {
+  @Deprecated(
+      'This is internal functionality, and will be removed in next major version.')
+  void serveStream(ServerTransportStream stream) {
+    serveStream_(stream);
+  }
+
+  Future<void> shutdown() async {
     final done = _connections.map((connection) => connection.finish()).toList();
     if (_insecureServer != null) {
       done.add(_insecureServer.close());

@@ -185,7 +185,7 @@ class ClientConnection {
   ///
   /// No further calls may be made on this connection, but existing calls
   /// are allowed to finish.
-  Future<Null> shutdown() async {
+  Future<void> shutdown() async {
     if (_state == ConnectionState.shutdown) return null;
     _setShutdownState();
     await _transport?.finish();
@@ -195,7 +195,7 @@ class ClientConnection {
   ///
   /// All open calls are terminated immediately, and no further calls may be
   /// made on this connection.
-  Future<Null> terminate() async {
+  Future<void> terminate() async {
     _setShutdownState();
     await _transport?.terminate();
   }

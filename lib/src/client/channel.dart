@@ -44,19 +44,19 @@ class ClientChannel {
   ///
   /// No further RPCs can be made on this channel. RPCs already in progress will
   /// be allowed to complete.
-  Future<Null> shutdown() {
-    if (_isShutdown) return new Future.value();
+  Future<void> shutdown() async {
+    if (_isShutdown) return;
     _isShutdown = true;
-    return _connection.shutdown();
+    if (_connection != null) await _connection.shutdown();
   }
 
   /// Terminates this channel.
   ///
   /// RPCs already in progress will be terminated. No further RPCs can be made
   /// on this channel.
-  Future<Null> terminate() {
+  Future<void> terminate() async {
     _isShutdown = true;
-    return _connection.terminate();
+    if (_connection != null) await _connection.terminate();
   }
 
   /// Returns a connection to this [Channel]'s RPC endpoint.

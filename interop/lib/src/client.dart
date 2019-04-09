@@ -88,7 +88,7 @@ class Tester {
     return true;
   }
 
-  Future<Null> runTest() async {
+  Future<void> runTest() async {
     ChannelCredentials credentials;
     if (_useTls) {
       List<int> trustedRoot;
@@ -110,7 +110,7 @@ class Tester {
     await channel.shutdown();
   }
 
-  Future<Null> runTestCase() async {
+  Future<void> runTestCase() async {
     switch (testCase) {
       case 'empty_unary':
         return emptyUnary();
@@ -174,7 +174,7 @@ class Tester {
   /// Client asserts:
   /// * call was successful
   /// * response is non-null
-  Future<Null> emptyUnary() async {
+  Future<void> emptyUnary() async {
     final response = await client.emptyCall(new Empty());
     if (response == null) throw 'Expected non-null response.';
     if (response is! Empty) throw 'Expected Empty response.';
@@ -202,7 +202,7 @@ class Tester {
   /// Client asserts:
   /// * Both calls were successful
   /// * The payload body of both responses is the same.
-  Future<Null> cacheableUnary() async {
+  Future<void> cacheableUnary() async {
     throw 'Not implemented';
   }
 
@@ -223,7 +223,7 @@ class Tester {
   /// * response payload body is 314159 bytes in size
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response message against a golden response
-  Future<Null> largeUnary() async {
+  Future<void> largeUnary() async {
     final payload = new Payload()..body = new Uint8List(271828);
     final request = new SimpleRequest()
       ..responseSize = 314159
@@ -282,7 +282,7 @@ class Tester {
   /// * Clients are free to assert that the response payload body contents are
   ///   zeros and comparing the entire response message against a golden
   ///   response.
-  Future<Null> clientCompressedUnary() async {
+  Future<void> clientCompressedUnary() async {
     throw 'Not implemented';
   }
 
@@ -326,7 +326,7 @@ class Tester {
   /// * response payload body is 314159 bytes in size in both cases.
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response message against a golden response
-  Future<Null> serverCompressedUnary() async {
+  Future<void> serverCompressedUnary() async {
     throw 'Not implemented';
   }
 
@@ -363,7 +363,7 @@ class Tester {
   /// Client asserts:
   /// * call was successful
   /// * response aggregated_payload_size is 74922
-  Future<Null> clientStreaming() async {
+  Future<void> clientStreaming() async {
     StreamingInputCallRequest createRequest(int bytes) {
       final request = new StreamingInputCallRequest()..payload = new Payload();
       request.payload.body = new Uint8List(bytes);
@@ -428,7 +428,7 @@ class Tester {
   /// * First call fails with `INVALID_ARGUMENT`.
   /// * Next calls succeeds.
   /// * Response aggregated payload size is 73086.
-  Future<Null> clientCompressedStreaming() async {
+  Future<void> clientCompressedStreaming() async {
     throw 'Not implemented';
   }
 
@@ -457,7 +457,7 @@ class Tester {
   /// * response payload bodies are sized (in order): 31415, 9, 2653, 58979
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response messages against golden responses
-  Future<Null> serverStreaming() async {
+  Future<void> serverStreaming() async {
     final expectedResponses = [31415, 9, 2653, 58979];
 
     final request = new StreamingOutputCallRequest()
@@ -515,7 +515,7 @@ class Tester {
   /// * response payload bodies are sized (in order): 31415, 92653
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response messages against golden responses
-  Future<Null> serverCompressedStreaming() async {
+  Future<void> serverCompressedStreaming() async {
     throw 'Not implemented';
   }
 
@@ -566,7 +566,7 @@ class Tester {
   /// * response payload bodies are sized (in order): 31415, 9, 2653, 58979
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response messages against golden responses
-  Future<Null> pingPong() async {
+  Future<void> pingPong() async {
     final requestSizes = [27182, 8, 1828, 45904];
     final expectedResponses = [31415, 9, 2653, 58979];
 
@@ -611,7 +611,7 @@ class Tester {
   /// Client asserts:
   /// * call was successful
   /// * exactly zero responses
-  Future<Null> emptyStream() async {
+  Future<void> emptyStream() async {
     final requests = new StreamController<StreamingOutputCallRequest>();
     final call = client.fullDuplexCall(requests.stream);
     requests.close();
@@ -653,7 +653,7 @@ class Tester {
   /// * response payload body is 314159 bytes in size
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response message against a golden response
-  Future<Null> computeEngineCreds() async {
+  Future<void> computeEngineCreds() async {
     final credentials = new ComputeEngineAuthenticator();
     final clientWithCredentials =
         new TestServiceClient(channel, options: credentials.toCallOptions);
@@ -709,7 +709,7 @@ class Tester {
   /// * response payload body is 314159 bytes in size
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response message against a golden response
-  Future<Null> serviceAccountCreds() async {
+  Future<void> serviceAccountCreds() async {
     throw 'Not implemented';
   }
 
@@ -743,7 +743,7 @@ class Tester {
   /// * response payload body is 314159 bytes in size
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response message against a golden response
-  Future<Null> jwtTokenCreds() async {
+  Future<void> jwtTokenCreds() async {
     final credentials = new JwtServiceAccountAuthenticator(serviceAccountJson);
     final clientWithCredentials =
         new TestServiceClient(channel, options: credentials.toCallOptions);
@@ -798,7 +798,7 @@ class Tester {
   ///   service account key file or GCE credentials was used, client should
   ///   check against the json key file or GCE default service account email.
   /// * received SimpleResponse.oauth_scope is in `--oauth_scope`
-  Future<Null> oauth2AuthToken() async {
+  Future<void> oauth2AuthToken() async {
     final credentials =
         new ServiceAccountAuthenticator(serviceAccountJson, [oauthScope]);
     final clientWithCredentials =
@@ -853,7 +853,7 @@ class Tester {
   /// * received SimpleResponse.username is not empty and is in the json key
   ///   file used by the auth library. The client can optionally check the
   ///   username matches the email address in the key file.
-  Future<Null> perRpcCreds() async {
+  Future<void> perRpcCreds() async {
     final credentials =
         new ServiceAccountAuthenticator(serviceAccountJson, [oauthScope]);
 
@@ -937,7 +937,7 @@ class Tester {
   /// * metadata with key `"x-grpc-test-echo-trailing-bin"` and value `0xababab`
   ///   is received in the trailing metadata for calls in Procedure steps 1 and
   ///   2.
-  Future<Null> customMetadata() async {
+  Future<void> customMetadata() async {
     void validate(Map<String, String> headers, Map<String, String> trailers) {
       if (headers[_headerEchoKey] != _headerEchoData) {
         throw 'Invalid header data received.';
@@ -1002,7 +1002,7 @@ class Tester {
   ///   steps 1 and 2
   /// * received status message is the same as the sent message for both
   ///   Procedure steps 1 and 2
-  Future<Null> statusCodeAndMessage() async {
+  Future<void> statusCodeAndMessage() async {
     final expectedStatus = new GrpcError.custom(2, 'test status message');
     final responseStatus = new EchoStatus()
       ..code = expectedStatus.code
@@ -1043,7 +1043,7 @@ class Tester {
   ///
   /// Client asserts:
   /// * received status code is 12 (UNIMPLEMENTED)
-  Future<Null> unimplementedMethod() async {
+  Future<void> unimplementedMethod() async {
     try {
       await client.unimplementedCall(new Empty());
       throw 'Did not throw.';
@@ -1063,7 +1063,7 @@ class Tester {
   ///
   /// Client asserts:
   /// * received status code is 12 (UNIMPLEMENTED)
-  Future<Null> unimplementedService() async {
+  Future<void> unimplementedService() async {
     try {
       await unimplementedServiceClient.unimplementedCall(new Empty());
       throw 'Did not throw.';
@@ -1083,7 +1083,7 @@ class Tester {
   ///
   /// Client asserts:
   /// * Call completed with status CANCELLED
-  Future<Null> cancelAfterBegin() async {
+  Future<void> cancelAfterBegin() async {
     final requests = new StreamController<StreamingInputCallRequest>();
     final call = client.streamingInputCall(requests.stream);
     scheduleMicrotask(call.cancel);
@@ -1116,7 +1116,7 @@ class Tester {
   ///
   /// Client asserts:
   /// * Call completed with status CANCELLED
-  Future<Null> cancelAfterFirstResponse() async {
+  Future<void> cancelAfterFirstResponse() async {
     final requests = new StreamController<StreamingOutputCallRequest>();
     final call = client.fullDuplexCall(requests.stream);
     final completer = new Completer();
@@ -1167,7 +1167,7 @@ class Tester {
   ///
   /// Client asserts:
   /// * Call completed with status DEADLINE_EXCEEDED.
-  Future<Null> timeoutOnSleepingServer() async {
+  Future<void> timeoutOnSleepingServer() async {
     final requests = new StreamController<StreamingOutputCallRequest>();
     final call = client.fullDuplexCall(requests.stream,
         options: new CallOptions(timeout: new Duration(milliseconds: 1)));
