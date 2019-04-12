@@ -1,7 +1,11 @@
-## 1.0.2
+## 1.0.3
 
 * Fix: now cancelling the StreamSubscription from a ResponseStream will close the Stream allowing
   the connection to time out.
+
+## 1.0.2
+
+* Fix bug where the server would crash if the client would break the connection.
 
 ## 1.0.1
 
