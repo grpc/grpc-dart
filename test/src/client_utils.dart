@@ -52,14 +52,14 @@ class FakeChannelOptions implements ChannelOptions {
 }
 
 class FakeChannel extends ClientChannel {
-  final ClientConnection connection;
+  final ClientConnection fixedConnection;
   final FakeChannelOptions options;
 
-  FakeChannel(String host, this.connection, this.options)
+  FakeChannel(String host, this.fixedConnection, this.options)
       : super(host, options: options);
 
   @override
-  Future<ClientConnection> getConnection() async => connection;
+  Future<ClientConnection> getConnection() async => fixedConnection;
 }
 
 typedef ServerMessageHandler = void Function(StreamMessage message);
@@ -134,6 +134,12 @@ class ClientHarness {
   void tearDown() {
     fromClient.close();
     toClient.close();
+  }
+
+  void sendResponse(int value) {
+    sendResponseHeader();
+    sendResponseValue(value);
+    sendResponseTrailer();
   }
 
   void sendResponseHeader({List<Header> headers = const []}) {
