@@ -30,7 +30,7 @@ typedef bool BadCertificateHandler(X509Certificate certificate, String host);
 /// certificates, etc.
 bool allowBadCertificates(X509Certificate certificate, String host) => true;
 
-class git ci ChannelOptions extends options.ChannelOptions {
+class ChannelOptions extends options.ChannelOptions {
   final ChannelCredentials credentials;
 
   const ChannelOptions({
