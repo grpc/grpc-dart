@@ -63,7 +63,8 @@ class ClientCall<Q, R> implements Response {
   String get path => _method.path;
 
   void onConnectionError(error) {
-    _terminateWithError(new GrpcError.unavailable('Error connecting: $error'));
+    _terminateWithError(new GrpcError.unavailable(
+        'Error connecting: $error', error is Exception ? error : null));
   }
 
   void _terminateWithError(GrpcError error) {
@@ -239,12 +240,15 @@ class ClientCall<Q, R> implements Response {
       // Only received a header frame and no data frames, so the header
       // should contain "trailers" as well (Trailers-Only).
       _trailers.complete(_headerMetadata);
-      final status = _headerMetadata['grpc-status'];
+      _headerMetadata.remove(":status");
+      final status = _headerMetadata.remove('grpc-status');
+//      final status = _headerMetadata['grpc-status'];
       // If status code is missing, we must treat it as '0'. As in 'success'.
       final statusCode = status != null ? int.parse(status) : 0;
       if (statusCode != 0) {
-        final message = _headerMetadata['grpc-message'];
-        _responseError(new GrpcError.custom(statusCode, message));
+        final message = _headerMetadata.remove('grpc-message');
+        _responseError(
+            new GrpcError.custom(statusCode, message, _headerMetadata));
       }
     }
     _timeoutTimer?.cancel();

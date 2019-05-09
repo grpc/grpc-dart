@@ -120,27 +120,29 @@ class StatusCode {
 class GrpcError {
   final int code;
   final String message;
+  final Map<String, String> trailers;
+  final Exception cause;
 
   /// Custom error code.
-  GrpcError.custom(this.code, [this.message]);
+  GrpcError.custom(this.code, [this.message, this.trailers]) : cause = null;
 
   /// The operation completed successfully.
-  GrpcError.ok([this.message]) : code = StatusCode.ok;
+  GrpcError.ok([this.message]) : code = StatusCode.ok, trailers = null, cause = null;
 
   /// The operation was cancelled (typically by the caller).
-  GrpcError.cancelled([this.message]) : code = StatusCode.cancelled;
+  GrpcError.cancelled([this.message]) : code = StatusCode.cancelled, trailers = null, cause = null;
 
   /// Unknown error. An example of where this error may be returned is if a
   /// Status value received from another address space belongs to an error-space
   /// that is not known in this address space. Also errors raised by APIs that
   /// do not return enough error information may be converted to this error.
-  GrpcError.unknown([this.message]) : code = StatusCode.unknown;
+  GrpcError.unknown([this.message]) : code = StatusCode.unknown, trailers = null, cause = null;
 
   /// Client specified an invalid argument. Note that this differs from
   /// [failedPrecondition]. [invalidArgument] indicates arguments that are
   /// problematic regardless of the state of the system (e.g., a malformed file
   /// name).
-  GrpcError.invalidArgument([this.message]) : code = StatusCode.invalidArgument;
+  GrpcError.invalidArgument([this.message]) : code = StatusCode.invalidArgument, trailers = null, cause = null;
 
   /// Deadline expired before operation could complete. For operations that
   /// change the state of the system, this error may be returned even if the
@@ -148,14 +150,14 @@ class GrpcError {
   /// from a server could have been delayed long enough for the deadline to
   /// expire.
   GrpcError.deadlineExceeded([this.message])
-      : code = StatusCode.deadlineExceeded;
+      : code = StatusCode.deadlineExceeded, trailers = null, cause = null;
 
   /// Some requested entity (e.g., file or directory) was not found.
-  GrpcError.notFound([this.message]) : code = StatusCode.notFound;
+  GrpcError.notFound([this.message]) : code = StatusCode.notFound, trailers = null, cause = null;
 
   /// Some entity that we attempted to create (e.g., file or directory) already
   /// exists.
-  GrpcError.alreadyExists([this.message]) : code = StatusCode.alreadyExists;
+  GrpcError.alreadyExists([this.message]) : code = StatusCode.alreadyExists, trailers = null, cause = null;
 
   /// The caller does not have permission to execute the specified operation.
   /// [permissionDenied] must not be used for rejections caused by exhausting
@@ -163,12 +165,12 @@ class GrpcError {
   /// [permissionDenied] must not be used if the caller cannot be identified
   /// (use [unauthenticated] instead for those errors).
   GrpcError.permissionDenied([this.message])
-      : code = StatusCode.permissionDenied;
+      : code = StatusCode.permissionDenied, trailers = null, cause = null;
 
   /// Some resource has been exhausted, perhaps a per-user quota, or perhaps the
   /// entire file system is out of space.
   GrpcError.resourceExhausted([this.message])
-      : code = StatusCode.resourceExhausted;
+      : code = StatusCode.resourceExhausted, trailers = null, cause = null;
 
   /// Operation was rejected because the system is not in a state required for
   /// the operation's execution. For example, directory to be deleted may be
@@ -185,14 +187,14 @@ class GrpcError {
   ///     returned since the client should not retry unless they have first
   ///     fixed up the directory by deleting files from it.
   GrpcError.failedPrecondition([this.message])
-      : code = StatusCode.failedPrecondition;
+      : code = StatusCode.failedPrecondition, trailers = null, cause = null;
 
   /// The operation was aborted, typically due to a concurrency issue like
   /// sequencer check failures, transaction aborts, etc.
   ///
   /// See litmus test above for deciding between [failedPrecondition],
   /// [aborted], and [unavailable].
-  GrpcError.aborted([this.message]) : code = StatusCode.aborted;
+  GrpcError.aborted([this.message]) : code = StatusCode.aborted, trailers = null, cause = null;
 
   /// Operation was attempted past the valid range. E.g., seeking or reading
   /// past end of file.
@@ -207,28 +209,28 @@ class GrpcError {
   /// [outOfRange]. We recommend using [outOfRange] (the more specific error)
   /// when it applies so that callers who are iterating through a space can
   /// easily look for an [outOfRange] error to detect when they are done.
-  GrpcError.outOfRange([this.message]) : code = StatusCode.outOfRange;
+  GrpcError.outOfRange([this.message]) : code = StatusCode.outOfRange, trailers = null, cause = null;
 
   /// Operation is not implemented or not supported/enabled in this service.
-  GrpcError.unimplemented([this.message]) : code = StatusCode.unimplemented;
+  GrpcError.unimplemented([this.message]) : code = StatusCode.unimplemented, trailers = null, cause = null;
 
   /// Internal errors. Means some invariants expected by underlying system has
   /// been broken. If you see one of these errors, something is very broken.
-  GrpcError.internal([this.message]) : code = StatusCode.internal;
+  GrpcError.internal([this.message]) : code = StatusCode.internal, trailers = null, cause = null;
 
   /// The service is currently unavailable.  This is a most likely a transient
   /// condition and may be corrected by retrying with a backoff.
   ///
   /// See litmus test above for deciding between [failedPrecondition],
   /// [aborted], and [unavailable].
-  GrpcError.unavailable([this.message]) : code = StatusCode.unavailable;
+  GrpcError.unavailable([this.message, this.cause]) : code = StatusCode.unavailable, trailers = null;
 
   /// Unrecoverable data loss or corruption.
-  GrpcError.dataLoss([this.message]) : code = StatusCode.dataLoss;
+  GrpcError.dataLoss([this.message]) : code = StatusCode.dataLoss, trailers = null, cause = null;
 
   /// The request does not have valid authentication credentials for the
   /// operation.
-  GrpcError.unauthenticated([this.message]) : code = StatusCode.unauthenticated;
+  GrpcError.unauthenticated([this.message]) : code = StatusCode.unauthenticated, trailers = null, cause = null;
 
   @override
   bool operator ==(other) {
