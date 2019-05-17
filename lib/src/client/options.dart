@@ -21,7 +21,7 @@ import 'dart:math';
 import '../shared/security.dart';
 
 const defaultIdleTimeout = const Duration(minutes: 5);
-const defaultUserAgent = 'dart-grpc/1.0.2';
+const defaultUserAgent = 'dart-grpc/1.0.3';
 
 typedef Duration BackoffStrategy(Duration lastBackoff);
 
