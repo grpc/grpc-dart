@@ -135,7 +135,7 @@ class ServerHarness {
 
   void setUp() {
     final stream = new TestServerStream(toServer.stream, fromServer.sink);
-    server.serveStream(stream);
+    server.serveStream_(stream);
   }
 
   void tearDown() {

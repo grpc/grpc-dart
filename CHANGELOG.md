@@ -1,7 +1,11 @@
-## 1.0.2
+## 1.0.3
 
 * Add `userAgent` for `ChannelOptions`
 * Breaking change: change arguments to named for `createCallHeaders`
+
+## 1.0.2
+
+* Fix bug where the server would crash if the client would break the connection.
 
 ## 1.0.1
 
