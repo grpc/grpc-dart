@@ -63,7 +63,8 @@ class ChannelCredentials {
       this._certificatePassword, this.authority, this.onBadCertificate);
 
   /// Disable TLS. RPCs are sent in clear text.
-  const ChannelCredentials.insecure() : this._(false, null, null, null, null);
+  const ChannelCredentials.insecure({String authority})
+      : this._(false, null, null, authority, null);
 
   /// Enable TLS and optionally specify the [certificates] to trust. If
   /// [certificates] is not provided, the default trust store is used.
