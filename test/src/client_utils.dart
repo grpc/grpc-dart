@@ -21,6 +21,7 @@ import 'package:grpc/src/client/channel.dart';
 import 'package:grpc/src/client/client.dart';
 import 'package:grpc/src/client/common.dart';
 import 'package:grpc/src/client/connection.dart';
+import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/client/method.dart';
 import 'package:grpc/src/client/options.dart';
 import 'package:grpc/src/shared/message.dart';

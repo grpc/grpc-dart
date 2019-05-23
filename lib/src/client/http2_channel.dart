@@ -17,6 +17,7 @@ import 'dart:async';
 
 import 'channel.dart';
 import 'connection.dart';
+import 'http2_connection.dart' show Http2ClientConnection;
 import 'transport/http2_credentials.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
