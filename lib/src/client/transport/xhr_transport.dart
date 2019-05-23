@@ -123,7 +123,6 @@ class XhrTransportStream implements GrpcTransportStream {
   }
 
   _close() {
-    print("closing");
     _incomingProcessor.close();
     _outgoingMessages.close();
     _onDone(this);
