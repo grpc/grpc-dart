@@ -17,16 +17,19 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
-import 'package:grpc/src/shared/status.dart';
+import 'package:grpc/src/client/call.dart';
 import 'package:meta/meta.dart';
 
 import '../../shared/message.dart';
+import '../../shared/status.dart';
+import '../connection.dart';
 import 'transport.dart';
 import 'web_streams.dart';
 
 class XhrTransportStream implements GrpcTransportStream {
   final HttpRequest _request;
   final ErrorHandler _onError;
+  final Function(XhrTransportStream stream) _onDone;
   int _requestBytesRead = 0;
   final StreamController<ByteBuffer> _incomingProcessor = StreamController();
   final StreamController<GrpcMessage> _incomingMessages = StreamController();
@@ -38,7 +41,9 @@ class XhrTransportStream implements GrpcTransportStream {
   @override
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
 
-  XhrTransportStream(this._request, this._onError) {
+  XhrTransportStream(this._request, {onError, onDone})
+      : _onError = onError,
+        _onDone = onDone {
     _outgoingMessages.stream
         .map(frame)
         .listen((data) => _request.send(data), cancelOnError: true);
@@ -118,8 +123,10 @@ class XhrTransportStream implements GrpcTransportStream {
   }
 
   _close() {
+    print("closing");
     _incomingProcessor.close();
     _outgoingMessages.close();
+    _onDone(this);
   }
 
   @override
@@ -129,23 +136,16 @@ class XhrTransportStream implements GrpcTransportStream {
   }
 }
 
-class XhrTransport extends Transport {
+class XhrClientConnection extends ClientConnection {
   final Uri uri;
 
-  HttpRequest _request;
+  final Set<XhrTransportStream> _requests = Set<XhrTransportStream>();
 
-  XhrTransport(this.uri);
+  XhrClientConnection(this.uri);
 
   String get authority => uri.authority;
 
-  @override
-  Future<void> connect() async {}
-
-  @override
-  Future<void> finish() async {}
-
-  @visibleForTesting
-  void initializeRequest(HttpRequest request, Map<String, String> metadata) {
+  void _initializeRequest(HttpRequest request, Map<String, String> metadata) {
     for (final header in metadata.keys) {
       request.setRequestHeader(header, metadata[header]);
     }
@@ -157,17 +157,40 @@ class XhrTransport extends Transport {
     request.responseType = 'text';
   }
 
+  @visibleForTesting
+  HttpRequest createHttpRequest() => HttpRequest();
+
   @override
   GrpcTransportStream makeRequest(String path, Duration timeout,
       Map<String, String> metadata, ErrorHandler onError) {
-    _request = HttpRequest();
-    _request.open('POST', uri.resolve(path).toString());
+    final HttpRequest request = createHttpRequest();
+    request.open('POST', uri.resolve(path).toString());
 
-    initializeRequest(_request, metadata);
+    _initializeRequest(request, metadata);
 
-    return XhrTransportStream(_request, onError);
+    final XhrTransportStream transportStream =
+        XhrTransportStream(request, onError: onError, onDone: _removeStream);
+    _requests.add(transportStream);
+    return transportStream;
+  }
+
+  void _removeStream(XhrTransportStream stream) {
+    _requests.remove(stream);
   }
 
   @override
-  Future<void> terminate() async {}
+  Future<void> terminate() async {
+    for (XhrTransportStream request in _requests) {
+      request.terminate();
+    }
+  }
+
+  @override
+  void dispatchCall(ClientCall call) {
+    call.onConnectionReady(this);
+  }
+
+  @override
+  Future<void> shutdown() async {
+  }
 }

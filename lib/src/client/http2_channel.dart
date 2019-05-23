@@ -23,7 +23,7 @@ import 'transport/transport.dart';
 
 /// A channel to a virtual gRPC endpoint.
 ///
-/// For each RPC, the channel picks a [ClientConnection] to dispatch the call.
+/// For each RPC, the channel picks a [Http2ClientConnection] to dispatch the call.
 /// RPCs on the same channel may be sent to different connections, depending on
 /// load balancing settings.
 class ClientChannel extends ClientChannelBase {
@@ -43,6 +43,6 @@ class ClientChannel extends ClientChannelBase {
 
   @override
   ClientConnection createConnection() {
-    return ClientConnection(options, _connectTransport);
+    return Http2ClientConnection(options, _connectTransport);
   }
 }

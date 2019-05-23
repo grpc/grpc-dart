@@ -39,12 +39,35 @@ enum ConnectionState {
   shutdown
 }
 
-class ClientConnection {
+abstract class ClientConnection {
+  String get authority;
+
+  /// Put [call] on the queue to be dispatched when the connection is ready.
+  void dispatchCall(ClientCall call);
+
+  /// Start a request for [path[ with [metadata].
+  GrpcTransportStream makeRequest(String path, Duration timeout,
+      Map<String, String> metadata, ErrorHandler onRequestFailure);
+
+  /// Shuts down this connection.
+  ///
+  /// No further calls may be made on this connection, but existing calls
+  /// are allowed to finish.
+  Future<void> shutdown();
+
+  /// Terminates this connection.
+  ///
+  /// All open calls are terminated immediately, and no further calls may be
+  /// made on this connection.
+  Future<void> terminate();
+}
+
+class Http2ClientConnection implements ClientConnection {
   final ChannelOptions options;
   final Future<Transport> Function() _connectTransport;
 
   ConnectionState _state = ConnectionState.idle;
-  void Function(ClientConnection connection) onStateChanged;
+  void Function(Http2ClientConnection connection) onStateChanged;
   final _pendingCalls = <ClientCall>[];
 
   Transport _transport;
@@ -54,7 +77,7 @@ class ClientConnection {
   Duration _currentReconnectDelay;
   String get authority => _transport.authority;
 
-  ClientConnection(this.options, this._connectTransport);
+  Http2ClientConnection(this.options, this._connectTransport);
 
   ConnectionState get state => _state;
 
@@ -110,20 +133,12 @@ class ClientConnection {
     _failCall(call, 'Connection shutting down.');
   }
 
-  /// Shuts down this connection.
-  ///
-  /// No further calls may be made on this connection, but existing calls
-  /// are allowed to finish.
   Future<void> shutdown() async {
     if (_state == ConnectionState.shutdown) return null;
     _setShutdownState();
     await _transport?.finish();
   }
 
-  /// Terminates this connection.
-  ///
-  /// All open calls are terminated immediately, and no further calls may be
-  /// made on this connection.
   Future<void> terminate() async {
     _setShutdownState();
     await _transport?.terminate();

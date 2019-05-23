@@ -44,7 +44,7 @@ class MockTransport extends Mock implements Transport {}
 
 class MockStream extends Mock implements GrpcTransportStream {}
 
-class FakeConnection extends ClientConnection {
+class FakeConnection extends Http2ClientConnection {
   var connectionError;
 
   FakeConnection._(String host, Transport transport, ChannelOptions options,
@@ -70,13 +70,13 @@ class FakeChannelOptions implements ChannelOptions {
 }
 
 class FakeChannel extends ClientChannelBase {
-  final ClientConnection connection;
+  final Http2ClientConnection connection;
   final FakeChannelOptions options;
 
   FakeChannel(String host, this.connection, this.options);
 
   @override
-  ClientConnection createConnection() => connection;
+  Http2ClientConnection createConnection() => connection;
 }
 
 class TestClient extends Client {
