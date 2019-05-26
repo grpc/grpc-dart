@@ -33,4 +33,8 @@ class Client {
       {CallOptions options}) {
     return _channel.createCall(method, requests, _options.mergedWith(options));
   }
+
+  Future<void> close() async {
+    await _channel.shutdown();
+  }
 }
