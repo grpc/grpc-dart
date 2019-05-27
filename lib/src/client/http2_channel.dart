@@ -17,13 +17,14 @@ import 'dart:async';
 
 import 'channel.dart';
 import 'connection.dart';
+import 'http2_connection.dart' show Http2ClientConnection;
 import 'transport/http2_credentials.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
 
 /// A channel to a virtual gRPC endpoint.
 ///
-/// For each RPC, the channel picks a [ClientConnection] to dispatch the call.
+/// For each RPC, the channel picks a [Http2ClientConnection] to dispatch the call.
 /// RPCs on the same channel may be sent to different connections, depending on
 /// load balancing settings.
 class ClientChannel extends ClientChannelBase {
@@ -43,6 +44,6 @@ class ClientChannel extends ClientChannelBase {
 
   @override
   ClientConnection createConnection() {
-    return ClientConnection(options, _connectTransport);
+    return Http2ClientConnection(options, _connectTransport);
   }
 }

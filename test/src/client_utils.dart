@@ -21,6 +21,7 @@ import 'package:grpc/src/client/channel.dart';
 import 'package:grpc/src/client/client.dart';
 import 'package:grpc/src/client/common.dart';
 import 'package:grpc/src/client/connection.dart';
+import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/client/method.dart';
 import 'package:grpc/src/client/options.dart';
 import 'package:grpc/src/shared/message.dart';
@@ -44,7 +45,7 @@ class MockTransport extends Mock implements Transport {}
 
 class MockStream extends Mock implements GrpcTransportStream {}
 
-class FakeConnection extends ClientConnection {
+class FakeConnection extends Http2ClientConnection {
   var connectionError;
 
   FakeConnection._(String host, Transport transport, ChannelOptions options,
@@ -70,13 +71,13 @@ class FakeChannelOptions implements ChannelOptions {
 }
 
 class FakeChannel extends ClientChannelBase {
-  final ClientConnection connection;
+  final Http2ClientConnection connection;
   final FakeChannelOptions options;
 
   FakeChannel(String host, this.connection, this.options);
 
   @override
-  ClientConnection createConnection() => connection;
+  Http2ClientConnection createConnection() => connection;
 }
 
 class TestClient extends Client {

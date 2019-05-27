@@ -24,7 +24,6 @@ export 'src/client/call.dart' show ClientCall;
 
 export 'src/client/client.dart' show Client;
 export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
-export 'src/client/connection.dart' show ClientConnection;
 export 'src/client/method.dart' show ClientMethod;
 export 'src/client/options.dart'
     show

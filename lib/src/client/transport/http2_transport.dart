@@ -64,6 +64,7 @@ class Http2TransportStream extends GrpcTransportStream {
   }
 }
 
+// TODO(sigurdm): Fold this class into Http2ClientConnection
 class Http2Transport extends Transport {
   static final _methodPost = new Header.ascii(':method', 'POST');
   static final _schemeHttp = new Header.ascii(':scheme', 'http');
