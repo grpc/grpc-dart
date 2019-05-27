@@ -73,13 +73,9 @@ class ClientConnection {
 
   ConnectionState get state => _state;
 
-  static List<Header> createCallHeaders(
-      {@required bool useTls,
-      @required String authority,
-      @required String path,
-      Duration timeout,
-      String userAgent,
-      Map<String, String> metadata}) {
+  static List<Header> createCallHeaders(bool useTls, String authority,
+      String path, Duration timeout, Map<String, String> metadata,
+      {String userAgent}) {
     final headers = [
       _methodPost,
       useTls ? _schemeHttps : _schemeHttp,
@@ -167,12 +163,8 @@ class ClientConnection {
   ClientTransportStream makeRequest(
       String path, Duration timeout, Map<String, String> metadata) {
     final headers = createCallHeaders(
-        useTls: options.credentials.isSecure,
-        authority: authority,
-        path: path,
-        timeout: timeout,
-        userAgent: options.userAgent,
-        metadata: metadata);
+        options.credentials.isSecure, authority, path, timeout, metadata,
+        userAgent: options.userAgent);
     return _transport.makeRequest(headers);
   }
 

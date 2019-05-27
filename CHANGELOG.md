@@ -1,7 +1,7 @@
 ## 1.0.3
 
 * Add `userAgent` for `ChannelOptions`
-* Breaking change: change arguments to named for `createCallHeaders`
+* Add `userAgent` as an optional named argument for `createCallHeaders`
 
 ## 1.0.2
 
