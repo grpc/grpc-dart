@@ -27,15 +27,3 @@ abstract class GrpcTransportStream {
 
   Future<void> terminate();
 }
-
-abstract class Transport {
-  ActiveStateHandler onActiveStateChanged;
-  SocketClosedHandler onSocketClosed;
-
-  String get authority;
-  Future<void> connect();
-  GrpcTransportStream makeRequest(String path, Duration timeout,
-      Map<String, String> metadata, ErrorHandler onRequestFailure);
-  Future<void> finish();
-  Future<void> terminate();
-}

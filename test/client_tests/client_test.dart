@@ -16,7 +16,7 @@
 import 'dart:async';
 
 import 'package:grpc/grpc.dart';
-import 'package:grpc/src/shared/message.dart';
+import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 
 import '../src/client_utils.dart';
@@ -39,8 +39,8 @@ void main() {
     const requestValue = 17;
     const responseValue = 19;
 
-    void handleRequest(List<int> message) {
-      final data = validateClientDataMessage(message);
+    void handleRequest(StreamMessage message) {
+      final data = validateDataMessage(message);
       expect(mockDecode(data.data), requestValue);
 
       harness
@@ -63,8 +63,8 @@ void main() {
 
     var index = 0;
 
-    void handleRequest(List<int> message) {
-      final data = validateClientDataMessage(message);
+    void handleRequest(StreamMessage message) {
+      final data = validateDataMessage(message);
       expect(mockDecode(data.data), requests[index++]);
     }
 
@@ -77,7 +77,7 @@ void main() {
 
     await harness.runTest(
       clientCall:
-          harness.client.clientStreaming(new Stream.fromIterable(requests)),
+      harness.client.clientStreaming(new Stream.fromIterable(requests)),
       expectedResult: response,
       expectedPath: '/Test/ClientStreaming',
       serverHandlers: [handleRequest, handleRequest],
@@ -89,8 +89,8 @@ void main() {
     const request = 4;
     const responses = const [3, 17, 9];
 
-    void handleRequest(List<int> message) {
-      final data = validateClientDataMessage(message);
+    void handleRequest(StreamMessage message) {
+      final data = validateDataMessage(message);
       expect(mockDecode(data.data), request);
 
       harness.sendResponseHeader();
@@ -112,8 +112,8 @@ void main() {
 
     var index = 0;
 
-    void handleRequest(List<int> message) {
-      final data = validateClientDataMessage(message);
+    void handleRequest(StreamMessage message) {
+      final data = validateDataMessage(message);
       expect(mockDecode(data.data), requests[index]);
 
       if (index == 0) {
@@ -162,7 +162,7 @@ void main() {
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
       expectedException:
-          new GrpcError.unimplemented('More than one response received'),
+      new GrpcError.unimplemented('More than one response received'),
       serverHandlers: [handleRequest],
     );
   });
@@ -202,7 +202,7 @@ void main() {
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
       expectedException:
-          new GrpcError.unimplemented('Received data before headers'),
+      new GrpcError.unimplemented('Received data before headers'),
       serverHandlers: [handleRequest],
     );
   });
@@ -218,7 +218,7 @@ void main() {
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
       expectedException:
-          new GrpcError.unimplemented('Received data after trailers'),
+      new GrpcError.unimplemented('Received data after trailers'),
       serverHandlers: [handleRequest],
     );
   });
@@ -234,7 +234,7 @@ void main() {
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
       expectedException:
-          new GrpcError.unimplemented('Received multiple trailers'),
+      new GrpcError.unimplemented('Received multiple trailers'),
       serverHandlers: [handleRequest],
     );
   });
@@ -244,18 +244,17 @@ void main() {
     const customStatusMessage = 'Custom message';
 
     void handleRequest(_) {
-      final headers = <String, String>{
-        'grpc-status': '$customStatusCode',
-        'grpc-message': customStatusMessage
-      };
-      harness.toClient.add(new GrpcMetadata(headers));
+      harness.toClient.add(new HeadersStreamMessage([
+        new Header.ascii('grpc-status', '$customStatusCode'),
+        new Header.ascii('grpc-message', customStatusMessage)
+      ], endStream: true));
       harness.toClient.close();
     }
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
       expectedException:
-          new GrpcError.custom(customStatusCode, customStatusMessage),
+      new GrpcError.custom(customStatusCode, customStatusMessage),
       serverHandlers: [handleRequest],
     );
   });
@@ -313,8 +312,8 @@ void main() {
     );
   });
 
-  Future<Null> makeUnaryCall() async {
-    void handleRequest(List<int> message) {
+  Future<void> makeUnaryCall() async {
+    void handleRequest(StreamMessage message) {
       harness
         ..sendResponseHeader()
         ..sendResponseValue(1)
@@ -338,7 +337,7 @@ void main() {
     };
 
     final expectedException =
-        new GrpcError.unavailable('Error connecting: Connection error');
+    new GrpcError.unavailable('Error connecting: Connection error');
 
     await harness.expectThrows(
         harness.client.unary(dummyValue), expectedException);

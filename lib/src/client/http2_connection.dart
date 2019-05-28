@@ -14,36 +14,81 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:http2/transport.dart';
+import 'package:meta/meta.dart';
+
+import '../shared/timeout.dart';
 
 import 'call.dart';
 import 'connection.dart' hide ClientConnection;
 import 'connection.dart' as connection;
-import 'options.dart';
+
+import 'transport/http2_credentials.dart';
+import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
 
-@Deprecated('Use Http2ClientConnection. Will be removed in next breaking release')
-class ClientConnection extends Http2ClientConnection {
-  ClientConnection(ChannelOptions options, Future<Transport> Function() _connectTransport) : super(options, _connectTransport);
-}
-
 class Http2ClientConnection implements connection.ClientConnection {
+  static final _methodPost = new Header.ascii(':method', 'POST');
+  static final _schemeHttp = new Header.ascii(':scheme', 'http');
+  static final _schemeHttps = new Header.ascii(':scheme', 'https');
+  static final _contentTypeGrpc =
+      new Header.ascii('content-type', 'application/grpc');
+  static final _teTrailers = new Header.ascii('te', 'trailers');
+  static final _grpcAcceptEncoding =
+      new Header.ascii('grpc-accept-encoding', 'identity');
+  static final _userAgent = new Header.ascii('user-agent', 'dart-grpc/0.2.0');
+
   final ChannelOptions options;
-  final Future<Transport> Function() _connectTransport;
 
   connection.ConnectionState _state = ConnectionState.idle;
+
+  @visibleForTesting
   void Function(Http2ClientConnection connection) onStateChanged;
   final _pendingCalls = <ClientCall>[];
 
-  Transport _transport;
+  ClientTransportConnection _transportConnection;
 
   /// Used for idle and reconnect timeout, depending on [_state].
   Timer _timer;
   Duration _currentReconnectDelay;
-  String get authority => _transport.authority;
 
-  Http2ClientConnection(this.options, this._connectTransport);
+  final String host;
+  final int port;
+
+  Http2ClientConnection(this.host, this.port, this.options);
+
+  ChannelCredentials get credentials => options.credentials;
+
+  String get authority =>
+      options.credentials.authority ?? port == 443 ? host : "$host:$port";
 
   ConnectionState get state => _state;
+
+  Future<ClientTransportConnection> connectTransport() async {
+    var socket = await Socket.connect(host, port);
+    if (_state == ConnectionState.shutdown) {
+      socket.destroy();
+      // TODO(sigurdm): Throw something nicer...
+      throw 'Shutting down';
+    }
+    final securityContext = credentials.securityContext;
+    if (securityContext != null) {
+      socket = await SecureSocket.secure(socket,
+          host: authority,
+          context: securityContext,
+          onBadCertificate: _validateBadCertificate);
+      if (_state == ConnectionState.shutdown) {
+        socket.destroy();
+        // TODO(sigurdm): Throw something nicer...
+        throw 'Shutting down';
+      }
+    }
+    socket.done.then((_) => _handleSocketClosed());
+    return new ClientTransportConnection.viaSocket(socket);
+  }
 
   void _connect() {
     if (_state != ConnectionState.idle &&
@@ -51,11 +96,10 @@ class Http2ClientConnection implements connection.ClientConnection {
       return;
     }
     _setState(ConnectionState.connecting);
-    _connectTransport().then((transport) {
+    connectTransport().then((transport) {
       _currentReconnectDelay = null;
-      _transport = transport;
-      _transport.onActiveStateChanged = _handleActiveStateChanged;
-      _transport.onSocketClosed = _handleSocketClosed;
+      _transportConnection = transport;
+      transport.onActiveStateChanged = _handleActiveStateChanged;
       _setState(ConnectionState.ready);
       _pendingCalls.forEach(_startCall);
       _pendingCalls.clear();
@@ -80,7 +124,10 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   GrpcTransportStream makeRequest(String path, Duration timeout,
       Map<String, String> metadata, ErrorHandler onRequestFailure) {
-    return _transport.makeRequest(path, timeout, metadata, onRequestFailure);
+    final headers = createCallHeaders(
+        credentials.isSecure, authority, path, timeout, metadata);
+    final stream = _transportConnection.makeRequest(headers);
+    return new Http2TransportStream(stream, onRequestFailure);
   }
 
   void _startCall(ClientCall call) {
@@ -100,12 +147,12 @@ class Http2ClientConnection implements connection.ClientConnection {
   Future<void> shutdown() async {
     if (_state == ConnectionState.shutdown) return null;
     _setShutdownState();
-    await _transport?.finish();
+    await _transportConnection?.finish();
   }
 
   Future<void> terminate() async {
     _setShutdownState();
-    await _transport?.terminate();
+    await _transportConnection?.terminate();
   }
 
   void _setShutdownState() {
@@ -125,8 +172,10 @@ class Http2ClientConnection implements connection.ClientConnection {
   void _handleIdleTimeout() {
     if (_timer == null || _state != ConnectionState.ready) return;
     _cancelTimer();
-    _transport?.finish()?.catchError((_) => {}); // TODO(jakobr): Log error.
-    _transport = null;
+    _transportConnection
+        ?.finish()
+        ?.catchError((_) => {}); // TODO(jakobr): Log error.
+    _transportConnection = null;
     _setState(ConnectionState.idle);
   }
 
@@ -152,7 +201,7 @@ class Http2ClientConnection implements connection.ClientConnection {
   }
 
   void _handleConnectionFailure(error) {
-    _transport = null;
+    _transportConnection = null;
     if (_state == ConnectionState.shutdown || _state == ConnectionState.idle) {
       return;
     }
@@ -171,7 +220,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   void _handleSocketClosed() {
     _cancelTimer();
-    _transport = null;
+    _transportConnection = null;
 
     if (_state == ConnectionState.idle && _state == ConnectionState.shutdown) {
       // All good.
@@ -189,5 +238,36 @@ class Http2ClientConnection implements connection.ClientConnection {
     _setState(ConnectionState.transientFailure);
     _currentReconnectDelay = options.backoffStrategy(_currentReconnectDelay);
     _timer = new Timer(_currentReconnectDelay, _handleReconnect);
+  }
+
+  static List<Header> createCallHeaders(bool useTls, String authority,
+      String path, Duration timeout, Map<String, String> metadata) {
+    final headers = [
+      _methodPost,
+      useTls ? _schemeHttps : _schemeHttp,
+      new Header(ascii.encode(':path'), utf8.encode(path)),
+      new Header(ascii.encode(':authority'), utf8.encode(authority)),
+    ];
+    if (timeout != null) {
+      headers.add(new Header.ascii('grpc-timeout', toTimeoutString(timeout)));
+    }
+    headers.addAll([
+      _contentTypeGrpc,
+      _teTrailers,
+      _grpcAcceptEncoding,
+      _userAgent,
+    ]);
+    metadata?.forEach((key, value) {
+      headers.add(new Header(ascii.encode(key), utf8.encode(value)));
+    });
+    return headers;
+  }
+
+  bool _validateBadCertificate(X509Certificate certificate) {
+    final credentials = this.credentials;
+    final validator = credentials.onBadCertificate;
+
+    if (validator == null) return false;
+    return validator(certificate, authority);
   }
 }

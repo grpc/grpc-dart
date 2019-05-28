@@ -61,4 +61,3 @@ abstract class ClientConnection {
   /// made on this connection.
   Future<void> terminate();
 }
-

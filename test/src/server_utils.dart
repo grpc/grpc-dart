@@ -15,6 +15,7 @@
 
 import 'dart:async';
 
+import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:grpc/src/shared/streams.dart';
 import 'package:http2/transport.dart';
@@ -172,7 +173,7 @@ class ServerHarness {
       {String authority = 'test',
       Map<String, String> metadata,
       Duration timeout}) {
-    final headers = Http2Transport.createCallHeaders(
+    final headers = Http2ClientConnection.createCallHeaders(
         true, authority, path, timeout, metadata);
     toServer.add(new HeadersStreamMessage(headers));
   }
