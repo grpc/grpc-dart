@@ -21,6 +21,7 @@ import 'dart:math';
 import '../shared/security.dart';
 
 const defaultIdleTimeout = const Duration(minutes: 5);
+const defaultUserAgent = 'dart-grpc/1.0.3';
 
 typedef Duration BackoffStrategy(Duration lastBackoff);
 
@@ -95,14 +96,16 @@ class ChannelOptions {
   final ChannelCredentials credentials;
   final Duration idleTimeout;
   final BackoffStrategy backoffStrategy;
+  final String userAgent;
 
-  const ChannelOptions(
-      {ChannelCredentials credentials,
-      Duration idleTimeout,
-      BackoffStrategy backoffStrategy =
-          defaultBackoffStrategy}) // Remove when dart-lang/sdk#31066 is fixed.
-      : this.credentials = credentials ?? const ChannelCredentials.secure(),
+  const ChannelOptions({
+    ChannelCredentials credentials,
+    Duration idleTimeout,
+    String userAgent,
+    BackoffStrategy backoffStrategy,
+  })  : this.credentials = credentials ?? const ChannelCredentials.secure(),
         this.idleTimeout = idleTimeout ?? defaultIdleTimeout,
+        this.userAgent = userAgent ?? defaultUserAgent,
         this.backoffStrategy = backoffStrategy ?? defaultBackoffStrategy;
 }
 

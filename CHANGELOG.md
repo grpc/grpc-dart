@@ -1,3 +1,8 @@
+## 1.0.3
+
+* Add `userAgent` argument for `ChannelOptions()`
+* Add `userAgent` as an optional named argument for `clientConnection.createCallHeaders()`
+
 ## 1.0.2
 
 * Fix bug where the server would crash if the client would break the connection.

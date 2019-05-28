@@ -54,7 +54,6 @@ class ClientConnection {
   static final _teTrailers = new Header.ascii('te', 'trailers');
   static final _grpcAcceptEncoding =
       new Header.ascii('grpc-accept-encoding', 'identity');
-  static final _userAgent = new Header.ascii('user-agent', 'dart-grpc/0.2.0');
 
   final String host;
   final int port;
@@ -75,7 +74,8 @@ class ClientConnection {
   ConnectionState get state => _state;
 
   static List<Header> createCallHeaders(bool useTls, String authority,
-      String path, Duration timeout, Map<String, String> metadata) {
+      String path, Duration timeout, Map<String, String> metadata,
+      {String userAgent}) {
     final headers = [
       _methodPost,
       useTls ? _schemeHttps : _schemeHttp,
@@ -89,7 +89,7 @@ class ClientConnection {
       _contentTypeGrpc,
       _teTrailers,
       _grpcAcceptEncoding,
-      _userAgent,
+      new Header.ascii('user-agent', userAgent ?? defaultUserAgent),
     ]);
     metadata?.forEach((key, value) {
       headers.add(new Header(ascii.encode(key), utf8.encode(value)));
@@ -163,7 +163,8 @@ class ClientConnection {
   ClientTransportStream makeRequest(
       String path, Duration timeout, Map<String, String> metadata) {
     final headers = createCallHeaders(
-        options.credentials.isSecure, authority, path, timeout, metadata);
+        options.credentials.isSecure, authority, path, timeout, metadata,
+        userAgent: options.userAgent);
     return _transport.makeRequest(headers);
   }
 
