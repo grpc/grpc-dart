@@ -1,7 +1,7 @@
 ## 1.0.3
 
-* Add `userAgent` for `ChannelOptions`
-* Add `userAgent` as an optional named argument for `createCallHeaders`
+* Add `userAgent` argument for `ChannelOptions()`
+* Add `userAgent` as an optional named argument for `clientConnection.createCallHeaders()`
 
 ## 1.0.2
 
