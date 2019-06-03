@@ -1,7 +1,8 @@
 ## 1.0.3
 
-* Add `userAgent` argument for `ChannelOptions()`
-* Add `userAgent` as an optional named argument for `clientConnection.createCallHeaders()`
+* Allow custom user agent with a `userAgent` argument for `ChannelOptions()`.
+* Allow specifying `authority` for `ChannelCredentials.insecure()`.
+* Add `userAgent` as an optional named argument for `clientConnection.createCallHeaders()`.
 
 ## 1.0.2
 
