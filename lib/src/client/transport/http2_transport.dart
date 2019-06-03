@@ -29,36 +29,28 @@ import 'transport.dart';
 
 class Http2TransportStream extends GrpcTransportStream {
   final TransportStream _transportStream;
-  final StreamController<GrpcMessage> _incomingMessages = StreamController();
+  final Stream<GrpcMessage> incomingMessages;
   final StreamController<List<int>> _outgoingMessages = StreamController();
   final ErrorHandler _onError;
 
-  Stream<GrpcMessage> get incomingMessages => _incomingMessages.stream;
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
 
-  Http2TransportStream(this._transportStream, this._onError) {
-    _transportStream.incomingMessages
-        .transform(new GrpcHttpDecoder())
-        .transform(grpcDecompressor())
-        .pipe(_incomingMessages);
-
+  Http2TransportStream(this._transportStream, this._onError)
+      : incomingMessages = _transportStream.incomingMessages
+            .transform(new GrpcHttpDecoder())
+            .transform(grpcDecompressor()) {
     _outgoingMessages.stream
         .map(frame)
         .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
-        .handleError(_onRequestError)
+        .handleError(_onError)
         .listen(_transportStream.outgoingMessages.add,
             onError: _transportStream.outgoingMessages.addError,
             onDone: _transportStream.outgoingMessages.close,
             cancelOnError: true);
   }
 
-  void _onRequestError(error) {
-    _onError(error);
-  }
-
   @override
   Future<void> terminate() async {
-    await _incomingMessages.close();
     await _outgoingMessages.close();
     _transportStream.terminate();
   }
