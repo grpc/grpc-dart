@@ -289,7 +289,9 @@ class ClientCall<Q, R> implements Response {
     await Future.wait(futures);
   }
 
-  Future<void> _safeTerminate() {
-    return _terminate().catchError((_) {});
+  Future<void> _safeTerminate() async {
+    try {
+      await _terminate();
+    } catch (_) {}
   }
 }

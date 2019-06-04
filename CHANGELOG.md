@@ -1,7 +1,9 @@
-## 1.1.0
+## 2.0.0
 
 * Add initial support for grpc-web.
   See `example/grpc-web` for an example of this working.
+* **Breaking**: grpc.dart no longer exposes `ClientConnection`. It was supposed to be an internal
+  abstraction.
 
 ## 1.0.1
 
