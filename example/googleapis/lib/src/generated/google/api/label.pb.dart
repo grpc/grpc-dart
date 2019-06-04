@@ -14,7 +14,7 @@ import 'label.pbenum.dart';
 export 'label.pbenum.dart';
 
 class LabelDescriptor extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('LabelDescriptor')
+  static final BuilderInfo _i = BuilderInfo('LabelDescriptor')
     ..aOS(1, 'key')
     ..e<LabelDescriptor_ValueType>(
         2,
@@ -33,14 +33,12 @@ class LabelDescriptor extends GeneratedMessage {
   LabelDescriptor.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  LabelDescriptor clone() => new LabelDescriptor()..mergeFromMessage(this);
+  LabelDescriptor clone() => LabelDescriptor()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static LabelDescriptor create() => new LabelDescriptor();
-  static PbList<LabelDescriptor> createRepeated() =>
-      new PbList<LabelDescriptor>();
+  static LabelDescriptor create() => LabelDescriptor();
+  static PbList<LabelDescriptor> createRepeated() => PbList<LabelDescriptor>();
   static LabelDescriptor getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyLabelDescriptor();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyLabelDescriptor();
     return _defaultInstance;
   }
 

@@ -72,7 +72,7 @@ class ServerHandler_ extends ServiceCall {
     _stream.onTerminated = (_) => cancel();
 
     _incomingSubscription = _stream.incomingMessages
-        .transform(new GrpcHttpDecoder())
+        .transform(GrpcHttpDecoder())
         .transform(grpcDecompressor())
         .listen(_onDataIdle,
             onError: _onError, onDone: _onDoneError, cancelOnError: true);
@@ -90,7 +90,7 @@ class ServerHandler_ extends ServiceCall {
 
   void _onDataIdle(GrpcMessage message) async {
     if (message is! GrpcMetadata) {
-      _sendError(new GrpcError.unimplemented('Expected header frame'));
+      _sendError(GrpcError.unimplemented('Expected header frame'));
       _sinkIncoming();
       return;
     }
@@ -102,7 +102,7 @@ class ServerHandler_ extends ServiceCall {
     final path = _clientMetadata[':path'];
     final pathSegments = path.split('/');
     if (pathSegments.length < 3) {
-      _sendError(new GrpcError.unimplemented('Invalid path'));
+      _sendError(GrpcError.unimplemented('Invalid path'));
       _sinkIncoming();
       return;
     }
@@ -112,7 +112,7 @@ class ServerHandler_ extends ServiceCall {
     _service = _serviceLookup(serviceName);
     _descriptor = _service?.$lookupMethod(methodName);
     if (_descriptor == null) {
-      _sendError(new GrpcError.unimplemented('Path $path not found'));
+      _sendError(GrpcError.unimplemented('Path $path not found'));
       _sinkIncoming();
       return;
     }
@@ -136,7 +136,7 @@ class ServerHandler_ extends ServiceCall {
         }
       }
     } catch (error) {
-      final grpcError = new GrpcError.internal(error.toString());
+      final grpcError = GrpcError.internal(error.toString());
       return grpcError;
     }
     return null;
@@ -158,8 +158,8 @@ class ServerHandler_ extends ServiceCall {
 
     final timeout = fromTimeoutString(_clientMetadata['grpc-timeout']);
     if (timeout != null) {
-      _deadline = new DateTime.now().add(timeout);
-      _timeoutTimer = new Timer(timeout, _onTimedOut);
+      _deadline = DateTime.now().add(timeout);
+      _timeoutTimer = Timer(timeout, _onTimedOut);
     }
   }
 
@@ -167,7 +167,7 @@ class ServerHandler_ extends ServiceCall {
     if (_isCanceled) return;
     _isTimedOut = true;
     _isCanceled = true;
-    final error = new GrpcError.deadlineExceeded('Deadline exceeded');
+    final error = GrpcError.deadlineExceeded('Deadline exceeded');
     _sendError(error);
     if (!_requests.isClosed) {
       _requests
@@ -180,7 +180,7 @@ class ServerHandler_ extends ServiceCall {
 
   void _onDataActive(GrpcMessage message) {
     if (message is! GrpcData) {
-      final error = new GrpcError.unimplemented('Expected request');
+      final error = GrpcError.unimplemented('Expected request');
       _sendError(error);
       _requests
         ..addError(error)
@@ -189,7 +189,7 @@ class ServerHandler_ extends ServiceCall {
     }
 
     if (_hasReceivedRequest && !_descriptor.streamingRequest) {
-      final error = new GrpcError.unimplemented('Too many requests');
+      final error = GrpcError.unimplemented('Too many requests');
       _sendError(error);
       _requests
         ..addError(error)
@@ -204,7 +204,7 @@ class ServerHandler_ extends ServiceCall {
       request = _descriptor.deserialize(data.data);
     } catch (error) {
       final grpcError =
-          new GrpcError.internal('Error deserializing request: $error');
+          GrpcError.internal('Error deserializing request: $error');
       _sendError(grpcError);
       _requests
         ..addError(grpcError)
@@ -225,8 +225,7 @@ class ServerHandler_ extends ServiceCall {
       }
       _stream.sendData(GrpcHttpEncoder.frame(bytes));
     } catch (error) {
-      final grpcError =
-          new GrpcError.internal('Error sending response: $error');
+      final grpcError = GrpcError.internal('Error sending response: $error');
       if (!_requests.isClosed) {
         // If we can, alert the handler that things are going wrong.
         _requests
@@ -246,12 +245,12 @@ class ServerHandler_ extends ServiceCall {
     if (error is GrpcError) {
       _sendError(error);
     } else {
-      _sendError(new GrpcError.unknown(error.toString()));
+      _sendError(GrpcError.unknown(error.toString()));
     }
   }
 
   void sendHeaders() {
-    if (_headersSent) throw new GrpcError.internal('Headers already sent');
+    if (_headersSent) throw GrpcError.internal('Headers already sent');
 
     _customHeaders..remove(':status')..remove('content-type');
 
@@ -266,7 +265,7 @@ class ServerHandler_ extends ServiceCall {
 
     final outgoingHeaders = <Header>[];
     outgoingHeadersMap.forEach((key, value) =>
-        outgoingHeaders.add(new Header(ascii.encode(key), utf8.encode(value))));
+        outgoingHeaders.add(Header(ascii.encode(key), utf8.encode(value))));
     _stream.sendHeaders(outgoingHeaders);
     _headersSent = true;
   }
@@ -293,8 +292,8 @@ class ServerHandler_ extends ServiceCall {
     }
 
     final outgoingTrailers = <Header>[];
-    outgoingTrailersMap.forEach((key, value) => outgoingTrailers
-        .add(new Header(ascii.encode(key), utf8.encode(value))));
+    outgoingTrailersMap.forEach((key, value) =>
+        outgoingTrailers.add(Header(ascii.encode(key), utf8.encode(value))));
     _stream.sendHeaders(outgoingTrailers, endStream: true);
     // We're done!
     _cancelResponseSubscription();
@@ -309,7 +308,7 @@ class ServerHandler_ extends ServiceCall {
     _timeoutTimer?.cancel();
     _isCanceled = true;
     if (_requests != null && !_requests.isClosed) {
-      _requests.addError(new GrpcError.cancelled('Cancelled'));
+      _requests.addError(GrpcError.cancelled('Cancelled'));
     }
     _cancelResponseSubscription();
     _incomingSubscription.cancel();
@@ -317,13 +316,13 @@ class ServerHandler_ extends ServiceCall {
   }
 
   void _onDoneError() {
-    _sendError(new GrpcError.unavailable('Request stream closed unexpectedly'));
+    _sendError(GrpcError.unavailable('Request stream closed unexpectedly'));
     _onDone();
   }
 
   void _onDoneExpected() {
     if (!(_hasReceivedRequest || _descriptor.streamingRequest)) {
-      final error = new GrpcError.unimplemented('No request received');
+      final error = GrpcError.unimplemented('No request received');
       _sendError(error);
       _requests.addError(error);
     }

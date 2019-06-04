@@ -11,7 +11,7 @@ import 'package:fixnum/fixnum.dart';
 import 'package:protobuf/protobuf.dart';
 
 class Timestamp extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Timestamp')
+  static final BuilderInfo _i = BuilderInfo('Timestamp')
     ..aInt64(1, 'seconds')
     ..a<int>(2, 'nanos', PbFieldType.O3)
     ..hasRequiredFields = false;
@@ -22,12 +22,12 @@ class Timestamp extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Timestamp.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Timestamp clone() => new Timestamp()..mergeFromMessage(this);
+  Timestamp clone() => Timestamp()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Timestamp create() => new Timestamp();
-  static PbList<Timestamp> createRepeated() => new PbList<Timestamp>();
+  static Timestamp create() => Timestamp();
+  static PbList<Timestamp> createRepeated() => PbList<Timestamp>();
   static Timestamp getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyTimestamp();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyTimestamp();
     return _defaultInstance;
   }
 

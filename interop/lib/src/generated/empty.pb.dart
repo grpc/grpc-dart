@@ -10,20 +10,19 @@ import 'dart:core' show int, bool, double, String, List, override;
 import 'package:protobuf/protobuf.dart';
 
 class Empty extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Empty')
-    ..hasRequiredFields = false;
+  static final BuilderInfo _i = BuilderInfo('Empty')..hasRequiredFields = false;
 
   Empty() : super();
   Empty.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromBuffer(i, r);
   Empty.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Empty clone() => new Empty()..mergeFromMessage(this);
+  Empty clone() => Empty()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Empty create() => new Empty();
-  static PbList<Empty> createRepeated() => new PbList<Empty>();
+  static Empty create() => Empty();
+  static PbList<Empty> createRepeated() => PbList<Empty>();
   static Empty getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyEmpty();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyEmpty();
     return _defaultInstance;
   }
 

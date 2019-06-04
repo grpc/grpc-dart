@@ -67,40 +67,39 @@ typedef ServerMessageHandler = void Function(StreamMessage message);
 
 class TestClient extends Client {
   static final _$unary =
-      new ClientMethod<int, int>('/Test/Unary', mockEncode, mockDecode);
-  static final _$clientStreaming = new ClientMethod<int, int>(
-      '/Test/ClientStreaming', mockEncode, mockDecode);
-  static final _$serverStreaming = new ClientMethod<int, int>(
-      '/Test/ServerStreaming', mockEncode, mockDecode);
+      ClientMethod<int, int>('/Test/Unary', mockEncode, mockDecode);
+  static final _$clientStreaming =
+      ClientMethod<int, int>('/Test/ClientStreaming', mockEncode, mockDecode);
+  static final _$serverStreaming =
+      ClientMethod<int, int>('/Test/ServerStreaming', mockEncode, mockDecode);
   static final _$bidirectional =
-      new ClientMethod<int, int>('/Test/Bidirectional', mockEncode, mockDecode);
+      ClientMethod<int, int>('/Test/Bidirectional', mockEncode, mockDecode);
 
   TestClient(ClientChannel channel, {CallOptions options})
       : super(channel, options: options);
 
   ResponseFuture<int> unary(int request, {CallOptions options}) {
-    final call = $createCall(_$unary, new Stream.fromIterable([request]),
-        options: options);
-    return new ResponseFuture(call);
+    final call =
+        $createCall(_$unary, Stream.fromIterable([request]), options: options);
+    return ResponseFuture(call);
   }
 
   ResponseFuture<int> clientStreaming(Stream<int> request,
       {CallOptions options}) {
     final call = $createCall(_$clientStreaming, request, options: options);
-    return new ResponseFuture(call);
+    return ResponseFuture(call);
   }
 
   ResponseStream<int> serverStreaming(int request, {CallOptions options}) {
-    final call = $createCall(
-        _$serverStreaming, new Stream.fromIterable([request]),
+    final call = $createCall(_$serverStreaming, Stream.fromIterable([request]),
         options: options);
-    return new ResponseStream(call);
+    return ResponseStream(call);
   }
 
   ResponseStream<int> bidirectional(Stream<int> request,
       {CallOptions options}) {
     final call = $createCall(_$bidirectional, request, options: options);
-    return new ResponseStream(call);
+    return ResponseStream(call);
   }
 }
 
@@ -117,19 +116,19 @@ class ClientHarness {
   TestClient client;
 
   void setUp() {
-    transport = new MockTransport();
-    channelOptions = new FakeChannelOptions();
-    connection = new FakeConnection('test', transport, channelOptions);
-    channel = new FakeChannel('test', connection, channelOptions);
-    stream = new MockStream();
-    fromClient = new StreamController();
-    toClient = new StreamController();
+    transport = MockTransport();
+    channelOptions = FakeChannelOptions();
+    connection = FakeConnection('test', transport, channelOptions);
+    channel = FakeChannel('test', connection, channelOptions);
+    stream = MockStream();
+    fromClient = StreamController();
+    toClient = StreamController();
     when(transport.makeRequest(any, endStream: anyNamed('endStream')))
         .thenReturn(stream);
     when(transport.onActiveStateChanged = captureAny).thenReturn(null);
     when(stream.outgoingMessages).thenReturn(fromClient.sink);
     when(stream.incomingMessages).thenAnswer((_) => toClient.stream);
-    client = new TestClient(channel);
+    client = TestClient(channel);
   }
 
   void tearDown() {
@@ -138,17 +137,16 @@ class ClientHarness {
   }
 
   void sendResponseHeader({List<Header> headers = const []}) {
-    toClient.add(new HeadersStreamMessage(headers));
+    toClient.add(HeadersStreamMessage(headers));
   }
 
   void sendResponseValue(int value) {
-    toClient
-        .add(new DataStreamMessage(GrpcHttpEncoder.frame(mockEncode(value))));
+    toClient.add(DataStreamMessage(GrpcHttpEncoder.frame(mockEncode(value))));
   }
 
   void sendResponseTrailer(
       {List<Header> headers = const [], bool closeStream = true}) {
-    toClient.add(new HeadersStreamMessage(headers, endStream: true));
+    toClient.add(HeadersStreamMessage(headers, endStream: true));
     if (closeStream) toClient.close();
   }
 

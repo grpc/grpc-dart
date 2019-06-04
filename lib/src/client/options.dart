@@ -20,18 +20,18 @@ import 'dart:math';
 
 import '../shared/security.dart';
 
-const defaultIdleTimeout = const Duration(minutes: 5);
+const defaultIdleTimeout = Duration(minutes: 5);
 const defaultUserAgent = 'dart-grpc/1.0.3';
 
-typedef Duration BackoffStrategy(Duration lastBackoff);
+typedef BackoffStrategy = Duration Function(Duration lastBackoff);
 
 // Backoff algorithm from https://github.com/grpc/grpc/blob/master/doc/connection-backoff.md
-const _minConnectTimeout = const Duration(seconds: 20);
-const _initialBackoff = const Duration(seconds: 1);
-const _maxBackoff = const Duration(seconds: 120);
+const _minConnectTimeout = Duration(seconds: 20);
+const _initialBackoff = Duration(seconds: 1);
+const _maxBackoff = Duration(seconds: 120);
 const _multiplier = 1.6;
 const _jitter = 0.2;
-final _random = new Random();
+final _random = Random();
 
 Duration defaultBackoffStrategy(Duration lastBackoff) {
   if (lastBackoff == null) return _initialBackoff;
@@ -44,7 +44,8 @@ Duration defaultBackoffStrategy(Duration lastBackoff) {
 /// returns `true`, the bad certificate is allowed, and the TLS handshake can
 /// continue. If the handler returns `false`, the TLS handshake fails, and the
 /// connection is aborted.
-typedef bool BadCertificateHandler(X509Certificate certificate, String host);
+typedef BadCertificateHandler = bool Function(
+    X509Certificate certificate, String host);
 
 /// Bad certificate handler that disables all certificate checks.
 /// DO NOT USE IN PRODUCTION!
@@ -83,7 +84,7 @@ class ChannelCredentials {
         ..setTrustedCertificatesBytes(_certificateBytes,
             password: _certificatePassword);
     }
-    final context = new SecurityContext(withTrustedRoots: true);
+    final context = SecurityContext(withTrustedRoots: true);
     if (SecurityContext.alpnSupported) {
       context.setAlpnProtocols(supportedAlpnProtocols, false);
     }
@@ -119,7 +120,7 @@ class ChannelOptions {
 /// by previous metadata providers) and the [uri] that is being called, and is
 /// expected to modify the map before returning or before completing the
 /// returned [Future].
-typedef FutureOr<void> MetadataProvider(
+typedef MetadataProvider = FutureOr<void> Function(
     Map<String, String> metadata, String uri);
 
 /// Runtime options for an RPC.
@@ -140,20 +141,20 @@ class CallOptions {
       {Map<String, String> metadata,
       Duration timeout,
       List<MetadataProvider> providers}) {
-    return new CallOptions._(new Map.unmodifiable(metadata ?? {}), timeout,
-        new List.unmodifiable(providers ?? []));
+    return CallOptions._(Map.unmodifiable(metadata ?? {}), timeout,
+        List.unmodifiable(providers ?? []));
   }
 
   factory CallOptions.from(Iterable<CallOptions> options) =>
-      options.fold(new CallOptions(), (p, o) => p.mergedWith(o));
+      options.fold(CallOptions(), (p, o) => p.mergedWith(o));
 
   CallOptions mergedWith(CallOptions other) {
     if (other == null) return this;
-    final mergedMetadata = new Map.from(metadata)..addAll(other.metadata);
+    final mergedMetadata = Map.from(metadata)..addAll(other.metadata);
     final mergedTimeout = other.timeout ?? timeout;
-    final mergedProviders = new List.from(metadataProviders)
+    final mergedProviders = List.from(metadataProviders)
       ..addAll(other.metadataProviders);
-    return new CallOptions._(new Map.unmodifiable(mergedMetadata),
-        mergedTimeout, new List.unmodifiable(mergedProviders));
+    return CallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
+        List.unmodifiable(mergedProviders));
   }
 }

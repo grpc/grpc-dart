@@ -22,16 +22,16 @@ import 'package:helloworld/src/generated/helloworld.pb.dart';
 import 'package:helloworld/src/generated/helloworld.pbgrpc.dart';
 
 Future<void> main(List<String> args) async {
-  final channel = new ClientChannel('localhost',
+  final channel = ClientChannel('localhost',
       port: 50051,
-      options: const ChannelOptions(
-          credentials: const ChannelCredentials.insecure()));
-  final stub = new GreeterClient(channel);
+      options:
+          const ChannelOptions(credentials: ChannelCredentials.insecure()));
+  final stub = GreeterClient(channel);
 
   final name = args.isNotEmpty ? args[0] : 'world';
 
   try {
-    final response = await stub.sayHello(new HelloRequest()..name = name);
+    final response = await stub.sayHello(HelloRequest()..name = name);
     print('Greeter client received: ${response.message}');
   } catch (e) {
     print('Caught error: $e');

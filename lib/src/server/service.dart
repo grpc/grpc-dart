@@ -39,7 +39,7 @@ class ServiceMethod<Q, R> {
       this.responseSerializer);
 
   StreamController<Q> createRequestStream(StreamSubscription incoming) =>
-      new StreamController<Q>(
+      StreamController<Q>(
           onListen: incoming.resume,
           onPause: incoming.pause,
           onResume: incoming.resume);
@@ -69,14 +69,13 @@ class ServiceMethod<Q, R> {
   Future<Q> _toSingleFuture(Stream<Q> stream) {
     Q _ensureOnlyOneRequest(Q previous, Q element) {
       if (previous != null) {
-        throw new GrpcError.unimplemented('More than one request received');
+        throw GrpcError.unimplemented('More than one request received');
       }
       return element;
     }
 
     Q _ensureOneRequest(Q value) {
-      if (value == null)
-        throw new GrpcError.unimplemented('No requests received');
+      if (value == null) throw GrpcError.unimplemented('No requests received');
       return value;
     }
 

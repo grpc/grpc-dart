@@ -63,14 +63,14 @@ class ClientChannel {
   ///
   /// The connection may be shared between multiple RPCs.
   Future<ClientConnection> getConnection() async {
-    if (_isShutdown) throw new GrpcError.unavailable('Channel shutting down.');
-    return _connection ??= new ClientConnection(host, port, options);
+    if (_isShutdown) throw GrpcError.unavailable('Channel shutting down.');
+    return _connection ??= ClientConnection(host, port, options);
   }
 
   /// Initiates a new RPC on this connection.
   ClientCall<Q, R> createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
-    final call = new ClientCall(method, requests, options);
+    final call = ClientCall(method, requests, options);
     getConnection().then((connection) {
       if (call.isCancelled) return;
       connection.dispatchCall(call);

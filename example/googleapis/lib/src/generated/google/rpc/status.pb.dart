@@ -12,7 +12,7 @@ import 'package:protobuf/protobuf.dart';
 import '../protobuf/any.pb.dart' as $google$protobuf;
 
 class Status extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Status')
+  static final BuilderInfo _i = BuilderInfo('Status')
     ..a<int>(1, 'code', PbFieldType.O3)
     ..aOS(2, 'message')
     ..pp<$google$protobuf.Any>(3, 'details', PbFieldType.PM,
@@ -25,12 +25,12 @@ class Status extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Status.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Status clone() => new Status()..mergeFromMessage(this);
+  Status clone() => Status()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Status create() => new Status();
-  static PbList<Status> createRepeated() => new PbList<Status>();
+  static Status create() => Status();
+  static PbList<Status> createRepeated() => PbList<Status>();
   static Status getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyStatus();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyStatus();
     return _defaultInstance;
   }
 

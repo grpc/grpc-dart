@@ -14,7 +14,7 @@ import 'messages.pbenum.dart';
 export 'messages.pbenum.dart';
 
 class BoolValue extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('BoolValue')
+  static final BuilderInfo _i = BuilderInfo('BoolValue')
     ..aOB(1, 'value')
     ..hasRequiredFields = false;
 
@@ -24,12 +24,12 @@ class BoolValue extends GeneratedMessage {
       : super.fromBuffer(i, r);
   BoolValue.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  BoolValue clone() => new BoolValue()..mergeFromMessage(this);
+  BoolValue clone() => BoolValue()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static BoolValue create() => new BoolValue();
-  static PbList<BoolValue> createRepeated() => new PbList<BoolValue>();
+  static BoolValue create() => BoolValue();
+  static PbList<BoolValue> createRepeated() => PbList<BoolValue>();
   static BoolValue getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyBoolValue();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyBoolValue();
     return _defaultInstance;
   }
 
@@ -50,7 +50,7 @@ class BoolValue extends GeneratedMessage {
 class _ReadonlyBoolValue extends BoolValue with ReadonlyMessageMixin {}
 
 class Payload extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Payload')
+  static final BuilderInfo _i = BuilderInfo('Payload')
     ..e<PayloadType>(1, 'type', PbFieldType.OE, PayloadType.COMPRESSABLE,
         PayloadType.valueOf, PayloadType.values)
     ..a<List<int>>(2, 'body', PbFieldType.OY)
@@ -62,12 +62,12 @@ class Payload extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Payload.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Payload clone() => new Payload()..mergeFromMessage(this);
+  Payload clone() => Payload()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Payload create() => new Payload();
-  static PbList<Payload> createRepeated() => new PbList<Payload>();
+  static Payload create() => Payload();
+  static PbList<Payload> createRepeated() => PbList<Payload>();
   static Payload getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyPayload();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyPayload();
     return _defaultInstance;
   }
 
@@ -96,7 +96,7 @@ class Payload extends GeneratedMessage {
 class _ReadonlyPayload extends Payload with ReadonlyMessageMixin {}
 
 class EchoStatus extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('EchoStatus')
+  static final BuilderInfo _i = BuilderInfo('EchoStatus')
     ..a<int>(1, 'code', PbFieldType.O3)
     ..aOS(2, 'message')
     ..hasRequiredFields = false;
@@ -107,12 +107,12 @@ class EchoStatus extends GeneratedMessage {
       : super.fromBuffer(i, r);
   EchoStatus.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  EchoStatus clone() => new EchoStatus()..mergeFromMessage(this);
+  EchoStatus clone() => EchoStatus()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static EchoStatus create() => new EchoStatus();
-  static PbList<EchoStatus> createRepeated() => new PbList<EchoStatus>();
+  static EchoStatus create() => EchoStatus();
+  static PbList<EchoStatus> createRepeated() => PbList<EchoStatus>();
   static EchoStatus getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyEchoStatus();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyEchoStatus();
     return _defaultInstance;
   }
 
@@ -141,7 +141,7 @@ class EchoStatus extends GeneratedMessage {
 class _ReadonlyEchoStatus extends EchoStatus with ReadonlyMessageMixin {}
 
 class SimpleRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('SimpleRequest')
+  static final BuilderInfo _i = BuilderInfo('SimpleRequest')
     ..e<PayloadType>(1, 'responseType', PbFieldType.OE,
         PayloadType.COMPRESSABLE, PayloadType.valueOf, PayloadType.values)
     ..a<int>(2, 'responseSize', PbFieldType.O3)
@@ -164,13 +164,12 @@ class SimpleRequest extends GeneratedMessage {
   SimpleRequest.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  SimpleRequest clone() => new SimpleRequest()..mergeFromMessage(this);
+  SimpleRequest clone() => SimpleRequest()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static SimpleRequest create() => new SimpleRequest();
-  static PbList<SimpleRequest> createRepeated() => new PbList<SimpleRequest>();
+  static SimpleRequest create() => SimpleRequest();
+  static PbList<SimpleRequest> createRepeated() => PbList<SimpleRequest>();
   static SimpleRequest getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlySimpleRequest();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlySimpleRequest();
     return _defaultInstance;
   }
 
@@ -247,7 +246,7 @@ class SimpleRequest extends GeneratedMessage {
 class _ReadonlySimpleRequest extends SimpleRequest with ReadonlyMessageMixin {}
 
 class SimpleResponse extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('SimpleResponse')
+  static final BuilderInfo _i = BuilderInfo('SimpleResponse')
     ..a<Payload>(
         1, 'payload', PbFieldType.OM, Payload.getDefault, Payload.create)
     ..aOS(2, 'username')
@@ -261,14 +260,12 @@ class SimpleResponse extends GeneratedMessage {
   SimpleResponse.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  SimpleResponse clone() => new SimpleResponse()..mergeFromMessage(this);
+  SimpleResponse clone() => SimpleResponse()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static SimpleResponse create() => new SimpleResponse();
-  static PbList<SimpleResponse> createRepeated() =>
-      new PbList<SimpleResponse>();
+  static SimpleResponse create() => SimpleResponse();
+  static PbList<SimpleResponse> createRepeated() => PbList<SimpleResponse>();
   static SimpleResponse getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlySimpleResponse();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlySimpleResponse();
     return _defaultInstance;
   }
 
@@ -306,7 +303,7 @@ class _ReadonlySimpleResponse extends SimpleResponse with ReadonlyMessageMixin {
 }
 
 class StreamingInputCallRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('StreamingInputCallRequest')
+  static final BuilderInfo _i = BuilderInfo('StreamingInputCallRequest')
     ..a<Payload>(
         1, 'payload', PbFieldType.OM, Payload.getDefault, Payload.create)
     ..a<BoolValue>(2, 'expectCompressed', PbFieldType.OM, BoolValue.getDefault,
@@ -321,14 +318,14 @@ class StreamingInputCallRequest extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   StreamingInputCallRequest clone() =>
-      new StreamingInputCallRequest()..mergeFromMessage(this);
+      StreamingInputCallRequest()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static StreamingInputCallRequest create() => new StreamingInputCallRequest();
+  static StreamingInputCallRequest create() => StreamingInputCallRequest();
   static PbList<StreamingInputCallRequest> createRepeated() =>
-      new PbList<StreamingInputCallRequest>();
+      PbList<StreamingInputCallRequest>();
   static StreamingInputCallRequest getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyStreamingInputCallRequest();
+      _defaultInstance = _ReadonlyStreamingInputCallRequest();
     return _defaultInstance;
   }
 
@@ -359,7 +356,7 @@ class _ReadonlyStreamingInputCallRequest extends StreamingInputCallRequest
     with ReadonlyMessageMixin {}
 
 class StreamingInputCallResponse extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('StreamingInputCallResponse')
+  static final BuilderInfo _i = BuilderInfo('StreamingInputCallResponse')
     ..a<int>(1, 'aggregatedPayloadSize', PbFieldType.O3)
     ..hasRequiredFields = false;
 
@@ -371,15 +368,14 @@ class StreamingInputCallResponse extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   StreamingInputCallResponse clone() =>
-      new StreamingInputCallResponse()..mergeFromMessage(this);
+      StreamingInputCallResponse()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static StreamingInputCallResponse create() =>
-      new StreamingInputCallResponse();
+  static StreamingInputCallResponse create() => StreamingInputCallResponse();
   static PbList<StreamingInputCallResponse> createRepeated() =>
-      new PbList<StreamingInputCallResponse>();
+      PbList<StreamingInputCallResponse>();
   static StreamingInputCallResponse getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyStreamingInputCallResponse();
+      _defaultInstance = _ReadonlyStreamingInputCallResponse();
     return _defaultInstance;
   }
 
@@ -402,7 +398,7 @@ class _ReadonlyStreamingInputCallResponse extends StreamingInputCallResponse
     with ReadonlyMessageMixin {}
 
 class ResponseParameters extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ResponseParameters')
+  static final BuilderInfo _i = BuilderInfo('ResponseParameters')
     ..a<int>(1, 'size', PbFieldType.O3)
     ..a<int>(2, 'intervalUs', PbFieldType.O3)
     ..a<BoolValue>(
@@ -416,15 +412,14 @@ class ResponseParameters extends GeneratedMessage {
   ResponseParameters.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  ResponseParameters clone() =>
-      new ResponseParameters()..mergeFromMessage(this);
+  ResponseParameters clone() => ResponseParameters()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static ResponseParameters create() => new ResponseParameters();
+  static ResponseParameters create() => ResponseParameters();
   static PbList<ResponseParameters> createRepeated() =>
-      new PbList<ResponseParameters>();
+      PbList<ResponseParameters>();
   static ResponseParameters getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyResponseParameters();
+      _defaultInstance = _ReadonlyResponseParameters();
     return _defaultInstance;
   }
 
@@ -462,7 +457,7 @@ class _ReadonlyResponseParameters extends ResponseParameters
     with ReadonlyMessageMixin {}
 
 class StreamingOutputCallRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('StreamingOutputCallRequest')
+  static final BuilderInfo _i = BuilderInfo('StreamingOutputCallRequest')
     ..e<PayloadType>(1, 'responseType', PbFieldType.OE,
         PayloadType.COMPRESSABLE, PayloadType.valueOf, PayloadType.values)
     ..pp<ResponseParameters>(2, 'responseParameters', PbFieldType.PM,
@@ -481,15 +476,14 @@ class StreamingOutputCallRequest extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   StreamingOutputCallRequest clone() =>
-      new StreamingOutputCallRequest()..mergeFromMessage(this);
+      StreamingOutputCallRequest()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static StreamingOutputCallRequest create() =>
-      new StreamingOutputCallRequest();
+  static StreamingOutputCallRequest create() => StreamingOutputCallRequest();
   static PbList<StreamingOutputCallRequest> createRepeated() =>
-      new PbList<StreamingOutputCallRequest>();
+      PbList<StreamingOutputCallRequest>();
   static StreamingOutputCallRequest getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyStreamingOutputCallRequest();
+      _defaultInstance = _ReadonlyStreamingOutputCallRequest();
     return _defaultInstance;
   }
 
@@ -530,7 +524,7 @@ class _ReadonlyStreamingOutputCallRequest extends StreamingOutputCallRequest
     with ReadonlyMessageMixin {}
 
 class StreamingOutputCallResponse extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('StreamingOutputCallResponse')
+  static final BuilderInfo _i = BuilderInfo('StreamingOutputCallResponse')
     ..a<Payload>(
         1, 'payload', PbFieldType.OM, Payload.getDefault, Payload.create)
     ..hasRequiredFields = false;
@@ -543,15 +537,14 @@ class StreamingOutputCallResponse extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   StreamingOutputCallResponse clone() =>
-      new StreamingOutputCallResponse()..mergeFromMessage(this);
+      StreamingOutputCallResponse()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static StreamingOutputCallResponse create() =>
-      new StreamingOutputCallResponse();
+  static StreamingOutputCallResponse create() => StreamingOutputCallResponse();
   static PbList<StreamingOutputCallResponse> createRepeated() =>
-      new PbList<StreamingOutputCallResponse>();
+      PbList<StreamingOutputCallResponse>();
   static StreamingOutputCallResponse getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyStreamingOutputCallResponse();
+      _defaultInstance = _ReadonlyStreamingOutputCallResponse();
     return _defaultInstance;
   }
 
@@ -574,7 +567,7 @@ class _ReadonlyStreamingOutputCallResponse extends StreamingOutputCallResponse
     with ReadonlyMessageMixin {}
 
 class ReconnectParams extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ReconnectParams')
+  static final BuilderInfo _i = BuilderInfo('ReconnectParams')
     ..a<int>(1, 'maxReconnectBackoffMs', PbFieldType.O3)
     ..hasRequiredFields = false;
 
@@ -585,14 +578,12 @@ class ReconnectParams extends GeneratedMessage {
   ReconnectParams.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  ReconnectParams clone() => new ReconnectParams()..mergeFromMessage(this);
+  ReconnectParams clone() => ReconnectParams()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static ReconnectParams create() => new ReconnectParams();
-  static PbList<ReconnectParams> createRepeated() =>
-      new PbList<ReconnectParams>();
+  static ReconnectParams create() => ReconnectParams();
+  static PbList<ReconnectParams> createRepeated() => PbList<ReconnectParams>();
   static ReconnectParams getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyReconnectParams();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyReconnectParams();
     return _defaultInstance;
   }
 
@@ -614,7 +605,7 @@ class _ReadonlyReconnectParams extends ReconnectParams
     with ReadonlyMessageMixin {}
 
 class ReconnectInfo extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ReconnectInfo')
+  static final BuilderInfo _i = BuilderInfo('ReconnectInfo')
     ..aOB(1, 'passed')
     ..p<int>(2, 'backoffMs', PbFieldType.P3)
     ..hasRequiredFields = false;
@@ -626,13 +617,12 @@ class ReconnectInfo extends GeneratedMessage {
   ReconnectInfo.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  ReconnectInfo clone() => new ReconnectInfo()..mergeFromMessage(this);
+  ReconnectInfo clone() => ReconnectInfo()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static ReconnectInfo create() => new ReconnectInfo();
-  static PbList<ReconnectInfo> createRepeated() => new PbList<ReconnectInfo>();
+  static ReconnectInfo create() => ReconnectInfo();
+  static PbList<ReconnectInfo> createRepeated() => PbList<ReconnectInfo>();
   static ReconnectInfo getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyReconnectInfo();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyReconnectInfo();
     return _defaultInstance;
   }
 

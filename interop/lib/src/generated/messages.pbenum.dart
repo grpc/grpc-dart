@@ -9,10 +9,9 @@ import 'dart:core' show int, dynamic, String, List, Map;
 import 'package:protobuf/protobuf.dart';
 
 class PayloadType extends ProtobufEnum {
-  static const PayloadType COMPRESSABLE =
-      const PayloadType._(0, 'COMPRESSABLE');
+  static const PayloadType COMPRESSABLE = PayloadType._(0, 'COMPRESSABLE');
 
-  static const List<PayloadType> values = const <PayloadType>[
+  static const List<PayloadType> values = <PayloadType>[
     COMPRESSABLE,
   ];
 

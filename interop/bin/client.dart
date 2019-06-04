@@ -60,7 +60,7 @@ const _serviceAccountKeyFileArgument = 'service_account_key_file';
 /// Clients must support TLS with ALPN. Clients must not disable certificate
 /// checking.
 Future<int> main(List<String> args) async {
-  final argumentParser = new ArgParser();
+  final argumentParser = ArgParser();
   argumentParser.addOption(_serverHostArgument,
       help: 'The server host to connect to. For example, "localhost" or '
           '"127.0.0.1".');
@@ -88,7 +88,7 @@ Future<int> main(List<String> args) async {
           'developer console.');
   final arguments = argumentParser.parse(args);
 
-  final testClient = new Tester();
+  final testClient = Tester();
 
   testClient.serverHost = arguments[_serverHostArgument];
   testClient.serverHostOverride = arguments[_serverHostOverrideArgument];

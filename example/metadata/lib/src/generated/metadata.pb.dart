@@ -10,7 +10,7 @@ import 'dart:core' show int, bool, double, String, List, override;
 import 'package:protobuf/protobuf.dart';
 
 class Record extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Record')
+  static final BuilderInfo _i = BuilderInfo('Record')
     ..aOS(1, 'value')
     ..hasRequiredFields = false;
 
@@ -20,12 +20,12 @@ class Record extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Record.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Record clone() => new Record()..mergeFromMessage(this);
+  Record clone() => Record()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Record create() => new Record();
-  static PbList<Record> createRepeated() => new PbList<Record>();
+  static Record create() => Record();
+  static PbList<Record> createRepeated() => PbList<Record>();
   static Record getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyRecord();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyRecord();
     return _defaultInstance;
   }
 
@@ -46,7 +46,7 @@ class Record extends GeneratedMessage {
 class _ReadonlyRecord extends Record with ReadonlyMessageMixin {}
 
 class Number extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Number')
+  static final BuilderInfo _i = BuilderInfo('Number')
     ..a<int>(1, 'value', PbFieldType.O3)
     ..hasRequiredFields = false;
 
@@ -56,12 +56,12 @@ class Number extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Number.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Number clone() => new Number()..mergeFromMessage(this);
+  Number clone() => Number()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Number create() => new Number();
-  static PbList<Number> createRepeated() => new PbList<Number>();
+  static Number create() => Number();
+  static PbList<Number> createRepeated() => PbList<Number>();
   static Number getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyNumber();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyNumber();
     return _defaultInstance;
   }
 
@@ -82,20 +82,19 @@ class Number extends GeneratedMessage {
 class _ReadonlyNumber extends Number with ReadonlyMessageMixin {}
 
 class Empty extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Empty')
-    ..hasRequiredFields = false;
+  static final BuilderInfo _i = BuilderInfo('Empty')..hasRequiredFields = false;
 
   Empty() : super();
   Empty.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromBuffer(i, r);
   Empty.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Empty clone() => new Empty()..mergeFromMessage(this);
+  Empty clone() => Empty()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Empty create() => new Empty();
-  static PbList<Empty> createRepeated() => new PbList<Empty>();
+  static Empty create() => Empty();
+  static PbList<Empty> createRepeated() => PbList<Empty>();
   static Empty getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyEmpty();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyEmpty();
     return _defaultInstance;
   }
 

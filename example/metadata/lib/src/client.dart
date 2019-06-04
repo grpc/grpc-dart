@@ -24,11 +24,11 @@ class Client {
   MetadataClient stub;
 
   Future<void> main(List<String> args) async {
-    channel = new ClientChannel('127.0.0.1',
+    channel = ClientChannel('127.0.0.1',
         port: 8080,
-        options: const ChannelOptions(
-            credentials: const ChannelCredentials.insecure()));
-    stub = new MetadataClient(channel);
+        options:
+            const ChannelOptions(credentials: ChannelCredentials.insecure()));
+    stub = MetadataClient(channel);
     // Run all of the demos in order.
     await runEcho();
     await runEchoDelayCancel();
@@ -43,9 +43,9 @@ class Client {
   /// Send custom metadata with a RPC, and print out the received response and
   /// metadata.
   Future<void> runEcho() async {
-    final request = new Record()..value = 'Kaj';
-    final call = stub.echo(request,
-        options: new CallOptions(metadata: {'peer': 'Verner'}));
+    final request = Record()..value = 'Kaj';
+    final call =
+        stub.echo(request, options: CallOptions(metadata: {'peer': 'Verner'}));
     call.headers.then((headers) {
       print('Received header metadata: $headers');
     });
@@ -62,18 +62,18 @@ class Client {
   /// well as a per-call metadata. The server will delay the response for the
   /// requested duration, during which the client will cancel the RPC.
   Future<void> runEchoDelayCancel() async {
-    final stubWithCustomOptions = new MetadataClient(channel,
-        options: new CallOptions(metadata: {'peer': 'Verner'}));
-    final request = new Record()..value = 'Kaj';
+    final stubWithCustomOptions = MetadataClient(channel,
+        options: CallOptions(metadata: {'peer': 'Verner'}));
+    final request = Record()..value = 'Kaj';
     final call = stubWithCustomOptions.echo(request,
-        options: new CallOptions(metadata: {'delay': '1'}));
+        options: CallOptions(metadata: {'delay': '1'}));
     call.headers.then((headers) {
       print('Received header metadata: $headers');
     });
     call.trailers.then((trailers) {
       print('Received trailer metadata: $trailers');
     });
-    await new Future.delayed(new Duration(milliseconds: 10));
+    await Future.delayed(Duration(milliseconds: 10));
     call.cancel();
     try {
       final response = await call;
@@ -88,10 +88,10 @@ class Client {
   /// Makes a bi-directional RPC, sends 4 requests, and cancels the RPC after
   /// receiving 3 responses.
   Future<void> runAddOneCancel() async {
-    final numbers = new StreamController<int>();
+    final numbers = StreamController<int>();
     final call =
-        stub.addOne(numbers.stream.map((value) => new Number()..value = value));
-    final receivedThree = new Completer<bool>();
+        stub.addOne(numbers.stream.map((value) => Number()..value = value));
+    final receivedThree = Completer<bool>();
     final sub = call.listen((number) {
       print('AddOneCancel: Received ${number.value}');
       if (number.value == 3) {
@@ -112,7 +112,7 @@ class Client {
   /// Call an RPC that returns a stream of Fibonacci numbers. Cancel the call
   /// after receiving more than 5 responses.
   Future<void> runFibonacciCancel() async {
-    final call = stub.fibonacci(new Empty());
+    final call = stub.fibonacci(Empty());
     int count = 0;
     try {
       await for (var number in call) {
@@ -133,8 +133,8 @@ class Client {
   /// Call an RPC that returns a stream of Fibonacci numbers, and specify an RPC
   /// timeout of 2 seconds.
   Future<void> runFibonacciTimeout() async {
-    final call = stub.fibonacci(new Empty(),
-        options: new CallOptions(timeout: new Duration(seconds: 2)));
+    final call = stub.fibonacci(Empty(),
+        options: CallOptions(timeout: Duration(seconds: 2)));
     int count = 0;
     try {
       await for (var number in call) {
