@@ -78,12 +78,11 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
       final dataLength = _dataHeader.buffer.asByteData().getUint32(0);
       _dataOffset = 0;
       _state = _GrpcWebParseState.Message;
+      _data = new Uint8List(dataLength);
       if (dataLength == 0) {
         // empty message
         _finishMessage();
       }
-
-      _data = new Uint8List(dataLength);
     }
   }
 

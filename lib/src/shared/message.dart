@@ -29,7 +29,7 @@ class GrpcMetadata extends GrpcMessage {
 class GrpcData extends GrpcMessage {
   final List<int> data;
   final bool isCompressed;
-  GrpcData(this.data, {this.isCompressed});
+  GrpcData(this.data, {this.isCompressed}) : assert(data != null);
 
   @override
   String toString() => 'gRPC Data (${data.length} bytes)';
