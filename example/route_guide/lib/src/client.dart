@@ -27,12 +27,12 @@ class Client {
   RouteGuideClient stub;
 
   Future<void> main(List<String> args) async {
-    channel = new ClientChannel('127.0.0.1',
+    channel = ClientChannel('127.0.0.1',
         port: 8080,
-        options: const ChannelOptions(
-            credentials: const ChannelCredentials.insecure()));
-    stub = new RouteGuideClient(channel,
-        options: new CallOptions(timeout: new Duration(seconds: 30)));
+        options:
+            const ChannelOptions(credentials: ChannelCredentials.insecure()));
+    stub = RouteGuideClient(channel,
+        options: CallOptions(timeout: Duration(seconds: 30)));
     // Run all of the demos in order.
     try {
       await runGetFeature();
@@ -58,10 +58,10 @@ class Client {
   /// Run the getFeature demo. Calls getFeature with a point known to have a
   /// feature and a point known not to have a feature.
   Future<void> runGetFeature() async {
-    final point1 = new Point()
+    final point1 = Point()
       ..latitude = 409146138
       ..longitude = -746188906;
-    final point2 = new Point()
+    final point2 = Point()
       ..latitude = 0
       ..longitude = 0;
 
@@ -73,13 +73,13 @@ class Client {
   /// all of the features in the pre-generated database. Prints each response as
   /// it comes in.
   Future<void> runListFeatures() async {
-    final lo = new Point()
+    final lo = Point()
       ..latitude = 400000000
       ..longitude = -750000000;
-    final hi = new Point()
+    final hi = Point()
       ..latitude = 420000000
       ..longitude = -730000000;
-    final rect = new Rectangle()
+    final rect = Rectangle()
       ..lo = lo
       ..hi = hi;
 
@@ -94,16 +94,14 @@ class Client {
   /// the statistics when they are sent from the server.
   Future<void> runRecordRoute() async {
     Stream<Point> generateRoute(int count) async* {
-      final random = new Random();
+      final random = Random();
 
       for (int i = 0; i < count; i++) {
         final point = featuresDb[random.nextInt(featuresDb.length)].location;
         print(
-            'Visiting point ${point.latitude / coordFactor}, ${point.longitude /
-                coordFactor}');
+            'Visiting point ${point.latitude / coordFactor}, ${point.longitude / coordFactor}');
         yield point;
-        await new Future.delayed(
-            new Duration(milliseconds: 200 + random.nextInt(100)));
+        await Future.delayed(Duration(milliseconds: 200 + random.nextInt(100)));
       }
     }
 
@@ -118,10 +116,10 @@ class Client {
   /// messages that are sent from the server.
   Future<void> runRouteChat() async {
     RouteNote createNote(String message, int latitude, int longitude) {
-      final location = new Point()
+      final location = Point()
         ..latitude = latitude
         ..longitude = longitude;
-      return new RouteNote()
+      return RouteNote()
         ..message = message
         ..location = location;
     }
@@ -136,7 +134,7 @@ class Client {
     Stream<RouteNote> outgoingNotes() async* {
       for (final note in notes) {
         // Short delay to simulate some other interaction.
-        await new Future.delayed(new Duration(milliseconds: 10));
+        await Future.delayed(Duration(milliseconds: 10));
         print('Sending message ${note.message} at ${note.location.latitude}, '
             '${note.location.longitude}');
         yield note;
@@ -145,8 +143,8 @@ class Client {
 
     final call = stub.routeChat(outgoingNotes());
     await for (var note in call) {
-      print('Got message ${note.message} at ${note.location.latitude}, ${note
-          .location.longitude}');
+      print(
+          'Got message ${note.message} at ${note.location.latitude}, ${note.location.longitude}');
     }
   }
 }

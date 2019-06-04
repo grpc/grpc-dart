@@ -46,14 +46,14 @@ enum ConnectionState {
 ///
 /// RPCs made on a connection are always sent to the same endpoint.
 class ClientConnection {
-  static final _methodPost = new Header.ascii(':method', 'POST');
-  static final _schemeHttp = new Header.ascii(':scheme', 'http');
-  static final _schemeHttps = new Header.ascii(':scheme', 'https');
+  static final _methodPost = Header.ascii(':method', 'POST');
+  static final _schemeHttp = Header.ascii(':scheme', 'http');
+  static final _schemeHttps = Header.ascii(':scheme', 'https');
   static final _contentTypeGrpc =
-      new Header.ascii('content-type', 'application/grpc');
-  static final _teTrailers = new Header.ascii('te', 'trailers');
+      Header.ascii('content-type', 'application/grpc');
+  static final _teTrailers = Header.ascii('te', 'trailers');
   static final _grpcAcceptEncoding =
-      new Header.ascii('grpc-accept-encoding', 'identity');
+      Header.ascii('grpc-accept-encoding', 'identity');
 
   final String host;
   final int port;
@@ -79,20 +79,20 @@ class ClientConnection {
     final headers = [
       _methodPost,
       useTls ? _schemeHttps : _schemeHttp,
-      new Header(ascii.encode(':path'), utf8.encode(path)),
-      new Header(ascii.encode(':authority'), utf8.encode(authority)),
+      Header(ascii.encode(':path'), utf8.encode(path)),
+      Header(ascii.encode(':authority'), utf8.encode(authority)),
     ];
     if (timeout != null) {
-      headers.add(new Header.ascii('grpc-timeout', toTimeoutString(timeout)));
+      headers.add(Header.ascii('grpc-timeout', toTimeoutString(timeout)));
     }
     headers.addAll([
       _contentTypeGrpc,
       _teTrailers,
       _grpcAcceptEncoding,
-      new Header.ascii('user-agent', userAgent ?? defaultUserAgent),
+      Header.ascii('user-agent', userAgent ?? defaultUserAgent),
     ]);
     metadata?.forEach((key, value) {
-      headers.add(new Header(ascii.encode(key), utf8.encode(value)));
+      headers.add(Header(ascii.encode(key), utf8.encode(value)));
     });
     return headers;
   }
@@ -119,7 +119,7 @@ class ClientConnection {
       }
     }
     socket.done.then(_handleSocketClosed);
-    return new ClientTransportConnection.viaSocket(socket);
+    return ClientTransportConnection.viaSocket(socket);
   }
 
   bool _validateBadCertificate(X509Certificate certificate) {
@@ -233,7 +233,7 @@ class ClientConnection {
       _cancelTimer();
     } else {
       if (options.idleTimeout != null) {
-        _timer ??= new Timer(options.idleTimeout, _handleIdleTimeout);
+        _timer ??= Timer(options.idleTimeout, _handleIdleTimeout);
       }
     }
   }
@@ -281,6 +281,6 @@ class ClientConnection {
     // We have pending RPCs. Reconnect after backoff delay.
     _setState(ConnectionState.transientFailure);
     _currentReconnectDelay = options.backoffStrategy(_currentReconnectDelay);
-    _timer = new Timer(_currentReconnectDelay, _handleReconnect);
+    _timer = Timer(_currentReconnectDelay, _handleReconnect);
   }
 }

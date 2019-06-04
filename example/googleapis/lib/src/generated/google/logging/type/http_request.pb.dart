@@ -13,7 +13,7 @@ import 'package:protobuf/protobuf.dart';
 import '../../protobuf/duration.pb.dart' as $google$protobuf;
 
 class HttpRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('HttpRequest')
+  static final BuilderInfo _i = BuilderInfo('HttpRequest')
     ..aOS(1, 'requestMethod')
     ..aOS(2, 'requestUrl')
     ..aInt64(3, 'requestSize')
@@ -39,12 +39,12 @@ class HttpRequest extends GeneratedMessage {
   HttpRequest.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  HttpRequest clone() => new HttpRequest()..mergeFromMessage(this);
+  HttpRequest clone() => HttpRequest()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static HttpRequest create() => new HttpRequest();
-  static PbList<HttpRequest> createRepeated() => new PbList<HttpRequest>();
+  static HttpRequest create() => HttpRequest();
+  static PbList<HttpRequest> createRepeated() => PbList<HttpRequest>();
   static HttpRequest getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyHttpRequest();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyHttpRequest();
     return _defaultInstance;
   }
 

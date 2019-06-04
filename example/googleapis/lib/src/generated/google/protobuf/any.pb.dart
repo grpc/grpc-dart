@@ -10,7 +10,7 @@ import 'dart:core' show int, bool, double, String, List, override;
 import 'package:protobuf/protobuf.dart';
 
 class Any extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Any')
+  static final BuilderInfo _i = BuilderInfo('Any')
     ..aOS(1, 'typeUrl')
     ..a<List<int>>(2, 'value', PbFieldType.OY)
     ..hasRequiredFields = false;
@@ -20,12 +20,12 @@ class Any extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Any.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Any clone() => new Any()..mergeFromMessage(this);
+  Any clone() => Any()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Any create() => new Any();
-  static PbList<Any> createRepeated() => new PbList<Any>();
+  static Any create() => Any();
+  static PbList<Any> createRepeated() => PbList<Any>();
   static Any getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyAny();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyAny();
     return _defaultInstance;
   }
 

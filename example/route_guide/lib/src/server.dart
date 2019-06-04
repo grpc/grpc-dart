@@ -30,19 +30,19 @@ class RouteGuideService extends RouteGuideServiceBase {
   @override
   Future<Feature> getFeature(grpc.ServiceCall call, Point request) async {
     return featuresDb.firstWhere((f) => f.location == request,
-        orElse: () => new Feature()..location = request);
+        orElse: () => Feature()..location = request);
   }
 
   Rectangle _normalize(Rectangle r) {
-    final lo = new Point()
+    final lo = Point()
       ..latitude = min(r.lo.latitude, r.hi.latitude)
       ..longitude = min(r.lo.longitude, r.hi.longitude);
 
-    final hi = new Point()
+    final hi = Point()
       ..latitude = max(r.lo.latitude, r.hi.latitude)
       ..longitude = max(r.lo.longitude, r.hi.longitude);
 
-    return new Rectangle()
+    return Rectangle()
       ..lo = lo
       ..hi = hi;
   }
@@ -80,7 +80,7 @@ class RouteGuideService extends RouteGuideServiceBase {
     int featureCount = 0;
     double distance = 0.0;
     Point previous;
-    final timer = new Stopwatch();
+    final timer = Stopwatch();
 
     await for (var location in request) {
       if (!timer.isRunning) timer.start();
@@ -96,7 +96,7 @@ class RouteGuideService extends RouteGuideServiceBase {
       previous = location;
     }
     timer.stop();
-    return new RouteSummary()
+    return RouteSummary()
       ..pointCount = pointCount
       ..featureCount = featureCount
       ..distance = distance.round()
@@ -143,7 +143,7 @@ class RouteGuideService extends RouteGuideServiceBase {
 
 class Server {
   Future<void> main(List<String> args) async {
-    final server = new grpc.Server([new RouteGuideService()]);
+    final server = grpc.Server([RouteGuideService()]);
     await server.serve(port: 8080);
     print('Server listening on port ${server.port}...');
   }

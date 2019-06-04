@@ -12,19 +12,19 @@ import 'helloworld.pb.dart';
 export 'helloworld.pb.dart';
 
 class GreeterClient extends Client {
-  static final _$sayHello = new ClientMethod<HelloRequest, HelloReply>(
+  static final _$sayHello = ClientMethod<HelloRequest, HelloReply>(
       '/helloworld.Greeter/SayHello',
       (HelloRequest value) => value.writeToBuffer(),
-      (List<int> value) => new HelloReply.fromBuffer(value));
+      (List<int> value) => HelloReply.fromBuffer(value));
 
   GreeterClient(ClientChannel channel, {CallOptions options})
       : super(channel, options: options);
 
   ResponseFuture<HelloReply> sayHello(HelloRequest request,
       {CallOptions options}) {
-    final call = $createCall(_$sayHello, new Stream.fromIterable([request]),
+    final call = $createCall(_$sayHello, Stream.fromIterable([request]),
         options: options);
-    return new ResponseFuture(call);
+    return ResponseFuture(call);
   }
 }
 
@@ -32,12 +32,12 @@ abstract class GreeterServiceBase extends Service {
   String get $name => 'helloworld.Greeter';
 
   GreeterServiceBase() {
-    $addMethod(new ServiceMethod<HelloRequest, HelloReply>(
+    $addMethod(ServiceMethod<HelloRequest, HelloReply>(
         'SayHello',
         sayHello_Pre,
         false,
         false,
-        (List<int> value) => new HelloRequest.fromBuffer(value),
+        (List<int> value) => HelloRequest.fromBuffer(value),
         (HelloReply value) => value.writeToBuffer()));
   }
 

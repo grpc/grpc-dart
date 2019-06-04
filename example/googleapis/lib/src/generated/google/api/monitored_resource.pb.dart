@@ -12,7 +12,7 @@ import 'package:protobuf/protobuf.dart';
 import 'label.pb.dart';
 
 class MonitoredResourceDescriptor extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('MonitoredResourceDescriptor')
+  static final BuilderInfo _i = BuilderInfo('MonitoredResourceDescriptor')
     ..aOS(1, 'type')
     ..aOS(2, 'displayName')
     ..aOS(3, 'description')
@@ -29,15 +29,14 @@ class MonitoredResourceDescriptor extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   MonitoredResourceDescriptor clone() =>
-      new MonitoredResourceDescriptor()..mergeFromMessage(this);
+      MonitoredResourceDescriptor()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static MonitoredResourceDescriptor create() =>
-      new MonitoredResourceDescriptor();
+  static MonitoredResourceDescriptor create() => MonitoredResourceDescriptor();
   static PbList<MonitoredResourceDescriptor> createRepeated() =>
-      new PbList<MonitoredResourceDescriptor>();
+      PbList<MonitoredResourceDescriptor>();
   static MonitoredResourceDescriptor getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyMonitoredResourceDescriptor();
+      _defaultInstance = _ReadonlyMonitoredResourceDescriptor();
     return _defaultInstance;
   }
 
@@ -86,7 +85,7 @@ class _ReadonlyMonitoredResourceDescriptor extends MonitoredResourceDescriptor
     with ReadonlyMessageMixin {}
 
 class MonitoredResource_LabelsEntry extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('MonitoredResource_LabelsEntry')
+  static final BuilderInfo _i = BuilderInfo('MonitoredResource_LabelsEntry')
     ..aOS(1, 'key')
     ..aOS(2, 'value')
     ..hasRequiredFields = false;
@@ -99,15 +98,15 @@ class MonitoredResource_LabelsEntry extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   MonitoredResource_LabelsEntry clone() =>
-      new MonitoredResource_LabelsEntry()..mergeFromMessage(this);
+      MonitoredResource_LabelsEntry()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
   static MonitoredResource_LabelsEntry create() =>
-      new MonitoredResource_LabelsEntry();
+      MonitoredResource_LabelsEntry();
   static PbList<MonitoredResource_LabelsEntry> createRepeated() =>
-      new PbList<MonitoredResource_LabelsEntry>();
+      PbList<MonitoredResource_LabelsEntry>();
   static MonitoredResource_LabelsEntry getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyMonitoredResource_LabelsEntry();
+      _defaultInstance = _ReadonlyMonitoredResource_LabelsEntry();
     return _defaultInstance;
   }
 
@@ -138,7 +137,7 @@ class _ReadonlyMonitoredResource_LabelsEntry
     extends MonitoredResource_LabelsEntry with ReadonlyMessageMixin {}
 
 class MonitoredResource extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('MonitoredResource')
+  static final BuilderInfo _i = BuilderInfo('MonitoredResource')
     ..aOS(1, 'type')
     ..pp<MonitoredResource_LabelsEntry>(
         2,
@@ -155,14 +154,14 @@ class MonitoredResource extends GeneratedMessage {
   MonitoredResource.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  MonitoredResource clone() => new MonitoredResource()..mergeFromMessage(this);
+  MonitoredResource clone() => MonitoredResource()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static MonitoredResource create() => new MonitoredResource();
+  static MonitoredResource create() => MonitoredResource();
   static PbList<MonitoredResource> createRepeated() =>
-      new PbList<MonitoredResource>();
+      PbList<MonitoredResource>();
   static MonitoredResource getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyMonitoredResource();
+      _defaultInstance = _ReadonlyMonitoredResource();
     return _defaultInstance;
   }
 

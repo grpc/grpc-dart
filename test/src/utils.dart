@@ -21,12 +21,12 @@ import 'package:test/test.dart';
 
 typedef MessageHandler = void Function(StreamMessage message);
 
-List<int> mockEncode(int value) => new List.filled(value, 0);
+List<int> mockEncode(int value) => List.filled(value, 0);
 
 int mockDecode(List<int> value) => value.length;
 
 Map<String, String> headersToMap(List<Header> headers) =>
-    new Map.fromIterable(headers,
+    Map.fromIterable(headers,
         key: (h) => ascii.decode(h.name), value: (h) => ascii.decode(h.value));
 
 void validateRequestHeaders(List<Header> headers,
@@ -80,20 +80,20 @@ void validateResponseTrailers(Map<String, String> trailers,
 
 GrpcMetadata validateMetadataMessage(StreamMessage message,
     {bool endStream = false}) {
-  expect(message, new TypeMatcher<HeadersStreamMessage>());
+  expect(message, TypeMatcher<HeadersStreamMessage>());
   expect(message.endStream, endStream);
 
-  final decoded = new GrpcHttpDecoder().convert(message);
-  expect(decoded, new TypeMatcher<GrpcMetadata>());
+  final decoded = GrpcHttpDecoder().convert(message);
+  expect(decoded, TypeMatcher<GrpcMetadata>());
   return decoded;
 }
 
 GrpcData validateDataMessage(StreamMessage message, {bool endStream = false}) {
-  expect(message, new TypeMatcher<DataStreamMessage>());
+  expect(message, TypeMatcher<DataStreamMessage>());
   expect(message.endStream, endStream);
 
-  final decoded = new GrpcHttpDecoder().convert(message);
-  expect(decoded, new TypeMatcher<GrpcData>());
+  final decoded = GrpcHttpDecoder().convert(message);
+  expect(decoded, TypeMatcher<GrpcData>());
   return decoded;
 }
 

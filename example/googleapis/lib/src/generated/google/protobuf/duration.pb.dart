@@ -11,7 +11,7 @@ import 'package:fixnum/fixnum.dart';
 import 'package:protobuf/protobuf.dart';
 
 class Duration extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Duration')
+  static final BuilderInfo _i = BuilderInfo('Duration')
     ..aInt64(1, 'seconds')
     ..a<int>(2, 'nanos', PbFieldType.O3)
     ..hasRequiredFields = false;
@@ -22,12 +22,12 @@ class Duration extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Duration.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Duration clone() => new Duration()..mergeFromMessage(this);
+  Duration clone() => Duration()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Duration create() => new Duration();
-  static PbList<Duration> createRepeated() => new PbList<Duration>();
+  static Duration create() => Duration();
+  static PbList<Duration> createRepeated() => PbList<Duration>();
   static Duration getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyDuration();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyDuration();
     return _defaultInstance;
   }
 

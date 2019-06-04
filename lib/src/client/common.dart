@@ -48,14 +48,13 @@ class ResponseFuture<R> extends DelegatingFuture<R>
 
   static R _ensureOnlyOneResponse<R>(R previous, R element) {
     if (previous != null) {
-      throw new GrpcError.unimplemented('More than one response received');
+      throw GrpcError.unimplemented('More than one response received');
     }
     return element;
   }
 
   static R _ensureOneResponse<R>(R value) {
-    if (value == null)
-      throw new GrpcError.unimplemented('No responses received');
+    if (value == null) throw GrpcError.unimplemented('No responses received');
     return value;
   }
 

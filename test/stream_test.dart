@@ -26,22 +26,22 @@ void main() {
     Stream<GrpcMessage> output;
 
     setUp(() {
-      input = new StreamController();
-      output = input.stream.transform(new GrpcHttpDecoder());
+      input = StreamController();
+      output = input.stream.transform(GrpcHttpDecoder());
     });
 
     test('converts chunked data correctly', () async {
       final result = output.toList();
       input
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage([0, 0]))
-        ..add(new DataStreamMessage([0, 0, 10, 48, 49]))
-        ..add(new DataStreamMessage([50, 51, 52, 53]))
-        ..add(new DataStreamMessage([54, 55, 56, 57, 0, 0, 0]))
-        ..add(new DataStreamMessage(
+        ..add(HeadersStreamMessage([]))
+        ..add(DataStreamMessage([0, 0]))
+        ..add(DataStreamMessage([0, 0, 10, 48, 49]))
+        ..add(DataStreamMessage([50, 51, 52, 53]))
+        ..add(DataStreamMessage([54, 55, 56, 57, 0, 0, 0]))
+        ..add(DataStreamMessage(
             [0, 4, 97, 98, 99, 100, 0, 0, 0, 0, 1, 65, 0, 0, 0, 0]))
-        ..add(new DataStreamMessage([4, 48, 49, 50, 51, 1, 0, 0, 1, 0]))
-        ..add(new DataStreamMessage(new List.filled(256, 90)));
+        ..add(DataStreamMessage([4, 48, 49, 50, 51, 1, 0, 0, 1, 0]))
+        ..add(DataStreamMessage(List.filled(256, 90)));
       input.close();
       final converted = await result;
       expect(converted.length, 6);
@@ -50,20 +50,20 @@ void main() {
         expect(message.data, expected);
       }
 
-      expect(converted[0], new TypeMatcher<GrpcMetadata>());
+      expect(converted[0], TypeMatcher<GrpcMetadata>());
       verify(converted[1], [48, 49, 50, 51, 52, 53, 54, 55, 56, 57]);
       verify(converted[2], [97, 98, 99, 100]);
       verify(converted[3], [65]);
       verify(converted[4], [48, 49, 50, 51]);
-      verify(converted[5], new List.filled(256, 90));
+      verify(converted[5], List.filled(256, 90));
     });
 
     test('throws error if input is closed while receiving data header',
         () async {
       final result = output.toList();
       input
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage([0, 0, 0]))
+        ..add(HeadersStreamMessage([]))
+        ..add(DataStreamMessage([0, 0, 0]))
         ..close();
       try {
         await result;
@@ -77,8 +77,8 @@ void main() {
     test('throws error if input is closed while receiving data', () async {
       final result = output.toList();
       input
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage([0, 0, 0, 0, 2, 1]))
+        ..add(HeadersStreamMessage([]))
+        ..add(DataStreamMessage([0, 0, 0, 0, 2, 1]))
         ..close();
       try {
         await result;
@@ -93,9 +93,9 @@ void main() {
         () async {
       final result = output.toList();
       input
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage([0, 0, 0, 0]))
-        ..add(new HeadersStreamMessage([]))
+        ..add(HeadersStreamMessage([]))
+        ..add(DataStreamMessage([0, 0, 0, 0]))
+        ..add(HeadersStreamMessage([]))
         ..close();
       try {
         await result;
@@ -109,9 +109,9 @@ void main() {
     test('throws error if receiving metadata while reading data', () async {
       final result = output.toList();
       input
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage([0, 0, 0, 0, 2, 1]))
-        ..add(new HeadersStreamMessage([]))
+        ..add(HeadersStreamMessage([]))
+        ..add(DataStreamMessage([0, 0, 0, 0, 2, 1]))
+        ..add(HeadersStreamMessage([]))
         ..close();
       try {
         await result;
@@ -125,18 +125,18 @@ void main() {
     test('discards empty data frames, but not empty gRPC frames', () async {
       final result = output.toList();
       input
-        ..add(new HeadersStreamMessage([]))
-        ..add(new DataStreamMessage([]))
-        ..add(new DataStreamMessage([0, 0, 0, 0, 2, 0, 1]))
-        ..add(new DataStreamMessage([0, 0, 0, 0, 0]))
+        ..add(HeadersStreamMessage([]))
+        ..add(DataStreamMessage([]))
+        ..add(DataStreamMessage([0, 0, 0, 0, 2, 0, 1]))
+        ..add(DataStreamMessage([0, 0, 0, 0, 0]))
         ..close();
       final converted = await result;
       expect(converted.length, 3);
-      expect(converted[0], new TypeMatcher<GrpcMetadata>());
-      expect(converted[1], new TypeMatcher<GrpcData>());
+      expect(converted[0], TypeMatcher<GrpcMetadata>());
+      expect(converted[1], TypeMatcher<GrpcData>());
       var data = converted[1] as GrpcData;
       expect(data.data.length, 2);
-      expect(converted[2], new TypeMatcher<GrpcData>());
+      expect(converted[2], TypeMatcher<GrpcData>());
       data = converted[2] as GrpcData;
       expect(data.data.length, 0);
     });

@@ -23,7 +23,7 @@ import 'package:http/http.dart' as http;
 
 import '../client/options.dart';
 
-const _tokenExpirationThreshold = const Duration(seconds: 30);
+const _tokenExpirationThreshold = Duration(seconds: 30);
 
 abstract class BaseAuthenticator {
   auth.AccessToken _accessToken;
@@ -31,8 +31,7 @@ abstract class BaseAuthenticator {
 
   Future<void> authenticate(Map<String, String> metadata, String uri) async {
     if (uri == null) {
-      throw new GrpcError.unauthenticated(
-          'Credentials require secure transport.');
+      throw GrpcError.unauthenticated('Credentials require secure transport.');
     }
     if (_accessToken == null || _accessToken.hasExpired || uri != _lastUri) {
       await obtainAccessCredentials(uri);
@@ -50,9 +49,9 @@ abstract class BaseAuthenticator {
 
   bool get _tokenExpiresSoon => _accessToken.expiry
       .subtract(_tokenExpirationThreshold)
-      .isBefore(new DateTime.now().toUtc());
+      .isBefore(DateTime.now().toUtc());
 
-  CallOptions get toCallOptions => new CallOptions(providers: [authenticate]);
+  CallOptions get toCallOptions => CallOptions(providers: [authenticate]);
 
   Future<void> obtainAccessCredentials(String uri);
 }
@@ -62,7 +61,7 @@ abstract class HttpBasedAuthenticator extends BaseAuthenticator {
 
   Future<void> obtainAccessCredentials(String uri) {
     if (_call == null) {
-      final authClient = new http.Client();
+      final authClient = http.Client();
       _call = obtainCredentialsWithClient(authClient, uri).then((credentials) {
         _accessToken = credentials.accessToken;
         _call = null;
@@ -90,7 +89,7 @@ class ServiceAccountAuthenticator extends HttpBasedAuthenticator {
   ServiceAccountAuthenticator(String serviceAccountJson, this._scopes) {
     final serviceAccount = jsonDecode(serviceAccountJson);
     _serviceAccountCredentials =
-        new auth.ServiceAccountCredentials.fromJson(serviceAccount);
+        auth.ServiceAccountCredentials.fromJson(serviceAccount);
     _projectId = serviceAccount['project_id'];
   }
 
@@ -110,7 +109,7 @@ class JwtServiceAccountAuthenticator extends BaseAuthenticator {
   JwtServiceAccountAuthenticator(String serviceAccountJson) {
     final serviceAccount = jsonDecode(serviceAccountJson);
     _serviceAccountCredentials =
-        new auth.ServiceAccountCredentials.fromJson(serviceAccount);
+        auth.ServiceAccountCredentials.fromJson(serviceAccount);
     _projectId = serviceAccount['project_id'];
     _keyId = serviceAccount['private_key_id'];
   }
@@ -129,7 +128,7 @@ auth.AccessToken _jwtTokenFor(
   // Subtracting 20 seconds from current timestamp to allow for clock skew among
   // servers.
   final timestamp =
-      (new DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000) - 20;
+      (DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000) - 20;
   final expiry = timestamp + 3600;
 
   final header = <String, String>{'alg': 'RS256', 'typ': 'JWT'};
@@ -153,13 +152,13 @@ auth.AccessToken _jwtTokenFor(
 
   final data = '$headerBase64.$claimsBase64';
 
-  final signer = new RS256Signer(credentials.privateRSAKey);
+  final signer = RS256Signer(credentials.privateRSAKey);
   final signature = signer.sign(ascii.encode(data));
 
   final jwt = '$data.${_base64url(signature)}';
 
-  return new auth.AccessToken('Bearer', jwt,
-      new DateTime.fromMillisecondsSinceEpoch(expiry * 1000, isUtc: true));
+  return auth.AccessToken('Bearer', jwt,
+      DateTime.fromMillisecondsSinceEpoch(expiry * 1000, isUtc: true));
 }
 
 String _base64url(List<int> bytes) {

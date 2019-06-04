@@ -100,7 +100,7 @@ class Server {
       server = _insecureServer;
     }
     server.listen((socket) {
-      final connection = new ServerTransportConnection.viaSocket(socket);
+      final connection = ServerTransportConnection.viaSocket(socket);
       _connections.add(connection);
       ServerHandler_ handler;
       // TODO(jakobr): Set active state handlers, close connection after idle
@@ -124,7 +124,7 @@ class Server {
 
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream) {
-    return new ServerHandler_(lookupService, stream, _interceptors)..handle();
+    return ServerHandler_(lookupService, stream, _interceptors)..handle();
   }
 
   @Deprecated(

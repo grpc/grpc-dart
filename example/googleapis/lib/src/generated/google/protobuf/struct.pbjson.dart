@@ -4,17 +4,17 @@
 // ignore_for_file: non_constant_identifier_names,library_prefixes
 library google.protobuf_struct_pbjson;
 
-const NullValue$json = const {
+const NullValue$json = {
   '1': 'NullValue',
-  '2': const [
-    const {'1': 'NULL_VALUE', '2': 0},
+  '2': [
+    {'1': 'NULL_VALUE', '2': 0},
   ],
 };
 
-const Struct$json = const {
+const Struct$json = {
   '1': 'Struct',
-  '2': const [
-    const {
+  '2': [
+    {
       '1': 'fields',
       '3': 1,
       '4': 3,
@@ -23,14 +23,14 @@ const Struct$json = const {
       '10': 'fields'
     },
   ],
-  '3': const [Struct_FieldsEntry$json],
+  '3': [Struct_FieldsEntry$json],
 };
 
-const Struct_FieldsEntry$json = const {
+const Struct_FieldsEntry$json = {
   '1': 'FieldsEntry',
-  '2': const [
-    const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
-    const {
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    {
       '1': 'value',
       '3': 2,
       '4': 1,
@@ -39,13 +39,13 @@ const Struct_FieldsEntry$json = const {
       '10': 'value'
     },
   ],
-  '7': const {'7': true},
+  '7': {'7': true},
 };
 
-const Value$json = const {
+const Value$json = {
   '1': 'Value',
-  '2': const [
-    const {
+  '2': [
+    {
       '1': 'null_value',
       '3': 1,
       '4': 1,
@@ -54,31 +54,10 @@ const Value$json = const {
       '9': 0,
       '10': 'nullValue'
     },
-    const {
-      '1': 'number_value',
-      '3': 2,
-      '4': 1,
-      '5': 1,
-      '9': 0,
-      '10': 'numberValue'
-    },
-    const {
-      '1': 'string_value',
-      '3': 3,
-      '4': 1,
-      '5': 9,
-      '9': 0,
-      '10': 'stringValue'
-    },
-    const {
-      '1': 'bool_value',
-      '3': 4,
-      '4': 1,
-      '5': 8,
-      '9': 0,
-      '10': 'boolValue'
-    },
-    const {
+    {'1': 'number_value', '3': 2, '4': 1, '5': 1, '9': 0, '10': 'numberValue'},
+    {'1': 'string_value', '3': 3, '4': 1, '5': 9, '9': 0, '10': 'stringValue'},
+    {'1': 'bool_value', '3': 4, '4': 1, '5': 8, '9': 0, '10': 'boolValue'},
+    {
       '1': 'struct_value',
       '3': 5,
       '4': 1,
@@ -87,7 +66,7 @@ const Value$json = const {
       '9': 0,
       '10': 'structValue'
     },
-    const {
+    {
       '1': 'list_value',
       '3': 6,
       '4': 1,
@@ -97,15 +76,15 @@ const Value$json = const {
       '10': 'listValue'
     },
   ],
-  '8': const [
-    const {'1': 'kind'},
+  '8': [
+    {'1': 'kind'},
   ],
 };
 
-const ListValue$json = const {
+const ListValue$json = {
   '1': 'ListValue',
-  '2': const [
-    const {
+  '2': [
+    {
       '1': 'values',
       '3': 1,
       '4': 3,

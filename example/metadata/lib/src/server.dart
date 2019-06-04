@@ -32,10 +32,10 @@ class MetadataService extends MetadataServiceBase {
 
     final delay = call.clientMetadata['delay'];
     if (delay != null) {
-      await new Future.delayed(new Duration(seconds: int.parse(delay)));
+      await Future.delayed(Duration(seconds: int.parse(delay)));
     }
 
-    return new Record()..value = peer;
+    return Record()..value = peer;
   }
 
   @override
@@ -44,7 +44,7 @@ class MetadataService extends MetadataServiceBase {
     try {
       await for (var number in request) {
         lastNumber = number.value;
-        yield new Number()..value = number.value + 1;
+        yield Number()..value = number.value + 1;
       }
     } catch (error) {
       print('Caught: $error, last number = $lastNumber');
@@ -61,8 +61,8 @@ class MetadataService extends MetadataServiceBase {
     int current = 1;
     try {
       while (true) {
-        await new Future.delayed(new Duration(milliseconds: 500));
-        yield new Number()..value = current;
+        await Future.delayed(Duration(milliseconds: 500));
+        yield Number()..value = current;
         final next = current + previous;
         previous = current;
         current = next;
@@ -77,7 +77,7 @@ class MetadataService extends MetadataServiceBase {
 
 class Server {
   Future<void> main(List<String> args) async {
-    final server = new grpc.Server([new MetadataService()]);
+    final server = grpc.Server([MetadataService()]);
     await server.serve(port: 8080);
     print('Server listening on port ${server.port}...');
   }
