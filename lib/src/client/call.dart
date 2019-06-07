@@ -61,8 +61,8 @@ class CallOptions {
   /// (including metadata provided by previous providers).
   factory CallOptions(
       {Map<String, String> metadata,
-        Duration timeout,
-        List<MetadataProvider> providers}) {
+      Duration timeout,
+      List<MetadataProvider> providers}) {
     return new CallOptions._(new Map.unmodifiable(metadata ?? {}), timeout,
         new List.unmodifiable(providers ?? []));
   }

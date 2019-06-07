@@ -47,4 +47,3 @@ class ChannelOptions {
     this.backoffStrategy = defaultBackoffStrategy,
   });
 }
-
