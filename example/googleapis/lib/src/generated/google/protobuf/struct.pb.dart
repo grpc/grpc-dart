@@ -14,7 +14,7 @@ import 'struct.pbenum.dart';
 export 'struct.pbenum.dart';
 
 class Struct_FieldsEntry extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Struct_FieldsEntry')
+  static final BuilderInfo _i = BuilderInfo('Struct_FieldsEntry')
     ..aOS(1, 'key')
     ..a<Value>(2, 'value', PbFieldType.OM, Value.getDefault, Value.create)
     ..hasRequiredFields = false;
@@ -26,15 +26,14 @@ class Struct_FieldsEntry extends GeneratedMessage {
   Struct_FieldsEntry.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Struct_FieldsEntry clone() =>
-      new Struct_FieldsEntry()..mergeFromMessage(this);
+  Struct_FieldsEntry clone() => Struct_FieldsEntry()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Struct_FieldsEntry create() => new Struct_FieldsEntry();
+  static Struct_FieldsEntry create() => Struct_FieldsEntry();
   static PbList<Struct_FieldsEntry> createRepeated() =>
-      new PbList<Struct_FieldsEntry>();
+      PbList<Struct_FieldsEntry>();
   static Struct_FieldsEntry getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyStruct_FieldsEntry();
+      _defaultInstance = _ReadonlyStruct_FieldsEntry();
     return _defaultInstance;
   }
 
@@ -64,7 +63,7 @@ class _ReadonlyStruct_FieldsEntry extends Struct_FieldsEntry
     with ReadonlyMessageMixin {}
 
 class Struct extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Struct')
+  static final BuilderInfo _i = BuilderInfo('Struct')
     ..pp<Struct_FieldsEntry>(1, 'fields', PbFieldType.PM,
         Struct_FieldsEntry.$checkItem, Struct_FieldsEntry.create)
     ..hasRequiredFields = false;
@@ -75,12 +74,12 @@ class Struct extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Struct.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Struct clone() => new Struct()..mergeFromMessage(this);
+  Struct clone() => Struct()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Struct create() => new Struct();
-  static PbList<Struct> createRepeated() => new PbList<Struct>();
+  static Struct create() => Struct();
+  static PbList<Struct> createRepeated() => PbList<Struct>();
   static Struct getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyStruct();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyStruct();
     return _defaultInstance;
   }
 
@@ -95,7 +94,7 @@ class Struct extends GeneratedMessage {
 class _ReadonlyStruct extends Struct with ReadonlyMessageMixin {}
 
 class Value extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Value')
+  static final BuilderInfo _i = BuilderInfo('Value')
     ..e<NullValue>(1, 'nullValue', PbFieldType.OE, NullValue.NULL_VALUE,
         NullValue.valueOf, NullValue.values)
     ..a<double>(2, 'numberValue', PbFieldType.OD)
@@ -112,12 +111,12 @@ class Value extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Value.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Value clone() => new Value()..mergeFromMessage(this);
+  Value clone() => Value()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Value create() => new Value();
-  static PbList<Value> createRepeated() => new PbList<Value>();
+  static Value create() => Value();
+  static PbList<Value> createRepeated() => PbList<Value>();
   static Value getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyValue();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyValue();
     return _defaultInstance;
   }
 
@@ -178,7 +177,7 @@ class Value extends GeneratedMessage {
 class _ReadonlyValue extends Value with ReadonlyMessageMixin {}
 
 class ListValue extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ListValue')
+  static final BuilderInfo _i = BuilderInfo('ListValue')
     ..pp<Value>(1, 'values', PbFieldType.PM, Value.$checkItem, Value.create)
     ..hasRequiredFields = false;
 
@@ -188,12 +187,12 @@ class ListValue extends GeneratedMessage {
       : super.fromBuffer(i, r);
   ListValue.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  ListValue clone() => new ListValue()..mergeFromMessage(this);
+  ListValue clone() => ListValue()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static ListValue create() => new ListValue();
-  static PbList<ListValue> createRepeated() => new PbList<ListValue>();
+  static ListValue create() => ListValue();
+  static PbList<ListValue> createRepeated() => PbList<ListValue>();
   static ListValue getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyListValue();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyListValue();
     return _defaultInstance;
   }
 

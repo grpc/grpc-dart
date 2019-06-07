@@ -19,7 +19,7 @@ import '../../protobuf/timestamp.pb.dart' as $google$protobuf;
 import '../type/log_severity.pbenum.dart' as $google$logging$type;
 
 class LogEntry_LabelsEntry extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('LogEntry_LabelsEntry')
+  static final BuilderInfo _i = BuilderInfo('LogEntry_LabelsEntry')
     ..aOS(1, 'key')
     ..aOS(2, 'value')
     ..hasRequiredFields = false;
@@ -32,14 +32,14 @@ class LogEntry_LabelsEntry extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   LogEntry_LabelsEntry clone() =>
-      new LogEntry_LabelsEntry()..mergeFromMessage(this);
+      LogEntry_LabelsEntry()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static LogEntry_LabelsEntry create() => new LogEntry_LabelsEntry();
+  static LogEntry_LabelsEntry create() => LogEntry_LabelsEntry();
   static PbList<LogEntry_LabelsEntry> createRepeated() =>
-      new PbList<LogEntry_LabelsEntry>();
+      PbList<LogEntry_LabelsEntry>();
   static LogEntry_LabelsEntry getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyLogEntry_LabelsEntry();
+      _defaultInstance = _ReadonlyLogEntry_LabelsEntry();
     return _defaultInstance;
   }
 
@@ -69,7 +69,7 @@ class _ReadonlyLogEntry_LabelsEntry extends LogEntry_LabelsEntry
     with ReadonlyMessageMixin {}
 
 class LogEntry extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('LogEntry')
+  static final BuilderInfo _i = BuilderInfo('LogEntry')
     ..a<$google$protobuf.Any>(2, 'protoPayload', PbFieldType.OM,
         $google$protobuf.Any.getDefault, $google$protobuf.Any.create)
     ..aOS(3, 'textPayload')
@@ -124,12 +124,12 @@ class LogEntry extends GeneratedMessage {
       : super.fromBuffer(i, r);
   LogEntry.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  LogEntry clone() => new LogEntry()..mergeFromMessage(this);
+  LogEntry clone() => LogEntry()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static LogEntry create() => new LogEntry();
-  static PbList<LogEntry> createRepeated() => new PbList<LogEntry>();
+  static LogEntry create() => LogEntry();
+  static PbList<LogEntry> createRepeated() => PbList<LogEntry>();
   static LogEntry getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyLogEntry();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyLogEntry();
     return _defaultInstance;
   }
 
@@ -256,7 +256,7 @@ class LogEntry extends GeneratedMessage {
 class _ReadonlyLogEntry extends LogEntry with ReadonlyMessageMixin {}
 
 class LogEntryOperation extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('LogEntryOperation')
+  static final BuilderInfo _i = BuilderInfo('LogEntryOperation')
     ..aOS(1, 'id')
     ..aOS(2, 'producer')
     ..aOB(3, 'first')
@@ -270,14 +270,14 @@ class LogEntryOperation extends GeneratedMessage {
   LogEntryOperation.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  LogEntryOperation clone() => new LogEntryOperation()..mergeFromMessage(this);
+  LogEntryOperation clone() => LogEntryOperation()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static LogEntryOperation create() => new LogEntryOperation();
+  static LogEntryOperation create() => LogEntryOperation();
   static PbList<LogEntryOperation> createRepeated() =>
-      new PbList<LogEntryOperation>();
+      PbList<LogEntryOperation>();
   static LogEntryOperation getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyLogEntryOperation();
+      _defaultInstance = _ReadonlyLogEntryOperation();
     return _defaultInstance;
   }
 
@@ -323,7 +323,7 @@ class _ReadonlyLogEntryOperation extends LogEntryOperation
     with ReadonlyMessageMixin {}
 
 class LogEntrySourceLocation extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('LogEntrySourceLocation')
+  static final BuilderInfo _i = BuilderInfo('LogEntrySourceLocation')
     ..aOS(1, 'file')
     ..aInt64(2, 'line')
     ..aOS(3, 'function')
@@ -337,14 +337,14 @@ class LogEntrySourceLocation extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   LogEntrySourceLocation clone() =>
-      new LogEntrySourceLocation()..mergeFromMessage(this);
+      LogEntrySourceLocation()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static LogEntrySourceLocation create() => new LogEntrySourceLocation();
+  static LogEntrySourceLocation create() => LogEntrySourceLocation();
   static PbList<LogEntrySourceLocation> createRepeated() =>
-      new PbList<LogEntrySourceLocation>();
+      PbList<LogEntrySourceLocation>();
   static LogEntrySourceLocation getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyLogEntrySourceLocation();
+      _defaultInstance = _ReadonlyLogEntrySourceLocation();
     return _defaultInstance;
   }
 

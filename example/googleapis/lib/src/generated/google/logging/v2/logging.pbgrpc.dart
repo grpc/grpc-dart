@@ -14,58 +14,56 @@ export 'logging.pb.dart';
 
 class LoggingServiceV2Client extends Client {
   static final _$deleteLog =
-      new ClientMethod<DeleteLogRequest, $google$protobuf.Empty>(
+      ClientMethod<DeleteLogRequest, $google$protobuf.Empty>(
           '/google.logging.v2.LoggingServiceV2/DeleteLog',
           (DeleteLogRequest value) => value.writeToBuffer(),
-          (List<int> value) => new $google$protobuf.Empty.fromBuffer(value));
+          (List<int> value) => $google$protobuf.Empty.fromBuffer(value));
   static final _$writeLogEntries =
-      new ClientMethod<WriteLogEntriesRequest, WriteLogEntriesResponse>(
+      ClientMethod<WriteLogEntriesRequest, WriteLogEntriesResponse>(
           '/google.logging.v2.LoggingServiceV2/WriteLogEntries',
           (WriteLogEntriesRequest value) => value.writeToBuffer(),
-          (List<int> value) => new WriteLogEntriesResponse.fromBuffer(value));
+          (List<int> value) => WriteLogEntriesResponse.fromBuffer(value));
   static final _$listLogEntries =
-      new ClientMethod<ListLogEntriesRequest, ListLogEntriesResponse>(
+      ClientMethod<ListLogEntriesRequest, ListLogEntriesResponse>(
           '/google.logging.v2.LoggingServiceV2/ListLogEntries',
           (ListLogEntriesRequest value) => value.writeToBuffer(),
-          (List<int> value) => new ListLogEntriesResponse.fromBuffer(value));
-  static final _$listMonitoredResourceDescriptors = new ClientMethod<
+          (List<int> value) => ListLogEntriesResponse.fromBuffer(value));
+  static final _$listMonitoredResourceDescriptors = ClientMethod<
           ListMonitoredResourceDescriptorsRequest,
           ListMonitoredResourceDescriptorsResponse>(
       '/google.logging.v2.LoggingServiceV2/ListMonitoredResourceDescriptors',
       (ListMonitoredResourceDescriptorsRequest value) => value.writeToBuffer(),
       (List<int> value) =>
-          new ListMonitoredResourceDescriptorsResponse.fromBuffer(value));
-  static final _$listLogs = new ClientMethod<ListLogsRequest, ListLogsResponse>(
+          ListMonitoredResourceDescriptorsResponse.fromBuffer(value));
+  static final _$listLogs = ClientMethod<ListLogsRequest, ListLogsResponse>(
       '/google.logging.v2.LoggingServiceV2/ListLogs',
       (ListLogsRequest value) => value.writeToBuffer(),
-      (List<int> value) => new ListLogsResponse.fromBuffer(value));
+      (List<int> value) => ListLogsResponse.fromBuffer(value));
 
   LoggingServiceV2Client(ClientChannel channel, {CallOptions options})
       : super(channel, options: options);
 
   ResponseFuture<$google$protobuf.Empty> deleteLog(DeleteLogRequest request,
       {CallOptions options}) {
-    final call = $createCall(_$deleteLog, new Stream.fromIterable([request]),
+    final call = $createCall(_$deleteLog, Stream.fromIterable([request]),
         options: options);
-    return new ResponseFuture(call);
+    return ResponseFuture(call);
   }
 
   ResponseFuture<WriteLogEntriesResponse> writeLogEntries(
       WriteLogEntriesRequest request,
       {CallOptions options}) {
-    final call = $createCall(
-        _$writeLogEntries, new Stream.fromIterable([request]),
+    final call = $createCall(_$writeLogEntries, Stream.fromIterable([request]),
         options: options);
-    return new ResponseFuture(call);
+    return ResponseFuture(call);
   }
 
   ResponseFuture<ListLogEntriesResponse> listLogEntries(
       ListLogEntriesRequest request,
       {CallOptions options}) {
-    final call = $createCall(
-        _$listLogEntries, new Stream.fromIterable([request]),
+    final call = $createCall(_$listLogEntries, Stream.fromIterable([request]),
         options: options);
-    return new ResponseFuture(call);
+    return ResponseFuture(call);
   }
 
   ResponseFuture<ListMonitoredResourceDescriptorsResponse>
@@ -73,16 +71,16 @@ class LoggingServiceV2Client extends Client {
           ListMonitoredResourceDescriptorsRequest request,
           {CallOptions options}) {
     final call = $createCall(
-        _$listMonitoredResourceDescriptors, new Stream.fromIterable([request]),
+        _$listMonitoredResourceDescriptors, Stream.fromIterable([request]),
         options: options);
-    return new ResponseFuture(call);
+    return ResponseFuture(call);
   }
 
   ResponseFuture<ListLogsResponse> listLogs(ListLogsRequest request,
       {CallOptions options}) {
-    final call = $createCall(_$listLogs, new Stream.fromIterable([request]),
+    final call = $createCall(_$listLogs, Stream.fromIterable([request]),
         options: options);
-    return new ResponseFuture(call);
+    return ResponseFuture(call);
   }
 }
 
@@ -90,44 +88,43 @@ abstract class LoggingServiceV2ServiceBase extends Service {
   String get $name => 'google.logging.v2.LoggingServiceV2';
 
   LoggingServiceV2ServiceBase() {
-    $addMethod(new ServiceMethod<DeleteLogRequest, $google$protobuf.Empty>(
+    $addMethod(ServiceMethod<DeleteLogRequest, $google$protobuf.Empty>(
         'DeleteLog',
         deleteLog_Pre,
         false,
         false,
-        (List<int> value) => new DeleteLogRequest.fromBuffer(value),
+        (List<int> value) => DeleteLogRequest.fromBuffer(value),
         ($google$protobuf.Empty value) => value.writeToBuffer()));
-    $addMethod(
-        new ServiceMethod<WriteLogEntriesRequest, WriteLogEntriesResponse>(
-            'WriteLogEntries',
-            writeLogEntries_Pre,
-            false,
-            false,
-            (List<int> value) => new WriteLogEntriesRequest.fromBuffer(value),
-            (WriteLogEntriesResponse value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod<ListLogEntriesRequest, ListLogEntriesResponse>(
+    $addMethod(ServiceMethod<WriteLogEntriesRequest, WriteLogEntriesResponse>(
+        'WriteLogEntries',
+        writeLogEntries_Pre,
+        false,
+        false,
+        (List<int> value) => WriteLogEntriesRequest.fromBuffer(value),
+        (WriteLogEntriesResponse value) => value.writeToBuffer()));
+    $addMethod(ServiceMethod<ListLogEntriesRequest, ListLogEntriesResponse>(
         'ListLogEntries',
         listLogEntries_Pre,
         false,
         false,
-        (List<int> value) => new ListLogEntriesRequest.fromBuffer(value),
+        (List<int> value) => ListLogEntriesRequest.fromBuffer(value),
         (ListLogEntriesResponse value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod<ListMonitoredResourceDescriptorsRequest,
+    $addMethod(ServiceMethod<ListMonitoredResourceDescriptorsRequest,
             ListMonitoredResourceDescriptorsResponse>(
         'ListMonitoredResourceDescriptors',
         listMonitoredResourceDescriptors_Pre,
         false,
         false,
         (List<int> value) =>
-            new ListMonitoredResourceDescriptorsRequest.fromBuffer(value),
+            ListMonitoredResourceDescriptorsRequest.fromBuffer(value),
         (ListMonitoredResourceDescriptorsResponse value) =>
             value.writeToBuffer()));
-    $addMethod(new ServiceMethod<ListLogsRequest, ListLogsResponse>(
+    $addMethod(ServiceMethod<ListLogsRequest, ListLogsResponse>(
         'ListLogs',
         listLogs_Pre,
         false,
         false,
-        (List<int> value) => new ListLogsRequest.fromBuffer(value),
+        (List<int> value) => ListLogsRequest.fromBuffer(value),
         (ListLogsResponse value) => value.writeToBuffer()));
   }
 

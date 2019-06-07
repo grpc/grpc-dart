@@ -48,7 +48,7 @@ class Tester {
     if (serviceAccountKeyFile?.isEmpty ?? true) {
       throw 'Service account key file not specified.';
     }
-    return new File(serviceAccountKeyFile).readAsStringSync();
+    return File(serviceAccountKeyFile).readAsStringSync();
   }
 
   void set serverPort(String value) {
@@ -93,19 +93,18 @@ class Tester {
     if (_useTls) {
       List<int> trustedRoot;
       if (_useTestCA) {
-        trustedRoot = new File('ca.pem').readAsBytesSync();
+        trustedRoot = File('ca.pem').readAsBytesSync();
       }
-      credentials = new ChannelCredentials.secure(
+      credentials = ChannelCredentials.secure(
           certificates: trustedRoot, authority: serverHostOverride);
     } else {
       credentials = const ChannelCredentials.insecure();
     }
 
-    final options = new ChannelOptions(credentials: credentials);
-    channel =
-        new ClientChannel(serverHost, port: _serverPort, options: options);
-    client = new TestServiceClient(channel);
-    unimplementedServiceClient = new UnimplementedServiceClient(channel);
+    final options = ChannelOptions(credentials: credentials);
+    channel = ClientChannel(serverHost, port: _serverPort, options: options);
+    client = TestServiceClient(channel);
+    unimplementedServiceClient = UnimplementedServiceClient(channel);
     await runTestCase();
     await channel.shutdown();
   }
@@ -175,7 +174,7 @@ class Tester {
   /// * call was successful
   /// * response is non-null
   Future<void> emptyUnary() async {
-    final response = await client.emptyCall(new Empty());
+    final response = await client.emptyCall(Empty());
     if (response == null) throw 'Expected non-null response.';
     if (response is! Empty) throw 'Expected Empty response.';
   }
@@ -224,8 +223,8 @@ class Tester {
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response message against a golden response
   Future<void> largeUnary() async {
-    final payload = new Payload()..body = new Uint8List(271828);
-    final request = new SimpleRequest()
+    final payload = Payload()..body = Uint8List(271828);
+    final request = SimpleRequest()
       ..responseSize = 314159
       ..payload = payload;
     final response = await client.unaryCall(request);
@@ -365,8 +364,8 @@ class Tester {
   /// * response aggregated_payload_size is 74922
   Future<void> clientStreaming() async {
     StreamingInputCallRequest createRequest(int bytes) {
-      final request = new StreamingInputCallRequest()..payload = new Payload();
-      request.payload.body = new Uint8List(bytes);
+      final request = StreamingInputCallRequest()..payload = Payload();
+      request.payload.body = Uint8List(bytes);
       return request;
     }
 
@@ -460,9 +459,9 @@ class Tester {
   Future<void> serverStreaming() async {
     final expectedResponses = [31415, 9, 2653, 58979];
 
-    final request = new StreamingOutputCallRequest()
-      ..responseParameters.addAll(expectedResponses
-          .map((size) => new ResponseParameters()..size = size));
+    final request = StreamingOutputCallRequest()
+      ..responseParameters.addAll(
+          expectedResponses.map((size) => ResponseParameters()..size = size));
 
     final responses = await client.streamingOutputCall(request).toList();
     if (responses.length != 4) {
@@ -471,7 +470,7 @@ class Tester {
     final responseLengths =
         responses.map((response) => response.payload.body.length).toList();
 
-    if (!new ListEquality().equals(responseLengths, expectedResponses)) {
+    if (!ListEquality().equals(responseLengths, expectedResponses)) {
       throw 'Incorrect response lengths received (${responseLengths.join(', ')} != ${expectedResponses.join(', ')})';
     }
   }
@@ -570,16 +569,16 @@ class Tester {
     final expectedResponses = [31415, 9, 2653, 58979];
 
     StreamingOutputCallRequest createRequest(int index) {
-      final payload = new Payload()..body = new Uint8List(requestSizes[index]);
-      final request = new StreamingOutputCallRequest()
+      final payload = Payload()..body = Uint8List(requestSizes[index]);
+      final request = StreamingOutputCallRequest()
         ..payload = payload
         ..responseParameters
-            .add(new ResponseParameters()..size = expectedResponses[index]);
+            .add(ResponseParameters()..size = expectedResponses[index]);
       return request;
     }
 
     var index = 0;
-    final requests = new StreamController<int>();
+    final requests = StreamController<int>();
 
     final responses = client.fullDuplexCall(requests.stream.map(createRequest));
     requests.add(index);
@@ -610,7 +609,7 @@ class Tester {
   /// * call was successful
   /// * exactly zero responses
   Future<void> emptyStream() async {
-    final requests = new StreamController<StreamingOutputCallRequest>();
+    final requests = StreamController<StreamingOutputCallRequest>();
     final call = client.fullDuplexCall(requests.stream);
     requests.close();
     final responses = await call.toList();
@@ -652,9 +651,9 @@ class Tester {
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response message against a golden response
   Future<void> computeEngineCreds() async {
-    final credentials = new ComputeEngineAuthenticator();
+    final credentials = ComputeEngineAuthenticator();
     final clientWithCredentials =
-        new TestServiceClient(channel, options: credentials.toCallOptions);
+        TestServiceClient(channel, options: credentials.toCallOptions);
 
     final response = await _sendSimpleRequestForAuth(clientWithCredentials,
         fillUsername: true, fillOauthScope: true);
@@ -742,9 +741,9 @@ class Tester {
   /// * clients are free to assert that the response payload body contents are
   ///   zero and comparing the entire response message against a golden response
   Future<void> jwtTokenCreds() async {
-    final credentials = new JwtServiceAccountAuthenticator(serviceAccountJson);
+    final credentials = JwtServiceAccountAuthenticator(serviceAccountJson);
     final clientWithCredentials =
-        new TestServiceClient(channel, options: credentials.toCallOptions);
+        TestServiceClient(channel, options: credentials.toCallOptions);
 
     final response = await _sendSimpleRequestForAuth(clientWithCredentials,
         fillUsername: true);
@@ -798,9 +797,9 @@ class Tester {
   /// * received SimpleResponse.oauth_scope is in `--oauth_scope`
   Future<void> oauth2AuthToken() async {
     final credentials =
-        new ServiceAccountAuthenticator(serviceAccountJson, [oauthScope]);
+        ServiceAccountAuthenticator(serviceAccountJson, [oauthScope]);
     final clientWithCredentials =
-        new TestServiceClient(channel, options: credentials.toCallOptions);
+        TestServiceClient(channel, options: credentials.toCallOptions);
 
     final response = await _sendSimpleRequestForAuth(clientWithCredentials,
         fillUsername: true, fillOauthScope: true);
@@ -853,7 +852,7 @@ class Tester {
   ///   username matches the email address in the key file.
   Future<void> perRpcCreds() async {
     final credentials =
-        new ServiceAccountAuthenticator(serviceAccountJson, [oauthScope]);
+        ServiceAccountAuthenticator(serviceAccountJson, [oauthScope]);
 
     final response = await _sendSimpleRequestForAuth(client,
         fillUsername: true,
@@ -882,8 +881,8 @@ class Tester {
       {bool fillUsername: false,
       bool fillOauthScope: false,
       CallOptions options}) async {
-    final payload = new Payload()..body = new Uint8List(271828);
-    final request = new SimpleRequest()
+    final payload = Payload()..body = Uint8List(271828);
+    final request = SimpleRequest()
       ..responseSize = 314159
       ..payload = payload
       ..fillUsername = fillUsername
@@ -945,14 +944,14 @@ class Tester {
       }
     }
 
-    final options = new CallOptions(metadata: {
+    final options = CallOptions(metadata: {
       _headerEchoKey: _headerEchoData,
       _trailerEchoKey: _trailerEchoData,
     });
     final unaryCall = client.unaryCall(
-        new SimpleRequest()
+        SimpleRequest()
           ..responseSize = 314159
-          ..payload = (new Payload()..body = new Uint8List(271828)),
+          ..payload = (Payload()..body = Uint8List(271828)),
         options: options);
     var headers = await unaryCall.headers;
     var trailers = await unaryCall.trailers;
@@ -960,9 +959,9 @@ class Tester {
     validate(headers, trailers);
 
     Stream<StreamingOutputCallRequest> requests() async* {
-      yield new StreamingOutputCallRequest()
-        ..responseParameters.add(new ResponseParameters()..size = 314159)
-        ..payload = (new Payload()..body = new Uint8List(271828));
+      yield StreamingOutputCallRequest()
+        ..responseParameters.add(ResponseParameters()..size = 314159)
+        ..payload = (Payload()..body = Uint8List(271828));
     }
 
     final fullDuplexCall = client.fullDuplexCall(requests(), options: options);
@@ -1001,13 +1000,12 @@ class Tester {
   /// * received status message is the same as the sent message for both
   ///   Procedure steps 1 and 2
   Future<void> statusCodeAndMessage() async {
-    final expectedStatus = new GrpcError.custom(2, 'test status message');
-    final responseStatus = new EchoStatus()
+    final expectedStatus = GrpcError.custom(2, 'test status message');
+    final responseStatus = EchoStatus()
       ..code = expectedStatus.code
       ..message = expectedStatus.message;
     try {
-      await client
-          .unaryCall(new SimpleRequest()..responseStatus = responseStatus);
+      await client.unaryCall(SimpleRequest()..responseStatus = responseStatus);
       throw 'Did not receive correct status code.';
     } on GrpcError catch (e) {
       if (e != expectedStatus) {
@@ -1015,7 +1013,7 @@ class Tester {
       }
     }
     Stream<StreamingOutputCallRequest> requests() async* {
-      yield new StreamingOutputCallRequest()..responseStatus = responseStatus;
+      yield StreamingOutputCallRequest()..responseStatus = responseStatus;
     }
 
     try {
@@ -1043,7 +1041,7 @@ class Tester {
   /// * received status code is 12 (UNIMPLEMENTED)
   Future<void> unimplementedMethod() async {
     try {
-      await client.unimplementedCall(new Empty());
+      await client.unimplementedCall(Empty());
       throw 'Did not throw.';
     } on GrpcError catch (e) {
       if (e.code != StatusCode.unimplemented) {
@@ -1063,7 +1061,7 @@ class Tester {
   /// * received status code is 12 (UNIMPLEMENTED)
   Future<void> unimplementedService() async {
     try {
-      await unimplementedServiceClient.unimplementedCall(new Empty());
+      await unimplementedServiceClient.unimplementedCall(Empty());
       throw 'Did not throw.';
     } on GrpcError catch (e) {
       if (e.code != StatusCode.unimplemented) {
@@ -1082,7 +1080,7 @@ class Tester {
   /// Client asserts:
   /// * Call completed with status CANCELLED
   Future<void> cancelAfterBegin() async {
-    final requests = new StreamController<StreamingInputCallRequest>();
+    final requests = StreamController<StreamingInputCallRequest>();
     final call = client.streamingInputCall(requests.stream);
     scheduleMicrotask(call.cancel);
     try {
@@ -1115,9 +1113,9 @@ class Tester {
   /// Client asserts:
   /// * Call completed with status CANCELLED
   Future<void> cancelAfterFirstResponse() async {
-    final requests = new StreamController<StreamingOutputCallRequest>();
+    final requests = StreamController<StreamingOutputCallRequest>();
     final call = client.fullDuplexCall(requests.stream);
-    final completer = new Completer();
+    final completer = Completer();
 
     var receivedResponse = false;
     call.listen((response) {
@@ -1142,9 +1140,9 @@ class Tester {
       if (!completer.isCompleted) completer.completeError('Expected error.');
     });
 
-    requests.add(new StreamingOutputCallRequest()
-      ..responseParameters.add(new ResponseParameters()..size = 31415)
-      ..payload = (new Payload()..body = new Uint8List(27182)));
+    requests.add(StreamingOutputCallRequest()
+      ..responseParameters.add(ResponseParameters()..size = 31415)
+      ..payload = (Payload()..body = Uint8List(27182)));
     await completer.future;
     requests.close();
   }
@@ -1166,11 +1164,11 @@ class Tester {
   /// Client asserts:
   /// * Call completed with status DEADLINE_EXCEEDED.
   Future<void> timeoutOnSleepingServer() async {
-    final requests = new StreamController<StreamingOutputCallRequest>();
+    final requests = StreamController<StreamingOutputCallRequest>();
     final call = client.fullDuplexCall(requests.stream,
-        options: new CallOptions(timeout: new Duration(milliseconds: 1)));
-    requests.add(new StreamingOutputCallRequest()
-      ..payload = (new Payload()..body = new Uint8List(27182)));
+        options: CallOptions(timeout: Duration(milliseconds: 1)));
+    requests.add(StreamingOutputCallRequest()
+      ..payload = (Payload()..body = Uint8List(27182)));
     try {
       await for (final _ in call) {
         throw 'Unexpected response received.';

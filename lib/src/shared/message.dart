@@ -56,7 +56,7 @@ class GrpcMessageSink extends Sink<GrpcMessage> {
 
 List<int> frame(List<int> payload) {
   final payloadLength = payload.length;
-  final bytes = new Uint8List(payloadLength + 5);
+  final bytes = Uint8List(payloadLength + 5);
   final header = bytes.buffer.asByteData(0, 5);
   header.setUint8(0, 0); // TODO(dart-lang/grpc-dart#6): Handle compression
   header.setUint32(1, payloadLength);
@@ -65,12 +65,12 @@ List<int> frame(List<int> payload) {
 }
 
 StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor() =>
-    new StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
+    StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
         handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
       if (value is GrpcData) {
         if (value.isCompressed) {
           // TODO(dart-lang/grpc-dart#6): Actually handle decompression.
-          sink.add(new GrpcData(value.data, isCompressed: false));
+          sink.add(GrpcData(value.data, isCompressed: false));
           return;
         }
       }

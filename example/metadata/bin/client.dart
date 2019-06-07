@@ -16,5 +16,5 @@
 import 'package:metadata/src/client.dart';
 
 main(List<String> args) {
-  new Client().main(args);
+  Client().main(args);
 }

@@ -12,112 +12,107 @@ import 'messages.pb.dart' as $1;
 export 'test.pb.dart';
 
 class TestServiceClient extends $grpc.Client {
-  static final _$emptyCall = new $grpc.ClientMethod<$0.Empty, $0.Empty>(
+  static final _$emptyCall = $grpc.ClientMethod<$0.Empty, $0.Empty>(
       '/grpc.testing.TestService/EmptyCall',
       ($0.Empty value) => value.writeToBuffer(),
-      (List<int> value) => new $0.Empty.fromBuffer(value));
+      (List<int> value) => $0.Empty.fromBuffer(value));
   static final _$unaryCall =
-      new $grpc.ClientMethod<$1.SimpleRequest, $1.SimpleResponse>(
+      $grpc.ClientMethod<$1.SimpleRequest, $1.SimpleResponse>(
           '/grpc.testing.TestService/UnaryCall',
           ($1.SimpleRequest value) => value.writeToBuffer(),
-          (List<int> value) => new $1.SimpleResponse.fromBuffer(value));
+          (List<int> value) => $1.SimpleResponse.fromBuffer(value));
   static final _$cacheableUnaryCall =
-      new $grpc.ClientMethod<$1.SimpleRequest, $1.SimpleResponse>(
+      $grpc.ClientMethod<$1.SimpleRequest, $1.SimpleResponse>(
           '/grpc.testing.TestService/CacheableUnaryCall',
           ($1.SimpleRequest value) => value.writeToBuffer(),
-          (List<int> value) => new $1.SimpleResponse.fromBuffer(value));
-  static final _$streamingOutputCall = new $grpc.ClientMethod<
+          (List<int> value) => $1.SimpleResponse.fromBuffer(value));
+  static final _$streamingOutputCall = $grpc.ClientMethod<
           $1.StreamingOutputCallRequest, $1.StreamingOutputCallResponse>(
       '/grpc.testing.TestService/StreamingOutputCall',
       ($1.StreamingOutputCallRequest value) => value.writeToBuffer(),
-      (List<int> value) =>
-          new $1.StreamingOutputCallResponse.fromBuffer(value));
-  static final _$streamingInputCall = new $grpc.ClientMethod<
+      (List<int> value) => $1.StreamingOutputCallResponse.fromBuffer(value));
+  static final _$streamingInputCall = $grpc.ClientMethod<
           $1.StreamingInputCallRequest, $1.StreamingInputCallResponse>(
       '/grpc.testing.TestService/StreamingInputCall',
       ($1.StreamingInputCallRequest value) => value.writeToBuffer(),
-      (List<int> value) => new $1.StreamingInputCallResponse.fromBuffer(value));
-  static final _$fullDuplexCall = new $grpc.ClientMethod<
+      (List<int> value) => $1.StreamingInputCallResponse.fromBuffer(value));
+  static final _$fullDuplexCall = $grpc.ClientMethod<
           $1.StreamingOutputCallRequest, $1.StreamingOutputCallResponse>(
       '/grpc.testing.TestService/FullDuplexCall',
       ($1.StreamingOutputCallRequest value) => value.writeToBuffer(),
-      (List<int> value) =>
-          new $1.StreamingOutputCallResponse.fromBuffer(value));
-  static final _$halfDuplexCall = new $grpc.ClientMethod<
+      (List<int> value) => $1.StreamingOutputCallResponse.fromBuffer(value));
+  static final _$halfDuplexCall = $grpc.ClientMethod<
           $1.StreamingOutputCallRequest, $1.StreamingOutputCallResponse>(
       '/grpc.testing.TestService/HalfDuplexCall',
       ($1.StreamingOutputCallRequest value) => value.writeToBuffer(),
-      (List<int> value) =>
-          new $1.StreamingOutputCallResponse.fromBuffer(value));
-  static final _$unimplementedCall = new $grpc.ClientMethod<$0.Empty, $0.Empty>(
+      (List<int> value) => $1.StreamingOutputCallResponse.fromBuffer(value));
+  static final _$unimplementedCall = $grpc.ClientMethod<$0.Empty, $0.Empty>(
       '/grpc.testing.TestService/UnimplementedCall',
       ($0.Empty value) => value.writeToBuffer(),
-      (List<int> value) => new $0.Empty.fromBuffer(value));
+      (List<int> value) => $0.Empty.fromBuffer(value));
 
   TestServiceClient($grpc.ClientChannel channel, {$grpc.CallOptions options})
       : super(channel, options: options);
 
   $grpc.ResponseFuture<$0.Empty> emptyCall($0.Empty request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(
-        _$emptyCall, new $async.Stream.fromIterable([request]),
+    final call = $createCall(_$emptyCall, $async.Stream.fromIterable([request]),
         options: options);
-    return new $grpc.ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 
   $grpc.ResponseFuture<$1.SimpleResponse> unaryCall($1.SimpleRequest request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(
-        _$unaryCall, new $async.Stream.fromIterable([request]),
+    final call = $createCall(_$unaryCall, $async.Stream.fromIterable([request]),
         options: options);
-    return new $grpc.ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 
   $grpc.ResponseFuture<$1.SimpleResponse> cacheableUnaryCall(
       $1.SimpleRequest request,
       {$grpc.CallOptions options}) {
     final call = $createCall(
-        _$cacheableUnaryCall, new $async.Stream.fromIterable([request]),
+        _$cacheableUnaryCall, $async.Stream.fromIterable([request]),
         options: options);
-    return new $grpc.ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 
   $grpc.ResponseStream<$1.StreamingOutputCallResponse> streamingOutputCall(
       $1.StreamingOutputCallRequest request,
       {$grpc.CallOptions options}) {
     final call = $createCall(
-        _$streamingOutputCall, new $async.Stream.fromIterable([request]),
+        _$streamingOutputCall, $async.Stream.fromIterable([request]),
         options: options);
-    return new $grpc.ResponseStream(call);
+    return $grpc.ResponseStream(call);
   }
 
   $grpc.ResponseFuture<$1.StreamingInputCallResponse> streamingInputCall(
       $async.Stream<$1.StreamingInputCallRequest> request,
       {$grpc.CallOptions options}) {
     final call = $createCall(_$streamingInputCall, request, options: options);
-    return new $grpc.ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 
   $grpc.ResponseStream<$1.StreamingOutputCallResponse> fullDuplexCall(
       $async.Stream<$1.StreamingOutputCallRequest> request,
       {$grpc.CallOptions options}) {
     final call = $createCall(_$fullDuplexCall, request, options: options);
-    return new $grpc.ResponseStream(call);
+    return $grpc.ResponseStream(call);
   }
 
   $grpc.ResponseStream<$1.StreamingOutputCallResponse> halfDuplexCall(
       $async.Stream<$1.StreamingOutputCallRequest> request,
       {$grpc.CallOptions options}) {
     final call = $createCall(_$halfDuplexCall, request, options: options);
-    return new $grpc.ResponseStream(call);
+    return $grpc.ResponseStream(call);
   }
 
   $grpc.ResponseFuture<$0.Empty> unimplementedCall($0.Empty request,
       {$grpc.CallOptions options}) {
     final call = $createCall(
-        _$unimplementedCall, new $async.Stream.fromIterable([request]),
+        _$unimplementedCall, $async.Stream.fromIterable([request]),
         options: options);
-    return new $grpc.ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 }
 
@@ -125,68 +120,65 @@ abstract class TestServiceBase extends $grpc.Service {
   String get $name => 'grpc.testing.TestService';
 
   TestServiceBase() {
-    $addMethod(new $grpc.ServiceMethod<$0.Empty, $0.Empty>(
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
         'EmptyCall',
         emptyCall_Pre,
         false,
         false,
-        (List<int> value) => new $0.Empty.fromBuffer(value),
+        (List<int> value) => $0.Empty.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
-    $addMethod(new $grpc.ServiceMethod<$1.SimpleRequest, $1.SimpleResponse>(
+    $addMethod($grpc.ServiceMethod<$1.SimpleRequest, $1.SimpleResponse>(
         'UnaryCall',
         unaryCall_Pre,
         false,
         false,
-        (List<int> value) => new $1.SimpleRequest.fromBuffer(value),
+        (List<int> value) => $1.SimpleRequest.fromBuffer(value),
         ($1.SimpleResponse value) => value.writeToBuffer()));
-    $addMethod(new $grpc.ServiceMethod<$1.SimpleRequest, $1.SimpleResponse>(
+    $addMethod($grpc.ServiceMethod<$1.SimpleRequest, $1.SimpleResponse>(
         'CacheableUnaryCall',
         cacheableUnaryCall_Pre,
         false,
         false,
-        (List<int> value) => new $1.SimpleRequest.fromBuffer(value),
+        (List<int> value) => $1.SimpleRequest.fromBuffer(value),
         ($1.SimpleResponse value) => value.writeToBuffer()));
-    $addMethod(new $grpc.ServiceMethod<$1.StreamingOutputCallRequest,
+    $addMethod($grpc.ServiceMethod<$1.StreamingOutputCallRequest,
             $1.StreamingOutputCallResponse>(
         'StreamingOutputCall',
         streamingOutputCall_Pre,
         false,
         true,
-        (List<int> value) =>
-            new $1.StreamingOutputCallRequest.fromBuffer(value),
+        (List<int> value) => $1.StreamingOutputCallRequest.fromBuffer(value),
         ($1.StreamingOutputCallResponse value) => value.writeToBuffer()));
-    $addMethod(new $grpc.ServiceMethod<$1.StreamingInputCallRequest,
+    $addMethod($grpc.ServiceMethod<$1.StreamingInputCallRequest,
             $1.StreamingInputCallResponse>(
         'StreamingInputCall',
         streamingInputCall,
         true,
         false,
-        (List<int> value) => new $1.StreamingInputCallRequest.fromBuffer(value),
+        (List<int> value) => $1.StreamingInputCallRequest.fromBuffer(value),
         ($1.StreamingInputCallResponse value) => value.writeToBuffer()));
-    $addMethod(new $grpc.ServiceMethod<$1.StreamingOutputCallRequest,
+    $addMethod($grpc.ServiceMethod<$1.StreamingOutputCallRequest,
             $1.StreamingOutputCallResponse>(
         'FullDuplexCall',
         fullDuplexCall,
         true,
         true,
-        (List<int> value) =>
-            new $1.StreamingOutputCallRequest.fromBuffer(value),
+        (List<int> value) => $1.StreamingOutputCallRequest.fromBuffer(value),
         ($1.StreamingOutputCallResponse value) => value.writeToBuffer()));
-    $addMethod(new $grpc.ServiceMethod<$1.StreamingOutputCallRequest,
+    $addMethod($grpc.ServiceMethod<$1.StreamingOutputCallRequest,
             $1.StreamingOutputCallResponse>(
         'HalfDuplexCall',
         halfDuplexCall,
         true,
         true,
-        (List<int> value) =>
-            new $1.StreamingOutputCallRequest.fromBuffer(value),
+        (List<int> value) => $1.StreamingOutputCallRequest.fromBuffer(value),
         ($1.StreamingOutputCallResponse value) => value.writeToBuffer()));
-    $addMethod(new $grpc.ServiceMethod<$0.Empty, $0.Empty>(
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
         'UnimplementedCall',
         unimplementedCall_Pre,
         false,
         false,
-        (List<int> value) => new $0.Empty.fromBuffer(value),
+        (List<int> value) => $0.Empty.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
   }
 
@@ -237,10 +229,10 @@ abstract class TestServiceBase extends $grpc.Service {
 }
 
 class UnimplementedServiceClient extends $grpc.Client {
-  static final _$unimplementedCall = new $grpc.ClientMethod<$0.Empty, $0.Empty>(
+  static final _$unimplementedCall = $grpc.ClientMethod<$0.Empty, $0.Empty>(
       '/grpc.testing.UnimplementedService/UnimplementedCall',
       ($0.Empty value) => value.writeToBuffer(),
-      (List<int> value) => new $0.Empty.fromBuffer(value));
+      (List<int> value) => $0.Empty.fromBuffer(value));
 
   UnimplementedServiceClient($grpc.ClientChannel channel,
       {$grpc.CallOptions options})
@@ -249,9 +241,9 @@ class UnimplementedServiceClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.Empty> unimplementedCall($0.Empty request,
       {$grpc.CallOptions options}) {
     final call = $createCall(
-        _$unimplementedCall, new $async.Stream.fromIterable([request]),
+        _$unimplementedCall, $async.Stream.fromIterable([request]),
         options: options);
-    return new $grpc.ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 }
 
@@ -259,12 +251,12 @@ abstract class UnimplementedServiceBase extends $grpc.Service {
   String get $name => 'grpc.testing.UnimplementedService';
 
   UnimplementedServiceBase() {
-    $addMethod(new $grpc.ServiceMethod<$0.Empty, $0.Empty>(
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
         'UnimplementedCall',
         unimplementedCall_Pre,
         false,
         false,
-        (List<int> value) => new $0.Empty.fromBuffer(value),
+        (List<int> value) => $0.Empty.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
   }
 
@@ -278,14 +270,14 @@ abstract class UnimplementedServiceBase extends $grpc.Service {
 }
 
 class ReconnectServiceClient extends $grpc.Client {
-  static final _$start = new $grpc.ClientMethod<$1.ReconnectParams, $0.Empty>(
+  static final _$start = $grpc.ClientMethod<$1.ReconnectParams, $0.Empty>(
       '/grpc.testing.ReconnectService/Start',
       ($1.ReconnectParams value) => value.writeToBuffer(),
-      (List<int> value) => new $0.Empty.fromBuffer(value));
-  static final _$stop = new $grpc.ClientMethod<$0.Empty, $1.ReconnectInfo>(
+      (List<int> value) => $0.Empty.fromBuffer(value));
+  static final _$stop = $grpc.ClientMethod<$0.Empty, $1.ReconnectInfo>(
       '/grpc.testing.ReconnectService/Stop',
       ($0.Empty value) => value.writeToBuffer(),
-      (List<int> value) => new $1.ReconnectInfo.fromBuffer(value));
+      (List<int> value) => $1.ReconnectInfo.fromBuffer(value));
 
   ReconnectServiceClient($grpc.ClientChannel channel,
       {$grpc.CallOptions options})
@@ -293,16 +285,16 @@ class ReconnectServiceClient extends $grpc.Client {
 
   $grpc.ResponseFuture<$0.Empty> start($1.ReconnectParams request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$start, new $async.Stream.fromIterable([request]),
+    final call = $createCall(_$start, $async.Stream.fromIterable([request]),
         options: options);
-    return new $grpc.ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 
   $grpc.ResponseFuture<$1.ReconnectInfo> stop($0.Empty request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$stop, new $async.Stream.fromIterable([request]),
+    final call = $createCall(_$stop, $async.Stream.fromIterable([request]),
         options: options);
-    return new $grpc.ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 }
 
@@ -310,19 +302,19 @@ abstract class ReconnectServiceBase extends $grpc.Service {
   String get $name => 'grpc.testing.ReconnectService';
 
   ReconnectServiceBase() {
-    $addMethod(new $grpc.ServiceMethod<$1.ReconnectParams, $0.Empty>(
+    $addMethod($grpc.ServiceMethod<$1.ReconnectParams, $0.Empty>(
         'Start',
         start_Pre,
         false,
         false,
-        (List<int> value) => new $1.ReconnectParams.fromBuffer(value),
+        (List<int> value) => $1.ReconnectParams.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
-    $addMethod(new $grpc.ServiceMethod<$0.Empty, $1.ReconnectInfo>(
+    $addMethod($grpc.ServiceMethod<$0.Empty, $1.ReconnectInfo>(
         'Stop',
         stop_Pre,
         false,
         false,
-        (List<int> value) => new $0.Empty.fromBuffer(value),
+        (List<int> value) => $0.Empty.fromBuffer(value),
         ($1.ReconnectInfo value) => value.writeToBuffer()));
   }
 

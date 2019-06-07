@@ -16,5 +16,5 @@
 import 'package:route_guide/src/server.dart';
 
 main(List<String> args) async {
-  await new Server().main(args);
+  await Server().main(args);
 }

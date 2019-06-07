@@ -9,13 +9,14 @@ import 'dart:core' show int, dynamic, String, List, Map;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class PayloadType extends $pb.ProtobufEnum {
-  static const PayloadType COMPRESSABLE = const PayloadType._(0, 'COMPRESSABLE');
+  static const PayloadType COMPRESSABLE = PayloadType._(0, 'COMPRESSABLE');
 
-  static const List<PayloadType> values = const <PayloadType> [
+  static const List<PayloadType> values = <PayloadType>[
     COMPRESSABLE,
   ];
 
-  static final Map<int, PayloadType> _byValue = $pb.ProtobufEnum.initByValue(values);
+  static final Map<int, PayloadType> _byValue =
+      $pb.ProtobufEnum.initByValue(values);
   static PayloadType valueOf(int value) => _byValue[value];
   static void $checkItem(PayloadType v) {
     if (v is! PayloadType) $pb.checkItemFailed(v, 'PayloadType');
@@ -23,4 +24,3 @@ class PayloadType extends $pb.ProtobufEnum {
 
   const PayloadType._(int v, String n) : super(v, n);
 }
-

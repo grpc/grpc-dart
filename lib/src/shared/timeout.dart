@@ -45,17 +45,17 @@ Duration fromTimeoutString(String timeout) {
   if (value == null) return null;
   switch (timeout[timeout.length - 1]) {
     case 'n':
-      return new Duration(microseconds: value * 1000);
+      return Duration(microseconds: value * 1000);
     case 'u':
-      return new Duration(microseconds: value);
+      return Duration(microseconds: value);
     case 'm':
-      return new Duration(milliseconds: value);
+      return Duration(milliseconds: value);
     case 'S':
-      return new Duration(seconds: value);
+      return Duration(seconds: value);
     case 'M':
-      return new Duration(minutes: value);
+      return Duration(minutes: value);
     case 'H':
-      return new Duration(hours: value);
+      return Duration(hours: value);
     default:
       return null;
   }

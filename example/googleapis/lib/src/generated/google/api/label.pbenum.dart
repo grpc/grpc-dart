@@ -10,14 +10,14 @@ import 'package:protobuf/protobuf.dart';
 
 class LabelDescriptor_ValueType extends ProtobufEnum {
   static const LabelDescriptor_ValueType STRING =
-      const LabelDescriptor_ValueType._(0, 'STRING');
+      LabelDescriptor_ValueType._(0, 'STRING');
   static const LabelDescriptor_ValueType BOOL =
-      const LabelDescriptor_ValueType._(1, 'BOOL');
+      LabelDescriptor_ValueType._(1, 'BOOL');
   static const LabelDescriptor_ValueType INT64 =
-      const LabelDescriptor_ValueType._(2, 'INT64');
+      LabelDescriptor_ValueType._(2, 'INT64');
 
   static const List<LabelDescriptor_ValueType> values =
-      const <LabelDescriptor_ValueType>[
+      <LabelDescriptor_ValueType>[
     STRING,
     BOOL,
     INT64,

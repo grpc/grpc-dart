@@ -69,13 +69,13 @@ abstract class ClientChannelBase implements ClientChannel {
   ///
   /// The connection may be shared between multiple RPCs.
   Future<ClientConnection> getConnection() async {
-    if (_isShutdown) throw new GrpcError.unavailable('Channel shutting down.');
+    if (_isShutdown) throw GrpcError.unavailable('Channel shutting down.');
     return _connection ??= createConnection();
   }
 
   ClientCall<Q, R> createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
-    final call = new ClientCall(method, requests, options);
+    final call = ClientCall(method, requests, options);
     getConnection().then((connection) {
       if (call.isCancelled) return;
       connection.dispatchCall(call);

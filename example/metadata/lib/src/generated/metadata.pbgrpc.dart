@@ -12,37 +12,37 @@ import 'metadata.pb.dart';
 export 'metadata.pb.dart';
 
 class MetadataClient extends Client {
-  static final _$echo = new ClientMethod<Record, Record>(
+  static final _$echo = ClientMethod<Record, Record>(
       '/grpc.Metadata/Echo',
       (Record value) => value.writeToBuffer(),
-      (List<int> value) => new Record.fromBuffer(value));
-  static final _$addOne = new ClientMethod<Number, Number>(
+      (List<int> value) => Record.fromBuffer(value));
+  static final _$addOne = ClientMethod<Number, Number>(
       '/grpc.Metadata/AddOne',
       (Number value) => value.writeToBuffer(),
-      (List<int> value) => new Number.fromBuffer(value));
-  static final _$fibonacci = new ClientMethod<Empty, Number>(
+      (List<int> value) => Number.fromBuffer(value));
+  static final _$fibonacci = ClientMethod<Empty, Number>(
       '/grpc.Metadata/Fibonacci',
       (Empty value) => value.writeToBuffer(),
-      (List<int> value) => new Number.fromBuffer(value));
+      (List<int> value) => Number.fromBuffer(value));
 
   MetadataClient(ClientChannel channel, {CallOptions options})
       : super(channel, options: options);
 
   ResponseFuture<Record> echo(Record request, {CallOptions options}) {
-    final call = $createCall(_$echo, new Stream.fromIterable([request]),
-        options: options);
-    return new ResponseFuture(call);
+    final call =
+        $createCall(_$echo, Stream.fromIterable([request]), options: options);
+    return ResponseFuture(call);
   }
 
   ResponseStream<Number> addOne(Stream<Number> request, {CallOptions options}) {
     final call = $createCall(_$addOne, request, options: options);
-    return new ResponseStream(call);
+    return ResponseStream(call);
   }
 
   ResponseStream<Number> fibonacci(Empty request, {CallOptions options}) {
-    final call = $createCall(_$fibonacci, new Stream.fromIterable([request]),
+    final call = $createCall(_$fibonacci, Stream.fromIterable([request]),
         options: options);
-    return new ResponseStream(call);
+    return ResponseStream(call);
   }
 }
 
@@ -50,26 +50,26 @@ abstract class MetadataServiceBase extends Service {
   String get $name => 'grpc.Metadata';
 
   MetadataServiceBase() {
-    $addMethod(new ServiceMethod<Record, Record>(
+    $addMethod(ServiceMethod<Record, Record>(
         'Echo',
         echo_Pre,
         false,
         false,
-        (List<int> value) => new Record.fromBuffer(value),
+        (List<int> value) => Record.fromBuffer(value),
         (Record value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod<Number, Number>(
+    $addMethod(ServiceMethod<Number, Number>(
         'AddOne',
         addOne,
         true,
         true,
-        (List<int> value) => new Number.fromBuffer(value),
+        (List<int> value) => Number.fromBuffer(value),
         (Number value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod<Empty, Number>(
+    $addMethod(ServiceMethod<Empty, Number>(
         'Fibonacci',
         fibonacci_Pre,
         false,
         true,
-        (List<int> value) => new Empty.fromBuffer(value),
+        (List<int> value) => Empty.fromBuffer(value),
         (Number value) => value.writeToBuffer()));
   }
 
