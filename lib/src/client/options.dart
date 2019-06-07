@@ -34,8 +34,8 @@ Duration defaultBackoffStrategy(Duration lastBackoff) {
   return nextBackoff < _maxBackoff ? nextBackoff : _maxBackoff;
 }
 
+/// Options controlling how connections are made on a [ClientChannel].
 class ChannelOptions {
-  /// Options controlling how connections are made on a [ClientChannel].
   final Duration idleTimeout;
   final BackoffStrategy backoffStrategy;
 
