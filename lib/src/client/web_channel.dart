@@ -23,10 +23,8 @@ import 'transport/xhr_transport.dart';
 /// A channel to a grpc-web endpoint.
 class GrpcWebClientChannel extends ClientChannelBase {
   final Uri uri;
-  ChannelOptions options;
 
-  GrpcWebClientChannel.xhr(this.uri, {this.options: const ChannelOptions()})
-      : super();
+  GrpcWebClientChannel.xhr(this.uri) : super();
 
   @override
   ClientConnection createConnection() {

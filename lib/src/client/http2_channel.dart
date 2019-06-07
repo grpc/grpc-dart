@@ -16,6 +16,7 @@
 import 'channel.dart';
 import 'connection.dart';
 import 'http2_connection.dart' show Http2ClientConnection;
+import 'options.dart';
 import 'transport/http2_credentials.dart';
 
 /// A channel to a virtual gRPC endpoint.

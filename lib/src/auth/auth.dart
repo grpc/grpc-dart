@@ -21,7 +21,7 @@ import 'package:googleapis_auth/src/crypto/rsa_sign.dart';
 import 'package:grpc/src/shared/status.dart';
 import 'package:http/http.dart' as http;
 
-import '../client/options.dart';
+import '../client/call.dart';
 
 const _tokenExpirationThreshold = const Duration(seconds: 30);
 

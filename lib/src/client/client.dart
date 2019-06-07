@@ -18,7 +18,6 @@ import 'dart:async';
 import 'call.dart';
 import 'channel.dart';
 import 'method.dart';
-import 'options.dart';
 
 /// Base class for client stubs.
 class Client {
