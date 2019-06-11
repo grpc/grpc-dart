@@ -190,6 +190,5 @@ class XhrClientConnection extends ClientConnection {
   }
 
   @override
-  Future<void> shutdown() async {
-  }
+  Future<void> shutdown() async {}
 }

@@ -21,27 +21,21 @@ export 'src/auth/auth.dart'
         ServiceAccountAuthenticator,
         JwtServiceAccountAuthenticator;
 
-export 'src/client/call.dart' show ClientCall;
+export 'src/client/call.dart' show CallOptions, ClientCall, MetadataProvider;
 export 'src/client/client.dart' show Client;
 export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
 export 'src/client/connection.dart' show ConnectionState;
 export 'src/client/http2_channel.dart' show ClientChannel;
-export 'src/client/http2_connection.dart' show ClientConnection, Http2ClientConnection;
 export 'src/client/method.dart' show ClientMethod;
 export 'src/client/options.dart'
     show
         defaultIdleTimeout,
         BackoffStrategy,
         defaultBackoffStrategy,
-        MetadataProvider,
-        CallOptions;
+        ChannelOptions;
 
 export 'src/client/transport/http2_credentials.dart'
-    show
-        BadCertificateHandler,
-        allowBadCertificates,
-        ChannelCredentials,
-        ChannelOptions;
+    show BadCertificateHandler, allowBadCertificates, ChannelCredentials;
 
 export 'src/server/call.dart' show ServiceCall;
 export 'src/server/handler.dart' show ServerHandler;

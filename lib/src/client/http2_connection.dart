@@ -26,6 +26,7 @@ import 'call.dart';
 import 'connection.dart' hide ClientConnection;
 import 'connection.dart' as connection;
 
+import 'options.dart';
 import 'transport/http2_credentials.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';

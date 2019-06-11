@@ -30,16 +30,6 @@ typedef bool BadCertificateHandler(X509Certificate certificate, String host);
 /// certificates, etc.
 bool allowBadCertificates(X509Certificate certificate, String host) => true;
 
-class ChannelOptions extends options.ChannelOptions {
-  final ChannelCredentials credentials;
-
-  const ChannelOptions({
-    this.credentials,
-    Duration idleTimeout = options.defaultIdleTimeout,
-    options.BackoffStrategy backoffStrategy = options.defaultBackoffStrategy,
-  }) : super(idleTimeout: idleTimeout, backoffStrategy: backoffStrategy);
-}
-
 class ChannelCredentials {
   final bool isSecure;
   final String authority;

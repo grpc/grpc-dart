@@ -32,6 +32,55 @@ const _reservedHeaders = const [
   'user-agent',
 ];
 
+/// Provides per-RPC metadata.
+///
+/// Metadata providers will be invoked for every RPC, and can add their own
+/// metadata to the RPC. If the function returns a [Future], the RPC will await
+/// completion of the returned [Future] before transmitting the request.
+///
+/// The metadata provider is given the current [metadata] map (possibly modified
+/// by previous metadata providers) and the [uri] that is being called, and is
+/// expected to modify the map before returning or before completing the
+/// returned [Future].
+typedef FutureOr<void> MetadataProvider(
+    Map<String, String> metadata, String uri);
+
+/// Runtime options for an RPC.
+class CallOptions {
+  final Map<String, String> metadata;
+  final Duration timeout;
+  final List<MetadataProvider> metadataProviders;
+
+  CallOptions._(this.metadata, this.timeout, this.metadataProviders);
+
+  /// Creates a [CallOptions] object.
+  ///
+  /// [CallOptions] can specify static [metadata], set the [timeout], and
+  /// configure per-RPC metadata [providers]. The metadata [providers] are
+  /// invoked in order for every RPC, and can modify the outgoing metadata
+  /// (including metadata provided by previous providers).
+  factory CallOptions(
+      {Map<String, String> metadata,
+      Duration timeout,
+      List<MetadataProvider> providers}) {
+    return new CallOptions._(new Map.unmodifiable(metadata ?? {}), timeout,
+        new List.unmodifiable(providers ?? []));
+  }
+
+  factory CallOptions.from(Iterable<CallOptions> options) =>
+      options.fold(new CallOptions(), (p, o) => p.mergedWith(o));
+
+  CallOptions mergedWith(CallOptions other) {
+    if (other == null) return this;
+    final mergedMetadata = new Map.from(metadata)..addAll(other.metadata);
+    final mergedTimeout = other.timeout ?? timeout;
+    final mergedProviders = new List.from(metadataProviders)
+      ..addAll(other.metadataProviders);
+    return new CallOptions._(new Map.unmodifiable(mergedMetadata),
+        mergedTimeout, new List.unmodifiable(mergedProviders));
+  }
+}
+
 /// An active call to a gRPC endpoint.
 class ClientCall<Q, R> implements Response {
   final ClientMethod<Q, R> _method;
