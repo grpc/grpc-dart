@@ -1,107 +1,103 @@
 ///
 //  Generated code. Do not modify.
+//  source: metadata.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library grpc_metadata;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
-// ignore: UNUSED_SHOWN_NAME
-import 'dart:core' show int, bool, double, String, List, override;
+import 'dart:core' as $core
+    show bool, Deprecated, double, int, List, Map, override, pragma, String;
 
-import 'package:protobuf/protobuf.dart';
+import 'package:protobuf/protobuf.dart' as $pb;
 
-class Record extends GeneratedMessage {
-  static final BuilderInfo _i = BuilderInfo('Record')
-    ..aOS(1, 'value')
-    ..hasRequiredFields = false;
+class Record extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i =
+      $pb.BuilderInfo('Record', package: const $pb.PackageName('grpc'))
+        ..aOS(1, 'value')
+        ..hasRequiredFields = false;
 
-  Record() : super();
-  Record.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  Record.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  Record._() : super();
+  factory Record() => create();
+  factory Record.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Record.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   Record clone() => Record()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static Record create() => Record();
-  static PbList<Record> createRepeated() => PbList<Record>();
-  static Record getDefault() {
-    if (_defaultInstance == null) _defaultInstance = _ReadonlyRecord();
-    return _defaultInstance;
-  }
-
+  Record copyWith(void Function(Record) updates) =>
+      super.copyWith((message) => updates(message as Record));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Record create() => Record._();
+  Record createEmptyInstance() => create();
+  static $pb.PbList<Record> createRepeated() => $pb.PbList<Record>();
+  static Record getDefault() => _defaultInstance ??= create()..freeze();
   static Record _defaultInstance;
-  static void $checkItem(Record v) {
-    if (v is! Record) checkItemFailed(v, 'Record');
-  }
 
-  String get value => $_getS(0, '');
-  set value(String v) {
+  $core.String get value => $_getS(0, '');
+  set value($core.String v) {
     $_setString(0, v);
   }
 
-  bool hasValue() => $_has(0);
+  $core.bool hasValue() => $_has(0);
   void clearValue() => clearField(1);
 }
 
-class _ReadonlyRecord extends Record with ReadonlyMessageMixin {}
+class Number extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i =
+      $pb.BuilderInfo('Number', package: const $pb.PackageName('grpc'))
+        ..a<$core.int>(1, 'value', $pb.PbFieldType.O3)
+        ..hasRequiredFields = false;
 
-class Number extends GeneratedMessage {
-  static final BuilderInfo _i = BuilderInfo('Number')
-    ..a<int>(1, 'value', PbFieldType.O3)
-    ..hasRequiredFields = false;
-
-  Number() : super();
-  Number.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  Number.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  Number._() : super();
+  factory Number() => create();
+  factory Number.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Number.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   Number clone() => Number()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static Number create() => Number();
-  static PbList<Number> createRepeated() => PbList<Number>();
-  static Number getDefault() {
-    if (_defaultInstance == null) _defaultInstance = _ReadonlyNumber();
-    return _defaultInstance;
-  }
-
+  Number copyWith(void Function(Number) updates) =>
+      super.copyWith((message) => updates(message as Number));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Number create() => Number._();
+  Number createEmptyInstance() => create();
+  static $pb.PbList<Number> createRepeated() => $pb.PbList<Number>();
+  static Number getDefault() => _defaultInstance ??= create()..freeze();
   static Number _defaultInstance;
-  static void $checkItem(Number v) {
-    if (v is! Number) checkItemFailed(v, 'Number');
+
+  $core.int get value => $_get(0, 0);
+  set value($core.int v) {
+    $_setSignedInt32(0, v);
   }
 
-  int get value => $_get(0, 0);
-  set value(int v) {
-    $_setUnsignedInt32(0, v);
-  }
-
-  bool hasValue() => $_has(0);
+  $core.bool hasValue() => $_has(0);
   void clearValue() => clearField(1);
 }
 
-class _ReadonlyNumber extends Number with ReadonlyMessageMixin {}
+class Empty extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i =
+      $pb.BuilderInfo('Empty', package: const $pb.PackageName('grpc'))
+        ..hasRequiredFields = false;
 
-class Empty extends GeneratedMessage {
-  static final BuilderInfo _i = BuilderInfo('Empty')..hasRequiredFields = false;
-
-  Empty() : super();
-  Empty.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  Empty.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  Empty._() : super();
+  factory Empty() => create();
+  factory Empty.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Empty.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   Empty clone() => Empty()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static Empty create() => Empty();
-  static PbList<Empty> createRepeated() => PbList<Empty>();
-  static Empty getDefault() {
-    if (_defaultInstance == null) _defaultInstance = _ReadonlyEmpty();
-    return _defaultInstance;
-  }
-
+  Empty copyWith(void Function(Empty) updates) =>
+      super.copyWith((message) => updates(message as Empty));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Empty create() => Empty._();
+  Empty createEmptyInstance() => create();
+  static $pb.PbList<Empty> createRepeated() => $pb.PbList<Empty>();
+  static Empty getDefault() => _defaultInstance ??= create()..freeze();
   static Empty _defaultInstance;
-  static void $checkItem(Empty v) {
-    if (v is! Empty) checkItemFailed(v, 'Empty');
-  }
 }
-
-class _ReadonlyEmpty extends Empty with ReadonlyMessageMixin {}

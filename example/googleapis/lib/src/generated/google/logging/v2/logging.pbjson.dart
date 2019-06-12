@@ -1,8 +1,8 @@
 ///
 //  Generated code. Do not modify.
+//  source: google/logging/v2/logging.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library google.logging.v2_logging_pbjson;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
 const DeleteLogRequest$json = {
   '1': 'DeleteLogRequest',
@@ -40,6 +40,7 @@ const WriteLogEntriesRequest$json = {
       '10': 'entries'
     },
     {'1': 'partial_success', '3': 5, '4': 1, '5': 8, '10': 'partialSuccess'},
+    {'1': 'dry_run', '3': 6, '4': 1, '5': 8, '10': 'dryRun'},
   ],
   '3': [WriteLogEntriesRequest_LabelsEntry$json],
 };
@@ -92,7 +93,14 @@ const WriteLogEntriesPartialErrors_LogEntryErrorsEntry$json = {
 const ListLogEntriesRequest$json = {
   '1': 'ListLogEntriesRequest',
   '2': [
-    {'1': 'project_ids', '3': 1, '4': 3, '5': 9, '10': 'projectIds'},
+    {
+      '1': 'project_ids',
+      '3': 1,
+      '4': 3,
+      '5': 9,
+      '8': {'3': true},
+      '10': 'projectIds',
+    },
     {'1': 'resource_names', '3': 8, '4': 3, '5': 9, '10': 'resourceNames'},
     {'1': 'filter', '3': 2, '4': 1, '5': 9, '10': 'filter'},
     {'1': 'order_by', '3': 3, '4': 1, '5': 9, '10': 'orderBy'},

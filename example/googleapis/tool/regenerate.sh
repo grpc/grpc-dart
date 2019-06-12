@@ -19,6 +19,7 @@ $PROTOC $GOOGLEAPIS/google/logging/type/http_request.proto
 
 $PROTOC $GOOGLEAPIS/google/api/monitored_resource.proto
 $PROTOC $GOOGLEAPIS/google/api/label.proto
+$PROTOC $GOOGLEAPIS/google/api/launch_stage.proto
 
 $PROTOC $GOOGLEAPIS/google/rpc/status.proto
 

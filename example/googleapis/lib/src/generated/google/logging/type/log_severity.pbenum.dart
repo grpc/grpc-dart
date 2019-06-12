@@ -1,14 +1,14 @@
 ///
 //  Generated code. Do not modify.
+//  source: google/logging/type/log_severity.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library google.logging.type_log_severity_pbenum;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
 // ignore_for_file: UNDEFINED_SHOWN_NAME,UNUSED_SHOWN_NAME
-import 'dart:core' show int, dynamic, String, List, Map;
-import 'package:protobuf/protobuf.dart';
+import 'dart:core' as $core show int, dynamic, String, List, Map;
+import 'package:protobuf/protobuf.dart' as $pb;
 
-class LogSeverity extends ProtobufEnum {
+class LogSeverity extends $pb.ProtobufEnum {
   static const LogSeverity DEFAULT = LogSeverity._(0, 'DEFAULT');
   static const LogSeverity DEBUG = LogSeverity._(100, 'DEBUG');
   static const LogSeverity INFO = LogSeverity._(200, 'INFO');
@@ -19,7 +19,7 @@ class LogSeverity extends ProtobufEnum {
   static const LogSeverity ALERT = LogSeverity._(700, 'ALERT');
   static const LogSeverity EMERGENCY = LogSeverity._(800, 'EMERGENCY');
 
-  static const List<LogSeverity> values = <LogSeverity>[
+  static const $core.List<LogSeverity> values = <LogSeverity>[
     DEFAULT,
     DEBUG,
     INFO,
@@ -31,11 +31,9 @@ class LogSeverity extends ProtobufEnum {
     EMERGENCY,
   ];
 
-  static final Map<int, dynamic> _byValue = ProtobufEnum.initByValue(values);
-  static LogSeverity valueOf(int value) => _byValue[value] as LogSeverity;
-  static void $checkItem(LogSeverity v) {
-    if (v is! LogSeverity) checkItemFailed(v, 'LogSeverity');
-  }
+  static final $core.Map<$core.int, LogSeverity> _byValue =
+      $pb.ProtobufEnum.initByValue(values);
+  static LogSeverity valueOf($core.int value) => _byValue[value];
 
-  const LogSeverity._(int v, String n) : super(v, n);
+  const LogSeverity._($core.int v, $core.String n) : super(v, n);
 }
