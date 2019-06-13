@@ -11,33 +11,33 @@ import 'echo.pb.dart';
 export 'echo.pb.dart';
 
 class EchoServiceClient extends $grpc.Client {
-  static final _$echo = new $grpc.ClientMethod<EchoRequest, EchoResponse>(
+  static final _$echo = $grpc.ClientMethod<EchoRequest, EchoResponse>(
       '/grpc.gateway.testing.EchoService/Echo',
       (EchoRequest value) => value.writeToBuffer(),
-      (List<int> value) => new EchoResponse.fromBuffer(value));
-  static final _$serverStreamingEcho = new $grpc.ClientMethod<
+      (List<int> value) => EchoResponse.fromBuffer(value));
+  static final _$serverStreamingEcho = $grpc.ClientMethod<
           ServerStreamingEchoRequest, ServerStreamingEchoResponse>(
       '/grpc.gateway.testing.EchoService/ServerStreamingEcho',
       (ServerStreamingEchoRequest value) => value.writeToBuffer(),
-      (List<int> value) => new ServerStreamingEchoResponse.fromBuffer(value));
+      (List<int> value) => ServerStreamingEchoResponse.fromBuffer(value));
 
   EchoServiceClient($grpc.ClientChannel channel, {$grpc.CallOptions options})
       : super(channel, options: options);
 
   $grpc.ResponseFuture<EchoResponse> echo(EchoRequest request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$echo, new $async.Stream.fromIterable([request]),
+    final call = $createCall(_$echo, $async.Stream.fromIterable([request]),
         options: options);
-    return new $grpc.ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 
   $grpc.ResponseStream<ServerStreamingEchoResponse> serverStreamingEcho(
       ServerStreamingEchoRequest request,
       {$grpc.CallOptions options}) {
     final call = $createCall(
-        _$serverStreamingEcho, new $async.Stream.fromIterable([request]),
+        _$serverStreamingEcho, $async.Stream.fromIterable([request]),
         options: options);
-    return new $grpc.ResponseStream(call);
+    return $grpc.ResponseStream(call);
   }
 }
 
@@ -45,20 +45,20 @@ abstract class EchoServiceBase extends $grpc.Service {
   String get $name => 'grpc.gateway.testing.EchoService';
 
   EchoServiceBase() {
-    $addMethod(new $grpc.ServiceMethod<EchoRequest, EchoResponse>(
+    $addMethod($grpc.ServiceMethod<EchoRequest, EchoResponse>(
         'Echo',
         echo_Pre,
         false,
         false,
-        (List<int> value) => new EchoRequest.fromBuffer(value),
+        (List<int> value) => EchoRequest.fromBuffer(value),
         (EchoResponse value) => value.writeToBuffer()));
-    $addMethod(new $grpc.ServiceMethod<ServerStreamingEchoRequest,
+    $addMethod($grpc.ServiceMethod<ServerStreamingEchoRequest,
             ServerStreamingEchoResponse>(
         'ServerStreamingEcho',
         serverStreamingEcho_Pre,
         false,
         true,
-        (List<int> value) => new ServerStreamingEchoRequest.fromBuffer(value),
+        (List<int> value) => ServerStreamingEchoRequest.fromBuffer(value),
         (ServerStreamingEchoResponse value) => value.writeToBuffer()));
   }
 

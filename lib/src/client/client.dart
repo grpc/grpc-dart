@@ -25,7 +25,7 @@ class Client {
   final CallOptions _options;
 
   Client(this._channel, {CallOptions options})
-      : _options = options ?? new CallOptions();
+      : _options = options ?? CallOptions();
 
   ClientCall<Q, R> $createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests,

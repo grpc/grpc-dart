@@ -24,7 +24,7 @@ import 'package:googleapis/src/generated/google/logging/v2/log_entry.pb.dart';
 import 'package:googleapis/src/generated/google/logging/v2/logging.pbgrpc.dart';
 
 Future<void> main() async {
-  final serviceAccountFile = new File('logging-service-account.json');
+  final serviceAccountFile = File('logging-service-account.json');
   if (!serviceAccountFile.existsSync()) {
     print('File logging-service-account.json not found. Please follow the '
         'steps in README.md to create it.');
@@ -36,19 +36,19 @@ Future<void> main() async {
     'https://www.googleapis.com/auth/logging.write',
   ];
 
-  final authenticator = new ServiceAccountAuthenticator(
+  final authenticator = ServiceAccountAuthenticator(
       serviceAccountFile.readAsStringSync(), scopes);
   final projectId = authenticator.projectId;
 
-  final channel = new ClientChannel('logging.googleapis.com');
+  final channel = ClientChannel('logging.googleapis.com');
   final logging =
-      new LoggingServiceV2Client(channel, options: authenticator.toCallOptions);
+      LoggingServiceV2Client(channel, options: authenticator.toCallOptions);
 
-  final request = new WriteLogEntriesRequest()
-    ..entries.add(new LogEntry()
+  final request = WriteLogEntriesRequest()
+    ..entries.add(LogEntry()
       ..logName = 'projects/$projectId/logs/example'
       ..severity = LogSeverity.INFO
-      ..resource = (new MonitoredResource()..type = 'global')
+      ..resource = (MonitoredResource()..type = 'global')
       ..textPayload = 'This is a log entry!');
   await logging.writeLogEntries(request);
 

@@ -32,15 +32,15 @@ import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
 
 class Http2ClientConnection implements connection.ClientConnection {
-  static final _methodPost = new Header.ascii(':method', 'POST');
-  static final _schemeHttp = new Header.ascii(':scheme', 'http');
-  static final _schemeHttps = new Header.ascii(':scheme', 'https');
+  static final _methodPost = Header.ascii(':method', 'POST');
+  static final _schemeHttp = Header.ascii(':scheme', 'http');
+  static final _schemeHttps = Header.ascii(':scheme', 'https');
   static final _contentTypeGrpc =
-      new Header.ascii('content-type', 'application/grpc');
-  static final _teTrailers = new Header.ascii('te', 'trailers');
+      Header.ascii('content-type', 'application/grpc');
+  static final _teTrailers = Header.ascii('te', 'trailers');
   static final _grpcAcceptEncoding =
-      new Header.ascii('grpc-accept-encoding', 'identity');
-  static final _userAgent = new Header.ascii('user-agent', 'dart-grpc/0.2.0');
+      Header.ascii('grpc-accept-encoding', 'identity');
+  static final _userAgent = Header.ascii('user-agent', 'dart-grpc/0.2.0');
 
   final ChannelOptions options;
 
@@ -88,7 +88,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       }
     }
     socket.done.then((_) => _handleSocketClosed());
-    return new ClientTransportConnection.viaSocket(socket);
+    return ClientTransportConnection.viaSocket(socket);
   }
 
   void _connect() {
@@ -128,7 +128,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     final headers = createCallHeaders(
         credentials.isSecure, authority, path, timeout, metadata);
     final stream = _transportConnection.makeRequest(headers);
-    return new Http2TransportStream(stream, onRequestFailure);
+    return Http2TransportStream(stream, onRequestFailure);
   }
 
   void _startCall(ClientCall call) {
@@ -190,7 +190,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       _cancelTimer();
     } else {
       if (options.idleTimeout != null) {
-        _timer ??= new Timer(options.idleTimeout, _handleIdleTimeout);
+        _timer ??= Timer(options.idleTimeout, _handleIdleTimeout);
       }
     }
   }
@@ -238,7 +238,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     // We have pending RPCs. Reconnect after backoff delay.
     _setState(ConnectionState.transientFailure);
     _currentReconnectDelay = options.backoffStrategy(_currentReconnectDelay);
-    _timer = new Timer(_currentReconnectDelay, _handleReconnect);
+    _timer = Timer(_currentReconnectDelay, _handleReconnect);
   }
 
   static List<Header> createCallHeaders(bool useTls, String authority,
@@ -246,11 +246,11 @@ class Http2ClientConnection implements connection.ClientConnection {
     final headers = [
       _methodPost,
       useTls ? _schemeHttps : _schemeHttp,
-      new Header(ascii.encode(':path'), utf8.encode(path)),
-      new Header(ascii.encode(':authority'), utf8.encode(authority)),
+      Header(ascii.encode(':path'), utf8.encode(path)),
+      Header(ascii.encode(':authority'), utf8.encode(authority)),
     ];
     if (timeout != null) {
-      headers.add(new Header.ascii('grpc-timeout', toTimeoutString(timeout)));
+      headers.add(Header.ascii('grpc-timeout', toTimeoutString(timeout)));
     }
     headers.addAll([
       _contentTypeGrpc,
@@ -259,7 +259,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       _userAgent,
     ]);
     metadata?.forEach((key, value) {
-      headers.add(new Header(ascii.encode(key), utf8.encode(value)));
+      headers.add(Header(ascii.encode(key), utf8.encode(value)));
     });
     return headers;
   }

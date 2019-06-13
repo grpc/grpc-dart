@@ -14,7 +14,7 @@ import 'log_entry.pb.dart';
 import '../../rpc/status.pb.dart' as $google$rpc;
 
 class DeleteLogRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('DeleteLogRequest')
+  static final BuilderInfo _i = BuilderInfo('DeleteLogRequest')
     ..aOS(1, 'logName')
     ..hasRequiredFields = false;
 
@@ -25,14 +25,14 @@ class DeleteLogRequest extends GeneratedMessage {
   DeleteLogRequest.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  DeleteLogRequest clone() => new DeleteLogRequest()..mergeFromMessage(this);
+  DeleteLogRequest clone() => DeleteLogRequest()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static DeleteLogRequest create() => new DeleteLogRequest();
+  static DeleteLogRequest create() => DeleteLogRequest();
   static PbList<DeleteLogRequest> createRepeated() =>
-      new PbList<DeleteLogRequest>();
+      PbList<DeleteLogRequest>();
   static DeleteLogRequest getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyDeleteLogRequest();
+      _defaultInstance = _ReadonlyDeleteLogRequest();
     return _defaultInstance;
   }
 
@@ -55,7 +55,7 @@ class _ReadonlyDeleteLogRequest extends DeleteLogRequest
 
 class WriteLogEntriesRequest_LabelsEntry extends GeneratedMessage {
   static final BuilderInfo _i =
-      new BuilderInfo('WriteLogEntriesRequest_LabelsEntry')
+      BuilderInfo('WriteLogEntriesRequest_LabelsEntry')
         ..aOS(1, 'key')
         ..aOS(2, 'value')
         ..hasRequiredFields = false;
@@ -68,15 +68,15 @@ class WriteLogEntriesRequest_LabelsEntry extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   WriteLogEntriesRequest_LabelsEntry clone() =>
-      new WriteLogEntriesRequest_LabelsEntry()..mergeFromMessage(this);
+      WriteLogEntriesRequest_LabelsEntry()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
   static WriteLogEntriesRequest_LabelsEntry create() =>
-      new WriteLogEntriesRequest_LabelsEntry();
+      WriteLogEntriesRequest_LabelsEntry();
   static PbList<WriteLogEntriesRequest_LabelsEntry> createRepeated() =>
-      new PbList<WriteLogEntriesRequest_LabelsEntry>();
+      PbList<WriteLogEntriesRequest_LabelsEntry>();
   static WriteLogEntriesRequest_LabelsEntry getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyWriteLogEntriesRequest_LabelsEntry();
+      _defaultInstance = _ReadonlyWriteLogEntriesRequest_LabelsEntry();
     return _defaultInstance;
   }
 
@@ -107,7 +107,7 @@ class _ReadonlyWriteLogEntriesRequest_LabelsEntry
     extends WriteLogEntriesRequest_LabelsEntry with ReadonlyMessageMixin {}
 
 class WriteLogEntriesRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('WriteLogEntriesRequest')
+  static final BuilderInfo _i = BuilderInfo('WriteLogEntriesRequest')
     ..aOS(1, 'logName')
     ..a<$google$api.MonitoredResource>(
         2,
@@ -134,14 +134,14 @@ class WriteLogEntriesRequest extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   WriteLogEntriesRequest clone() =>
-      new WriteLogEntriesRequest()..mergeFromMessage(this);
+      WriteLogEntriesRequest()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static WriteLogEntriesRequest create() => new WriteLogEntriesRequest();
+  static WriteLogEntriesRequest create() => WriteLogEntriesRequest();
   static PbList<WriteLogEntriesRequest> createRepeated() =>
-      new PbList<WriteLogEntriesRequest>();
+      PbList<WriteLogEntriesRequest>();
   static WriteLogEntriesRequest getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyWriteLogEntriesRequest();
+      _defaultInstance = _ReadonlyWriteLogEntriesRequest();
     return _defaultInstance;
   }
 
@@ -184,7 +184,7 @@ class _ReadonlyWriteLogEntriesRequest extends WriteLogEntriesRequest
     with ReadonlyMessageMixin {}
 
 class WriteLogEntriesResponse extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('WriteLogEntriesResponse')
+  static final BuilderInfo _i = BuilderInfo('WriteLogEntriesResponse')
     ..hasRequiredFields = false;
 
   WriteLogEntriesResponse() : super();
@@ -195,14 +195,14 @@ class WriteLogEntriesResponse extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   WriteLogEntriesResponse clone() =>
-      new WriteLogEntriesResponse()..mergeFromMessage(this);
+      WriteLogEntriesResponse()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static WriteLogEntriesResponse create() => new WriteLogEntriesResponse();
+  static WriteLogEntriesResponse create() => WriteLogEntriesResponse();
   static PbList<WriteLogEntriesResponse> createRepeated() =>
-      new PbList<WriteLogEntriesResponse>();
+      PbList<WriteLogEntriesResponse>();
   static WriteLogEntriesResponse getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyWriteLogEntriesResponse();
+      _defaultInstance = _ReadonlyWriteLogEntriesResponse();
     return _defaultInstance;
   }
 
@@ -219,7 +219,7 @@ class _ReadonlyWriteLogEntriesResponse extends WriteLogEntriesResponse
 class WriteLogEntriesPartialErrors_LogEntryErrorsEntry
     extends GeneratedMessage {
   static final BuilderInfo _i =
-      new BuilderInfo('WriteLogEntriesPartialErrors_LogEntryErrorsEntry')
+      BuilderInfo('WriteLogEntriesPartialErrors_LogEntryErrorsEntry')
         ..a<int>(1, 'key', PbFieldType.O3)
         ..a<$google$rpc.Status>(2, 'value', PbFieldType.OM,
             $google$rpc.Status.getDefault, $google$rpc.Status.create)
@@ -233,18 +233,18 @@ class WriteLogEntriesPartialErrors_LogEntryErrorsEntry
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   WriteLogEntriesPartialErrors_LogEntryErrorsEntry clone() =>
-      new WriteLogEntriesPartialErrors_LogEntryErrorsEntry()
+      WriteLogEntriesPartialErrors_LogEntryErrorsEntry()
         ..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
   static WriteLogEntriesPartialErrors_LogEntryErrorsEntry create() =>
-      new WriteLogEntriesPartialErrors_LogEntryErrorsEntry();
+      WriteLogEntriesPartialErrors_LogEntryErrorsEntry();
   static PbList<WriteLogEntriesPartialErrors_LogEntryErrorsEntry>
       createRepeated() =>
-          new PbList<WriteLogEntriesPartialErrors_LogEntryErrorsEntry>();
+          PbList<WriteLogEntriesPartialErrors_LogEntryErrorsEntry>();
   static WriteLogEntriesPartialErrors_LogEntryErrorsEntry getDefault() {
     if (_defaultInstance == null)
       _defaultInstance =
-          new _ReadonlyWriteLogEntriesPartialErrors_LogEntryErrorsEntry();
+          _ReadonlyWriteLogEntriesPartialErrors_LogEntryErrorsEntry();
     return _defaultInstance;
   }
 
@@ -276,7 +276,7 @@ class _ReadonlyWriteLogEntriesPartialErrors_LogEntryErrorsEntry
     with ReadonlyMessageMixin {}
 
 class WriteLogEntriesPartialErrors extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('WriteLogEntriesPartialErrors')
+  static final BuilderInfo _i = BuilderInfo('WriteLogEntriesPartialErrors')
     ..pp<WriteLogEntriesPartialErrors_LogEntryErrorsEntry>(
         1,
         'logEntryErrors',
@@ -293,15 +293,15 @@ class WriteLogEntriesPartialErrors extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   WriteLogEntriesPartialErrors clone() =>
-      new WriteLogEntriesPartialErrors()..mergeFromMessage(this);
+      WriteLogEntriesPartialErrors()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
   static WriteLogEntriesPartialErrors create() =>
-      new WriteLogEntriesPartialErrors();
+      WriteLogEntriesPartialErrors();
   static PbList<WriteLogEntriesPartialErrors> createRepeated() =>
-      new PbList<WriteLogEntriesPartialErrors>();
+      PbList<WriteLogEntriesPartialErrors>();
   static WriteLogEntriesPartialErrors getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyWriteLogEntriesPartialErrors();
+      _defaultInstance = _ReadonlyWriteLogEntriesPartialErrors();
     return _defaultInstance;
   }
 
@@ -319,7 +319,7 @@ class _ReadonlyWriteLogEntriesPartialErrors extends WriteLogEntriesPartialErrors
     with ReadonlyMessageMixin {}
 
 class ListLogEntriesRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ListLogEntriesRequest')
+  static final BuilderInfo _i = BuilderInfo('ListLogEntriesRequest')
     ..pPS(1, 'projectIds')
     ..aOS(2, 'filter')
     ..aOS(3, 'orderBy')
@@ -336,14 +336,14 @@ class ListLogEntriesRequest extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   ListLogEntriesRequest clone() =>
-      new ListLogEntriesRequest()..mergeFromMessage(this);
+      ListLogEntriesRequest()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static ListLogEntriesRequest create() => new ListLogEntriesRequest();
+  static ListLogEntriesRequest create() => ListLogEntriesRequest();
   static PbList<ListLogEntriesRequest> createRepeated() =>
-      new PbList<ListLogEntriesRequest>();
+      PbList<ListLogEntriesRequest>();
   static ListLogEntriesRequest getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyListLogEntriesRequest();
+      _defaultInstance = _ReadonlyListLogEntriesRequest();
     return _defaultInstance;
   }
 
@@ -394,7 +394,7 @@ class _ReadonlyListLogEntriesRequest extends ListLogEntriesRequest
     with ReadonlyMessageMixin {}
 
 class ListLogEntriesResponse extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ListLogEntriesResponse')
+  static final BuilderInfo _i = BuilderInfo('ListLogEntriesResponse')
     ..pp<LogEntry>(
         1, 'entries', PbFieldType.PM, LogEntry.$checkItem, LogEntry.create)
     ..aOS(2, 'nextPageToken')
@@ -408,14 +408,14 @@ class ListLogEntriesResponse extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   ListLogEntriesResponse clone() =>
-      new ListLogEntriesResponse()..mergeFromMessage(this);
+      ListLogEntriesResponse()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static ListLogEntriesResponse create() => new ListLogEntriesResponse();
+  static ListLogEntriesResponse create() => ListLogEntriesResponse();
   static PbList<ListLogEntriesResponse> createRepeated() =>
-      new PbList<ListLogEntriesResponse>();
+      PbList<ListLogEntriesResponse>();
   static ListLogEntriesResponse getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyListLogEntriesResponse();
+      _defaultInstance = _ReadonlyListLogEntriesResponse();
     return _defaultInstance;
   }
 
@@ -441,7 +441,7 @@ class _ReadonlyListLogEntriesResponse extends ListLogEntriesResponse
 
 class ListMonitoredResourceDescriptorsRequest extends GeneratedMessage {
   static final BuilderInfo _i =
-      new BuilderInfo('ListMonitoredResourceDescriptorsRequest')
+      BuilderInfo('ListMonitoredResourceDescriptorsRequest')
         ..a<int>(1, 'pageSize', PbFieldType.O3)
         ..aOS(2, 'pageToken')
         ..hasRequiredFields = false;
@@ -454,15 +454,15 @@ class ListMonitoredResourceDescriptorsRequest extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   ListMonitoredResourceDescriptorsRequest clone() =>
-      new ListMonitoredResourceDescriptorsRequest()..mergeFromMessage(this);
+      ListMonitoredResourceDescriptorsRequest()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
   static ListMonitoredResourceDescriptorsRequest create() =>
-      new ListMonitoredResourceDescriptorsRequest();
+      ListMonitoredResourceDescriptorsRequest();
   static PbList<ListMonitoredResourceDescriptorsRequest> createRepeated() =>
-      new PbList<ListMonitoredResourceDescriptorsRequest>();
+      PbList<ListMonitoredResourceDescriptorsRequest>();
   static ListMonitoredResourceDescriptorsRequest getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyListMonitoredResourceDescriptorsRequest();
+      _defaultInstance = _ReadonlyListMonitoredResourceDescriptorsRequest();
     return _defaultInstance;
   }
 
@@ -494,7 +494,7 @@ class _ReadonlyListMonitoredResourceDescriptorsRequest
 
 class ListMonitoredResourceDescriptorsResponse extends GeneratedMessage {
   static final BuilderInfo _i =
-      new BuilderInfo('ListMonitoredResourceDescriptorsResponse')
+      BuilderInfo('ListMonitoredResourceDescriptorsResponse')
         ..pp<$google$api.MonitoredResourceDescriptor>(
             1,
             'resourceDescriptors',
@@ -512,16 +512,15 @@ class ListMonitoredResourceDescriptorsResponse extends GeneratedMessage {
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
   ListMonitoredResourceDescriptorsResponse clone() =>
-      new ListMonitoredResourceDescriptorsResponse()..mergeFromMessage(this);
+      ListMonitoredResourceDescriptorsResponse()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
   static ListMonitoredResourceDescriptorsResponse create() =>
-      new ListMonitoredResourceDescriptorsResponse();
+      ListMonitoredResourceDescriptorsResponse();
   static PbList<ListMonitoredResourceDescriptorsResponse> createRepeated() =>
-      new PbList<ListMonitoredResourceDescriptorsResponse>();
+      PbList<ListMonitoredResourceDescriptorsResponse>();
   static ListMonitoredResourceDescriptorsResponse getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance =
-          new _ReadonlyListMonitoredResourceDescriptorsResponse();
+      _defaultInstance = _ReadonlyListMonitoredResourceDescriptorsResponse();
     return _defaultInstance;
   }
 
@@ -548,7 +547,7 @@ class _ReadonlyListMonitoredResourceDescriptorsResponse
 }
 
 class ListLogsRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ListLogsRequest')
+  static final BuilderInfo _i = BuilderInfo('ListLogsRequest')
     ..aOS(1, 'parent')
     ..a<int>(2, 'pageSize', PbFieldType.O3)
     ..aOS(3, 'pageToken')
@@ -561,14 +560,12 @@ class ListLogsRequest extends GeneratedMessage {
   ListLogsRequest.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  ListLogsRequest clone() => new ListLogsRequest()..mergeFromMessage(this);
+  ListLogsRequest clone() => ListLogsRequest()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static ListLogsRequest create() => new ListLogsRequest();
-  static PbList<ListLogsRequest> createRepeated() =>
-      new PbList<ListLogsRequest>();
+  static ListLogsRequest create() => ListLogsRequest();
+  static PbList<ListLogsRequest> createRepeated() => PbList<ListLogsRequest>();
   static ListLogsRequest getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyListLogsRequest();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyListLogsRequest();
     return _defaultInstance;
   }
 
@@ -606,7 +603,7 @@ class _ReadonlyListLogsRequest extends ListLogsRequest
     with ReadonlyMessageMixin {}
 
 class ListLogsResponse extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('ListLogsResponse')
+  static final BuilderInfo _i = BuilderInfo('ListLogsResponse')
     ..aOS(2, 'nextPageToken')
     ..pPS(3, 'logNames')
     ..hasRequiredFields = false;
@@ -618,14 +615,14 @@ class ListLogsResponse extends GeneratedMessage {
   ListLogsResponse.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  ListLogsResponse clone() => new ListLogsResponse()..mergeFromMessage(this);
+  ListLogsResponse clone() => ListLogsResponse()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static ListLogsResponse create() => new ListLogsResponse();
+  static ListLogsResponse create() => ListLogsResponse();
   static PbList<ListLogsResponse> createRepeated() =>
-      new PbList<ListLogsResponse>();
+      PbList<ListLogsResponse>();
   static ListLogsResponse getDefault() {
     if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyListLogsResponse();
+      _defaultInstance = _ReadonlyListLogsResponse();
     return _defaultInstance;
   }
 

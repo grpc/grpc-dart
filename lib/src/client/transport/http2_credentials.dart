@@ -59,7 +59,7 @@ class ChannelCredentials {
         ..setTrustedCertificatesBytes(_certificateBytes,
             password: _certificatePassword);
     }
-    final context = new SecurityContext(withTrustedRoots: true);
+    final context = SecurityContext(withTrustedRoots: true);
     context.setAlpnProtocols(supportedAlpnProtocols, false);
 
     return context;

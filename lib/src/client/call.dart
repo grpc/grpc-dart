@@ -24,7 +24,7 @@ import 'method.dart';
 import 'options.dart';
 import 'transport/transport.dart';
 
-const _reservedHeaders = const [
+const _reservedHeaders = [
   'content-type',
   'te',
   'grpc-timeout',
@@ -63,21 +63,21 @@ class CallOptions {
       {Map<String, String> metadata,
       Duration timeout,
       List<MetadataProvider> providers}) {
-    return new CallOptions._(new Map.unmodifiable(metadata ?? {}), timeout,
-        new List.unmodifiable(providers ?? []));
+    return CallOptions._(Map.unmodifiable(metadata ?? {}), timeout,
+        List.unmodifiable(providers ?? []));
   }
 
   factory CallOptions.from(Iterable<CallOptions> options) =>
-      options.fold(new CallOptions(), (p, o) => p.mergedWith(o));
+      options.fold(CallOptions(), (p, o) => p.mergedWith(o));
 
   CallOptions mergedWith(CallOptions other) {
     if (other == null) return this;
-    final mergedMetadata = new Map.from(metadata)..addAll(other.metadata);
+    final mergedMetadata = Map.from(metadata)..addAll(other.metadata);
     final mergedTimeout = other.timeout ?? timeout;
-    final mergedProviders = new List.from(metadataProviders)
+    final mergedProviders = List.from(metadataProviders)
       ..addAll(other.metadataProviders);
-    return new CallOptions._(new Map.unmodifiable(mergedMetadata),
-        mergedTimeout, new List.unmodifiable(mergedProviders));
+    return CallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
+        List.unmodifiable(mergedProviders));
   }
 }
 
@@ -87,8 +87,8 @@ class ClientCall<Q, R> implements Response {
   final Stream<Q> _requests;
   final CallOptions options;
 
-  final _headers = new Completer<Map<String, String>>();
-  final _trailers = new Completer<Map<String, String>>();
+  final _headers = Completer<Map<String, String>>();
+  final _trailers = Completer<Map<String, String>>();
   bool _hasReceivedResponses = false;
 
   Map<String, String> _headerMetadata;
@@ -102,14 +102,14 @@ class ClientCall<Q, R> implements Response {
   Timer _timeoutTimer;
 
   ClientCall(this._method, this._requests, this.options) {
-    _responses = new StreamController(onListen: _onResponseListen);
+    _responses = StreamController(onListen: _onResponseListen);
     if (options.timeout != null) {
-      _timeoutTimer = new Timer(options.timeout, _onTimedOut);
+      _timeoutTimer = Timer(options.timeout, _onTimedOut);
     }
   }
 
   void onConnectionError(error) {
-    _terminateWithError(new GrpcError.unavailable('Error connecting: $error'));
+    _terminateWithError(GrpcError.unavailable('Error connecting: $error'));
   }
 
   void _terminateWithError(GrpcError error) {
@@ -137,7 +137,7 @@ class ClientCall<Q, R> implements Response {
     if (options.metadataProviders.isEmpty) {
       _sendRequest(connection, _sanitizeMetadata(options.metadata));
     } else {
-      final metadata = new Map<String, String>.from(options.metadata);
+      final metadata = Map<String, String>.from(options.metadata);
       Future.forEach(
               options.metadataProviders,
               (provider) => provider(
@@ -148,7 +148,7 @@ class ClientCall<Q, R> implements Response {
   }
 
   void _onMetadataProviderError(error) {
-    _terminateWithError(new GrpcError.internal('Error making call: $error'));
+    _terminateWithError(GrpcError.internal('Error making call: $error'));
   }
 
   void _sendRequest(ClientConnection connection, Map<String, String> metadata) {
@@ -156,7 +156,7 @@ class ClientCall<Q, R> implements Response {
       _stream = connection.makeRequest(
           _method.path, options.timeout, metadata, _onRequestError);
     } catch (e) {
-      _terminateWithError(new GrpcError.unavailable('Error making call: $e'));
+      _terminateWithError(GrpcError.unavailable('Error making call: $e'));
       return;
     }
     _requestSubscription = _requests
@@ -172,7 +172,7 @@ class ClientCall<Q, R> implements Response {
   }
 
   void _onTimedOut() {
-    _responses.addError(new GrpcError.deadlineExceeded('Deadline exceeded'));
+    _responses.addError(GrpcError.deadlineExceeded('Deadline exceeded'));
     _safeTerminate();
   }
 
@@ -210,13 +210,11 @@ class ClientCall<Q, R> implements Response {
   void _onResponseData(GrpcMessage data) {
     if (data is GrpcData) {
       if (!_headers.isCompleted) {
-        _responseError(
-            new GrpcError.unimplemented('Received data before headers'));
+        _responseError(GrpcError.unimplemented('Received data before headers'));
         return;
       }
       if (_trailers.isCompleted) {
-        _responseError(
-            new GrpcError.unimplemented('Received data after trailers'));
+        _responseError(GrpcError.unimplemented('Received data after trailers'));
         return;
       }
       _responses.add(_method.responseDeserializer(data.data));
@@ -229,8 +227,7 @@ class ClientCall<Q, R> implements Response {
         return;
       }
       if (_trailers.isCompleted) {
-        _responseError(
-            new GrpcError.unimplemented('Received multiple trailers'));
+        _responseError(GrpcError.unimplemented('Received multiple trailers'));
         return;
       }
       final metadata = data.metadata;
@@ -240,11 +237,11 @@ class ClientCall<Q, R> implements Response {
         final status = int.parse(metadata['grpc-status']);
         final message = metadata['grpc-message'];
         if (status != 0) {
-          _responseError(new GrpcError.custom(status, message));
+          _responseError(GrpcError.custom(status, message));
         }
       }
     } else {
-      _responseError(new GrpcError.unimplemented('Unexpected frame received'));
+      _responseError(GrpcError.unimplemented('Unexpected frame received'));
     }
   }
 
@@ -255,20 +252,20 @@ class ClientCall<Q, R> implements Response {
       _responseError(error);
       return;
     }
-    _responseError(new GrpcError.unknown(error.toString()));
+    _responseError(GrpcError.unknown(error.toString()));
   }
 
   /// Handles closure of the response stream. Verifies that server has sent
   /// response messages and header/trailer metadata, as necessary.
   void _onResponseDone() {
     if (!_headers.isCompleted) {
-      _responseError(new GrpcError.unavailable('Did not receive anything'));
+      _responseError(GrpcError.unavailable('Did not receive anything'));
       return;
     }
     if (!_trailers.isCompleted) {
       if (_hasReceivedResponses) {
         // Trailers are required after receiving data.
-        _responseError(new GrpcError.unavailable('Missing trailers'));
+        _responseError(GrpcError.unavailable('Missing trailers'));
         return;
       }
 
@@ -280,7 +277,7 @@ class ClientCall<Q, R> implements Response {
       final statusCode = status != null ? int.parse(status) : 0;
       if (statusCode != 0) {
         final message = _headerMetadata['grpc-message'];
-        _responseError(new GrpcError.custom(statusCode, message));
+        _responseError(GrpcError.custom(statusCode, message));
       }
     }
     _timeoutTimer?.cancel();
@@ -293,7 +290,7 @@ class ClientCall<Q, R> implements Response {
   /// error to the user code on the [_responses] stream.
   void _onRequestError(error, [StackTrace stackTrace]) {
     if (error is! GrpcError) {
-      error = new GrpcError.unknown(error.toString());
+      error = GrpcError.unknown(error.toString());
     }
 
     _responses.addError(error);
@@ -315,7 +312,7 @@ class ClientCall<Q, R> implements Response {
   @override
   Future<void> cancel() {
     if (!_responses.isClosed) {
-      _responses.addError(new GrpcError.cancelled('Cancelled by client.'));
+      _responses.addError(GrpcError.cancelled('Cancelled by client.'));
     }
     return _terminate();
   }

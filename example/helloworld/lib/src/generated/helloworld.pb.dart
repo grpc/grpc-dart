@@ -10,7 +10,7 @@ import 'dart:core' show int, bool, double, String, List, override;
 import 'package:protobuf/protobuf.dart';
 
 class HelloRequest extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('HelloRequest')
+  static final BuilderInfo _i = BuilderInfo('HelloRequest')
     ..aOS(1, 'name')
     ..hasRequiredFields = false;
 
@@ -21,13 +21,12 @@ class HelloRequest extends GeneratedMessage {
   HelloRequest.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  HelloRequest clone() => new HelloRequest()..mergeFromMessage(this);
+  HelloRequest clone() => HelloRequest()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static HelloRequest create() => new HelloRequest();
-  static PbList<HelloRequest> createRepeated() => new PbList<HelloRequest>();
+  static HelloRequest create() => HelloRequest();
+  static PbList<HelloRequest> createRepeated() => PbList<HelloRequest>();
   static HelloRequest getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyHelloRequest();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyHelloRequest();
     return _defaultInstance;
   }
 
@@ -48,7 +47,7 @@ class HelloRequest extends GeneratedMessage {
 class _ReadonlyHelloRequest extends HelloRequest with ReadonlyMessageMixin {}
 
 class HelloReply extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('HelloReply')
+  static final BuilderInfo _i = BuilderInfo('HelloReply')
     ..aOS(1, 'message')
     ..hasRequiredFields = false;
 
@@ -58,12 +57,12 @@ class HelloReply extends GeneratedMessage {
       : super.fromBuffer(i, r);
   HelloReply.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  HelloReply clone() => new HelloReply()..mergeFromMessage(this);
+  HelloReply clone() => HelloReply()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static HelloReply create() => new HelloReply();
-  static PbList<HelloReply> createRepeated() => new PbList<HelloReply>();
+  static HelloReply create() => HelloReply();
+  static PbList<HelloReply> createRepeated() => PbList<HelloReply>();
   static HelloReply getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyHelloReply();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyHelloReply();
     return _defaultInstance;
   }
 

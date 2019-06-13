@@ -12,8 +12,7 @@ class EchoApp {
     _addLeftMessage(message);
 
     try {
-      final response =
-          await _service.echo(new EchoRequest()..message = message);
+      final response = await _service.echo(EchoRequest()..message = message);
       _addRightMessage(response.message);
     } catch (error) {
       _addRightMessage(error.toString());

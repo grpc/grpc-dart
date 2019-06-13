@@ -32,11 +32,11 @@ class Http2TransportStream extends GrpcTransportStream {
 
   Http2TransportStream(this._transportStream, this._onError)
       : incomingMessages = _transportStream.incomingMessages
-            .transform(new GrpcHttpDecoder())
+            .transform(GrpcHttpDecoder())
             .transform(grpcDecompressor()) {
     _outgoingMessages.stream
         .map(frame)
-        .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
+        .map<StreamMessage>((bytes) => DataStreamMessage(bytes))
         .handleError(_onError)
         .listen(_transportStream.outgoingMessages.add,
             onError: _transportStream.outgoingMessages.addError,

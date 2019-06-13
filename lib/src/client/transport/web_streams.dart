@@ -44,7 +44,7 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
 
   final Sink<GrpcMessage> _out;
 
-  final _dataHeader = new Uint8List(4);
+  final _dataHeader = Uint8List(4);
 
   _GrpcWebParseState _state = _GrpcWebParseState.Init;
   int _chunkOffset;
@@ -78,7 +78,7 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
       final dataLength = _dataHeader.buffer.asByteData().getUint32(0);
       _dataOffset = 0;
       _state = _GrpcWebParseState.Message;
-      _data = new Uint8List(dataLength);
+      _data = Uint8List(dataLength);
       if (dataLength == 0) {
         // empty message
         _finishMessage();
@@ -104,12 +104,12 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
   void _finishMessage() {
     switch (_frameType) {
       case frameTypeData:
-        _out.add(new GrpcData(_data, isCompressed: false));
+        _out.add(GrpcData(_data, isCompressed: false));
         break;
       case frameTypeTrailers:
         final stringData = String.fromCharCodes(_data);
         final headers = _parseHttp1Headers(stringData);
-        _out.add(new GrpcMetadata(headers));
+        _out.add(GrpcMetadata(headers));
         break;
     }
     _state = _GrpcWebParseState.Init;
@@ -150,7 +150,7 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
   @override
   void close() {
     if (_data != null || _dataOffset != 0) {
-      throw new GrpcError.unavailable('Closed in non-idle state');
+      throw GrpcError.unavailable('Closed in non-idle state');
     }
     _out.close();
   }

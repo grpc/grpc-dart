@@ -99,7 +99,7 @@ class Server {
       server = _insecureServer;
     }
     server.listen((socket) {
-      final connection = new ServerTransportConnection.viaSocket(socket);
+      final connection = ServerTransportConnection.viaSocket(socket);
       _connections.add(connection);
       // TODO(jakobr): Set active state handlers, close connection after idle
       // timeout.
@@ -114,7 +114,7 @@ class Server {
   }
 
   void serveStream(ServerTransportStream stream) {
-    new ServerHandler(lookupService, stream, _interceptors).handle();
+    ServerHandler(lookupService, stream, _interceptors).handle();
   }
 
   Future<void> shutdown() async {

@@ -9,17 +9,17 @@ import 'dart:core' show int, dynamic, String, List, Map;
 import 'package:protobuf/protobuf.dart';
 
 class LogSeverity extends ProtobufEnum {
-  static const LogSeverity DEFAULT = const LogSeverity._(0, 'DEFAULT');
-  static const LogSeverity DEBUG = const LogSeverity._(100, 'DEBUG');
-  static const LogSeverity INFO = const LogSeverity._(200, 'INFO');
-  static const LogSeverity NOTICE = const LogSeverity._(300, 'NOTICE');
-  static const LogSeverity WARNING = const LogSeverity._(400, 'WARNING');
-  static const LogSeverity ERROR = const LogSeverity._(500, 'ERROR');
-  static const LogSeverity CRITICAL = const LogSeverity._(600, 'CRITICAL');
-  static const LogSeverity ALERT = const LogSeverity._(700, 'ALERT');
-  static const LogSeverity EMERGENCY = const LogSeverity._(800, 'EMERGENCY');
+  static const LogSeverity DEFAULT = LogSeverity._(0, 'DEFAULT');
+  static const LogSeverity DEBUG = LogSeverity._(100, 'DEBUG');
+  static const LogSeverity INFO = LogSeverity._(200, 'INFO');
+  static const LogSeverity NOTICE = LogSeverity._(300, 'NOTICE');
+  static const LogSeverity WARNING = LogSeverity._(400, 'WARNING');
+  static const LogSeverity ERROR = LogSeverity._(500, 'ERROR');
+  static const LogSeverity CRITICAL = LogSeverity._(600, 'CRITICAL');
+  static const LogSeverity ALERT = LogSeverity._(700, 'ALERT');
+  static const LogSeverity EMERGENCY = LogSeverity._(800, 'EMERGENCY');
 
-  static const List<LogSeverity> values = const <LogSeverity>[
+  static const List<LogSeverity> values = <LogSeverity>[
     DEFAULT,
     DEBUG,
     INFO,

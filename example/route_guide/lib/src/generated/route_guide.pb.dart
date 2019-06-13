@@ -10,7 +10,7 @@ import 'dart:core' show int, bool, double, String, List, override;
 import 'package:protobuf/protobuf.dart';
 
 class Point extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Point')
+  static final BuilderInfo _i = BuilderInfo('Point')
     ..a<int>(1, 'latitude', PbFieldType.O3)
     ..a<int>(2, 'longitude', PbFieldType.O3)
     ..hasRequiredFields = false;
@@ -20,12 +20,12 @@ class Point extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Point.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Point clone() => new Point()..mergeFromMessage(this);
+  Point clone() => Point()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Point create() => new Point();
-  static PbList<Point> createRepeated() => new PbList<Point>();
+  static Point create() => Point();
+  static PbList<Point> createRepeated() => PbList<Point>();
   static Point getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyPoint();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyPoint();
     return _defaultInstance;
   }
 
@@ -54,7 +54,7 @@ class Point extends GeneratedMessage {
 class _ReadonlyPoint extends Point with ReadonlyMessageMixin {}
 
 class Rectangle extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Rectangle')
+  static final BuilderInfo _i = BuilderInfo('Rectangle')
     ..a<Point>(1, 'lo', PbFieldType.OM, Point.getDefault, Point.create)
     ..a<Point>(2, 'hi', PbFieldType.OM, Point.getDefault, Point.create)
     ..hasRequiredFields = false;
@@ -65,12 +65,12 @@ class Rectangle extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Rectangle.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Rectangle clone() => new Rectangle()..mergeFromMessage(this);
+  Rectangle clone() => Rectangle()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Rectangle create() => new Rectangle();
-  static PbList<Rectangle> createRepeated() => new PbList<Rectangle>();
+  static Rectangle create() => Rectangle();
+  static PbList<Rectangle> createRepeated() => PbList<Rectangle>();
   static Rectangle getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyRectangle();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyRectangle();
     return _defaultInstance;
   }
 
@@ -99,7 +99,7 @@ class Rectangle extends GeneratedMessage {
 class _ReadonlyRectangle extends Rectangle with ReadonlyMessageMixin {}
 
 class Feature extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Feature')
+  static final BuilderInfo _i = BuilderInfo('Feature')
     ..aOS(1, 'name')
     ..a<Point>(2, 'location', PbFieldType.OM, Point.getDefault, Point.create)
     ..hasRequiredFields = false;
@@ -110,12 +110,12 @@ class Feature extends GeneratedMessage {
       : super.fromBuffer(i, r);
   Feature.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  Feature clone() => new Feature()..mergeFromMessage(this);
+  Feature clone() => Feature()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static Feature create() => new Feature();
-  static PbList<Feature> createRepeated() => new PbList<Feature>();
+  static Feature create() => Feature();
+  static PbList<Feature> createRepeated() => PbList<Feature>();
   static Feature getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyFeature();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyFeature();
     return _defaultInstance;
   }
 
@@ -144,7 +144,7 @@ class Feature extends GeneratedMessage {
 class _ReadonlyFeature extends Feature with ReadonlyMessageMixin {}
 
 class RouteNote extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('RouteNote')
+  static final BuilderInfo _i = BuilderInfo('RouteNote')
     ..a<Point>(1, 'location', PbFieldType.OM, Point.getDefault, Point.create)
     ..aOS(2, 'message')
     ..hasRequiredFields = false;
@@ -155,12 +155,12 @@ class RouteNote extends GeneratedMessage {
       : super.fromBuffer(i, r);
   RouteNote.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  RouteNote clone() => new RouteNote()..mergeFromMessage(this);
+  RouteNote clone() => RouteNote()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static RouteNote create() => new RouteNote();
-  static PbList<RouteNote> createRepeated() => new PbList<RouteNote>();
+  static RouteNote create() => RouteNote();
+  static PbList<RouteNote> createRepeated() => PbList<RouteNote>();
   static RouteNote getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyRouteNote();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyRouteNote();
     return _defaultInstance;
   }
 
@@ -189,7 +189,7 @@ class RouteNote extends GeneratedMessage {
 class _ReadonlyRouteNote extends RouteNote with ReadonlyMessageMixin {}
 
 class RouteSummary extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('RouteSummary')
+  static final BuilderInfo _i = BuilderInfo('RouteSummary')
     ..a<int>(1, 'pointCount', PbFieldType.O3)
     ..a<int>(2, 'featureCount', PbFieldType.O3)
     ..a<int>(3, 'distance', PbFieldType.O3)
@@ -203,13 +203,12 @@ class RouteSummary extends GeneratedMessage {
   RouteSummary.fromJson(String i,
       [ExtensionRegistry r = ExtensionRegistry.EMPTY])
       : super.fromJson(i, r);
-  RouteSummary clone() => new RouteSummary()..mergeFromMessage(this);
+  RouteSummary clone() => RouteSummary()..mergeFromMessage(this);
   BuilderInfo get info_ => _i;
-  static RouteSummary create() => new RouteSummary();
-  static PbList<RouteSummary> createRepeated() => new PbList<RouteSummary>();
+  static RouteSummary create() => RouteSummary();
+  static PbList<RouteSummary> createRepeated() => PbList<RouteSummary>();
   static RouteSummary getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyRouteSummary();
+    if (_defaultInstance == null) _defaultInstance = _ReadonlyRouteSummary();
     return _defaultInstance;
   }
 

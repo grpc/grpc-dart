@@ -16,16 +16,16 @@
 import 'dart:math';
 import 'transport/http2_credentials.dart';
 
-const defaultIdleTimeout = const Duration(minutes: 5);
+const defaultIdleTimeout = Duration(minutes: 5);
 
 typedef Duration BackoffStrategy(Duration lastBackoff);
 
 // Backoff algorithm from https://github.com/grpc/grpc/blob/master/doc/connection-backoff.md
-const _initialBackoff = const Duration(seconds: 1);
-const _maxBackoff = const Duration(seconds: 120);
+const _initialBackoff = Duration(seconds: 1);
+const _maxBackoff = Duration(seconds: 120);
 const _multiplier = 1.6;
 const _jitter = 0.2;
-final _random = new Random();
+final _random = Random();
 
 Duration defaultBackoffStrategy(Duration lastBackoff) {
   if (lastBackoff == null) return _initialBackoff;

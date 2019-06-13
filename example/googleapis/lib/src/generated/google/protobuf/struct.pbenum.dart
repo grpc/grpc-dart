@@ -9,9 +9,9 @@ import 'dart:core' show int, dynamic, String, List, Map;
 import 'package:protobuf/protobuf.dart';
 
 class NullValue extends ProtobufEnum {
-  static const NullValue NULL_VALUE = const NullValue._(0, 'NULL_VALUE');
+  static const NullValue NULL_VALUE = NullValue._(0, 'NULL_VALUE');
 
-  static const List<NullValue> values = const <NullValue>[
+  static const List<NullValue> values = <NullValue>[
     NULL_VALUE,
   ];
 
