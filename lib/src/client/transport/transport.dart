@@ -1,4 +1,4 @@
-// Copyright (c) 2019, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2018, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,15 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Exports the minimum api to define server and client stubs.
-///
-/// Mainly intended to be imported by generated code.
-library service_api;
+import 'dart:async';
 
-export 'src/client/call.dart' show CallOptions;
-export 'src/client/channel.dart' show ClientChannel;
-export 'src/client/client.dart' show Client;
-export 'src/client/common.dart' show ResponseFuture, ResponseStream;
-export 'src/client/method.dart' show ClientMethod;
-export 'src/server/call.dart' show ServiceCall;
-export 'src/server/service.dart' show Service, ServiceMethod;
+import '../../shared/message.dart';
+
+typedef void SocketClosedHandler();
+typedef void ActiveStateHandler(bool isActive);
+typedef void ErrorHandler(error);
+
+abstract class GrpcTransportStream {
+  Stream<GrpcMessage> get incomingMessages;
+  StreamSink<List<int>> get outgoingMessages;
+
+  Future<void> terminate();
+}

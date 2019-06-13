@@ -14,7 +14,10 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:grpc/src/client/http2_connection.dart';
+import 'package:grpc/src/shared/message.dart';
 import 'package:grpc/src/shared/streams.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
@@ -28,7 +31,7 @@ class MockTransport extends Mock implements ClientTransportConnection {}
 
 class MockStream extends Mock implements ClientTransportStream {}
 
-class FakeConnection extends ClientConnection {
+class FakeConnection extends Http2ClientConnection {
   final ClientTransportConnection transport;
 
   var connectionError;
@@ -53,14 +56,14 @@ class FakeChannelOptions implements ChannelOptions {
 }
 
 class FakeChannel extends ClientChannel {
-  final ClientConnection connection;
+  final Http2ClientConnection connection;
   final FakeChannelOptions options;
 
   FakeChannel(String host, this.connection, this.options)
       : super(host, options: options);
 
   @override
-  Future<ClientConnection> getConnection() async => connection;
+  Future<Http2ClientConnection> getConnection() async => connection;
 }
 
 typedef ServerMessageHandler = void Function(StreamMessage message);
@@ -141,7 +144,7 @@ class ClientHarness {
   }
 
   void sendResponseValue(int value) {
-    toClient.add(DataStreamMessage(GrpcHttpEncoder.frame(mockEncode(value))));
+    toClient.add(DataStreamMessage(frame(mockEncode(value))));
   }
 
   void sendResponseTrailer(
@@ -183,7 +186,9 @@ class ClientHarness {
 
     final List<Header> capturedHeaders =
         verify(transport.makeRequest(captureAny)).captured.single;
-    validateRequestHeaders(capturedHeaders,
+    validateRequestHeaders(
+        Map.fromEntries(capturedHeaders.map((header) =>
+            MapEntry(utf8.decode(header.name), utf8.decode(header.value)))),
         path: expectedPath,
         timeout: toTimeoutString(expectedTimeout),
         customHeaders: expectedCustomHeaders);

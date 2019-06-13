@@ -15,11 +15,14 @@
 
 import 'dart:async';
 
+import 'package:grpc/src/client/http2_connection.dart';
+import 'package:grpc/src/shared/message.dart';
 import 'package:grpc/src/shared/streams.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 
 import 'package:grpc/grpc.dart';
+import 'package:grpc/src/client/transport/http2_transport.dart';
 
 import 'utils.dart';
 
@@ -170,14 +173,14 @@ class ServerHarness {
       {String authority = 'test',
       Map<String, String> metadata,
       Duration timeout}) {
-    final headers = ClientConnection.createCallHeaders(
+    final headers = Http2ClientConnection.createCallHeaders(
         true, authority, path, timeout, metadata,
         userAgent: 'dart-grpc/1.0.0 test');
     toServer.add(HeadersStreamMessage(headers));
   }
 
   void sendData(int value) {
-    toServer.add(DataStreamMessage(GrpcHttpEncoder.frame(mockEncode(value))));
+    toServer.add(DataStreamMessage(frame(mockEncode(value))));
   }
 
   void runTest(String path, List<int> requests, List<int> expectedResponses) {

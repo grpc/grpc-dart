@@ -13,46 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http2/transport.dart';
 
+import 'message.dart';
 import 'status.dart';
-
-abstract class GrpcMessage {}
-
-class GrpcMetadata extends GrpcMessage {
-  final Map<String, String> metadata;
-  GrpcMetadata(this.metadata);
-
-  @override
-  String toString() => 'gRPC Metadata ($metadata)';
-}
-
-class GrpcData extends GrpcMessage {
-  final List<int> data;
-  final bool isCompressed;
-  GrpcData(this.data, {this.isCompressed});
-
-  @override
-  String toString() => 'gRPC Data (${data.length} bytes)';
-}
-
-StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor() =>
-    StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
-        handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
-      if (value is GrpcData) {
-        if (value.isCompressed) {
-          // TODO(dart-lang/grpc-dart#6): Actually handle decompression.
-          sink.add(GrpcData(value.data, isCompressed: false));
-          return;
-        }
-      }
-      sink.add(value);
-    });
 
 class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
   @override
@@ -68,22 +36,12 @@ class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
     }
     throw GrpcError.internal('Unexpected message type');
   }
-
-  static List<int> frame(List<int> payload) {
-    final payloadLength = payload.length;
-    final bytes = Uint8List(payloadLength + 5);
-    final header = bytes.buffer.asByteData(0, 5);
-    header.setUint8(0, 0); // TODO(dart-lang/grpc-dart#6): Handle compression
-    header.setUint32(1, payloadLength);
-    bytes.setRange(5, bytes.length, payload);
-    return bytes;
-  }
 }
 
 class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
   @override
   GrpcMessage convert(StreamMessage input) {
-    final sink = _GrpcMessageSink();
+    final sink = GrpcMessageSink();
     startChunkedConversion(sink)
       ..add(input)
       ..close();
@@ -181,24 +139,5 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
       throw GrpcError.unavailable('Closed in non-idle state');
     }
     _out.close();
-  }
-}
-
-class _GrpcMessageSink extends Sink<GrpcMessage> {
-  GrpcMessage message;
-
-  @override
-  void add(GrpcMessage data) {
-    if (message != null) {
-      throw 'Too many messages received!';
-    }
-    message = data;
-  }
-
-  @override
-  void close() {
-    if (message == null) {
-      throw 'No messages received!';
-    }
   }
 }
