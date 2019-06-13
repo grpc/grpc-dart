@@ -63,21 +63,21 @@ class CallOptions {
       {Map<String, String> metadata,
       Duration timeout,
       List<MetadataProvider> providers}) {
-    return CallOptions._(Map.unmodifiable(metadata ?? {}), timeout,
-        List.unmodifiable(providers ?? []));
+    return new CallOptions._(new Map.unmodifiable(metadata ?? {}), timeout,
+        new List.unmodifiable(providers ?? []));
   }
 
   factory CallOptions.from(Iterable<CallOptions> options) =>
-      options.fold(CallOptions(), (p, o) => p.mergedWith(o));
+      options.fold(new CallOptions(), (p, o) => p.mergedWith(o));
 
   CallOptions mergedWith(CallOptions other) {
     if (other == null) return this;
-    final mergedMetadata = Map.from(metadata)..addAll(other.metadata);
+    final mergedMetadata = new Map.from(metadata)..addAll(other.metadata);
     final mergedTimeout = other.timeout ?? timeout;
-    final mergedProviders = List.from(metadataProviders)
+    final mergedProviders = new List.from(metadataProviders)
       ..addAll(other.metadataProviders);
-    return CallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
-        List.unmodifiable(mergedProviders));
+    return new CallOptions._(new Map.unmodifiable(mergedMetadata),
+        mergedTimeout, new List.unmodifiable(mergedProviders));
   }
 }
 
