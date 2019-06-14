@@ -1,160 +1,141 @@
 ///
 //  Generated code. Do not modify.
+//  source: google/protobuf/struct.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library google.protobuf_struct;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
-// ignore: UNUSED_SHOWN_NAME
-import 'dart:core' show int, bool, double, String, List, override;
+import 'dart:core' as $core
+    show bool, Deprecated, double, int, List, Map, override, pragma, String;
 
-import 'package:protobuf/protobuf.dart';
+import 'package:protobuf/protobuf.dart' as $pb;
 
 import 'struct.pbenum.dart';
 
 export 'struct.pbenum.dart';
 
-class Struct_FieldsEntry extends GeneratedMessage {
-  static final BuilderInfo _i = BuilderInfo('Struct_FieldsEntry')
-    ..aOS(1, 'key')
-    ..a<Value>(2, 'value', PbFieldType.OM, Value.getDefault, Value.create)
+class Struct extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Struct',
+      package: const $pb.PackageName('google.protobuf'))
+    ..m<$core.String, Value>(
+        1,
+        'fields',
+        'Struct.FieldsEntry',
+        $pb.PbFieldType.OS,
+        $pb.PbFieldType.OM,
+        Value.create,
+        null,
+        null,
+        const $pb.PackageName('google.protobuf'))
     ..hasRequiredFields = false;
 
-  Struct_FieldsEntry() : super();
-  Struct_FieldsEntry.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  Struct_FieldsEntry.fromJson(String i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
-  Struct_FieldsEntry clone() => Struct_FieldsEntry()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static Struct_FieldsEntry create() => Struct_FieldsEntry();
-  static PbList<Struct_FieldsEntry> createRepeated() =>
-      PbList<Struct_FieldsEntry>();
-  static Struct_FieldsEntry getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = _ReadonlyStruct_FieldsEntry();
-    return _defaultInstance;
-  }
-
-  static Struct_FieldsEntry _defaultInstance;
-  static void $checkItem(Struct_FieldsEntry v) {
-    if (v is! Struct_FieldsEntry) checkItemFailed(v, 'Struct_FieldsEntry');
-  }
-
-  String get key => $_getS(0, '');
-  set key(String v) {
-    $_setString(0, v);
-  }
-
-  bool hasKey() => $_has(0);
-  void clearKey() => clearField(1);
-
-  Value get value => $_getN(1);
-  set value(Value v) {
-    setField(2, v);
-  }
-
-  bool hasValue() => $_has(1);
-  void clearValue() => clearField(2);
-}
-
-class _ReadonlyStruct_FieldsEntry extends Struct_FieldsEntry
-    with ReadonlyMessageMixin {}
-
-class Struct extends GeneratedMessage {
-  static final BuilderInfo _i = BuilderInfo('Struct')
-    ..pp<Struct_FieldsEntry>(1, 'fields', PbFieldType.PM,
-        Struct_FieldsEntry.$checkItem, Struct_FieldsEntry.create)
-    ..hasRequiredFields = false;
-
-  Struct() : super();
-  Struct.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  Struct.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  Struct._() : super();
+  factory Struct() => create();
+  factory Struct.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Struct.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   Struct clone() => Struct()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static Struct create() => Struct();
-  static PbList<Struct> createRepeated() => PbList<Struct>();
-  static Struct getDefault() {
-    if (_defaultInstance == null) _defaultInstance = _ReadonlyStruct();
-    return _defaultInstance;
-  }
-
+  Struct copyWith(void Function(Struct) updates) =>
+      super.copyWith((message) => updates(message as Struct));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Struct create() => Struct._();
+  Struct createEmptyInstance() => create();
+  static $pb.PbList<Struct> createRepeated() => $pb.PbList<Struct>();
+  static Struct getDefault() => _defaultInstance ??= create()..freeze();
   static Struct _defaultInstance;
-  static void $checkItem(Struct v) {
-    if (v is! Struct) checkItemFailed(v, 'Struct');
-  }
 
-  List<Struct_FieldsEntry> get fields => $_getList(0);
+  $core.Map<$core.String, Value> get fields => $_getMap(0);
 }
 
-class _ReadonlyStruct extends Struct with ReadonlyMessageMixin {}
+enum Value_Kind {
+  nullValue,
+  numberValue,
+  stringValue,
+  boolValue,
+  structValue,
+  listValue,
+  notSet
+}
 
-class Value extends GeneratedMessage {
-  static final BuilderInfo _i = BuilderInfo('Value')
-    ..e<NullValue>(1, 'nullValue', PbFieldType.OE, NullValue.NULL_VALUE,
+class Value extends $pb.GeneratedMessage {
+  static const $core.Map<$core.int, Value_Kind> _Value_KindByTag = {
+    1: Value_Kind.nullValue,
+    2: Value_Kind.numberValue,
+    3: Value_Kind.stringValue,
+    4: Value_Kind.boolValue,
+    5: Value_Kind.structValue,
+    6: Value_Kind.listValue,
+    0: Value_Kind.notSet
+  };
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Value',
+      package: const $pb.PackageName('google.protobuf'))
+    ..oo(0, [1, 2, 3, 4, 5, 6])
+    ..e<NullValue>(1, 'nullValue', $pb.PbFieldType.OE, NullValue.NULL_VALUE,
         NullValue.valueOf, NullValue.values)
-    ..a<double>(2, 'numberValue', PbFieldType.OD)
+    ..a<$core.double>(2, 'numberValue', $pb.PbFieldType.OD)
     ..aOS(3, 'stringValue')
     ..aOB(4, 'boolValue')
     ..a<Struct>(
-        5, 'structValue', PbFieldType.OM, Struct.getDefault, Struct.create)
-    ..a<ListValue>(
-        6, 'listValue', PbFieldType.OM, ListValue.getDefault, ListValue.create)
+        5, 'structValue', $pb.PbFieldType.OM, Struct.getDefault, Struct.create)
+    ..a<ListValue>(6, 'listValue', $pb.PbFieldType.OM, ListValue.getDefault,
+        ListValue.create)
     ..hasRequiredFields = false;
 
-  Value() : super();
-  Value.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  Value.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  Value._() : super();
+  factory Value() => create();
+  factory Value.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Value.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   Value clone() => Value()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static Value create() => Value();
-  static PbList<Value> createRepeated() => PbList<Value>();
-  static Value getDefault() {
-    if (_defaultInstance == null) _defaultInstance = _ReadonlyValue();
-    return _defaultInstance;
-  }
-
+  Value copyWith(void Function(Value) updates) =>
+      super.copyWith((message) => updates(message as Value));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Value create() => Value._();
+  Value createEmptyInstance() => create();
+  static $pb.PbList<Value> createRepeated() => $pb.PbList<Value>();
+  static Value getDefault() => _defaultInstance ??= create()..freeze();
   static Value _defaultInstance;
-  static void $checkItem(Value v) {
-    if (v is! Value) checkItemFailed(v, 'Value');
-  }
+
+  Value_Kind whichKind() => _Value_KindByTag[$_whichOneof(0)];
+  void clearKind() => clearField($_whichOneof(0));
 
   NullValue get nullValue => $_getN(0);
   set nullValue(NullValue v) {
     setField(1, v);
   }
 
-  bool hasNullValue() => $_has(0);
+  $core.bool hasNullValue() => $_has(0);
   void clearNullValue() => clearField(1);
 
-  double get numberValue => $_getN(1);
-  set numberValue(double v) {
+  $core.double get numberValue => $_getN(1);
+  set numberValue($core.double v) {
     $_setDouble(1, v);
   }
 
-  bool hasNumberValue() => $_has(1);
+  $core.bool hasNumberValue() => $_has(1);
   void clearNumberValue() => clearField(2);
 
-  String get stringValue => $_getS(2, '');
-  set stringValue(String v) {
+  $core.String get stringValue => $_getS(2, '');
+  set stringValue($core.String v) {
     $_setString(2, v);
   }
 
-  bool hasStringValue() => $_has(2);
+  $core.bool hasStringValue() => $_has(2);
   void clearStringValue() => clearField(3);
 
-  bool get boolValue => $_get(3, false);
-  set boolValue(bool v) {
+  $core.bool get boolValue => $_get(3, false);
+  set boolValue($core.bool v) {
     $_setBool(3, v);
   }
 
-  bool hasBoolValue() => $_has(3);
+  $core.bool hasBoolValue() => $_has(3);
   void clearBoolValue() => clearField(4);
 
   Struct get structValue => $_getN(4);
@@ -162,7 +143,7 @@ class Value extends GeneratedMessage {
     setField(5, v);
   }
 
-  bool hasStructValue() => $_has(4);
+  $core.bool hasStructValue() => $_has(4);
   void clearStructValue() => clearField(5);
 
   ListValue get listValue => $_getN(5);
@@ -170,38 +151,34 @@ class Value extends GeneratedMessage {
     setField(6, v);
   }
 
-  bool hasListValue() => $_has(5);
+  $core.bool hasListValue() => $_has(5);
   void clearListValue() => clearField(6);
 }
 
-class _ReadonlyValue extends Value with ReadonlyMessageMixin {}
-
-class ListValue extends GeneratedMessage {
-  static final BuilderInfo _i = BuilderInfo('ListValue')
-    ..pp<Value>(1, 'values', PbFieldType.PM, Value.$checkItem, Value.create)
+class ListValue extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('ListValue',
+      package: const $pb.PackageName('google.protobuf'))
+    ..pc<Value>(1, 'values', $pb.PbFieldType.PM, Value.create)
     ..hasRequiredFields = false;
 
-  ListValue() : super();
-  ListValue.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  ListValue.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  ListValue._() : super();
+  factory ListValue() => create();
+  factory ListValue.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ListValue.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   ListValue clone() => ListValue()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static ListValue create() => ListValue();
-  static PbList<ListValue> createRepeated() => PbList<ListValue>();
-  static ListValue getDefault() {
-    if (_defaultInstance == null) _defaultInstance = _ReadonlyListValue();
-    return _defaultInstance;
-  }
-
+  ListValue copyWith(void Function(ListValue) updates) =>
+      super.copyWith((message) => updates(message as ListValue));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ListValue create() => ListValue._();
+  ListValue createEmptyInstance() => create();
+  static $pb.PbList<ListValue> createRepeated() => $pb.PbList<ListValue>();
+  static ListValue getDefault() => _defaultInstance ??= create()..freeze();
   static ListValue _defaultInstance;
-  static void $checkItem(ListValue v) {
-    if (v is! ListValue) checkItemFailed(v, 'ListValue');
-  }
 
-  List<Value> get values => $_getList(0);
+  $core.List<Value> get values => $_getList(0);
 }
-
-class _ReadonlyListValue extends ListValue with ReadonlyMessageMixin {}

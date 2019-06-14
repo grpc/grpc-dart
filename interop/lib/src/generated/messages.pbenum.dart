@@ -1,25 +1,23 @@
 ///
 //  Generated code. Do not modify.
+//  source: messages.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library grpc.testing_messages_pbenum;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
 // ignore_for_file: UNDEFINED_SHOWN_NAME,UNUSED_SHOWN_NAME
-import 'dart:core' show int, dynamic, String, List, Map;
-import 'package:protobuf/protobuf.dart';
+import 'dart:core' as $core show int, dynamic, String, List, Map;
+import 'package:protobuf/protobuf.dart' as $pb;
 
-class PayloadType extends ProtobufEnum {
+class PayloadType extends $pb.ProtobufEnum {
   static const PayloadType COMPRESSABLE = PayloadType._(0, 'COMPRESSABLE');
 
-  static const List<PayloadType> values = <PayloadType>[
+  static const $core.List<PayloadType> values = <PayloadType>[
     COMPRESSABLE,
   ];
 
-  static final Map<int, dynamic> _byValue = ProtobufEnum.initByValue(values);
-  static PayloadType valueOf(int value) => _byValue[value] as PayloadType;
-  static void $checkItem(PayloadType v) {
-    if (v is! PayloadType) checkItemFailed(v, 'PayloadType');
-  }
+  static final $core.Map<$core.int, PayloadType> _byValue =
+      $pb.ProtobufEnum.initByValue(values);
+  static PayloadType valueOf($core.int value) => _byValue[value];
 
-  const PayloadType._(int v, String n) : super(v, n);
+  const PayloadType._($core.int v, $core.String n) : super(v, n);
 }
