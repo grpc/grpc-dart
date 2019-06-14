@@ -4,7 +4,11 @@ language: dart
 sudo: required
 addons:
   chrome: stable
-  
+
+# The Chrome addon does not work on windows
+install:
+  - if [ $TRAVIS_OS_NAME = windows ]; then choco install googlechrome ; fi
+
 # Run against both the dev and stable channel.
 dart:
   - stable
@@ -18,9 +22,6 @@ dart_task:
 # Only run one instance of the formatter and the analyzer, rather than running
 # them against each Dart version.
 matrix:
-  exclude:
-    - dart_task: --platform chrome
-      os: windows
   include:
   # Wish we could exclude `example` in `analysis_options.yaml` but it seems
   # blocked by https://github.com/dart-lang/sdk/issues/26212
