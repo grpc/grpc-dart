@@ -19,8 +19,7 @@ dart_task:
 # them against each Dart version.
 matrix:
   exclude:
-    - dart_task:
-        - test: --platform chrome
+    - dart_task: --platform chrome
       os: windows
   include:
   # Wish we could exclude `example` in `analysis_options.yaml` but it seems
