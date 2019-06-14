@@ -1,87 +1,94 @@
 ///
 //  Generated code. Do not modify.
+//  source: metadata.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library grpc_metadata_pbgrpc;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
-import 'dart:async';
+import 'dart:async' as $async;
 
-import 'package:grpc/grpc.dart';
+import 'dart:core' as $core show int, String, List;
 
-import 'metadata.pb.dart';
+import 'package:grpc/service_api.dart' as $grpc;
+import 'metadata.pb.dart' as $0;
 export 'metadata.pb.dart';
 
-class MetadataClient extends Client {
-  static final _$echo = ClientMethod<Record, Record>(
+class MetadataClient extends $grpc.Client {
+  static final _$echo = $grpc.ClientMethod<$0.Record, $0.Record>(
       '/grpc.Metadata/Echo',
-      (Record value) => value.writeToBuffer(),
-      (List<int> value) => Record.fromBuffer(value));
-  static final _$addOne = ClientMethod<Number, Number>(
+      ($0.Record value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Record.fromBuffer(value));
+  static final _$addOne = $grpc.ClientMethod<$0.Number, $0.Number>(
       '/grpc.Metadata/AddOne',
-      (Number value) => value.writeToBuffer(),
-      (List<int> value) => Number.fromBuffer(value));
-  static final _$fibonacci = ClientMethod<Empty, Number>(
+      ($0.Number value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Number.fromBuffer(value));
+  static final _$fibonacci = $grpc.ClientMethod<$0.Empty, $0.Number>(
       '/grpc.Metadata/Fibonacci',
-      (Empty value) => value.writeToBuffer(),
-      (List<int> value) => Number.fromBuffer(value));
+      ($0.Empty value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Number.fromBuffer(value));
 
-  MetadataClient(ClientChannel channel, {CallOptions options})
+  MetadataClient($grpc.ClientChannel channel, {$grpc.CallOptions options})
       : super(channel, options: options);
 
-  ResponseFuture<Record> echo(Record request, {CallOptions options}) {
-    final call =
-        $createCall(_$echo, Stream.fromIterable([request]), options: options);
-    return ResponseFuture(call);
-  }
-
-  ResponseStream<Number> addOne(Stream<Number> request, {CallOptions options}) {
-    final call = $createCall(_$addOne, request, options: options);
-    return ResponseStream(call);
-  }
-
-  ResponseStream<Number> fibonacci(Empty request, {CallOptions options}) {
-    final call = $createCall(_$fibonacci, Stream.fromIterable([request]),
+  $grpc.ResponseFuture<$0.Record> echo($0.Record request,
+      {$grpc.CallOptions options}) {
+    final call = $createCall(_$echo, $async.Stream.fromIterable([request]),
         options: options);
-    return ResponseStream(call);
+    return $grpc.ResponseFuture(call);
+  }
+
+  $grpc.ResponseStream<$0.Number> addOne($async.Stream<$0.Number> request,
+      {$grpc.CallOptions options}) {
+    final call = $createCall(_$addOne, request, options: options);
+    return $grpc.ResponseStream(call);
+  }
+
+  $grpc.ResponseStream<$0.Number> fibonacci($0.Empty request,
+      {$grpc.CallOptions options}) {
+    final call = $createCall(_$fibonacci, $async.Stream.fromIterable([request]),
+        options: options);
+    return $grpc.ResponseStream(call);
   }
 }
 
-abstract class MetadataServiceBase extends Service {
-  String get $name => 'grpc.Metadata';
+abstract class MetadataServiceBase extends $grpc.Service {
+  $core.String get $name => 'grpc.Metadata';
 
   MetadataServiceBase() {
-    $addMethod(ServiceMethod<Record, Record>(
+    $addMethod($grpc.ServiceMethod<$0.Record, $0.Record>(
         'Echo',
         echo_Pre,
         false,
         false,
-        (List<int> value) => Record.fromBuffer(value),
-        (Record value) => value.writeToBuffer()));
-    $addMethod(ServiceMethod<Number, Number>(
+        ($core.List<$core.int> value) => $0.Record.fromBuffer(value),
+        ($0.Record value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.Number, $0.Number>(
         'AddOne',
         addOne,
         true,
         true,
-        (List<int> value) => Number.fromBuffer(value),
-        (Number value) => value.writeToBuffer()));
-    $addMethod(ServiceMethod<Empty, Number>(
+        ($core.List<$core.int> value) => $0.Number.fromBuffer(value),
+        ($0.Number value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Number>(
         'Fibonacci',
         fibonacci_Pre,
         false,
         true,
-        (List<int> value) => Empty.fromBuffer(value),
-        (Number value) => value.writeToBuffer()));
+        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
+        ($0.Number value) => value.writeToBuffer()));
   }
 
-  Future<Record> echo_Pre(ServiceCall call, Future request) async {
+  $async.Future<$0.Record> echo_Pre(
+      $grpc.ServiceCall call, $async.Future request) async {
     return echo(call, await request);
   }
 
-  Stream<Number> fibonacci_Pre(ServiceCall call, Future request) async* {
-    yield* fibonacci(call, (await request) as Empty);
+  $async.Stream<$0.Number> fibonacci_Pre(
+      $grpc.ServiceCall call, $async.Future request) async* {
+    yield* fibonacci(call, (await request) as $0.Empty);
   }
 
-  Future<Record> echo(ServiceCall call, Record request);
-  Stream<Number> addOne(ServiceCall call, Stream<Number> request);
-  Stream<Number> fibonacci(ServiceCall call, Empty request);
+  $async.Future<$0.Record> echo($grpc.ServiceCall call, $0.Record request);
+  $async.Stream<$0.Number> addOne(
+      $grpc.ServiceCall call, $async.Stream<$0.Number> request);
+  $async.Stream<$0.Number> fibonacci($grpc.ServiceCall call, $0.Empty request);
 }

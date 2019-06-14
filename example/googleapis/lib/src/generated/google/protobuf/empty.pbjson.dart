@@ -1,8 +1,8 @@
 ///
 //  Generated code. Do not modify.
+//  source: google/protobuf/empty.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library google.protobuf_empty_pbjson;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
 const Empty$json = {
   '1': 'Empty',

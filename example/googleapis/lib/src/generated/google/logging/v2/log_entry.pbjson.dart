@@ -1,8 +1,8 @@
 ///
 //  Generated code. Do not modify.
+//  source: google/logging/v2/log_entry.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library google.logging.v2_log_entry_pbjson;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
 const LogEntry$json = {
   '1': 'LogEntry',
@@ -77,6 +77,14 @@ const LogEntry$json = {
       '10': 'labels'
     },
     {
+      '1': 'metadata',
+      '3': 25,
+      '4': 1,
+      '5': 11,
+      '6': '.google.api.MonitoredResourceMetadata',
+      '10': 'metadata'
+    },
+    {
       '1': 'operation',
       '3': 15,
       '4': 1,
@@ -86,6 +94,7 @@ const LogEntry$json = {
     },
     {'1': 'trace', '3': 22, '4': 1, '5': 9, '10': 'trace'},
     {'1': 'span_id', '3': 27, '4': 1, '5': 9, '10': 'spanId'},
+    {'1': 'trace_sampled', '3': 30, '4': 1, '5': 8, '10': 'traceSampled'},
     {
       '1': 'source_location',
       '3': 23,

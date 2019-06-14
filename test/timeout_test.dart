@@ -115,9 +115,7 @@ void main() {
       Future<int> methodHandler(ServiceCall call, Future<int> request) async {
         try {
           expect(call.isTimedOut, isFalse);
-          Future delay = Future.delayed(Duration(milliseconds: 2));
-          expect(delay, completes);
-          await delay;
+          await Future.delayed(Duration(milliseconds: 50));
           expect(call.isTimedOut, isTrue);
           try {
             await request;
