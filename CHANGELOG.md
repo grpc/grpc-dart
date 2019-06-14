@@ -2,9 +2,9 @@
 
 * Add initial support for grpc-web.
   See `example/grpc-web` for an example of this working.
-* **Breaking**: grpc.dart no longer exposes `ClientConnection`. It was supposed to be an internal
+* **Breaking**: `grpc.dart` no longer exposes `ClientConnection`. It was supposed to be an internal
   abstraction.
-* **Breaking**: grpc.dart no longer exposes the deprecated `ServerHandler`.
+* **Breaking**: `grpc.dart` no longer exposes the deprecated `ServerHandler`.
   It was supposed to be an internal abstraction.
 * `service_api.dart` no longer exports Server - it has never been used by the generated code.
 
