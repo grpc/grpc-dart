@@ -18,6 +18,7 @@ import 'dart:convert';
 
 import 'package:http2/transport.dart';
 
+import '../shared/message.dart';
 import '../shared/status.dart';
 import '../shared/streams.dart';
 import '../shared/timeout.dart';
@@ -223,7 +224,7 @@ class ServerHandler_ extends ServiceCall {
       if (!_headersSent) {
         sendHeaders();
       }
-      _stream.sendData(GrpcHttpEncoder.frame(bytes));
+      _stream.sendData(frame(bytes));
     } catch (error) {
       final grpcError = GrpcError.internal('Error sending response: $error');
       if (!_requests.isClosed) {
@@ -353,9 +354,6 @@ class ServerHandler_ extends ServiceCall {
   }
 }
 
-@Deprecated(
-    'This is an internal class, and will not be part of the public interface in next major version.')
-// TODO(sigurdm): Remove this class from grpc.dart exports.
 class ServerHandler extends ServerHandler_ {
   ServerHandler(Service Function(String service) serviceLookup, stream,
       [List<Interceptor> interceptors = const <Interceptor>[]])

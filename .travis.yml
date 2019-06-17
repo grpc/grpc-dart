@@ -1,7 +1,15 @@
 language: dart
-sudo: false
 
-# Run against both the dev and channel.
+# necessary to avoid chrome sandboxing issues
+sudo: required
+addons:
+  chrome: stable
+
+# The Chrome addon does not work on windows
+install:
+  - if [ $TRAVIS_OS_NAME = windows ]; then choco install googlechrome ; fi
+
+# Run against both the dev and stable channel.
 dart:
   - stable
   - dev
@@ -9,6 +17,7 @@ dart:
 # Define test tasks to run.
 dart_task:
   - test: --platform vm
+  - test: --platform chrome
 
 # Only run one instance of the formatter and the analyzer, rather than running
 # them against each Dart version.
@@ -19,8 +28,9 @@ matrix:
   - dart: dev
     dart_task: dartfmt
     script:
+    - pub get
     - dartanalyzer lib test
-    - for example in example/*; do (cd $example; echo [Analyzing $example]; pub get; dartanalyzer .); done
+    - for example in example/*/; do (cd $example; echo [Analyzing $example]; pub get; dartanalyzer .); done
     - (cd interop; echo [Analyzing interop]; pub get; dartanalyzer .)
 
 

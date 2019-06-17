@@ -13,15 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Exports the minimum api to define server and client stubs.
-///
-/// Mainly intended to be imported by generated code.
-library service_api;
+import 'dart:async';
 
-export 'src/client/call.dart' show CallOptions;
-export 'src/client/channel.dart' show ClientChannel;
-export 'src/client/client.dart' show Client;
-export 'src/client/common.dart' show ResponseFuture, ResponseStream;
-export 'src/client/method.dart' show ClientMethod;
-export 'src/server/call.dart' show ServiceCall;
-export 'src/server/service.dart' show Service, ServiceMethod;
+import 'channel.dart';
+import 'connection.dart';
+import 'options.dart';
+import 'transport/xhr_transport.dart';
+
+/// A channel to a grpc-web endpoint.
+class GrpcWebClientChannel extends ClientChannelBase {
+  final Uri uri;
+
+  GrpcWebClientChannel.xhr(this.uri) : super();
+
+  @override
+  ClientConnection createConnection() {
+    return XhrClientConnection(uri);
+  }
+}

@@ -136,5 +136,5 @@ void main() {
         ..sendRequestHeader('/Test/Unary', timeout: Duration(microseconds: 1));
       await harness.fromServer.done;
     });
-  });
+  }, testOn: 'vm');
 }
