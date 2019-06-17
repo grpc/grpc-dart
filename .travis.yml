@@ -29,7 +29,7 @@ matrix:
     dart_task: dartfmt
     script:
     - dartanalyzer lib test
-    - for example in example/*; do (cd $example; echo [Analyzing $example]; pub get; dartanalyzer .); done
+    - for example in example/*/; do (cd $example; echo [Analyzing $example]; pub get; dartanalyzer .); done
     - (cd interop; echo [Analyzing interop]; pub get; dartanalyzer .)
 
 
