@@ -28,6 +28,7 @@ matrix:
   - dart: dev
     dart_task: dartfmt
     script:
+    - pub get
     - dartanalyzer lib test
     - for example in example/*/; do (cd $example; echo [Analyzing $example]; pub get; dartanalyzer .); done
     - (cd interop; echo [Analyzing interop]; pub get; dartanalyzer .)
