@@ -17,9 +17,12 @@ export 'src/auth/auth.dart'
     show
         BaseAuthenticator,
         HttpBasedAuthenticator,
-        ComputeEngineAuthenticator,
-        ServiceAccountAuthenticator,
         JwtServiceAccountAuthenticator;
+
+export 'src/auth/auth_io.dart'
+    show
+    ComputeEngineAuthenticator,
+    ServiceAccountAuthenticator;
 
 export 'src/client/call.dart' show CallOptions, ClientCall, MetadataProvider;
 export 'src/client/client.dart' show Client;

@@ -16,8 +16,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:googleapis_auth/auth_io.dart' as auth;
-import 'package:googleapis_auth/src/crypto/rsa_sign.dart';
+import 'package:googleapis_auth/auth.dart' as auth;
+import 'package:googleapis_auth/src/crypto/rsa_sign.dart' show RS256Signer;
 import 'package:grpc/src/shared/status.dart';
 import 'package:http/http.dart' as http;
 
@@ -73,32 +73,6 @@ abstract class HttpBasedAuthenticator extends BaseAuthenticator {
 
   Future<auth.AccessCredentials> obtainCredentialsWithClient(
       http.Client client, String uri);
-}
-
-class ComputeEngineAuthenticator extends HttpBasedAuthenticator {
-  Future<auth.AccessCredentials> obtainCredentialsWithClient(
-          http.Client client, String uri) =>
-      auth.obtainAccessCredentialsViaMetadataServer(client);
-}
-
-class ServiceAccountAuthenticator extends HttpBasedAuthenticator {
-  auth.ServiceAccountCredentials _serviceAccountCredentials;
-  final List<String> _scopes;
-  String _projectId;
-
-  ServiceAccountAuthenticator(String serviceAccountJson, this._scopes) {
-    final serviceAccount = jsonDecode(serviceAccountJson);
-    _serviceAccountCredentials =
-        auth.ServiceAccountCredentials.fromJson(serviceAccount);
-    _projectId = serviceAccount['project_id'];
-  }
-
-  String get projectId => _projectId;
-
-  Future<auth.AccessCredentials> obtainCredentialsWithClient(
-          http.Client client, String uri) =>
-      auth.obtainAccessCredentialsViaServiceAccount(
-          _serviceAccountCredentials, _scopes, client);
 }
 
 class JwtServiceAccountAuthenticator extends BaseAuthenticator {
