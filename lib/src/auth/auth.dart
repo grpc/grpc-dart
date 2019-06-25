@@ -16,11 +16,11 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:googleapis_auth/auth_browser.dart' as auth;
-import 'package:grpc/src/shared/status.dart';
+import 'package:googleapis_auth/auth.dart' as auth;
 import 'package:http/http.dart' as http;
 
 import '../client/call.dart';
+import '../shared/status.dart';
 import 'rsa.dart';
 
 const _tokenExpirationThreshold = Duration(seconds: 30);
