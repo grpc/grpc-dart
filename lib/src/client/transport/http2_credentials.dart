@@ -16,7 +16,6 @@
 import 'dart:io';
 
 import '../../shared/security.dart';
-import '../options.dart' as options;
 
 /// Handler for checking certificates that fail validation. If this handler
 /// returns `true`, the bad certificate is allowed, and the TLS handshake can

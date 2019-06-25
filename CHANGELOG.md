@@ -1,3 +1,7 @@
+## 2.0.0+1
+
+* Fix imports to ensure grpc-web.dart has no accidental transitive dependencies on dart:io.
+
 ## 2.0.0
 
 * Add initial support for grpc-web.

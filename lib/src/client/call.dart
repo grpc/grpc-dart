@@ -21,7 +21,6 @@ import '../shared/status.dart';
 import 'common.dart';
 import 'connection.dart';
 import 'method.dart';
-import 'options.dart';
 import 'transport/transport.dart';
 
 const _reservedHeaders = [

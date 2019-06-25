@@ -16,12 +16,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:googleapis_auth/auth_io.dart' as auth;
-import 'package:googleapis_auth/src/crypto/rsa_sign.dart';
-import 'package:grpc/src/shared/status.dart';
+import 'package:googleapis_auth/auth.dart' as auth;
 import 'package:http/http.dart' as http;
 
 import '../client/call.dart';
+import '../shared/status.dart';
+import 'rsa.dart';
 
 const _tokenExpirationThreshold = Duration(seconds: 30);
 
@@ -75,32 +75,6 @@ abstract class HttpBasedAuthenticator extends BaseAuthenticator {
       http.Client client, String uri);
 }
 
-class ComputeEngineAuthenticator extends HttpBasedAuthenticator {
-  Future<auth.AccessCredentials> obtainCredentialsWithClient(
-          http.Client client, String uri) =>
-      auth.obtainAccessCredentialsViaMetadataServer(client);
-}
-
-class ServiceAccountAuthenticator extends HttpBasedAuthenticator {
-  auth.ServiceAccountCredentials _serviceAccountCredentials;
-  final List<String> _scopes;
-  String _projectId;
-
-  ServiceAccountAuthenticator(String serviceAccountJson, this._scopes) {
-    final serviceAccount = jsonDecode(serviceAccountJson);
-    _serviceAccountCredentials =
-        auth.ServiceAccountCredentials.fromJson(serviceAccount);
-    _projectId = serviceAccount['project_id'];
-  }
-
-  String get projectId => _projectId;
-
-  Future<auth.AccessCredentials> obtainCredentialsWithClient(
-          http.Client client, String uri) =>
-      auth.obtainAccessCredentialsViaServiceAccount(
-          _serviceAccountCredentials, _scopes, client);
-}
-
 class JwtServiceAccountAuthenticator extends BaseAuthenticator {
   auth.ServiceAccountCredentials _serviceAccountCredentials;
   String _projectId;
@@ -152,7 +126,11 @@ auth.AccessToken _jwtTokenFor(
 
   final data = '$headerBase64.$claimsBase64';
 
-  final signer = RS256Signer(credentials.privateRSAKey);
+  final key = credentials.privateRSAKey;
+  // We convert to our internal version of RSAPrivateKey. See rsa.dart for more
+  // explanation.
+  final signer = RS256Signer(RSAPrivateKey(
+      key.n, key.e, key.d, key.p, key.q, key.dmp1, key.dmq1, key.coeff));
   final signature = signer.sign(ascii.encode(data));
 
   final jwt = '$data.${_base64url(signature)}';

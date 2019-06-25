@@ -8,6 +8,9 @@ The [Dart](https://www.dart.dev/) implementation of
 
 See the [Dart gRPC Quickstart](https://grpc.io/docs/quickstart/dart.html).
 
+[grpc-web](https://github.com/grpc/grpc-web) in a browser context is supported by 
+`package:grpc/grpc-web.dart`.
+
 # Status
 
 If you experience issues, or if you have feature requests,
@@ -15,8 +18,8 @@ please [open an issue](https://github.com/dart-lang/grpc-dart/issues).
 
 # Notes
 
-This library requires Dart SDK version 2.0 or later.
+This library requires Dart SDK version 2.2.0 or later.
 
 It currently supports the the [Flutter](https://flutter.dev/) and
-[Dart native](https://dart.dev/platforms) platforms. The potential
-addition of gRPC-Web is tracked in [issue 43](https://github.com/grpc/grpc-dart/issues/43).
+[Dart native](https://dart.dev/platforms) platforms.
+

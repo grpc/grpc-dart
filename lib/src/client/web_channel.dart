@@ -13,11 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
-
 import 'channel.dart';
 import 'connection.dart';
-import 'options.dart';
 import 'transport/xhr_transport.dart';
 
 /// A channel to a grpc-web endpoint.
