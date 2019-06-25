@@ -16,12 +16,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:googleapis_auth/auth.dart' as auth;
-import 'package:googleapis_auth/src/crypto/rsa_sign.dart' show RS256Signer;
+import 'package:googleapis_auth/auth_browser.dart' as auth;
 import 'package:grpc/src/shared/status.dart';
 import 'package:http/http.dart' as http;
 
 import '../client/call.dart';
+import 'rsa.dart';
 
 const _tokenExpirationThreshold = Duration(seconds: 30);
 
@@ -126,7 +126,11 @@ auth.AccessToken _jwtTokenFor(
 
   final data = '$headerBase64.$claimsBase64';
 
-  final signer = RS256Signer(credentials.privateRSAKey);
+  final key = credentials.privateRSAKey;
+  // We convert to our internal version of RSAPrivateKey. See rsa.dart for more
+  // explanation.
+  final signer = RS256Signer(RSAPrivateKey(
+      key.n, key.e, key.d, key.p, key.q, key.dmp1, key.dmq1, key.coeff));
   final signature = signer.sign(ascii.encode(data));
 
   final jwt = '$data.${_base64url(signature)}';
