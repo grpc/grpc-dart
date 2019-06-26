@@ -71,8 +71,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     var socket = await Socket.connect(host, port);
     if (_state == ConnectionState.shutdown) {
       socket.destroy();
-      // TODO(sigurdm): Throw something nicer...
-      throw 'Shutting down';
+      throw _ShutdownException();
     }
     final securityContext = credentials.securityContext;
     if (securityContext != null) {
@@ -82,8 +81,7 @@ class Http2ClientConnection implements connection.ClientConnection {
           onBadCertificate: _validateBadCertificate);
       if (_state == ConnectionState.shutdown) {
         socket.destroy();
-        // TODO(sigurdm): Throw something nicer...
-        throw 'Shutting down';
+        throw _ShutdownException();
       }
     }
     socket.done.then((_) => _handleSocketClosed());
@@ -273,3 +271,5 @@ class Http2ClientConnection implements connection.ClientConnection {
     return validator(certificate, authority);
   }
 }
+
+class _ShutdownException implements Exception {}
