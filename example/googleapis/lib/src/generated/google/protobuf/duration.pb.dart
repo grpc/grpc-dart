@@ -1,56 +1,54 @@
 ///
 //  Generated code. Do not modify.
+//  source: google/protobuf/duration.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library google.protobuf_duration;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
-// ignore: UNUSED_SHOWN_NAME
-import 'dart:core' show int, bool, double, String, List, override;
+import 'dart:core' as $core
+    show bool, Deprecated, double, int, List, Map, override, pragma, String;
 
 import 'package:fixnum/fixnum.dart';
-import 'package:protobuf/protobuf.dart';
+import 'package:protobuf/protobuf.dart' as $pb;
 
-class Duration extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Duration')
+class Duration extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Duration',
+      package: const $pb.PackageName('google.protobuf'))
     ..aInt64(1, 'seconds')
-    ..a<int>(2, 'nanos', PbFieldType.O3)
+    ..a<$core.int>(2, 'nanos', $pb.PbFieldType.O3)
     ..hasRequiredFields = false;
 
-  Duration() : super();
-  Duration.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  Duration.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
-  Duration clone() => new Duration()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static Duration create() => new Duration();
-  static PbList<Duration> createRepeated() => new PbList<Duration>();
-  static Duration getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyDuration();
-    return _defaultInstance;
-  }
-
+  Duration._() : super();
+  factory Duration() => create();
+  factory Duration.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Duration.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  Duration clone() => Duration()..mergeFromMessage(this);
+  Duration copyWith(void Function(Duration) updates) =>
+      super.copyWith((message) => updates(message as Duration));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Duration create() => Duration._();
+  Duration createEmptyInstance() => create();
+  static $pb.PbList<Duration> createRepeated() => $pb.PbList<Duration>();
+  static Duration getDefault() => _defaultInstance ??= create()..freeze();
   static Duration _defaultInstance;
-  static void $checkItem(Duration v) {
-    if (v is! Duration) checkItemFailed(v, 'Duration');
-  }
 
   Int64 get seconds => $_getI64(0);
   set seconds(Int64 v) {
     $_setInt64(0, v);
   }
 
-  bool hasSeconds() => $_has(0);
+  $core.bool hasSeconds() => $_has(0);
   void clearSeconds() => clearField(1);
 
-  int get nanos => $_get(1, 0);
-  set nanos(int v) {
-    $_setUnsignedInt32(1, v);
+  $core.int get nanos => $_get(1, 0);
+  set nanos($core.int v) {
+    $_setSignedInt32(1, v);
   }
 
-  bool hasNanos() => $_has(1);
+  $core.bool hasNanos() => $_has(1);
   void clearNanos() => clearField(2);
 }
-
-class _ReadonlyDuration extends Duration with ReadonlyMessageMixin {}

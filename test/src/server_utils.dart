@@ -15,7 +15,8 @@
 
 import 'dart:async';
 
-import 'package:grpc/src/shared/streams.dart';
+import 'package:grpc/src/client/http2_connection.dart';
+import 'package:grpc/src/shared/message.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 
@@ -43,10 +44,10 @@ class TestService extends Service {
         'ServerStreaming', _serverStreaming, false, true));
     $addMethod(ServerHarness.createMethod(
         'Bidirectional', _bidirectional, true, true));
-    $addMethod(new ServiceMethod<int, int>('RequestError', _bidirectional, true,
+    $addMethod(ServiceMethod<int, int>('RequestError', _bidirectional, true,
         true, (List<int> value) => throw 'Failed', mockEncode));
-    $addMethod(new ServiceMethod<int, int>('ResponseError', _bidirectional,
-        true, true, mockDecode, (int value) => throw 'Failed'));
+    $addMethod(ServiceMethod<int, int>('ResponseError', _bidirectional, true,
+        true, mockDecode, (int value) => throw 'Failed'));
   }
 
   Future<int> _unary(ServiceCall call, Future<int> request) {
@@ -116,25 +117,25 @@ class TestServerStream extends ServerTransportStream {
 }
 
 class ServerHarness {
-  final toServer = new StreamController<StreamMessage>();
-  final fromServer = new StreamController<StreamMessage>();
-  final service = new TestService();
-  final interceptor = new TestInterceptor();
+  final toServer = StreamController<StreamMessage>();
+  final fromServer = StreamController<StreamMessage>();
+  final service = TestService();
+  final interceptor = TestInterceptor();
 
   Server server;
 
   ServerHarness() {
-    server = new Server(<Service>[service], <Interceptor>[interceptor]);
+    server = Server(<Service>[service], <Interceptor>[interceptor]);
   }
 
   static ServiceMethod<int, int> createMethod(String name,
       Function methodHandler, bool clientStreaming, bool serverStreaming) {
-    return new ServiceMethod<int, int>(name, methodHandler, clientStreaming,
+    return ServiceMethod<int, int>(name, methodHandler, clientStreaming,
         serverStreaming, mockDecode, mockEncode);
   }
 
   void setUp() {
-    final stream = new TestServerStream(toServer.stream, fromServer.sink);
+    final stream = TestServerStream(toServer.stream, fromServer.sink);
     server.serveStream_(stream);
   }
 
@@ -170,14 +171,14 @@ class ServerHarness {
       {String authority = 'test',
       Map<String, String> metadata,
       Duration timeout}) {
-    final headers = ClientConnection.createCallHeaders(
-        true, authority, path, timeout, metadata);
-    toServer.add(new HeadersStreamMessage(headers));
+    final headers = Http2ClientConnection.createCallHeaders(
+        true, authority, path, timeout, metadata,
+        userAgent: 'dart-grpc/1.0.0 test');
+    toServer.add(HeadersStreamMessage(headers));
   }
 
   void sendData(int value) {
-    toServer
-        .add(new DataStreamMessage(GrpcHttpEncoder.frame(mockEncode(value))));
+    toServer.add(DataStreamMessage(frame(mockEncode(value))));
   }
 
   void runTest(String path, List<int> requests, List<int> expectedResponses) {

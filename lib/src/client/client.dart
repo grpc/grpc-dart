@@ -18,7 +18,6 @@ import 'dart:async';
 import 'call.dart';
 import 'channel.dart';
 import 'method.dart';
-import 'options.dart';
 
 /// Base class for client stubs.
 class Client {
@@ -26,7 +25,7 @@ class Client {
   final CallOptions _options;
 
   Client(this._channel, {CallOptions options})
-      : _options = options ?? new CallOptions();
+      : _options = options ?? CallOptions();
 
   ClientCall<Q, R> $createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests,

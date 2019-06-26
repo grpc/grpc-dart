@@ -1,186 +1,202 @@
 ///
 //  Generated code. Do not modify.
+//  source: google/api/monitored_resource.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library google.api_monitored_resource;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
-// ignore: UNUSED_SHOWN_NAME
-import 'dart:core' show int, bool, double, String, List, override;
+import 'dart:core' as $core
+    show bool, Deprecated, double, int, List, Map, override, pragma, String;
 
-import 'package:protobuf/protobuf.dart';
+import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'label.pb.dart';
+import 'label.pb.dart' as $0;
+import '../protobuf/struct.pb.dart' as $1;
 
-class MonitoredResourceDescriptor extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('MonitoredResourceDescriptor')
+import 'launch_stage.pbenum.dart' as $2;
+
+class MonitoredResourceDescriptor extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      'MonitoredResourceDescriptor',
+      package: const $pb.PackageName('google.api'))
     ..aOS(1, 'type')
     ..aOS(2, 'displayName')
     ..aOS(3, 'description')
-    ..pp<LabelDescriptor>(4, 'labels', PbFieldType.PM,
-        LabelDescriptor.$checkItem, LabelDescriptor.create)
+    ..pc<$0.LabelDescriptor>(
+        4, 'labels', $pb.PbFieldType.PM, $0.LabelDescriptor.create)
     ..aOS(5, 'name')
+    ..e<$2.LaunchStage>(
+        7,
+        'launchStage',
+        $pb.PbFieldType.OE,
+        $2.LaunchStage.LAUNCH_STAGE_UNSPECIFIED,
+        $2.LaunchStage.valueOf,
+        $2.LaunchStage.values)
     ..hasRequiredFields = false;
 
-  MonitoredResourceDescriptor() : super();
-  MonitoredResourceDescriptor.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  MonitoredResourceDescriptor.fromJson(String i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  MonitoredResourceDescriptor._() : super();
+  factory MonitoredResourceDescriptor() => create();
+  factory MonitoredResourceDescriptor.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory MonitoredResourceDescriptor.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   MonitoredResourceDescriptor clone() =>
-      new MonitoredResourceDescriptor()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
+      MonitoredResourceDescriptor()..mergeFromMessage(this);
+  MonitoredResourceDescriptor copyWith(
+          void Function(MonitoredResourceDescriptor) updates) =>
+      super.copyWith(
+          (message) => updates(message as MonitoredResourceDescriptor));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
   static MonitoredResourceDescriptor create() =>
-      new MonitoredResourceDescriptor();
-  static PbList<MonitoredResourceDescriptor> createRepeated() =>
-      new PbList<MonitoredResourceDescriptor>();
-  static MonitoredResourceDescriptor getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyMonitoredResourceDescriptor();
-    return _defaultInstance;
-  }
-
+      MonitoredResourceDescriptor._();
+  MonitoredResourceDescriptor createEmptyInstance() => create();
+  static $pb.PbList<MonitoredResourceDescriptor> createRepeated() =>
+      $pb.PbList<MonitoredResourceDescriptor>();
+  static MonitoredResourceDescriptor getDefault() =>
+      _defaultInstance ??= create()..freeze();
   static MonitoredResourceDescriptor _defaultInstance;
-  static void $checkItem(MonitoredResourceDescriptor v) {
-    if (v is! MonitoredResourceDescriptor)
-      checkItemFailed(v, 'MonitoredResourceDescriptor');
-  }
 
-  String get type => $_getS(0, '');
-  set type(String v) {
+  $core.String get type => $_getS(0, '');
+  set type($core.String v) {
     $_setString(0, v);
   }
 
-  bool hasType() => $_has(0);
+  $core.bool hasType() => $_has(0);
   void clearType() => clearField(1);
 
-  String get displayName => $_getS(1, '');
-  set displayName(String v) {
+  $core.String get displayName => $_getS(1, '');
+  set displayName($core.String v) {
     $_setString(1, v);
   }
 
-  bool hasDisplayName() => $_has(1);
+  $core.bool hasDisplayName() => $_has(1);
   void clearDisplayName() => clearField(2);
 
-  String get description => $_getS(2, '');
-  set description(String v) {
+  $core.String get description => $_getS(2, '');
+  set description($core.String v) {
     $_setString(2, v);
   }
 
-  bool hasDescription() => $_has(2);
+  $core.bool hasDescription() => $_has(2);
   void clearDescription() => clearField(3);
 
-  List<LabelDescriptor> get labels => $_getList(3);
+  $core.List<$0.LabelDescriptor> get labels => $_getList(3);
 
-  String get name => $_getS(4, '');
-  set name(String v) {
+  $core.String get name => $_getS(4, '');
+  set name($core.String v) {
     $_setString(4, v);
   }
 
-  bool hasName() => $_has(4);
+  $core.bool hasName() => $_has(4);
   void clearName() => clearField(5);
+
+  $2.LaunchStage get launchStage => $_getN(5);
+  set launchStage($2.LaunchStage v) {
+    setField(7, v);
+  }
+
+  $core.bool hasLaunchStage() => $_has(5);
+  void clearLaunchStage() => clearField(7);
 }
 
-class _ReadonlyMonitoredResourceDescriptor extends MonitoredResourceDescriptor
-    with ReadonlyMessageMixin {}
-
-class MonitoredResource_LabelsEntry extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('MonitoredResource_LabelsEntry')
-    ..aOS(1, 'key')
-    ..aOS(2, 'value')
-    ..hasRequiredFields = false;
-
-  MonitoredResource_LabelsEntry() : super();
-  MonitoredResource_LabelsEntry.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  MonitoredResource_LabelsEntry.fromJson(String i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
-  MonitoredResource_LabelsEntry clone() =>
-      new MonitoredResource_LabelsEntry()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static MonitoredResource_LabelsEntry create() =>
-      new MonitoredResource_LabelsEntry();
-  static PbList<MonitoredResource_LabelsEntry> createRepeated() =>
-      new PbList<MonitoredResource_LabelsEntry>();
-  static MonitoredResource_LabelsEntry getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyMonitoredResource_LabelsEntry();
-    return _defaultInstance;
-  }
-
-  static MonitoredResource_LabelsEntry _defaultInstance;
-  static void $checkItem(MonitoredResource_LabelsEntry v) {
-    if (v is! MonitoredResource_LabelsEntry)
-      checkItemFailed(v, 'MonitoredResource_LabelsEntry');
-  }
-
-  String get key => $_getS(0, '');
-  set key(String v) {
-    $_setString(0, v);
-  }
-
-  bool hasKey() => $_has(0);
-  void clearKey() => clearField(1);
-
-  String get value => $_getS(1, '');
-  set value(String v) {
-    $_setString(1, v);
-  }
-
-  bool hasValue() => $_has(1);
-  void clearValue() => clearField(2);
-}
-
-class _ReadonlyMonitoredResource_LabelsEntry
-    extends MonitoredResource_LabelsEntry with ReadonlyMessageMixin {}
-
-class MonitoredResource extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('MonitoredResource')
+class MonitoredResource extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('MonitoredResource',
+      package: const $pb.PackageName('google.api'))
     ..aOS(1, 'type')
-    ..pp<MonitoredResource_LabelsEntry>(
+    ..m<$core.String, $core.String>(
         2,
         'labels',
-        PbFieldType.PM,
-        MonitoredResource_LabelsEntry.$checkItem,
-        MonitoredResource_LabelsEntry.create)
+        'MonitoredResource.LabelsEntry',
+        $pb.PbFieldType.OS,
+        $pb.PbFieldType.OS,
+        null,
+        null,
+        null,
+        const $pb.PackageName('google.api'))
     ..hasRequiredFields = false;
 
-  MonitoredResource() : super();
-  MonitoredResource.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  MonitoredResource.fromJson(String i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
-  MonitoredResource clone() => new MonitoredResource()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static MonitoredResource create() => new MonitoredResource();
-  static PbList<MonitoredResource> createRepeated() =>
-      new PbList<MonitoredResource>();
-  static MonitoredResource getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyMonitoredResource();
-    return _defaultInstance;
-  }
-
+  MonitoredResource._() : super();
+  factory MonitoredResource() => create();
+  factory MonitoredResource.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory MonitoredResource.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  MonitoredResource clone() => MonitoredResource()..mergeFromMessage(this);
+  MonitoredResource copyWith(void Function(MonitoredResource) updates) =>
+      super.copyWith((message) => updates(message as MonitoredResource));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static MonitoredResource create() => MonitoredResource._();
+  MonitoredResource createEmptyInstance() => create();
+  static $pb.PbList<MonitoredResource> createRepeated() =>
+      $pb.PbList<MonitoredResource>();
+  static MonitoredResource getDefault() =>
+      _defaultInstance ??= create()..freeze();
   static MonitoredResource _defaultInstance;
-  static void $checkItem(MonitoredResource v) {
-    if (v is! MonitoredResource) checkItemFailed(v, 'MonitoredResource');
-  }
 
-  String get type => $_getS(0, '');
-  set type(String v) {
+  $core.String get type => $_getS(0, '');
+  set type($core.String v) {
     $_setString(0, v);
   }
 
-  bool hasType() => $_has(0);
+  $core.bool hasType() => $_has(0);
   void clearType() => clearField(1);
 
-  List<MonitoredResource_LabelsEntry> get labels => $_getList(1);
+  $core.Map<$core.String, $core.String> get labels => $_getMap(1);
 }
 
-class _ReadonlyMonitoredResource extends MonitoredResource
-    with ReadonlyMessageMixin {}
+class MonitoredResourceMetadata extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('MonitoredResourceMetadata',
+      package: const $pb.PackageName('google.api'))
+    ..a<$1.Struct>(1, 'systemLabels', $pb.PbFieldType.OM, $1.Struct.getDefault,
+        $1.Struct.create)
+    ..m<$core.String, $core.String>(
+        2,
+        'userLabels',
+        'MonitoredResourceMetadata.UserLabelsEntry',
+        $pb.PbFieldType.OS,
+        $pb.PbFieldType.OS,
+        null,
+        null,
+        null,
+        const $pb.PackageName('google.api'))
+    ..hasRequiredFields = false;
+
+  MonitoredResourceMetadata._() : super();
+  factory MonitoredResourceMetadata() => create();
+  factory MonitoredResourceMetadata.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory MonitoredResourceMetadata.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  MonitoredResourceMetadata clone() =>
+      MonitoredResourceMetadata()..mergeFromMessage(this);
+  MonitoredResourceMetadata copyWith(
+          void Function(MonitoredResourceMetadata) updates) =>
+      super
+          .copyWith((message) => updates(message as MonitoredResourceMetadata));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static MonitoredResourceMetadata create() => MonitoredResourceMetadata._();
+  MonitoredResourceMetadata createEmptyInstance() => create();
+  static $pb.PbList<MonitoredResourceMetadata> createRepeated() =>
+      $pb.PbList<MonitoredResourceMetadata>();
+  static MonitoredResourceMetadata getDefault() =>
+      _defaultInstance ??= create()..freeze();
+  static MonitoredResourceMetadata _defaultInstance;
+
+  $1.Struct get systemLabels => $_getN(0);
+  set systemLabels($1.Struct v) {
+    setField(1, v);
+  }
+
+  $core.bool hasSystemLabels() => $_has(0);
+  void clearSystemLabels() => clearField(1);
+
+  $core.Map<$core.String, $core.String> get userLabels => $_getMap(1);
+}

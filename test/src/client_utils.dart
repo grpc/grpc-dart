@@ -14,8 +14,10 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:grpc/src/shared/streams.dart';
+import 'package:grpc/src/client/http2_connection.dart';
+import 'package:grpc/src/shared/message.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
@@ -28,7 +30,7 @@ class MockTransport extends Mock implements ClientTransportConnection {}
 
 class MockStream extends Mock implements ClientTransportStream {}
 
-class FakeConnection extends ClientConnection {
+class FakeConnection extends Http2ClientConnection {
   final ClientTransportConnection transport;
 
   var connectionError;
@@ -48,58 +50,58 @@ Duration testBackoff(Duration lastBackoff) => const Duration(milliseconds: 1);
 class FakeChannelOptions implements ChannelOptions {
   ChannelCredentials credentials = const ChannelCredentials.secure();
   Duration idleTimeout = const Duration(seconds: 1);
+  String userAgent = 'dart-grpc/1.0.0 test';
   BackoffStrategy backoffStrategy = testBackoff;
 }
 
 class FakeChannel extends ClientChannel {
-  final ClientConnection connection;
+  final Http2ClientConnection connection;
   final FakeChannelOptions options;
 
   FakeChannel(String host, this.connection, this.options)
       : super(host, options: options);
 
   @override
-  Future<ClientConnection> getConnection() async => connection;
+  Future<Http2ClientConnection> getConnection() async => connection;
 }
 
 typedef ServerMessageHandler = void Function(StreamMessage message);
 
 class TestClient extends Client {
   static final _$unary =
-      new ClientMethod<int, int>('/Test/Unary', mockEncode, mockDecode);
-  static final _$clientStreaming = new ClientMethod<int, int>(
-      '/Test/ClientStreaming', mockEncode, mockDecode);
-  static final _$serverStreaming = new ClientMethod<int, int>(
-      '/Test/ServerStreaming', mockEncode, mockDecode);
+      ClientMethod<int, int>('/Test/Unary', mockEncode, mockDecode);
+  static final _$clientStreaming =
+      ClientMethod<int, int>('/Test/ClientStreaming', mockEncode, mockDecode);
+  static final _$serverStreaming =
+      ClientMethod<int, int>('/Test/ServerStreaming', mockEncode, mockDecode);
   static final _$bidirectional =
-      new ClientMethod<int, int>('/Test/Bidirectional', mockEncode, mockDecode);
+      ClientMethod<int, int>('/Test/Bidirectional', mockEncode, mockDecode);
 
   TestClient(ClientChannel channel, {CallOptions options})
       : super(channel, options: options);
 
   ResponseFuture<int> unary(int request, {CallOptions options}) {
-    final call = $createCall(_$unary, new Stream.fromIterable([request]),
-        options: options);
-    return new ResponseFuture(call);
+    final call =
+        $createCall(_$unary, Stream.fromIterable([request]), options: options);
+    return ResponseFuture(call);
   }
 
   ResponseFuture<int> clientStreaming(Stream<int> request,
       {CallOptions options}) {
     final call = $createCall(_$clientStreaming, request, options: options);
-    return new ResponseFuture(call);
+    return ResponseFuture(call);
   }
 
   ResponseStream<int> serverStreaming(int request, {CallOptions options}) {
-    final call = $createCall(
-        _$serverStreaming, new Stream.fromIterable([request]),
+    final call = $createCall(_$serverStreaming, Stream.fromIterable([request]),
         options: options);
-    return new ResponseStream(call);
+    return ResponseStream(call);
   }
 
   ResponseStream<int> bidirectional(Stream<int> request,
       {CallOptions options}) {
     final call = $createCall(_$bidirectional, request, options: options);
-    return new ResponseStream(call);
+    return ResponseStream(call);
   }
 }
 
@@ -116,19 +118,19 @@ class ClientHarness {
   TestClient client;
 
   void setUp() {
-    transport = new MockTransport();
-    channelOptions = new FakeChannelOptions();
-    connection = new FakeConnection('test', transport, channelOptions);
-    channel = new FakeChannel('test', connection, channelOptions);
-    stream = new MockStream();
-    fromClient = new StreamController();
-    toClient = new StreamController();
+    transport = MockTransport();
+    channelOptions = FakeChannelOptions();
+    connection = FakeConnection('test', transport, channelOptions);
+    channel = FakeChannel('test', connection, channelOptions);
+    stream = MockStream();
+    fromClient = StreamController();
+    toClient = StreamController();
     when(transport.makeRequest(any, endStream: anyNamed('endStream')))
         .thenReturn(stream);
     when(transport.onActiveStateChanged = captureAny).thenReturn(null);
     when(stream.outgoingMessages).thenReturn(fromClient.sink);
     when(stream.incomingMessages).thenAnswer((_) => toClient.stream);
-    client = new TestClient(channel);
+    client = TestClient(channel);
   }
 
   void tearDown() {
@@ -137,17 +139,16 @@ class ClientHarness {
   }
 
   void sendResponseHeader({List<Header> headers = const []}) {
-    toClient.add(new HeadersStreamMessage(headers));
+    toClient.add(HeadersStreamMessage(headers));
   }
 
   void sendResponseValue(int value) {
-    toClient
-        .add(new DataStreamMessage(GrpcHttpEncoder.frame(mockEncode(value))));
+    toClient.add(DataStreamMessage(frame(mockEncode(value))));
   }
 
   void sendResponseTrailer(
       {List<Header> headers = const [], bool closeStream = true}) {
-    toClient.add(new HeadersStreamMessage(headers, endStream: true));
+    toClient.add(HeadersStreamMessage(headers, endStream: true));
     if (closeStream) toClient.close();
   }
 
@@ -184,7 +185,9 @@ class ClientHarness {
 
     final List<Header> capturedHeaders =
         verify(transport.makeRequest(captureAny)).captured.single;
-    validateRequestHeaders(capturedHeaders,
+    validateRequestHeaders(
+        Map.fromEntries(capturedHeaders.map((header) =>
+            MapEntry(utf8.decode(header.name), utf8.decode(header.value)))),
         path: expectedPath,
         timeout: toTimeoutString(expectedTimeout),
         customHeaders: expectedCustomHeaders);

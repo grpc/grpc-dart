@@ -12,6 +12,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+@TestOn('vm')
 
 import 'dart:async';
 
@@ -27,7 +28,7 @@ void main() {
   ServerHarness harness;
 
   setUp(() {
-    harness = new ServerHarness()..setUp();
+    harness = ServerHarness()..setUp();
   });
 
   tearDown(() {
@@ -49,7 +50,7 @@ void main() {
   });
 
   test('Client-streaming calls work on the server', () async {
-    const expectedRequests = const [5, 3, 17];
+    const expectedRequests = [5, 3, 17];
     const expectedResponse = 12;
     Future<int> methodHandler(ServiceCall call, Stream<int> request) async {
       expect(await request.toList(), expectedRequests);
@@ -64,7 +65,7 @@ void main() {
 
   test('Server-streaming calls work on the server', () async {
     const expectedRequest = 5;
-    const expectedResponses = const [7, 9, 1];
+    const expectedResponses = [7, 9, 1];
 
     Stream<int> methodHandler(ServiceCall call, Future<int> request) async* {
       expect(await request, expectedRequest);
@@ -80,7 +81,7 @@ void main() {
   });
 
   test('Bidirectional calls work on the server', () async {
-    const expectedRequests = const [3, 1, 7];
+    const expectedRequests = [3, 1, 7];
     final expectedResponses = expectedRequests.map((v) => v + 5).toList();
 
     Stream<int> methodHandler(ServiceCall call, Stream<int> request) async* {
@@ -159,7 +160,7 @@ void main() {
   test('Server returns error on missing request for unary call', () async {
     harness
       ..service.unaryHandler =
-          expectError(new GrpcError.unimplemented('No request received'))
+          expectError(GrpcError.unimplemented('No request received'))
       ..expectErrorResponse(StatusCode.unimplemented, 'No request received')
       ..sendRequestHeader('/Test/Unary')
       ..toServer.close();
@@ -170,10 +171,10 @@ void main() {
       () async {
     harness
       ..service.unaryHandler =
-          expectError(new GrpcError.unimplemented('Expected request'))
+          expectError(GrpcError.unimplemented('Expected request'))
       ..expectErrorResponse(StatusCode.unimplemented, 'Expected request')
       ..sendRequestHeader('/Test/Unary')
-      ..toServer.add(new HeadersStreamMessage([]))
+      ..toServer.add(HeadersStreamMessage([]))
       ..toServer.close();
     await harness.fromServer.done;
   });
@@ -181,7 +182,7 @@ void main() {
   test('Server returns error on too many requests for unary call', () async {
     harness
       ..service.unaryHandler =
-          expectError(new GrpcError.unimplemented('Too many requests'))
+          expectError(GrpcError.unimplemented('Too many requests'))
       ..expectErrorResponse(StatusCode.unimplemented, 'Too many requests')
       ..sendRequestHeader('/Test/Unary')
       ..sendData(dummyValue)
@@ -193,7 +194,7 @@ void main() {
   test('Server returns request deserialization errors', () async {
     harness
       ..service.bidirectionalHandler = expectErrorStreaming(
-          new GrpcError.internal('Error deserializing request: Failed'))
+          GrpcError.internal('Error deserializing request: Failed'))
       ..expectErrorResponse(
           StatusCode.internal, 'Error deserializing request: Failed')
       ..sendRequestHeader('/Test/RequestError')
@@ -205,7 +206,7 @@ void main() {
   test('Server returns response serialization errors', () async {
     harness
       ..service.bidirectionalHandler = expectErrorStreaming(
-          new GrpcError.internal('Error sending response: Failed'))
+          GrpcError.internal('Error sending response: Failed'))
       ..expectErrorResponse(
           StatusCode.internal, 'Error sending response: Failed')
       ..sendRequestHeader('/Test/ResponseError')
@@ -230,7 +231,7 @@ void main() {
   });
 
   test('Server receives cancel', () async {
-    final success = new Completer<bool>();
+    final success = Completer<bool>();
 
     Future<int> methodHandler(ServiceCall call, Future<int> request) async {
       try {
@@ -239,7 +240,7 @@ void main() {
         return result;
       } catch (caughtError) {
         try {
-          expect(caughtError, new GrpcError.cancelled('Cancelled'));
+          expect(caughtError, GrpcError.cancelled('Cancelled'));
           expect(call.isCanceled, isTrue);
           success.complete(true);
         } catch (failure, stack) {
@@ -291,7 +292,7 @@ void main() {
         if (method.name == "Unary") {
           return null;
         }
-        return new GrpcError.unauthenticated('Request is unauthenticated');
+        return GrpcError.unauthenticated('Request is unauthenticated');
       };
 
       Future<void> doTest(Interceptor handler) async {
@@ -311,7 +312,7 @@ void main() {
     group('returns error if interceptor blocks request', () {
       final Interceptor interceptor = (call, method) {
         if (method.name == "Unary") {
-          return new GrpcError.unauthenticated('Request is unauthenticated');
+          return GrpcError.unauthenticated('Request is unauthenticated');
         }
         return null;
       };
@@ -333,7 +334,7 @@ void main() {
 
     group('returns internal error if interceptor throws exception', () {
       final Interceptor interceptor = (call, method) {
-        throw new Exception('Reason is unknown');
+        throw Exception('Reason is unknown');
       };
 
       Future<void> doTest(Interceptor handler) async {
@@ -355,7 +356,7 @@ void main() {
       final Interceptor interceptor = (call, method) async {
         await Future.value();
         await Future.value();
-        throw new Exception('Reason is unknown');
+        throw Exception('Reason is unknown');
       };
 
       harness

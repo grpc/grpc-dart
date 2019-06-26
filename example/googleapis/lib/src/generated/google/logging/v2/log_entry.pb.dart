@@ -1,215 +1,166 @@
 ///
 //  Generated code. Do not modify.
+//  source: google/logging/v2/log_entry.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library google.logging.v2_log_entry;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
-// ignore: UNUSED_SHOWN_NAME
-import 'dart:core' show int, bool, double, String, List, override;
+import 'dart:core' as $core
+    show bool, Deprecated, double, int, List, Map, override, pragma, String;
 
 import 'package:fixnum/fixnum.dart';
-import 'package:protobuf/protobuf.dart';
+import 'package:protobuf/protobuf.dart' as $pb;
 
-import '../../protobuf/any.pb.dart' as $google$protobuf;
-import '../../protobuf/struct.pb.dart' as $google$protobuf;
-import '../type/http_request.pb.dart' as $google$logging$type;
-import '../../api/monitored_resource.pb.dart' as $google$api;
-import '../../protobuf/timestamp.pb.dart' as $google$protobuf;
+import '../../protobuf/any.pb.dart' as $0;
+import '../../protobuf/struct.pb.dart' as $1;
+import '../type/http_request.pb.dart' as $2;
+import '../../api/monitored_resource.pb.dart' as $3;
+import '../../protobuf/timestamp.pb.dart' as $4;
 
-import '../type/log_severity.pbenum.dart' as $google$logging$type;
+import '../type/log_severity.pbenum.dart' as $5;
 
-class LogEntry_LabelsEntry extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('LogEntry_LabelsEntry')
-    ..aOS(1, 'key')
-    ..aOS(2, 'value')
-    ..hasRequiredFields = false;
+enum LogEntry_Payload { protoPayload, textPayload, jsonPayload, notSet }
 
-  LogEntry_LabelsEntry() : super();
-  LogEntry_LabelsEntry.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  LogEntry_LabelsEntry.fromJson(String i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
-  LogEntry_LabelsEntry clone() =>
-      new LogEntry_LabelsEntry()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static LogEntry_LabelsEntry create() => new LogEntry_LabelsEntry();
-  static PbList<LogEntry_LabelsEntry> createRepeated() =>
-      new PbList<LogEntry_LabelsEntry>();
-  static LogEntry_LabelsEntry getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyLogEntry_LabelsEntry();
-    return _defaultInstance;
-  }
-
-  static LogEntry_LabelsEntry _defaultInstance;
-  static void $checkItem(LogEntry_LabelsEntry v) {
-    if (v is! LogEntry_LabelsEntry) checkItemFailed(v, 'LogEntry_LabelsEntry');
-  }
-
-  String get key => $_getS(0, '');
-  set key(String v) {
-    $_setString(0, v);
-  }
-
-  bool hasKey() => $_has(0);
-  void clearKey() => clearField(1);
-
-  String get value => $_getS(1, '');
-  set value(String v) {
-    $_setString(1, v);
-  }
-
-  bool hasValue() => $_has(1);
-  void clearValue() => clearField(2);
-}
-
-class _ReadonlyLogEntry_LabelsEntry extends LogEntry_LabelsEntry
-    with ReadonlyMessageMixin {}
-
-class LogEntry extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('LogEntry')
-    ..a<$google$protobuf.Any>(2, 'protoPayload', PbFieldType.OM,
-        $google$protobuf.Any.getDefault, $google$protobuf.Any.create)
+class LogEntry extends $pb.GeneratedMessage {
+  static const $core.Map<$core.int, LogEntry_Payload> _LogEntry_PayloadByTag = {
+    2: LogEntry_Payload.protoPayload,
+    3: LogEntry_Payload.textPayload,
+    6: LogEntry_Payload.jsonPayload,
+    0: LogEntry_Payload.notSet
+  };
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('LogEntry',
+      package: const $pb.PackageName('google.logging.v2'))
+    ..oo(0, [2, 3, 6])
+    ..a<$0.Any>(
+        2, 'protoPayload', $pb.PbFieldType.OM, $0.Any.getDefault, $0.Any.create)
     ..aOS(3, 'textPayload')
     ..aOS(4, 'insertId')
-    ..a<$google$protobuf.Struct>(6, 'jsonPayload', PbFieldType.OM,
-        $google$protobuf.Struct.getDefault, $google$protobuf.Struct.create)
-    ..a<$google$logging$type.HttpRequest>(
-        7,
-        'httpRequest',
-        PbFieldType.OM,
-        $google$logging$type.HttpRequest.getDefault,
-        $google$logging$type.HttpRequest.create)
-    ..a<$google$api.MonitoredResource>(
-        8,
-        'resource',
-        PbFieldType.OM,
-        $google$api.MonitoredResource.getDefault,
-        $google$api.MonitoredResource.create)
-    ..a<$google$protobuf.Timestamp>(
-        9,
-        'timestamp',
-        PbFieldType.OM,
-        $google$protobuf.Timestamp.getDefault,
-        $google$protobuf.Timestamp.create)
-    ..e<$google$logging$type.LogSeverity>(
-        10,
-        'severity',
-        PbFieldType.OE,
-        $google$logging$type.LogSeverity.DEFAULT,
-        $google$logging$type.LogSeverity.valueOf,
-        $google$logging$type.LogSeverity.values)
-    ..pp<LogEntry_LabelsEntry>(11, 'labels', PbFieldType.PM,
-        LogEntry_LabelsEntry.$checkItem, LogEntry_LabelsEntry.create)
+    ..a<$1.Struct>(6, 'jsonPayload', $pb.PbFieldType.OM, $1.Struct.getDefault,
+        $1.Struct.create)
+    ..a<$2.HttpRequest>(7, 'httpRequest', $pb.PbFieldType.OM,
+        $2.HttpRequest.getDefault, $2.HttpRequest.create)
+    ..a<$3.MonitoredResource>(8, 'resource', $pb.PbFieldType.OM,
+        $3.MonitoredResource.getDefault, $3.MonitoredResource.create)
+    ..a<$4.Timestamp>(9, 'timestamp', $pb.PbFieldType.OM,
+        $4.Timestamp.getDefault, $4.Timestamp.create)
+    ..e<$5.LogSeverity>(10, 'severity', $pb.PbFieldType.OE,
+        $5.LogSeverity.DEFAULT, $5.LogSeverity.valueOf, $5.LogSeverity.values)
+    ..m<$core.String, $core.String>(
+        11,
+        'labels',
+        'LogEntry.LabelsEntry',
+        $pb.PbFieldType.OS,
+        $pb.PbFieldType.OS,
+        null,
+        null,
+        null,
+        const $pb.PackageName('google.logging.v2'))
     ..aOS(12, 'logName')
-    ..a<LogEntryOperation>(15, 'operation', PbFieldType.OM,
+    ..a<LogEntryOperation>(15, 'operation', $pb.PbFieldType.OM,
         LogEntryOperation.getDefault, LogEntryOperation.create)
     ..aOS(22, 'trace')
-    ..a<LogEntrySourceLocation>(23, 'sourceLocation', PbFieldType.OM,
+    ..a<LogEntrySourceLocation>(23, 'sourceLocation', $pb.PbFieldType.OM,
         LogEntrySourceLocation.getDefault, LogEntrySourceLocation.create)
-    ..a<$google$protobuf.Timestamp>(
-        24,
-        'receiveTimestamp',
-        PbFieldType.OM,
-        $google$protobuf.Timestamp.getDefault,
-        $google$protobuf.Timestamp.create)
+    ..a<$4.Timestamp>(
+        24, 'receiveTimestamp', $pb.PbFieldType.OM, $4.Timestamp.getDefault, $4.Timestamp.create)
+    ..a<$3.MonitoredResourceMetadata>(25, 'metadata', $pb.PbFieldType.OM, $3.MonitoredResourceMetadata.getDefault, $3.MonitoredResourceMetadata.create)
     ..aOS(27, 'spanId')
+    ..aOB(30, 'traceSampled')
     ..hasRequiredFields = false;
 
-  LogEntry() : super();
-  LogEntry.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  LogEntry.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
-  LogEntry clone() => new LogEntry()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static LogEntry create() => new LogEntry();
-  static PbList<LogEntry> createRepeated() => new PbList<LogEntry>();
-  static LogEntry getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyLogEntry();
-    return _defaultInstance;
-  }
-
+  LogEntry._() : super();
+  factory LogEntry() => create();
+  factory LogEntry.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory LogEntry.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  LogEntry clone() => LogEntry()..mergeFromMessage(this);
+  LogEntry copyWith(void Function(LogEntry) updates) =>
+      super.copyWith((message) => updates(message as LogEntry));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static LogEntry create() => LogEntry._();
+  LogEntry createEmptyInstance() => create();
+  static $pb.PbList<LogEntry> createRepeated() => $pb.PbList<LogEntry>();
+  static LogEntry getDefault() => _defaultInstance ??= create()..freeze();
   static LogEntry _defaultInstance;
-  static void $checkItem(LogEntry v) {
-    if (v is! LogEntry) checkItemFailed(v, 'LogEntry');
-  }
 
-  $google$protobuf.Any get protoPayload => $_getN(0);
-  set protoPayload($google$protobuf.Any v) {
+  LogEntry_Payload whichPayload() => _LogEntry_PayloadByTag[$_whichOneof(0)];
+  void clearPayload() => clearField($_whichOneof(0));
+
+  $0.Any get protoPayload => $_getN(0);
+  set protoPayload($0.Any v) {
     setField(2, v);
   }
 
-  bool hasProtoPayload() => $_has(0);
+  $core.bool hasProtoPayload() => $_has(0);
   void clearProtoPayload() => clearField(2);
 
-  String get textPayload => $_getS(1, '');
-  set textPayload(String v) {
+  $core.String get textPayload => $_getS(1, '');
+  set textPayload($core.String v) {
     $_setString(1, v);
   }
 
-  bool hasTextPayload() => $_has(1);
+  $core.bool hasTextPayload() => $_has(1);
   void clearTextPayload() => clearField(3);
 
-  String get insertId => $_getS(2, '');
-  set insertId(String v) {
+  $core.String get insertId => $_getS(2, '');
+  set insertId($core.String v) {
     $_setString(2, v);
   }
 
-  bool hasInsertId() => $_has(2);
+  $core.bool hasInsertId() => $_has(2);
   void clearInsertId() => clearField(4);
 
-  $google$protobuf.Struct get jsonPayload => $_getN(3);
-  set jsonPayload($google$protobuf.Struct v) {
+  $1.Struct get jsonPayload => $_getN(3);
+  set jsonPayload($1.Struct v) {
     setField(6, v);
   }
 
-  bool hasJsonPayload() => $_has(3);
+  $core.bool hasJsonPayload() => $_has(3);
   void clearJsonPayload() => clearField(6);
 
-  $google$logging$type.HttpRequest get httpRequest => $_getN(4);
-  set httpRequest($google$logging$type.HttpRequest v) {
+  $2.HttpRequest get httpRequest => $_getN(4);
+  set httpRequest($2.HttpRequest v) {
     setField(7, v);
   }
 
-  bool hasHttpRequest() => $_has(4);
+  $core.bool hasHttpRequest() => $_has(4);
   void clearHttpRequest() => clearField(7);
 
-  $google$api.MonitoredResource get resource => $_getN(5);
-  set resource($google$api.MonitoredResource v) {
+  $3.MonitoredResource get resource => $_getN(5);
+  set resource($3.MonitoredResource v) {
     setField(8, v);
   }
 
-  bool hasResource() => $_has(5);
+  $core.bool hasResource() => $_has(5);
   void clearResource() => clearField(8);
 
-  $google$protobuf.Timestamp get timestamp => $_getN(6);
-  set timestamp($google$protobuf.Timestamp v) {
+  $4.Timestamp get timestamp => $_getN(6);
+  set timestamp($4.Timestamp v) {
     setField(9, v);
   }
 
-  bool hasTimestamp() => $_has(6);
+  $core.bool hasTimestamp() => $_has(6);
   void clearTimestamp() => clearField(9);
 
-  $google$logging$type.LogSeverity get severity => $_getN(7);
-  set severity($google$logging$type.LogSeverity v) {
+  $5.LogSeverity get severity => $_getN(7);
+  set severity($5.LogSeverity v) {
     setField(10, v);
   }
 
-  bool hasSeverity() => $_has(7);
+  $core.bool hasSeverity() => $_has(7);
   void clearSeverity() => clearField(10);
 
-  List<LogEntry_LabelsEntry> get labels => $_getList(8);
+  $core.Map<$core.String, $core.String> get labels => $_getMap(8);
 
-  String get logName => $_getS(9, '');
-  set logName(String v) {
+  $core.String get logName => $_getS(9, '');
+  set logName($core.String v) {
     $_setString(9, v);
   }
 
-  bool hasLogName() => $_has(9);
+  $core.bool hasLogName() => $_has(9);
   void clearLogName() => clearField(12);
 
   LogEntryOperation get operation => $_getN(10);
@@ -217,15 +168,15 @@ class LogEntry extends GeneratedMessage {
     setField(15, v);
   }
 
-  bool hasOperation() => $_has(10);
+  $core.bool hasOperation() => $_has(10);
   void clearOperation() => clearField(15);
 
-  String get trace => $_getS(11, '');
-  set trace(String v) {
+  $core.String get trace => $_getS(11, '');
+  set trace($core.String v) {
     $_setString(11, v);
   }
 
-  bool hasTrace() => $_has(11);
+  $core.bool hasTrace() => $_has(11);
   void clearTrace() => clearField(22);
 
   LogEntrySourceLocation get sourceLocation => $_getN(12);
@@ -233,133 +184,142 @@ class LogEntry extends GeneratedMessage {
     setField(23, v);
   }
 
-  bool hasSourceLocation() => $_has(12);
+  $core.bool hasSourceLocation() => $_has(12);
   void clearSourceLocation() => clearField(23);
 
-  $google$protobuf.Timestamp get receiveTimestamp => $_getN(13);
-  set receiveTimestamp($google$protobuf.Timestamp v) {
+  $4.Timestamp get receiveTimestamp => $_getN(13);
+  set receiveTimestamp($4.Timestamp v) {
     setField(24, v);
   }
 
-  bool hasReceiveTimestamp() => $_has(13);
+  $core.bool hasReceiveTimestamp() => $_has(13);
   void clearReceiveTimestamp() => clearField(24);
 
-  String get spanId => $_getS(14, '');
-  set spanId(String v) {
-    $_setString(14, v);
+  $3.MonitoredResourceMetadata get metadata => $_getN(14);
+  set metadata($3.MonitoredResourceMetadata v) {
+    setField(25, v);
   }
 
-  bool hasSpanId() => $_has(14);
+  $core.bool hasMetadata() => $_has(14);
+  void clearMetadata() => clearField(25);
+
+  $core.String get spanId => $_getS(15, '');
+  set spanId($core.String v) {
+    $_setString(15, v);
+  }
+
+  $core.bool hasSpanId() => $_has(15);
   void clearSpanId() => clearField(27);
+
+  $core.bool get traceSampled => $_get(16, false);
+  set traceSampled($core.bool v) {
+    $_setBool(16, v);
+  }
+
+  $core.bool hasTraceSampled() => $_has(16);
+  void clearTraceSampled() => clearField(30);
 }
 
-class _ReadonlyLogEntry extends LogEntry with ReadonlyMessageMixin {}
-
-class LogEntryOperation extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('LogEntryOperation')
+class LogEntryOperation extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('LogEntryOperation',
+      package: const $pb.PackageName('google.logging.v2'))
     ..aOS(1, 'id')
     ..aOS(2, 'producer')
     ..aOB(3, 'first')
     ..aOB(4, 'last')
     ..hasRequiredFields = false;
 
-  LogEntryOperation() : super();
-  LogEntryOperation.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  LogEntryOperation.fromJson(String i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
-  LogEntryOperation clone() => new LogEntryOperation()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static LogEntryOperation create() => new LogEntryOperation();
-  static PbList<LogEntryOperation> createRepeated() =>
-      new PbList<LogEntryOperation>();
-  static LogEntryOperation getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyLogEntryOperation();
-    return _defaultInstance;
-  }
-
+  LogEntryOperation._() : super();
+  factory LogEntryOperation() => create();
+  factory LogEntryOperation.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory LogEntryOperation.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  LogEntryOperation clone() => LogEntryOperation()..mergeFromMessage(this);
+  LogEntryOperation copyWith(void Function(LogEntryOperation) updates) =>
+      super.copyWith((message) => updates(message as LogEntryOperation));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static LogEntryOperation create() => LogEntryOperation._();
+  LogEntryOperation createEmptyInstance() => create();
+  static $pb.PbList<LogEntryOperation> createRepeated() =>
+      $pb.PbList<LogEntryOperation>();
+  static LogEntryOperation getDefault() =>
+      _defaultInstance ??= create()..freeze();
   static LogEntryOperation _defaultInstance;
-  static void $checkItem(LogEntryOperation v) {
-    if (v is! LogEntryOperation) checkItemFailed(v, 'LogEntryOperation');
-  }
 
-  String get id => $_getS(0, '');
-  set id(String v) {
+  $core.String get id => $_getS(0, '');
+  set id($core.String v) {
     $_setString(0, v);
   }
 
-  bool hasId() => $_has(0);
+  $core.bool hasId() => $_has(0);
   void clearId() => clearField(1);
 
-  String get producer => $_getS(1, '');
-  set producer(String v) {
+  $core.String get producer => $_getS(1, '');
+  set producer($core.String v) {
     $_setString(1, v);
   }
 
-  bool hasProducer() => $_has(1);
+  $core.bool hasProducer() => $_has(1);
   void clearProducer() => clearField(2);
 
-  bool get first => $_get(2, false);
-  set first(bool v) {
+  $core.bool get first => $_get(2, false);
+  set first($core.bool v) {
     $_setBool(2, v);
   }
 
-  bool hasFirst() => $_has(2);
+  $core.bool hasFirst() => $_has(2);
   void clearFirst() => clearField(3);
 
-  bool get last => $_get(3, false);
-  set last(bool v) {
+  $core.bool get last => $_get(3, false);
+  set last($core.bool v) {
     $_setBool(3, v);
   }
 
-  bool hasLast() => $_has(3);
+  $core.bool hasLast() => $_has(3);
   void clearLast() => clearField(4);
 }
 
-class _ReadonlyLogEntryOperation extends LogEntryOperation
-    with ReadonlyMessageMixin {}
-
-class LogEntrySourceLocation extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('LogEntrySourceLocation')
+class LogEntrySourceLocation extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('LogEntrySourceLocation',
+      package: const $pb.PackageName('google.logging.v2'))
     ..aOS(1, 'file')
     ..aInt64(2, 'line')
     ..aOS(3, 'function')
     ..hasRequiredFields = false;
 
-  LogEntrySourceLocation() : super();
-  LogEntrySourceLocation.fromBuffer(List<int> i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  LogEntrySourceLocation.fromJson(String i,
-      [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  LogEntrySourceLocation._() : super();
+  factory LogEntrySourceLocation() => create();
+  factory LogEntrySourceLocation.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory LogEntrySourceLocation.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
   LogEntrySourceLocation clone() =>
-      new LogEntrySourceLocation()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static LogEntrySourceLocation create() => new LogEntrySourceLocation();
-  static PbList<LogEntrySourceLocation> createRepeated() =>
-      new PbList<LogEntrySourceLocation>();
-  static LogEntrySourceLocation getDefault() {
-    if (_defaultInstance == null)
-      _defaultInstance = new _ReadonlyLogEntrySourceLocation();
-    return _defaultInstance;
-  }
-
+      LogEntrySourceLocation()..mergeFromMessage(this);
+  LogEntrySourceLocation copyWith(
+          void Function(LogEntrySourceLocation) updates) =>
+      super.copyWith((message) => updates(message as LogEntrySourceLocation));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static LogEntrySourceLocation create() => LogEntrySourceLocation._();
+  LogEntrySourceLocation createEmptyInstance() => create();
+  static $pb.PbList<LogEntrySourceLocation> createRepeated() =>
+      $pb.PbList<LogEntrySourceLocation>();
+  static LogEntrySourceLocation getDefault() =>
+      _defaultInstance ??= create()..freeze();
   static LogEntrySourceLocation _defaultInstance;
-  static void $checkItem(LogEntrySourceLocation v) {
-    if (v is! LogEntrySourceLocation)
-      checkItemFailed(v, 'LogEntrySourceLocation');
-  }
 
-  String get file => $_getS(0, '');
-  set file(String v) {
+  $core.String get file => $_getS(0, '');
+  set file($core.String v) {
     $_setString(0, v);
   }
 
-  bool hasFile() => $_has(0);
+  $core.bool hasFile() => $_has(0);
   void clearFile() => clearField(1);
 
   Int64 get line => $_getI64(1);
@@ -367,17 +327,14 @@ class LogEntrySourceLocation extends GeneratedMessage {
     $_setInt64(1, v);
   }
 
-  bool hasLine() => $_has(1);
+  $core.bool hasLine() => $_has(1);
   void clearLine() => clearField(2);
 
-  String get function => $_getS(2, '');
-  set function(String v) {
+  $core.String get function => $_getS(2, '');
+  set function($core.String v) {
     $_setString(2, v);
   }
 
-  bool hasFunction() => $_has(2);
+  $core.bool hasFunction() => $_has(2);
   void clearFunction() => clearField(3);
 }
-
-class _ReadonlyLogEntrySourceLocation extends LogEntrySourceLocation
-    with ReadonlyMessageMixin {}

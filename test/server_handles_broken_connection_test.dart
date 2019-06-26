@@ -1,10 +1,11 @@
+@TestOn('vm')
 import 'dart:async';
 import 'dart:isolate';
 import 'package:grpc/grpc.dart' as grpc;
 import 'package:test/test.dart';
 
 class TestClient extends grpc.Client {
-  static final _$infiniteStream = new grpc.ClientMethod<int, int>(
+  static final _$infiniteStream = grpc.ClientMethod<int, int>(
       '/test.TestService/infiniteStream',
       (int value) => [value],
       (List<int> value) => value[0]);
@@ -23,13 +24,8 @@ class TestService extends grpc.Service {
   final void Function() finallyCallback;
 
   TestService({this.finallyCallback}) {
-    $addMethod(new grpc.ServiceMethod<int, int>(
-        'infiniteStream',
-        infiniteStream,
-        false,
-        true,
-        (List<int> value) => value[0],
-        (int value) => [value]));
+    $addMethod(grpc.ServiceMethod<int, int>('infiniteStream', infiniteStream,
+        false, true, (List<int> value) => value[0], (int value) => [value]));
   }
 
   Stream<int> infiniteStream(grpc.ServiceCall call, Future request) async* {
@@ -60,7 +56,7 @@ void client(clientData) async {
     'localhost',
     port: clientData.port,
     options: const grpc.ChannelOptions(
-      credentials: const grpc.ChannelCredentials.insecure(),
+      credentials: grpc.ChannelCredentials.insecure(),
     ),
   );
   TestClient(channel).infiniteStream(1).listen((count) async {
@@ -74,8 +70,8 @@ main() async {
   test("the client interrupting the connection does not crash the server",
       () async {
     grpc.Server server;
-    server = new grpc.Server([
-      new TestService(
+    server = grpc.Server([
+      TestService(
           finallyCallback: expectAsync0(() {
         server.shutdown();
       }, reason: 'the producer should get cancelled'))

@@ -12,29 +12,28 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
+@TestOn('vm')
 import 'dart:io';
 
-import 'package:grpc/grpc.dart';
+import 'package:grpc/src/client/transport/http2_credentials.dart';
 import 'package:test/test.dart';
 
-const isTlsException = const TypeMatcher<TlsException>();
+const isTlsException = TypeMatcher<TlsException>();
 
 void main() {
   group('Certificates', () {
     test('report password errors correctly', () async {
-      final certificates =
-          await new File('test/data/certstore.p12').readAsBytes();
+      final certificates = await File('test/data/certstore.p12').readAsBytes();
 
       final missingPassword =
-          new ChannelCredentials.secure(certificates: certificates);
+          ChannelCredentials.secure(certificates: certificates);
       expect(() => missingPassword.securityContext, throwsA(isTlsException));
 
-      final wrongPassword = new ChannelCredentials.secure(
+      final wrongPassword = ChannelCredentials.secure(
           certificates: certificates, password: 'wrong');
       expect(() => wrongPassword.securityContext, throwsA(isTlsException));
 
-      final correctPassword = new ChannelCredentials.secure(
+      final correctPassword = ChannelCredentials.secure(
           certificates: certificates, password: 'correct');
       expect(correctPassword.securityContext, isNotNull);
     });

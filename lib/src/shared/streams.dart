@@ -13,46 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http2/transport.dart';
 
+import 'message.dart';
 import 'status.dart';
-
-abstract class GrpcMessage {}
-
-class GrpcMetadata extends GrpcMessage {
-  final Map<String, String> metadata;
-  GrpcMetadata(this.metadata);
-
-  @override
-  String toString() => 'gRPC Metadata ($metadata)';
-}
-
-class GrpcData extends GrpcMessage {
-  final List<int> data;
-  final bool isCompressed;
-  GrpcData(this.data, {this.isCompressed});
-
-  @override
-  String toString() => 'gRPC Data (${data.length} bytes)';
-}
-
-StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor() =>
-    new StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
-        handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
-      if (value is GrpcData) {
-        if (value.isCompressed) {
-          // TODO(dart-lang/grpc-dart#6): Actually handle decompression.
-          sink.add(new GrpcData(value.data, isCompressed: false));
-          return;
-        }
-      }
-      sink.add(value);
-    });
 
 class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
   @override
@@ -60,30 +28,20 @@ class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
     if (input is GrpcMetadata) {
       final headers = <Header>[];
       input.metadata.forEach((key, value) {
-        headers.add(new Header(ascii.encode(key), utf8.encode(value)));
+        headers.add(Header(ascii.encode(key), utf8.encode(value)));
       });
-      return new HeadersStreamMessage(headers);
+      return HeadersStreamMessage(headers);
     } else if (input is GrpcData) {
-      return new DataStreamMessage(frame(input.data));
+      return DataStreamMessage(frame(input.data));
     }
-    throw new GrpcError.internal('Unexpected message type');
-  }
-
-  static List<int> frame(List<int> payload) {
-    final payloadLength = payload.length;
-    final bytes = new Uint8List(payloadLength + 5);
-    final header = bytes.buffer.asByteData(0, 5);
-    header.setUint8(0, 0); // TODO(dart-lang/grpc-dart#6): Handle compression
-    header.setUint32(1, payloadLength);
-    bytes.setRange(5, bytes.length, payload);
-    return bytes;
+    throw GrpcError.internal('Unexpected message type');
   }
 }
 
 class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
   @override
   GrpcMessage convert(StreamMessage input) {
-    final sink = new _GrpcMessageSink();
+    final sink = GrpcMessageSink();
     startChunkedConversion(sink)
       ..add(input)
       ..close();
@@ -92,14 +50,14 @@ class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
 
   @override
   Sink<StreamMessage> startChunkedConversion(Sink<GrpcMessage> sink) {
-    return new _GrpcMessageConversionSink(sink);
+    return _GrpcMessageConversionSink(sink);
   }
 }
 
 class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
   final Sink<GrpcMessage> _out;
 
-  final _dataHeader = new Uint8List(5);
+  final _dataHeader = Uint8List(5);
   Uint8List _data;
   int _dataOffset = 0;
 
@@ -123,7 +81,7 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
         if (_dataOffset == _dataHeader.lengthInBytes) {
           final dataLength = _dataHeader.buffer.asByteData().getUint32(1);
           // TODO(jakobr): Sanity check dataLength. Max size?
-          _data = new Uint8List(dataLength);
+          _data = Uint8List(dataLength);
           _dataOffset = 0;
         }
       }
@@ -139,7 +97,7 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
           chunkReadOffset += toCopy;
         }
         if (_dataOffset == _data.lengthInBytes) {
-          _out.add(new GrpcData(_data,
+          _out.add(GrpcData(_data,
               isCompressed: _dataHeader.buffer.asByteData().getUint8(0) != 0));
           _data = null;
           _dataOffset = 0;
@@ -152,7 +110,7 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
     if (_data != null || _dataOffset != 0) {
       // We were in the middle of receiving data, so receiving a header frame
       // is a violation of the gRPC protocol.
-      throw new GrpcError.unimplemented('Received header while reading data');
+      throw GrpcError.unimplemented('Received header while reading data');
     }
     final headers = <String, String>{};
     for (var header in chunk.headers) {
@@ -160,7 +118,7 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
       headers[ascii.decode(header.name)] = ascii.decode(header.value);
     }
     // TODO(jakobr): Check :status, go to error mode if not 2xx.
-    _out.add(new GrpcMetadata(headers));
+    _out.add(GrpcMetadata(headers));
   }
 
   @override
@@ -171,34 +129,15 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
       _addHeaders(chunk);
     } else {
       // No clue what this is.
-      throw new GrpcError.unimplemented('Received unknown HTTP/2 frame type');
+      throw GrpcError.unimplemented('Received unknown HTTP/2 frame type');
     }
   }
 
   @override
   void close() {
     if (_data != null || _dataOffset != 0) {
-      throw new GrpcError.unavailable('Closed in non-idle state');
+      throw GrpcError.unavailable('Closed in non-idle state');
     }
     _out.close();
-  }
-}
-
-class _GrpcMessageSink extends Sink<GrpcMessage> {
-  GrpcMessage message;
-
-  @override
-  void add(GrpcMessage data) {
-    if (message != null) {
-      throw 'Too many messages received!';
-    }
-    message = data;
-  }
-
-  @override
-  void close() {
-    if (message == null) {
-      throw 'No messages received!';
-    }
   }
 }

@@ -1,107 +1,119 @@
 ///
 //  Generated code. Do not modify.
+//  source: route_guide.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library routeguide_route_guide_pbgrpc;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
-import 'dart:async';
+import 'dart:async' as $async;
 
-import 'package:grpc/grpc.dart';
+import 'dart:core' as $core show int, String, List;
 
-import 'route_guide.pb.dart';
+import 'package:grpc/service_api.dart' as $grpc;
+import 'route_guide.pb.dart' as $0;
 export 'route_guide.pb.dart';
 
-class RouteGuideClient extends Client {
-  static final _$getFeature = new ClientMethod<Point, Feature>(
+class RouteGuideClient extends $grpc.Client {
+  static final _$getFeature = $grpc.ClientMethod<$0.Point, $0.Feature>(
       '/routeguide.RouteGuide/GetFeature',
-      (Point value) => value.writeToBuffer(),
-      (List<int> value) => new Feature.fromBuffer(value));
-  static final _$listFeatures = new ClientMethod<Rectangle, Feature>(
+      ($0.Point value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Feature.fromBuffer(value));
+  static final _$listFeatures = $grpc.ClientMethod<$0.Rectangle, $0.Feature>(
       '/routeguide.RouteGuide/ListFeatures',
-      (Rectangle value) => value.writeToBuffer(),
-      (List<int> value) => new Feature.fromBuffer(value));
-  static final _$recordRoute = new ClientMethod<Point, RouteSummary>(
+      ($0.Rectangle value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Feature.fromBuffer(value));
+  static final _$recordRoute = $grpc.ClientMethod<$0.Point, $0.RouteSummary>(
       '/routeguide.RouteGuide/RecordRoute',
-      (Point value) => value.writeToBuffer(),
-      (List<int> value) => new RouteSummary.fromBuffer(value));
-  static final _$routeChat = new ClientMethod<RouteNote, RouteNote>(
+      ($0.Point value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.RouteSummary.fromBuffer(value));
+  static final _$routeChat = $grpc.ClientMethod<$0.RouteNote, $0.RouteNote>(
       '/routeguide.RouteGuide/RouteChat',
-      (RouteNote value) => value.writeToBuffer(),
-      (List<int> value) => new RouteNote.fromBuffer(value));
+      ($0.RouteNote value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.RouteNote.fromBuffer(value));
 
-  RouteGuideClient(ClientChannel channel, {CallOptions options})
+  RouteGuideClient($grpc.ClientChannel channel, {$grpc.CallOptions options})
       : super(channel, options: options);
 
-  ResponseFuture<Feature> getFeature(Point request, {CallOptions options}) {
-    final call = $createCall(_$getFeature, new Stream.fromIterable([request]),
+  $grpc.ResponseFuture<$0.Feature> getFeature($0.Point request,
+      {$grpc.CallOptions options}) {
+    final call = $createCall(
+        _$getFeature, $async.Stream.fromIterable([request]),
         options: options);
-    return new ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 
-  ResponseStream<Feature> listFeatures(Rectangle request,
-      {CallOptions options}) {
-    final call = $createCall(_$listFeatures, new Stream.fromIterable([request]),
+  $grpc.ResponseStream<$0.Feature> listFeatures($0.Rectangle request,
+      {$grpc.CallOptions options}) {
+    final call = $createCall(
+        _$listFeatures, $async.Stream.fromIterable([request]),
         options: options);
-    return new ResponseStream(call);
+    return $grpc.ResponseStream(call);
   }
 
-  ResponseFuture<RouteSummary> recordRoute(Stream<Point> request,
-      {CallOptions options}) {
+  $grpc.ResponseFuture<$0.RouteSummary> recordRoute(
+      $async.Stream<$0.Point> request,
+      {$grpc.CallOptions options}) {
     final call = $createCall(_$recordRoute, request, options: options);
-    return new ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 
-  ResponseStream<RouteNote> routeChat(Stream<RouteNote> request,
-      {CallOptions options}) {
+  $grpc.ResponseStream<$0.RouteNote> routeChat(
+      $async.Stream<$0.RouteNote> request,
+      {$grpc.CallOptions options}) {
     final call = $createCall(_$routeChat, request, options: options);
-    return new ResponseStream(call);
+    return $grpc.ResponseStream(call);
   }
 }
 
-abstract class RouteGuideServiceBase extends Service {
-  String get $name => 'routeguide.RouteGuide';
+abstract class RouteGuideServiceBase extends $grpc.Service {
+  $core.String get $name => 'routeguide.RouteGuide';
 
   RouteGuideServiceBase() {
-    $addMethod(new ServiceMethod<Point, Feature>(
+    $addMethod($grpc.ServiceMethod<$0.Point, $0.Feature>(
         'GetFeature',
         getFeature_Pre,
         false,
         false,
-        (List<int> value) => new Point.fromBuffer(value),
-        (Feature value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod<Rectangle, Feature>(
+        ($core.List<$core.int> value) => $0.Point.fromBuffer(value),
+        ($0.Feature value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.Rectangle, $0.Feature>(
         'ListFeatures',
         listFeatures_Pre,
         false,
         true,
-        (List<int> value) => new Rectangle.fromBuffer(value),
-        (Feature value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod<Point, RouteSummary>(
+        ($core.List<$core.int> value) => $0.Rectangle.fromBuffer(value),
+        ($0.Feature value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.Point, $0.RouteSummary>(
         'RecordRoute',
         recordRoute,
         true,
         false,
-        (List<int> value) => new Point.fromBuffer(value),
-        (RouteSummary value) => value.writeToBuffer()));
-    $addMethod(new ServiceMethod<RouteNote, RouteNote>(
+        ($core.List<$core.int> value) => $0.Point.fromBuffer(value),
+        ($0.RouteSummary value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.RouteNote, $0.RouteNote>(
         'RouteChat',
         routeChat,
         true,
         true,
-        (List<int> value) => new RouteNote.fromBuffer(value),
-        (RouteNote value) => value.writeToBuffer()));
+        ($core.List<$core.int> value) => $0.RouteNote.fromBuffer(value),
+        ($0.RouteNote value) => value.writeToBuffer()));
   }
 
-  Future<Feature> getFeature_Pre(ServiceCall call, Future request) async {
+  $async.Future<$0.Feature> getFeature_Pre(
+      $grpc.ServiceCall call, $async.Future request) async {
     return getFeature(call, await request);
   }
 
-  Stream<Feature> listFeatures_Pre(ServiceCall call, Future request) async* {
-    yield* listFeatures(call, (await request) as Rectangle);
+  $async.Stream<$0.Feature> listFeatures_Pre(
+      $grpc.ServiceCall call, $async.Future request) async* {
+    yield* listFeatures(call, (await request) as $0.Rectangle);
   }
 
-  Future<Feature> getFeature(ServiceCall call, Point request);
-  Stream<Feature> listFeatures(ServiceCall call, Rectangle request);
-  Future<RouteSummary> recordRoute(ServiceCall call, Stream<Point> request);
-  Stream<RouteNote> routeChat(ServiceCall call, Stream<RouteNote> request);
+  $async.Future<$0.Feature> getFeature(
+      $grpc.ServiceCall call, $0.Point request);
+  $async.Stream<$0.Feature> listFeatures(
+      $grpc.ServiceCall call, $0.Rectangle request);
+  $async.Future<$0.RouteSummary> recordRoute(
+      $grpc.ServiceCall call, $async.Stream<$0.Point> request);
+  $async.Stream<$0.RouteNote> routeChat(
+      $grpc.ServiceCall call, $async.Stream<$0.RouteNote> request);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2017, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2018, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +15,15 @@
 
 import 'dart:async';
 
-import 'package:http2/transport.dart';
-
+import '../shared/message.dart';
 import '../shared/status.dart';
-import '../shared/streams.dart';
 
 import 'common.dart';
 import 'connection.dart';
 import 'method.dart';
-import 'options.dart';
+import 'transport/transport.dart';
 
-const _reservedHeaders = const [
+const _reservedHeaders = [
   'content-type',
   'te',
   'grpc-timeout',
@@ -33,34 +31,81 @@ const _reservedHeaders = const [
   'user-agent',
 ];
 
+/// Provides per-RPC metadata.
+///
+/// Metadata providers will be invoked for every RPC, and can add their own
+/// metadata to the RPC. If the function returns a [Future], the RPC will await
+/// completion of the returned [Future] before transmitting the request.
+///
+/// The metadata provider is given the current [metadata] map (possibly modified
+/// by previous metadata providers) and the [uri] that is being called, and is
+/// expected to modify the map before returning or before completing the
+/// returned [Future].
+typedef FutureOr<void> MetadataProvider(
+    Map<String, String> metadata, String uri);
+
+/// Runtime options for an RPC.
+class CallOptions {
+  final Map<String, String> metadata;
+  final Duration timeout;
+  final List<MetadataProvider> metadataProviders;
+
+  CallOptions._(this.metadata, this.timeout, this.metadataProviders);
+
+  /// Creates a [CallOptions] object.
+  ///
+  /// [CallOptions] can specify static [metadata], set the [timeout], and
+  /// configure per-RPC metadata [providers]. The metadata [providers] are
+  /// invoked in order for every RPC, and can modify the outgoing metadata
+  /// (including metadata provided by previous providers).
+  factory CallOptions(
+      {Map<String, String> metadata,
+      Duration timeout,
+      List<MetadataProvider> providers}) {
+    return CallOptions._(Map.unmodifiable(metadata ?? {}), timeout,
+        List.unmodifiable(providers ?? []));
+  }
+
+  factory CallOptions.from(Iterable<CallOptions> options) =>
+      options.fold(CallOptions(), (p, o) => p.mergedWith(o));
+
+  CallOptions mergedWith(CallOptions other) {
+    if (other == null) return this;
+    final mergedMetadata = Map.from(metadata)..addAll(other.metadata);
+    final mergedTimeout = other.timeout ?? timeout;
+    final mergedProviders = List.from(metadataProviders)
+      ..addAll(other.metadataProviders);
+    return CallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
+        List.unmodifiable(mergedProviders));
+  }
+}
+
 /// An active call to a gRPC endpoint.
 class ClientCall<Q, R> implements Response {
   final ClientMethod<Q, R> _method;
   final Stream<Q> _requests;
   final CallOptions options;
 
-  final _headers = new Completer<Map<String, String>>();
-  final _trailers = new Completer<Map<String, String>>();
+  final _headers = Completer<Map<String, String>>();
+  final _trailers = Completer<Map<String, String>>();
   bool _hasReceivedResponses = false;
 
   Map<String, String> _headerMetadata;
 
-  TransportStream _stream;
+  GrpcTransportStream _stream;
   StreamController<R> _responses;
-  StreamSubscription<StreamMessage> _requestSubscription;
+  StreamSubscription<List<int>> _requestSubscription;
   StreamSubscription<GrpcMessage> _responseSubscription;
 
   bool isCancelled = false;
   Timer _timeoutTimer;
 
   ClientCall(this._method, this._requests, this.options) {
-    _responses = new StreamController(onListen: _onResponseListen);
+    _responses = StreamController(onListen: _onResponseListen);
     if (options.timeout != null) {
-      _timeoutTimer = new Timer(options.timeout, _onTimedOut);
+      _timeoutTimer = Timer(options.timeout, _onTimedOut);
     }
   }
-
-  String get path => _method.path;
 
   void onConnectionError(error) {
     _terminateWithError(new GrpcError.unavailable(
@@ -86,43 +131,46 @@ class ClientCall<Q, R> implements Response {
     return sanitizedMetadata;
   }
 
+
+// TODO(sigurdm): Find out why we do this.
+  static String audiencePath(ClientMethod method) {
+    final lastSlashPos = method.path.lastIndexOf('/');
+    return lastSlashPos == -1
+        ? method.path
+        : method.path.substring(0, lastSlashPos);
+  }
+
+
   void onConnectionReady(ClientConnection connection) {
     if (isCancelled) return;
 
     if (options.metadataProviders.isEmpty) {
       _sendRequest(connection, _sanitizeMetadata(options.metadata));
     } else {
-      final metadata = new Map<String, String>.from(options.metadata);
-      String audience;
-      if (connection.options.credentials.isSecure) {
-        final port = connection.port != 443 ? ':${connection.port}' : '';
-        final lastSlashPos = path.lastIndexOf('/');
-        final audiencePath =
-            lastSlashPos == -1 ? path : path.substring(0, lastSlashPos);
-        audience = 'https://${connection.authority}$port$audiencePath';
-      }
-      Future.forEach(options.metadataProviders,
-              (provider) => provider(metadata, audience))
+      final metadata = Map<String, String>.from(options.metadata);
+      Future.forEach(
+              options.metadataProviders,
+              (provider) => provider(
+                  metadata, "${connection.authority}${audiencePath(_method)}"))
           .then((_) => _sendRequest(connection, _sanitizeMetadata(metadata)))
           .catchError(_onMetadataProviderError);
     }
   }
 
   void _onMetadataProviderError(error) {
-    _terminateWithError(new GrpcError.internal('Error making call: $error'));
+    _terminateWithError(GrpcError.internal('Error making call: $error'));
   }
 
   void _sendRequest(ClientConnection connection, Map<String, String> metadata) {
     try {
-      _stream = connection.makeRequest(path, options.timeout, metadata);
+      _stream = connection.makeRequest(
+          _method.path, options.timeout, metadata, _onRequestError);
     } catch (e) {
-      _terminateWithError(new GrpcError.unavailable('Error making call: $e'));
+      _terminateWithError(GrpcError.unavailable('Error making call: $e'));
       return;
     }
     _requestSubscription = _requests
         .map(_method.requestSerializer)
-        .map(GrpcHttpEncoder.frame)
-        .map<StreamMessage>((bytes) => new DataStreamMessage(bytes))
         .handleError(_onRequestError)
         .listen(_stream.outgoingMessages.add,
             onError: _stream.outgoingMessages.addError,
@@ -134,7 +182,7 @@ class ClientCall<Q, R> implements Response {
   }
 
   void _onTimedOut() {
-    _responses.addError(new GrpcError.deadlineExceeded('Deadline exceeded'));
+    _responses.addError(GrpcError.deadlineExceeded('Deadline exceeded'));
     _safeTerminate();
   }
 
@@ -144,13 +192,10 @@ class ClientCall<Q, R> implements Response {
     if (_stream != null &&
         _responses.hasListener &&
         _responseSubscription == null) {
-      _responseSubscription = _stream.incomingMessages
-          .transform(new GrpcHttpDecoder())
-          .transform(grpcDecompressor())
-          .listen(_onResponseData,
-              onError: _onResponseError,
-              onDone: _onResponseDone,
-              cancelOnError: true);
+      _responseSubscription = _stream.incomingMessages.listen(_onResponseData,
+          onError: _onResponseError,
+          onDone: _onResponseDone,
+          cancelOnError: true);
       if (_responses.isPaused) {
         _responseSubscription.pause();
       }
@@ -175,13 +220,11 @@ class ClientCall<Q, R> implements Response {
   void _onResponseData(GrpcMessage data) {
     if (data is GrpcData) {
       if (!_headers.isCompleted) {
-        _responseError(
-            new GrpcError.unimplemented('Received data before headers'));
+        _responseError(GrpcError.unimplemented('Received data before headers'));
         return;
       }
       if (_trailers.isCompleted) {
-        _responseError(
-            new GrpcError.unimplemented('Received data after trailers'));
+        _responseError(GrpcError.unimplemented('Received data after trailers'));
         return;
       }
       _responses.add(_method.responseDeserializer(data.data));
@@ -194,8 +237,7 @@ class ClientCall<Q, R> implements Response {
         return;
       }
       if (_trailers.isCompleted) {
-        _responseError(
-            new GrpcError.unimplemented('Received multiple trailers'));
+        _responseError(GrpcError.unimplemented('Received multiple trailers'));
         return;
       }
       final metadata = data.metadata;
@@ -205,11 +247,11 @@ class ClientCall<Q, R> implements Response {
         final status = int.parse(metadata['grpc-status']);
         final message = metadata['grpc-message'];
         if (status != 0) {
-          _responseError(new GrpcError.custom(status, message));
+          _responseError(GrpcError.custom(status, message));
         }
       }
     } else {
-      _responseError(new GrpcError.unimplemented('Unexpected frame received'));
+      _responseError(GrpcError.unimplemented('Unexpected frame received'));
     }
   }
 
@@ -220,20 +262,20 @@ class ClientCall<Q, R> implements Response {
       _responseError(error);
       return;
     }
-    _responseError(new GrpcError.unknown(error.toString()));
+    _responseError(GrpcError.unknown(error.toString()));
   }
 
   /// Handles closure of the response stream. Verifies that server has sent
   /// response messages and header/trailer metadata, as necessary.
   void _onResponseDone() {
     if (!_headers.isCompleted) {
-      _responseError(new GrpcError.unavailable('Did not receive anything'));
+      _responseError(GrpcError.unavailable('Did not receive anything'));
       return;
     }
     if (!_trailers.isCompleted) {
       if (_hasReceivedResponses) {
         // Trailers are required after receiving data.
-        _responseError(new GrpcError.unavailable('Missing trailers'));
+        _responseError(GrpcError.unavailable('Missing trailers'));
         return;
       }
 
@@ -257,9 +299,9 @@ class ClientCall<Q, R> implements Response {
   /// Error handler for the requests stream. Something went wrong while trying
   /// to send the request to the server. Abort the request, and forward the
   /// error to the user code on the [_responses] stream.
-  void _onRequestError(error) {
+  void _onRequestError(error, [StackTrace stackTrace]) {
     if (error is! GrpcError) {
-      error = new GrpcError.unknown(error.toString());
+      error = GrpcError.unknown(error.toString());
     }
 
     _responses.addError(error);
@@ -281,7 +323,7 @@ class ClientCall<Q, R> implements Response {
   @override
   Future<void> cancel() {
     if (!_responses.isClosed) {
-      _responses.addError(new GrpcError.cancelled('Cancelled by client.'));
+      _responses.addError(GrpcError.cancelled('Cancelled by client.'));
     }
     return _terminate();
   }
@@ -304,7 +346,9 @@ class ClientCall<Q, R> implements Response {
     await Future.wait(futures);
   }
 
-  Future<void> _safeTerminate() {
-    return _terminate().catchError((_) {});
+  Future<void> _safeTerminate() async {
+    try {
+      await _terminate();
+    } catch (_) {}
   }
 }

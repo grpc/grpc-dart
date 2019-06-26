@@ -29,37 +29,34 @@ void main() {
   group('Unit:', () {
     test('Timeouts are converted correctly to header string', () {
       expect(toTimeoutString(null), isNull);
-      expect(toTimeoutString(new Duration(microseconds: -1)), '1n');
-      expect(toTimeoutString(new Duration(microseconds: 0)), '0u');
-      expect(toTimeoutString(new Duration(microseconds: 107)), '107u');
-      expect(
-          toTimeoutString(new Duration(hours: 2, microseconds: 17)), '7200S');
-      expect(toTimeoutString(new Duration(milliseconds: 1420665)), '1420S');
-      expect(
-          toTimeoutString(new Duration(seconds: 2, microseconds: 3)), '2000m');
-      expect(
-          toTimeoutString(new Duration(seconds: 2, milliseconds: 3)), '2003m');
-      expect(toTimeoutString(new Duration(hours: 17, seconds: 3)), '61203S');
-      expect(toTimeoutString(new Duration(minutes: 42)), '2520S');
-      expect(toTimeoutString(new Duration(days: 201)), '4824H');
+      expect(toTimeoutString(Duration(microseconds: -1)), '1n');
+      expect(toTimeoutString(Duration(microseconds: 0)), '0u');
+      expect(toTimeoutString(Duration(microseconds: 107)), '107u');
+      expect(toTimeoutString(Duration(hours: 2, microseconds: 17)), '7200S');
+      expect(toTimeoutString(Duration(milliseconds: 1420665)), '1420S');
+      expect(toTimeoutString(Duration(seconds: 2, microseconds: 3)), '2000m');
+      expect(toTimeoutString(Duration(seconds: 2, milliseconds: 3)), '2003m');
+      expect(toTimeoutString(Duration(hours: 17, seconds: 3)), '61203S');
+      expect(toTimeoutString(Duration(minutes: 42)), '2520S');
+      expect(toTimeoutString(Duration(days: 201)), '4824H');
     });
 
     test('Timeouts are converted correctly from header string', () {
       expect(fromTimeoutString(null), isNull);
-      expect(fromTimeoutString('1n'), new Duration(microseconds: 1000));
-      expect(fromTimeoutString('0u'), new Duration(microseconds: 0));
-      expect(fromTimeoutString('107u'), new Duration(microseconds: 107));
-      expect(fromTimeoutString('7200S'), new Duration(hours: 2));
-      expect(fromTimeoutString('1420S'), new Duration(seconds: 1420));
-      expect(fromTimeoutString('2000m'), new Duration(seconds: 2));
-      expect(fromTimeoutString('2003m'), new Duration(milliseconds: 2003));
-      expect(fromTimeoutString('17H'), new Duration(hours: 17));
-      expect(fromTimeoutString('157M'), new Duration(minutes: 157));
+      expect(fromTimeoutString('1n'), Duration(microseconds: 1000));
+      expect(fromTimeoutString('0u'), Duration(microseconds: 0));
+      expect(fromTimeoutString('107u'), Duration(microseconds: 107));
+      expect(fromTimeoutString('7200S'), Duration(hours: 2));
+      expect(fromTimeoutString('1420S'), Duration(seconds: 1420));
+      expect(fromTimeoutString('2000m'), Duration(seconds: 2));
+      expect(fromTimeoutString('2003m'), Duration(milliseconds: 2003));
+      expect(fromTimeoutString('17H'), Duration(hours: 17));
+      expect(fromTimeoutString('157M'), Duration(minutes: 157));
       expect(fromTimeoutString('1'), isNull);
       expect(fromTimeoutString('202'), isNull);
       expect(fromTimeoutString('1s'), isNull);
       expect(fromTimeoutString('ab'), isNull);
-      expect(fromTimeoutString('-1S'), new Duration(seconds: -1));
+      expect(fromTimeoutString('-1S'), Duration(seconds: -1));
     });
   });
 
@@ -67,7 +64,7 @@ void main() {
     ClientHarness harness;
 
     setUp(() {
-      harness = new ClientHarness()..setUp();
+      harness = ClientHarness()..setUp();
     });
 
     tearDown(() {
@@ -77,7 +74,7 @@ void main() {
     test('Calls time out if deadline is exceeded', () async {
       void handleRequest(StreamMessage message) {
         validateDataMessage(message);
-        final Future delay = new Future.delayed(new Duration(milliseconds: 2));
+        final Future delay = Future.delayed(Duration(milliseconds: 2));
         expect(delay, completes);
         delay.then((_) {
           try {
@@ -91,11 +88,11 @@ void main() {
         });
       }
 
-      final timeout = new Duration(microseconds: 1);
+      final timeout = Duration(microseconds: 1);
       await harness.runFailureTest(
         clientCall: harness.client
-            .unary(dummyValue, options: new CallOptions(timeout: timeout)),
-        expectedException: new GrpcError.deadlineExceeded('Deadline exceeded'),
+            .unary(dummyValue, options: CallOptions(timeout: timeout)),
+        expectedException: GrpcError.deadlineExceeded('Deadline exceeded'),
         expectedPath: '/Test/Unary',
         expectedTimeout: timeout,
         serverHandlers: [handleRequest],
@@ -107,7 +104,7 @@ void main() {
     ServerHarness harness;
 
     setUp(() {
-      harness = new ServerHarness()..setUp();
+      harness = ServerHarness()..setUp();
     });
 
     tearDown(() {
@@ -118,14 +115,12 @@ void main() {
       Future<int> methodHandler(ServiceCall call, Future<int> request) async {
         try {
           expect(call.isTimedOut, isFalse);
-          Future delay = new Future.delayed(new Duration(milliseconds: 2));
-          expect(delay, completes);
-          await delay;
+          await Future.delayed(Duration(milliseconds: 50));
           expect(call.isTimedOut, isTrue);
           try {
             await request;
           } catch (error) {
-            expect(error, new GrpcError.deadlineExceeded('Deadline exceeded'));
+            expect(error, GrpcError.deadlineExceeded('Deadline exceeded'));
             return dummyValue;
           }
           fail('Did not throw');
@@ -138,9 +133,8 @@ void main() {
       harness
         ..service.unaryHandler = methodHandler
         ..expectErrorResponse(StatusCode.deadlineExceeded, 'Deadline exceeded')
-        ..sendRequestHeader('/Test/Unary',
-            timeout: new Duration(microseconds: 1));
+        ..sendRequestHeader('/Test/Unary', timeout: Duration(microseconds: 1));
       await harness.fromServer.done;
     });
-  });
+  }, testOn: 'vm');
 }

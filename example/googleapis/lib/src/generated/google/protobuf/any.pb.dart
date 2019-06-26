@@ -1,54 +1,87 @@
 ///
 //  Generated code. Do not modify.
+//  source: google/protobuf/any.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library google.protobuf_any;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
-// ignore: UNUSED_SHOWN_NAME
-import 'dart:core' show int, bool, double, String, List, override;
+import 'dart:core' as $core
+    show bool, Deprecated, double, int, List, Map, override, pragma, String;
 
-import 'package:protobuf/protobuf.dart';
+import 'package:protobuf/protobuf.dart' as $pb;
 
-class Any extends GeneratedMessage {
-  static final BuilderInfo _i = new BuilderInfo('Any')
-    ..aOS(1, 'typeUrl')
-    ..a<List<int>>(2, 'value', PbFieldType.OY)
-    ..hasRequiredFields = false;
+class Any extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i =
+      $pb.BuilderInfo('Any', package: const $pb.PackageName('google.protobuf'))
+        ..aOS(1, 'typeUrl')
+        ..a<$core.List<$core.int>>(2, 'value', $pb.PbFieldType.OY)
+        ..hasRequiredFields = false;
 
-  Any() : super();
-  Any.fromBuffer(List<int> i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  Any.fromJson(String i, [ExtensionRegistry r = ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
-  Any clone() => new Any()..mergeFromMessage(this);
-  BuilderInfo get info_ => _i;
-  static Any create() => new Any();
-  static PbList<Any> createRepeated() => new PbList<Any>();
-  static Any getDefault() {
-    if (_defaultInstance == null) _defaultInstance = new _ReadonlyAny();
-    return _defaultInstance;
-  }
-
+  Any._() : super();
+  factory Any() => create();
+  factory Any.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory Any.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  Any clone() => Any()..mergeFromMessage(this);
+  Any copyWith(void Function(Any) updates) =>
+      super.copyWith((message) => updates(message as Any));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Any create() => Any._();
+  Any createEmptyInstance() => create();
+  static $pb.PbList<Any> createRepeated() => $pb.PbList<Any>();
+  static Any getDefault() => _defaultInstance ??= create()..freeze();
   static Any _defaultInstance;
-  static void $checkItem(Any v) {
-    if (v is! Any) checkItemFailed(v, 'Any');
-  }
 
-  String get typeUrl => $_getS(0, '');
-  set typeUrl(String v) {
+  $core.String get typeUrl => $_getS(0, '');
+  set typeUrl($core.String v) {
     $_setString(0, v);
   }
 
-  bool hasTypeUrl() => $_has(0);
+  $core.bool hasTypeUrl() => $_has(0);
   void clearTypeUrl() => clearField(1);
 
-  List<int> get value => $_getN(1);
-  set value(List<int> v) {
+  $core.List<$core.int> get value => $_getN(1);
+  set value($core.List<$core.int> v) {
     $_setBytes(1, v);
   }
 
-  bool hasValue() => $_has(1);
+  $core.bool hasValue() => $_has(1);
   void clearValue() => clearField(2);
-}
 
-class _ReadonlyAny extends Any with ReadonlyMessageMixin {}
+  /// Unpacks the message in [value] into [instance].
+  ///
+  /// Throws a [InvalidProtocolBufferException] if [typeUrl] does not correspond
+  /// to the type of [instance].
+  ///
+  /// A typical usage would be `any.unpackInto(Message())`.
+  ///
+  /// Returns [instance].
+  T unpackInto<T extends $pb.GeneratedMessage>(T instance,
+      {$pb.ExtensionRegistry extensionRegistry = $pb.ExtensionRegistry.EMPTY}) {
+    $pb.unpackIntoHelper(value, instance, typeUrl,
+        extensionRegistry: extensionRegistry);
+    return instance;
+  }
+
+  /// Returns `true` if the encoded message matches the type of [instance].
+  ///
+  /// Can be used with a default instance:
+  /// `any.canUnpackInto(Message.getDefault())`
+  $core.bool canUnpackInto($pb.GeneratedMessage instance) {
+    return $pb.canUnpackIntoHelper(instance, typeUrl);
+  }
+
+  /// Creates a new [Any] encoding [message].
+  ///
+  /// The [typeUrl] will be [typeUrlPrefix]/`fullName` where `fullName` is
+  /// the fully qualified name of the type of [message].
+  static Any pack($pb.GeneratedMessage message,
+      {$core.String typeUrlPrefix = 'type.googleapis.com'}) {
+    return Any()
+      ..value = message.writeToBuffer()
+      ..typeUrl = '${typeUrlPrefix}/${message.info_.qualifiedMessageName}';
+  }
+}

@@ -13,23 +13,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'src/auth/auth.dart';
+export 'src/auth/auth.dart'
+    show
+        BaseAuthenticator,
+        HttpBasedAuthenticator,
+        JwtServiceAccountAuthenticator;
 
-export 'src/client/call.dart';
-export 'src/client/channel.dart';
-export 'src/client/client.dart';
-export 'src/client/common.dart';
-export 'src/client/connection.dart';
-export 'src/client/method.dart';
-export 'src/client/options.dart';
+export 'src/auth/auth_io.dart'
+    show
+    ComputeEngineAuthenticator,
+    ServiceAccountAuthenticator;
 
-export 'src/server/call.dart';
-export 'src/server/handler.dart' show ServerHandler;
-export 'src/server/interceptor.dart';
-export 'src/server/server.dart';
-export 'src/server/service.dart';
+export 'src/client/call.dart' show CallOptions, ClientCall, MetadataProvider;
+export 'src/client/client.dart' show Client;
+export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
+export 'src/client/connection.dart' show ConnectionState;
+export 'src/client/http2_channel.dart' show ClientChannel;
+export 'src/client/method.dart' show ClientMethod;
+export 'src/client/options.dart'
+    show
+        defaultIdleTimeout,
+        BackoffStrategy,
+        defaultBackoffStrategy,
+        ChannelOptions;
 
-export 'src/shared/security.dart';
-export 'src/shared/status.dart';
-export 'src/shared/streams.dart';
-export 'src/shared/timeout.dart';
+export 'src/client/transport/http2_credentials.dart'
+    show BadCertificateHandler, allowBadCertificates, ChannelCredentials;
+
+export 'src/server/call.dart' show ServiceCall;
+export 'src/server/interceptor.dart' show Interceptor;
+export 'src/server/server.dart' show ServerTlsCredentials, Server;
+export 'src/server/service.dart' show ServiceMethod, Service;
+
+export 'src/shared/message.dart'
+    show GrpcMessage, GrpcMetadata, GrpcData, grpcDecompressor;
+
+export 'src/shared/security.dart'
+    show supportedAlpnProtocols, createSecurityContext;
+export 'src/shared/status.dart' show StatusCode, GrpcError;
+export 'src/shared/streams.dart' show GrpcHttpEncoder, GrpcHttpDecoder;
+
+export 'src/shared/timeout.dart' show toTimeoutString, fromTimeoutString;

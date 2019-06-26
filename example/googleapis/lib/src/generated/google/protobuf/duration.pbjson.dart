@@ -1,13 +1,13 @@
 ///
 //  Generated code. Do not modify.
+//  source: google/protobuf/duration.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library google.protobuf_duration_pbjson;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
-const Duration$json = const {
+const Duration$json = {
   '1': 'Duration',
-  '2': const [
-    const {'1': 'seconds', '3': 1, '4': 1, '5': 3, '10': 'seconds'},
-    const {'1': 'nanos', '3': 2, '4': 1, '5': 5, '10': 'nanos'},
+  '2': [
+    {'1': 'seconds', '3': 1, '4': 1, '5': 3, '10': 'seconds'},
+    {'1': 'nanos', '3': 2, '4': 1, '5': 5, '10': 'nanos'},
   ],
 };

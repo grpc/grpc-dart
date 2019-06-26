@@ -42,27 +42,26 @@ class TestService extends TestServiceBase {
 
   @override
   Future<Empty> emptyCall(ServiceCall call, Empty request) async {
-    return new Empty();
+    return Empty();
   }
 
   @override
   Future<SimpleResponse> unaryCall(
       ServiceCall call, SimpleRequest request) async {
     if (request.responseStatus.code != 0) {
-      throw new GrpcError.custom(
+      throw GrpcError.custom(
           request.responseStatus.code, request.responseStatus.message);
     }
-    final payload = new Payload()
-      ..body = new List.filled(request.responseSize, 0);
-    return new SimpleResponse()..payload = payload;
+    final payload = Payload()..body = List.filled(request.responseSize, 0);
+    return SimpleResponse()..payload = payload;
   }
 
   @override
   Future<SimpleResponse> cacheableUnaryCall(
       ServiceCall call, SimpleRequest request) async {
-    final timestamp = new DateTime.now().microsecond * 1000;
-    final responsePayload = new Payload()..body = ascii.encode('$timestamp');
-    return new SimpleResponse()..payload = responsePayload;
+    final timestamp = DateTime.now().microsecond * 1000;
+    final responsePayload = Payload()..body = ascii.encode('$timestamp');
+    return SimpleResponse()..payload = responsePayload;
   }
 
   @override
@@ -70,32 +69,31 @@ class TestService extends TestServiceBase {
       ServiceCall call, Stream<StreamingInputCallRequest> request) async {
     final aggregatedPayloadSize = await request.fold(
         0, (size, message) => size + message.payload.body.length);
-    return new StreamingInputCallResponse()
+    return StreamingInputCallResponse()
       ..aggregatedPayloadSize = aggregatedPayloadSize;
   }
 
   Payload _payloadForRequest(ResponseParameters entry) =>
-      new Payload()..body = new List.filled(entry.size, 0);
+      Payload()..body = List.filled(entry.size, 0);
 
   @override
   Stream<StreamingOutputCallResponse> streamingOutputCall(
       ServiceCall call, StreamingOutputCallRequest request) async* {
     for (final entry in request.responseParameters) {
       if (entry.intervalUs > 0) {
-        await new Future.delayed(new Duration(microseconds: entry.intervalUs));
+        await Future.delayed(Duration(microseconds: entry.intervalUs));
       }
-      yield new StreamingOutputCallResponse()
-        ..payload = _payloadForRequest(entry);
+      yield StreamingOutputCallResponse()..payload = _payloadForRequest(entry);
     }
   }
 
   StreamingOutputCallResponse _responseForRequest(
       StreamingOutputCallRequest request) {
     if (request.responseStatus.code != 0) {
-      throw new GrpcError.custom(
+      throw GrpcError.custom(
           request.responseStatus.code, request.responseStatus.message);
     }
-    final response = new StreamingOutputCallResponse();
+    final response = StreamingOutputCallResponse();
     if (request.responseParameters.isNotEmpty) {
       response.payload = _payloadForRequest(request.responseParameters[0]);
     }
@@ -112,12 +110,17 @@ class TestService extends TestServiceBase {
   Stream<StreamingOutputCallResponse> halfDuplexCall(
       ServiceCall call, Stream<StreamingOutputCallRequest> request) async* {
     final bufferedResponses = await request.map(_responseForRequest).toList();
-    yield* new Stream.fromIterable(bufferedResponses);
+    yield* Stream.fromIterable(bufferedResponses);
+  }
+
+  @override
+  Future<Empty> unimplementedCall(ServiceCall call, Empty request) async {
+    return Empty();
   }
 }
 
 Future<void> main(List<String> args) async {
-  final argumentParser = new ArgParser();
+  final argumentParser = ArgParser();
   argumentParser.addOption('port', defaultsTo: '8080');
   argumentParser.addOption('use_tls', defaultsTo: 'false');
   argumentParser.addOption('tls_cert_file', defaultsTo: 'server1.pem');
@@ -125,15 +128,15 @@ Future<void> main(List<String> args) async {
   final arguments = argumentParser.parse(args);
   final port = int.parse(arguments['port']);
 
-  final services = [new TestService()];
+  final services = [TestService()];
 
-  final server = new Server(services);
+  final server = Server(services);
 
   ServerTlsCredentials tlsCredentials;
   if (arguments['use_tls'] == 'true') {
-    final certificate = new File(arguments['tls_cert_file']).readAsBytes();
-    final privateKey = new File(arguments['tls_key_file']).readAsBytes();
-    tlsCredentials = new ServerTlsCredentials(
+    final certificate = File(arguments['tls_cert_file']).readAsBytes();
+    final privateKey = File(arguments['tls_key_file']).readAsBytes();
+    tlsCredentials = ServerTlsCredentials(
         certificate: await certificate, privateKey: await privateKey);
   }
   await server.serve(port: port, security: tlsCredentials);

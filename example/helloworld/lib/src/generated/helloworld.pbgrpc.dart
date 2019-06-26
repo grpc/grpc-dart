@@ -1,49 +1,52 @@
 ///
 //  Generated code. Do not modify.
+//  source: helloworld.proto
 ///
-// ignore_for_file: non_constant_identifier_names,library_prefixes
-library helloworld_helloworld_pbgrpc;
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
 
-import 'dart:async';
+import 'dart:async' as $async;
 
-import 'package:grpc/grpc.dart';
+import 'dart:core' as $core show int, String, List;
 
-import 'helloworld.pb.dart';
+import 'package:grpc/service_api.dart' as $grpc;
+import 'helloworld.pb.dart' as $0;
 export 'helloworld.pb.dart';
 
-class GreeterClient extends Client {
-  static final _$sayHello = new ClientMethod<HelloRequest, HelloReply>(
+class GreeterClient extends $grpc.Client {
+  static final _$sayHello = $grpc.ClientMethod<$0.HelloRequest, $0.HelloReply>(
       '/helloworld.Greeter/SayHello',
-      (HelloRequest value) => value.writeToBuffer(),
-      (List<int> value) => new HelloReply.fromBuffer(value));
+      ($0.HelloRequest value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.HelloReply.fromBuffer(value));
 
-  GreeterClient(ClientChannel channel, {CallOptions options})
+  GreeterClient($grpc.ClientChannel channel, {$grpc.CallOptions options})
       : super(channel, options: options);
 
-  ResponseFuture<HelloReply> sayHello(HelloRequest request,
-      {CallOptions options}) {
-    final call = $createCall(_$sayHello, new Stream.fromIterable([request]),
+  $grpc.ResponseFuture<$0.HelloReply> sayHello($0.HelloRequest request,
+      {$grpc.CallOptions options}) {
+    final call = $createCall(_$sayHello, $async.Stream.fromIterable([request]),
         options: options);
-    return new ResponseFuture(call);
+    return $grpc.ResponseFuture(call);
   }
 }
 
-abstract class GreeterServiceBase extends Service {
-  String get $name => 'helloworld.Greeter';
+abstract class GreeterServiceBase extends $grpc.Service {
+  $core.String get $name => 'helloworld.Greeter';
 
   GreeterServiceBase() {
-    $addMethod(new ServiceMethod<HelloRequest, HelloReply>(
+    $addMethod($grpc.ServiceMethod<$0.HelloRequest, $0.HelloReply>(
         'SayHello',
         sayHello_Pre,
         false,
         false,
-        (List<int> value) => new HelloRequest.fromBuffer(value),
-        (HelloReply value) => value.writeToBuffer()));
+        ($core.List<$core.int> value) => $0.HelloRequest.fromBuffer(value),
+        ($0.HelloReply value) => value.writeToBuffer()));
   }
 
-  Future<HelloReply> sayHello_Pre(ServiceCall call, Future request) async {
+  $async.Future<$0.HelloReply> sayHello_Pre(
+      $grpc.ServiceCall call, $async.Future request) async {
     return sayHello(call, await request);
   }
 
-  Future<HelloReply> sayHello(ServiceCall call, HelloRequest request);
+  $async.Future<$0.HelloReply> sayHello(
+      $grpc.ServiceCall call, $0.HelloRequest request);
 }
