@@ -19,9 +19,9 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:grpc/grpc.dart';
-import 'package:interop/src/generated/empty.pb.dart';
-import 'package:interop/src/generated/messages.pb.dart';
-import 'package:interop/src/generated/test.pbgrpc.dart';
+import 'generated/empty.pb.dart';
+import 'generated/messages.pb.dart';
+import 'generated/test.pbgrpc.dart';
 
 const _headerEchoKey = 'x-grpc-test-echo-initial';
 const _headerEchoData = 'test_initial_metadata_value';

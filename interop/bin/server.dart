@@ -114,8 +114,9 @@ class TestService extends TestServiceBase {
   }
 
   @override
-  Future<Empty> unimplementedCall(ServiceCall call, Empty request) async {
-    return Empty();
+  Future<Empty> unimplementedCall(ServiceCall call, Empty request) {
+    call.sendTrailers(status: StatusCode.unimplemented);
+    return null;
   }
 }
 
