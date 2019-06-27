@@ -16,6 +16,7 @@
 import 'dart:async';
 
 import 'package:grpc/grpc.dart';
+import 'package:grpc/src/client/http2_connection.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 
@@ -380,5 +381,19 @@ void main() {
     }
     expect(lastBackoff, const Duration(minutes: 2));
     expect(defaultBackoffStrategy(lastBackoff), const Duration(minutes: 2));
+  });
+
+  test('authority is computed correctly', () {
+    final emptyOptions = ChannelOptions();
+    expect(Http2ClientConnection('localhost', 8080, emptyOptions).authority,
+        'localhost:8080');
+    expect(Http2ClientConnection('localhost', 443, emptyOptions).authority,
+        'localhost');
+    final channelOptions = ChannelOptions(
+        credentials: ChannelCredentials.insecure(authority: 'myauthority.com'));
+    expect(Http2ClientConnection('localhost', 8080, channelOptions).authority,
+        'myauthority.com');
+    expect(Http2ClientConnection('localhost', null, channelOptions).authority,
+        'myauthority.com');
   });
 }
