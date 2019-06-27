@@ -1,4 +1,4 @@
-## 2.0.0+2
+## 2.0.1
 
 * Fix computation of authority. This should fix authorization.
 
