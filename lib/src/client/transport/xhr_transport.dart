@@ -143,6 +143,7 @@ class XhrClientConnection extends ClientConnection {
   XhrClientConnection(this.uri);
 
   String get authority => uri.authority;
+  String get scheme => uri.scheme;
 
   void _initializeRequest(HttpRequest request, Map<String, String> metadata) {
     for (final header in metadata.keys) {

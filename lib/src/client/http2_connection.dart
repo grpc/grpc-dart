@@ -65,6 +65,8 @@ class Http2ClientConnection implements connection.ClientConnection {
   String get authority =>
       options.credentials.authority ?? (port == 443 ? host : "$host:$port");
 
+  String get scheme => options.credentials.isSecure ? 'https' : 'http';
+
   ConnectionState get state => _state;
 
   Future<ClientTransportConnection> connectTransport() async {

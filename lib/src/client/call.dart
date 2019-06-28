@@ -150,7 +150,7 @@ class ClientCall<Q, R> implements Response {
       Future.forEach(
               options.metadataProviders,
               (provider) => provider(
-                  metadata, "${connection.authority}${audiencePath(_method)}"))
+                  metadata, '${connection.scheme}://${connection.authority}${audiencePath(_method)}'))
           .then((_) => _sendRequest(connection, _sanitizeMetadata(metadata)))
           .catchError(_onMetadataProviderError);
     }
