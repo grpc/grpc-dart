@@ -87,8 +87,7 @@ class Server {
   Future<void> serve(
       {dynamic address,
       int port,
-      ServerTlsCredentials security,
-      void Function(String message) logError = print}) async {
+      ServerTlsCredentials security}) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
     Stream<Socket> server;
     if (security != null) {
@@ -110,8 +109,11 @@ class Server {
       // timeout.
       connection.incomingStreams.listen((stream) {
         handler = serveStream_(stream);
-      }, onError: (error) {
-        logError('Connection error: $error');
+      }, onError: (error, stackTrace) {
+        if (error is Error) {
+          Zone.current.handleUncaughtError(error, stackTrace);
+        }
+        // Non-Errors are ignored by the server.
       }, onDone: () {
         // TODO(sigurdm): This is not correct behavior in the presence of
         // half-closed tcp streams.
@@ -120,8 +122,11 @@ class Server {
         handler?.cancel();
         _connections.remove(connection);
       });
-    }, onError: (error) {
-      logError('Socket error: $error');
+    }, onError: (error, stackTrace) {
+      if (error is Error) {
+        Zone.current.handleUncaughtError(error, stackTrace);
+      }
+      // Non-Errors are ignored by the server.
     });
   }
 
