@@ -20,6 +20,6 @@ please [open an issue](https://github.com/dart-lang/grpc-dart/issues).
 
 This library requires Dart SDK version 2.2.0 or later.
 
-It currently supports the the [Flutter](https://flutter.dev/) and
+It currently supports the [Flutter](https://flutter.dev/) and
 [Dart native](https://dart.dev/platforms) platforms.
 

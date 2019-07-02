@@ -38,6 +38,7 @@ enum ConnectionState {
 
 abstract class ClientConnection {
   String get authority;
+  String get scheme;
 
   /// Put [call] on the queue to be dispatched when the connection is ready.
   void dispatchCall(ClientCall call);
