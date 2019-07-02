@@ -102,11 +102,11 @@ class Server {
     server.listen((socket) {
       final connection = ServerTransportConnection.viaSocket(socket);
       _connections.add(connection);
-      ServerHandler_ handler;
+      final handlers = <ServerHandler_>[];
       // TODO(jakobr): Set active state handlers, close connection after idle
       // timeout.
       connection.incomingStreams.listen((stream) {
-        handler = serveStream_(stream);
+        handlers.add(serveStream_(stream));
       }, onError: (error) {
         print('Connection error: $error');
       }, onDone: () {
@@ -114,7 +114,9 @@ class Server {
         // half-closed tcp streams.
         // Half-closed  streams seems to not be fully supported by package:http2.
         // https://github.com/dart-lang/http2/issues/42
-        handler?.cancel();
+        for (final handler in handlers) {
+          handler.cancel();
+        }
         _connections.remove(connection);
       });
     }, onError: (error) {
