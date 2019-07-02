@@ -85,9 +85,7 @@ class Server {
   Service lookupService(String service) => _services[service];
 
   Future<void> serve(
-      {dynamic address,
-      int port,
-      ServerTlsCredentials security}) async {
+      {dynamic address, int port, ServerTlsCredentials security}) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
     Stream<Socket> server;
     if (security != null) {
