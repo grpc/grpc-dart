@@ -117,6 +117,7 @@ class Server {
         for (final handler in handlers) {
           handler.cancel();
         }
+        handlers.clear();
         _connections.remove(connection);
       });
     }, onError: (error) {
