@@ -1,3 +1,7 @@
+## 2.0.1
+
+* GrpcError now implements Exception to indicate it can be reasonably handled.
+
 ## 2.0.0+1
 
 * Fix imports to ensure grpc-web.dart has no accidental transitive dependencies on dart:io.
