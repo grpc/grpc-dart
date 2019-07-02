@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Fix computation of the audience given to metadata providers to include the scheme.
+
 ## 2.0.1
 
 * Fix computation of authority. This should fix authorization.
