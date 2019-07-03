@@ -41,7 +41,7 @@ class GrpcMessageSink extends Sink<GrpcMessage> {
   @override
   void add(GrpcMessage data) {
     if (message != null) {
-      throw 'Too many messages received!';
+      throw StateError('Too many messages received!');
     }
     message = data;
   }
@@ -49,7 +49,7 @@ class GrpcMessageSink extends Sink<GrpcMessage> {
   @override
   void close() {
     if (message == null) {
-      throw 'No messages received!';
+      throw StateError('No messages received!');
     }
   }
 }

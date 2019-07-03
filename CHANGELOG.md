@@ -1,3 +1,7 @@
+## 2.0.3
+
+* GrpcError now implements Exception to indicate it can be reasonably handled.
+
 ## 2.0.2
 
 * Fix computation of the audience given to metadata providers to include the scheme.
