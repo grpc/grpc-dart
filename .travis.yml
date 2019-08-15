@@ -18,7 +18,7 @@ dart:
 dart_task:
   - test: --platform vm
   - test: --platform chrome
-  - dartfmt
+  - dartfmt: true
   - dartanalyzer: --fatal-warnings lib
 
 # Only building master means that we don't run two builds for each pull request.
