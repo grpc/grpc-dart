@@ -19,12 +19,12 @@ script:
 
   - |
     if [$TRAVIS_DART_VERSION = stable]; then
-      function format_analyze() {
+      function format_analyze {
         pushd $1
         pub get --no-precompile && dartfmt -n lib && dartanalyzer .
         local result=$?
         popd
-        return result
+        return $result
       }
 
       format_analyze(.)
