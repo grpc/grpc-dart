@@ -7,7 +7,7 @@ addons:
 
 # The Chrome addon does not work on windows
 install:
-  - pub get
+  - pub get --no-precompile
   - if [ $TRAVIS_OS_NAME = windows ]; then choco install googlechrome ; fi
 
 # Run against both the dev and stable channel.
@@ -16,11 +16,15 @@ dart:
   - dev
 
 script:
-  env
-  dartfmt
-  dartanalyzer
-  pub run test --platform=vm
-  pub run test --platform=chrome
+  - env
+#  if [$]
+#  for example in example/*; do (cd $example; echo [Analyzing $example]; pub get; dartanalyzer .); done
+#  fi
+  - dartfmt -n lib
+  - dartanalyzer
+  - pub run test --platform=vm
+  - pub run test --platform=chrome
+
 
 # Only building master means that we don't run two builds for each pull request.
 branches:
