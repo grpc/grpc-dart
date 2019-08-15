@@ -27,10 +27,10 @@ script:
         return $result
       }
 
-      format_analyze(.)
-      format_analyze(interop)
+      format_analyze .
+      format_analyze interop
       for example in example/*; do
-         format_analyze($example)
+         format_analyze $example
       done
     fi
   - pub run test --platform=vm
