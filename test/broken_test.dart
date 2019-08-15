@@ -1,0 +1,3 @@
+main() {
+  throw('test failed');
+}
