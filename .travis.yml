@@ -6,7 +6,7 @@ addons:
   chrome: stable
 
 # The Chrome addon does not work on windows
-install:
+before_install:
   - if [ $TRAVIS_OS_NAME = windows ]; then choco install googlechrome ; fi
 
 # Run against both the dev and stable channel.
