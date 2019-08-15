@@ -15,12 +15,12 @@ dart:
   - stable
   - dev
 
-# Define test tasks to run.
-dart_task:
-  - test: --platform vm
-  - test: --platform chrome
-  - dartfmt: true
-  - dartanalyzer: --fatal-warnings lib
+script:
+  env
+  dartfmt
+  dartanalyzer
+  pub run test --platform=vm
+  pub run test --platform=chrome
 
 # Only building master means that we don't run two builds for each pull request.
 branches:
