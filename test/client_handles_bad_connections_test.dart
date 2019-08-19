@@ -57,7 +57,7 @@ main() async {
       server.port,
       grpc.ChannelOptions(
         idleTimeout: Duration(minutes: 1),
-        // Sho
+        // Short delay to test that it will time out.
         connectionTimeout: Duration(milliseconds: 100),
         credentials: grpc.ChannelCredentials.insecure(),
       ),

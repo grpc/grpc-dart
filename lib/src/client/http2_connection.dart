@@ -81,11 +81,11 @@ class Http2ClientConnection implements connection.ClientConnection {
     if (securityContext == null) {
       socket = await Socket.connect(host, port);
     } else {
-      final socket = await SecureSocket.connect(host, port,
+      socket = await SecureSocket.connect(host, port,
           supportedProtocols: ['h2'],
           context: securityContext,
           onBadCertificate: _validateBadCertificate);
-      if (socket.selectedProtocol != 'h2') {
+      if ((socket as SecureSocket).selectedProtocol != 'h2') {
         socket.destroy();
         throw (TransportException(
             'Endpoint $host:$port does not support http/2 via ALPN'));
@@ -96,6 +96,8 @@ class Http2ClientConnection implements connection.ClientConnection {
     socket.done.then((_) => _abandonConnection());
 
     // Give the settings settings-frame a bit of time to arrive.
+    // TODO(sigurdm): This is a hack. The http2 package should expose a way of
+    // waiting for the settings frame to arrive.
     await new Future.delayed(_estimatedRoundTripTime);
 
     if (_state == ConnectionState.shutdown) {
@@ -126,7 +128,6 @@ class Http2ClientConnection implements connection.ClientConnection {
         _pendingCalls.clear();
         pendingCalls.forEach(dispatchCall);
       }
-
     }).catchError(_handleConnectionFailure);
   }
 
@@ -138,10 +139,10 @@ class Http2ClientConnection implements connection.ClientConnection {
     final bool isHealthy = _transportConnection.isOpen;
     final bool shouldRefresh =
         _connectionLifeTimer.elapsed > options.connectionTimeout;
+    if (shouldRefresh) {
+      _transportConnection.finish();
+    }
     if (!isHealthy || shouldRefresh) {
-      if (isHealthy) {
-        _transportConnection.finish();
-      }
       _abandonConnection();
     }
   }

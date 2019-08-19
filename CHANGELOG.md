@@ -1,4 +1,4 @@
-## 2.0.4
+## 2.1.0
 
 * Do a health check of the http2-connection before making request.
 * Introduce `ChannelOptions.connectionLimit` the longest time a single connection is used for new
