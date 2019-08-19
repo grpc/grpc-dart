@@ -1,3 +1,12 @@
+## 2.1.0
+
+* Do a health check of the http2-connection before making request.
+* Introduce `ChannelOptions.connectionLimit` the longest time a single connection is used for new
+  requests.
+* Use Tcp.nodelay to improve client call speed.
+* Use SecureSocket supportedProtocols to save a round trip when establishing a secure connection.
+* Allow passing http2 `ServerSettings` to `Server.serve`.
+
 ## 2.0.3
 
 * GrpcError now implements Exception to indicate it can be reasonably handled.
