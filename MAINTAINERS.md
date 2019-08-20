@@ -8,6 +8,7 @@ for general contribution guidelines.
 ## Maintainers (in alphabetical order)
 - [mit-mit](https://github.com/mit-mit), Google Inc.
 - [nichite](https://github.com/nichite), Google Inc.
+- [szakarias](https://github.com/szakarias), Google Inc.
 - [sigurdm](https://github.com/sigurdm), Google Inc.
 
 ## Emeritus Maintainers (in alphabetical order)
