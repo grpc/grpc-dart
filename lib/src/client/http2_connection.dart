@@ -77,19 +77,13 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   Future<ClientTransportConnection> connectTransport() async {
     final securityContext = credentials.securityContext;
-    Socket socket;
-    if (securityContext == null) {
-      socket = await Socket.connect(host, port);
-    } else {
-      socket = await SecureSocket.connect(host, port,
-          supportedProtocols: ['h2'],
+    Socket socket = await Socket.connect(host, port);
+    if (securityContext != null) {
+      // Todo(sigurdm): We want to pass supportedProtocols: ['h2']. http://dartbug.com/37950
+      socket = await SecureSocket.secure(socket,
+          host: authority,
           context: securityContext,
           onBadCertificate: _validateBadCertificate);
-      if ((socket as SecureSocket).selectedProtocol != 'h2') {
-        socket.destroy();
-        throw (TransportException(
-            'Endpoint $host:$port does not support http/2 via ALPN'));
-      }
     }
 
     final connection = ClientTransportConnection.viaSocket(socket);
