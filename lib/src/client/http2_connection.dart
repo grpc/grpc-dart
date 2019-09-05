@@ -81,7 +81,11 @@ class Http2ClientConnection implements connection.ClientConnection {
     if (securityContext != null) {
       // Todo(sigurdm): We want to pass supportedProtocols: ['h2']. http://dartbug.com/37950
       socket = await SecureSocket.secure(socket,
-          host: authority,
+          // This is not really the host, but the authority to verify the TLC
+          // connection against.
+          //
+          // We don't use `this.authority` here, as that includes the port.
+          host: options.credentials.authority ?? host,
           context: securityContext,
           onBadCertificate: _validateBadCertificate);
     }
