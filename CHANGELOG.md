@@ -1,3 +1,8 @@
+## 2.1.2
+
+* Fix bug introduced in 2.1.1 where the port would be added to the default authority when making a
+  secure connection.
+
 ## 2.1.1
 
 * Fix bug introduced in 2.1.0 where an explicit `authority` would not be used when making a secure 
