@@ -26,19 +26,19 @@ import 'rsa.dart';
 const _tokenExpirationThreshold = Duration(seconds: 30);
 
 abstract class BaseAuthenticator {
-  auth.AccessToken _accessToken;
+  auth.AccessToken accessToken;
   String _lastUri;
 
   Future<void> authenticate(Map<String, String> metadata, String uri) async {
     if (uri == null) {
       throw GrpcError.unauthenticated('Credentials require secure transport.');
     }
-    if (_accessToken == null || _accessToken.hasExpired || uri != _lastUri) {
+    if (accessToken == null || accessToken.hasExpired || uri != _lastUri) {
       await obtainAccessCredentials(uri);
       _lastUri = uri;
     }
 
-    final auth = '${_accessToken.type} ${_accessToken.data}';
+    final auth = '${accessToken.type} ${accessToken.data}';
     metadata['authorization'] = auth;
 
     if (_tokenExpiresSoon) {
@@ -47,7 +47,7 @@ abstract class BaseAuthenticator {
     }
   }
 
-  bool get _tokenExpiresSoon => _accessToken.expiry
+  bool get _tokenExpiresSoon => accessToken.expiry
       .subtract(_tokenExpirationThreshold)
       .isBefore(DateTime.now().toUtc());
 
@@ -63,7 +63,7 @@ abstract class HttpBasedAuthenticator extends BaseAuthenticator {
     if (_call == null) {
       final authClient = http.Client();
       _call = obtainCredentialsWithClient(authClient, uri).then((credentials) {
-        _accessToken = credentials.accessToken;
+        accessToken = credentials.accessToken;
         _call = null;
         authClient.close();
       });
@@ -91,7 +91,7 @@ class JwtServiceAccountAuthenticator extends BaseAuthenticator {
   String get projectId => _projectId;
 
   Future<void> obtainAccessCredentials(String uri) async {
-    _accessToken = _jwtTokenFor(_serviceAccountCredentials, _keyId, uri);
+    accessToken = _jwtTokenFor(_serviceAccountCredentials, _keyId, uri);
   }
 }
 
