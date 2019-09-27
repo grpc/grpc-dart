@@ -1,3 +1,9 @@
+## 2.1.3
+
+* Fix: explicitly specify `'localhost'` for round trip tests
+* Remove unnecessary import of HTTP2 lib
+* Run `dartfmt`
+
 ## 2.1.2
 
 * Fix bug introduced in 2.1.1 where the port would be added to the default authority when making a
