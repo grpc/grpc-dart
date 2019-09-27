@@ -48,9 +48,9 @@ class ChannelCredentials {
   /// [certificates] is not provided, the default trust store is used.
   const ChannelCredentials.secure(
       {List<int> certificates,
-        String password,
-        String authority,
-        BadCertificateHandler onBadCertificate})
+      String password,
+      String authority,
+      BadCertificateHandler onBadCertificate})
       : this._(true, certificates, password, authority, onBadCertificate);
 
   SecurityContext get securityContext {

@@ -6,7 +6,6 @@ import 'package:grpc/service_api.dart' as api;
 import 'package:grpc/src/client/channel.dart' hide ClientChannel;
 import 'package:grpc/src/client/connection.dart';
 import 'package:grpc/src/client/http2_connection.dart';
-import 'package:http2/http2.dart';
 import 'package:test/test.dart';
 
 class TestClient extends Client {
@@ -49,7 +48,7 @@ class FixedConnectionClientChannel extends ClientChannelBase {
 main() async {
   test('round trip insecure connection', () async {
     final Server server = Server([TestService()]);
-    await server.serve(port: 0);
+    await server.serve(address: 'localhost', port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
       'localhost',
@@ -64,6 +63,7 @@ main() async {
   test('round trip secure connection', () async {
     final Server server = Server([TestService()]);
     await server.serve(
+        address: 'localhost',
         port: 0,
         security: ServerTlsCredentials(
             certificate: File('test/data/localhost.crt').readAsBytesSync(),
