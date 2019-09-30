@@ -50,7 +50,7 @@ class FixedConnectionClientChannel extends ClientChannelBase {
 main() async {
   test('client reconnects after the connection gets old', () async {
     final grpc.Server server = grpc.Server([TestService()]);
-    await server.serve(port: 0);
+    await server.serve(address: 'localhost', port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
       'localhost',
@@ -75,7 +75,9 @@ main() async {
   test('client reconnects when stream limit is used', () async {
     final grpc.Server server = grpc.Server([TestService()]);
     await server.serve(
-        port: 0, http2ServerSettings: ServerSettings(concurrentStreamLimit: 2));
+        address: 'localhost',
+        port: 0,
+        http2ServerSettings: ServerSettings(concurrentStreamLimit: 2));
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
         'localhost',
