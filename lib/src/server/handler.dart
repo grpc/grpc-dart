@@ -283,6 +283,7 @@ class ServerHandler_ extends ServiceCall {
       _customHeaders..remove(':status')..remove('content-type');
       outgoingTrailersMap.addAll(_customHeaders);
       _customHeaders = null;
+      _headersSent = true;
     }
     _customTrailers..remove(':status')..remove('content-type');
     outgoingTrailersMap.addAll(_customTrailers);
