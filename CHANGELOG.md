@@ -1,3 +1,7 @@
+## 2.1.3
+
+* Fix a state bug in the server.
+
 ## 2.1.2
 
 * Fix bug introduced in 2.1.1 where the port would be added to the default authority when making a
@@ -5,7 +9,7 @@
 
 ## 2.1.1
 
-* Fix bug introduced in 2.1.0 where an explicit `authority` would not be used when making a secure 
+* Fix bug introduced in 2.1.0 where an explicit `authority` would not be used when making a secure
   connection.
 
 ## 2.1.0
