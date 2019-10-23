@@ -130,7 +130,6 @@ class ClientCall<Q, R> implements Response {
     return sanitizedMetadata;
   }
 
-
 // TODO(sigurdm): Find out why we do this.
   static String audiencePath(ClientMethod method) {
     final lastSlashPos = method.path.lastIndexOf('/');
@@ -138,7 +137,6 @@ class ClientCall<Q, R> implements Response {
         ? method.path
         : method.path.substring(0, lastSlashPos);
   }
-
 
   void onConnectionReady(ClientConnection connection) {
     if (isCancelled) return;
@@ -149,8 +147,8 @@ class ClientCall<Q, R> implements Response {
       final metadata = Map<String, String>.from(options.metadata);
       Future.forEach(
               options.metadataProviders,
-              (provider) => provider(
-                  metadata, '${connection.scheme}://${connection.authority}${audiencePath(_method)}'))
+              (provider) => provider(metadata,
+                  '${connection.scheme}://${connection.authority}${audiencePath(_method)}'))
           .then((_) => _sendRequest(connection, _sanitizeMetadata(metadata)))
           .catchError(_onMetadataProviderError);
     }

@@ -8,7 +8,7 @@ import 'auth.dart';
 
 class ComputeEngineAuthenticator extends HttpBasedAuthenticator {
   Future<auth.AccessCredentials> obtainCredentialsWithClient(
-      http.Client client, String uri) =>
+          http.Client client, String uri) =>
       auth.obtainAccessCredentialsViaMetadataServer(client);
 }
 
@@ -27,7 +27,7 @@ class ServiceAccountAuthenticator extends HttpBasedAuthenticator {
   String get projectId => _projectId;
 
   Future<auth.AccessCredentials> obtainCredentialsWithClient(
-      http.Client client, String uri) =>
+          http.Client client, String uri) =>
       auth.obtainAccessCredentialsViaServiceAccount(
           _serviceAccountCredentials, _scopes, client);
 }

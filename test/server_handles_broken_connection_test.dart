@@ -76,7 +76,7 @@ main() async {
         server.shutdown();
       }, reason: 'the producer should get cancelled'))
     ]);
-    await server.serve(port: 0);
+    await server.serve(address: 'localhost', port: 0);
     final receivePort = ReceivePort();
     Isolate.spawn(
         client, ClientData(port: server.port, sendPort: receivePort.sendPort));
