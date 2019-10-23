@@ -9,7 +9,7 @@ The [Dart](https://www.dart.dev/) implementation of
 See the [Dart gRPC Quickstart](https://grpc.io/docs/quickstart/dart.html).
 
 [grpc-web](https://github.com/grpc/grpc-web) in a browser context is supported by 
-`package:grpc/grpc-web.dart`.
+`package:grpc/grpc_web.dart`.
 
 # Status
 
