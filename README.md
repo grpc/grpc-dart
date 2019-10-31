@@ -16,6 +16,8 @@ See the [Dart gRPC Quickstart](https://grpc.io/docs/quickstart/dart.html).
 If you experience issues, or if you have feature requests,
 please [open an issue](https://github.com/dart-lang/grpc-dart/issues).
 
+Note that we have limited bandwidth to accept PRs, and that all PRs will require signing the [EasyCLA](https://lfcla.com/).
+
 # Notes
 
 This library requires Dart SDK version 2.2.0 or later.
