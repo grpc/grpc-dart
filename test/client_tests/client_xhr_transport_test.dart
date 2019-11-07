@@ -122,7 +122,7 @@ void main() {
   });
 
   test('Stream handles trailers properly', () async {
-    final metadata = <String, String>{
+    final trailers = <String, String>{
       'trailer_1': 'value_1',
       'trailer_2': 'value_2'
     };
@@ -130,27 +130,26 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        metadata, (error) => fail(error.toString()));
+        {}, (error) => fail(error.toString()));
 
-    final encoded = frame(metadata.entries
+    final encodedTrailers = frame(trailers.entries
         .map((e) => '${e.key}:${e.value}')
         .join('\r\n')
         .codeUnits);
-    encoded[0] = 0x80; // Mark this frame as trailers.
-    final encodedString = String.fromCharCodes(encoded);
+    encodedTrailers[0] = 0x80; // Mark this frame as trailers.
+    final encodedString = String.fromCharCodes(encodedTrailers);
 
     stream.incomingMessages.listen((message) {
       expect(message, TypeMatcher<GrpcMetadata>());
       if (message is GrpcMetadata) {
-        print(message.metadata);
         message.metadata.forEach((key, value) {
-          expect(value, metadata[key]);
+          expect(value, trailers[key]);
         });
       }
     });
     when(connection.latestRequest.getResponseHeader('Content-Type'))
         .thenReturn('application/grpc+proto');
-    when(connection.latestRequest.responseHeaders).thenReturn(metadata);
+    when(connection.latestRequest.responseHeaders).thenReturn({});
     when(connection.latestRequest.readyState)
         .thenReturn(HttpRequest.HEADERS_RECEIVED);
     when(connection.latestRequest.response).thenReturn(encodedString);
@@ -159,12 +158,10 @@ void main() {
   });
 
   test('Stream handles empty trailers properly', () async {
-    final metadata = <String, String>{};
-
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        metadata, (error) => fail(error.toString()));
+        {}, (error) => fail(error.toString()));
 
     final encoded = frame(''.codeUnits);
     encoded[0] = 0x80; // Mark this frame as trailers.
@@ -173,13 +170,12 @@ void main() {
     stream.incomingMessages.listen((message) {
       expect(message, TypeMatcher<GrpcMetadata>());
       if (message is GrpcMetadata) {
-        print(message.metadata);
         message.metadata.isEmpty;
       }
     });
     when(connection.latestRequest.getResponseHeader('Content-Type'))
         .thenReturn('application/grpc+proto');
-    when(connection.latestRequest.responseHeaders).thenReturn(metadata);
+    when(connection.latestRequest.responseHeaders).thenReturn({});
     when(connection.latestRequest.readyState)
         .thenReturn(HttpRequest.HEADERS_RECEIVED);
     when(connection.latestRequest.response).thenReturn(encodedString);
