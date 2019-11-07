@@ -1,6 +1,6 @@
 ## 2.1.3
 
-* Fix bug in grpc-web when receiving an empty trailer
+* Fix bug in grpc-web when receiving an empty trailer.
 * Fix a state bug in the server.
 
 ## 2.1.2
