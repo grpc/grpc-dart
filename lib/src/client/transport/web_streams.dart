@@ -118,7 +118,8 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
   }
 
   Map<String, String> _parseHttp1Headers(String stringData) {
-    final chunks = stringData.trim().split('\r\n');
+    final trimmed = stringData.trim();
+    final chunks = trimmed == '' ? [] : trimmed.split('\r\n');
     final headers = <String, String>{};
     for (final chunk in chunks) {
       final pos = chunk.indexOf(':');
