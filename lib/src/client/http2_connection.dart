@@ -90,7 +90,8 @@ class Http2ClientConnection implements connection.ClientConnection {
           onBadCertificate: _validateBadCertificate);
     }
 
-    final connection = ClientTransportConnection.viaSocket(socket);
+    final incoming = socket.handleError((_) => _abandonConnection());
+    final connection = ClientTransportConnection.viaStreams(incoming, socket);
     socket.done.then((_) => _abandonConnection());
 
     // Give the settings settings-frame a bit of time to arrive.
@@ -265,7 +266,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     _cancelTimer();
     _transportConnection = null;
 
-    if (_state == ConnectionState.idle && _state == ConnectionState.shutdown) {
+    if (_state == ConnectionState.idle || _state == ConnectionState.shutdown) {
       // All good.
       return;
     }
