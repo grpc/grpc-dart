@@ -17,6 +17,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http2/transport.dart';
+import 'package:logging/logging.dart' show Logger;
 import 'package:meta/meta.dart';
 
 import '../shared/security.dart';
@@ -58,6 +59,7 @@ class ServerTlsCredentials {
 ///
 /// Listens for incoming RPCs, dispatching them to the right [Service] handler.
 class Server {
+  static final Logger _log = new Logger('Server');
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
 
@@ -88,7 +90,10 @@ class Server {
       {dynamic address,
       int port,
       ServerTlsCredentials security,
-      ServerSettings http2ServerSettings}) async {
+      ServerSettings http2ServerSettings,
+      int backlog: 0,
+      bool v6Only: false,
+      bool shared: false}) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
     Stream<Socket> server;
     if (security != null) {
@@ -99,7 +104,7 @@ class Server {
       server = _secureServer;
     } else {
       _insecureServer = await ServerSocket.bind(
-          address ?? InternetAddress.anyIPv4, port ?? 80);
+          address ?? InternetAddress.anyIPv4, port ?? 80, backlog: backlog, shared: shared , v6Only: v6Only);
       server = _insecureServer;
     }
     server.listen((socket) {
@@ -111,8 +116,8 @@ class Server {
       // timeout.
       connection.incomingStreams.listen((stream) {
         handler = serveStream_(stream);
-      }, onError: (error) {
-        print('Connection error: $error');
+      }, onError: (error, StackTrace stackTrace) {
+        _log.severe('Connection error: ', error, stackTrace);
       }, onDone: () {
         // TODO(sigurdm): This is not correct behavior in the presence of
         // half-closed tcp streams.
@@ -121,8 +126,8 @@ class Server {
         handler?.cancel();
         _connections.remove(connection);
       });
-    }, onError: (error) {
-      print('Socket error: $error');
+    }, onError: (error, StackTrace stackTrace) {
+      _log.severe('Socket error:', error, stackTrace);
     });
   }
 
