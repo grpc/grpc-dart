@@ -10,3 +10,5 @@ pubspec.lock
 # Directory created by dartdoc
 doc/api/
 
+# Directory created by WebStorm
+.idea/
