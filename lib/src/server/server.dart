@@ -17,6 +17,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http2/transport.dart';
+import 'package:logging/logging.dart' show Logger;
 import 'package:meta/meta.dart';
 
 import '../shared/security.dart';
@@ -58,6 +59,7 @@ class ServerTlsCredentials {
 ///
 /// Listens for incoming RPCs, dispatching them to the right [Service] handler.
 class Server {
+  static final Logger _log = new Logger('Server');
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
 
@@ -111,8 +113,8 @@ class Server {
       // timeout.
       connection.incomingStreams.listen((stream) {
         handler = serveStream_(stream);
-      }, onError: (error) {
-        print('Connection error: $error');
+      }, onError: (error, StackTrace stackTrace) {
+        _log.severe('Connection error: ', error, stackTrace);
       }, onDone: () {
         // TODO(sigurdm): This is not correct behavior in the presence of
         // half-closed tcp streams.
@@ -121,8 +123,8 @@ class Server {
         handler?.cancel();
         _connections.remove(connection);
       });
-    }, onError: (error) {
-      print('Socket error: $error');
+    }, onError: (error, StackTrace stackTrace) {
+      _log.severe('Socket error:', error, stackTrace);
     });
   }
 
