@@ -1,4 +1,4 @@
-// Copyright (c) 2018, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2019, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ import 'package:grpc/grpc.dart';
 import 'package:isolate_service/src/generated/helloworld.pb.dart';
 import 'package:isolate_service/src/generated/helloworld.pbgrpc.dart';
 
-
 import "package:isolate/isolate_runner.dart";
 import "package:isolate/ports.dart";
 import "package:isolate/runner.dart";
@@ -38,15 +37,18 @@ class GreeterService extends GreeterServiceBase {
   }
 }
 
-
 void initLog([String isolateMarker]) {
-  if (isolateMarker == null){ isolateMarker = "I${Isolate.current.hashCode}"; }
+  if (isolateMarker == null) {
+    isolateMarker = "I${Isolate.current.hashCode}";
+  }
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((LogRecord rec) {
     if (rec.error != null) {
-      print('[$isolateMarker] ${rec.level.name}:${rec.loggerName} ${rec.time}: ${rec.message} ${rec.error}');
+      print(
+          '[$isolateMarker] ${rec.level.name}:${rec.loggerName} ${rec.time}: ${rec.message} ${rec.error}');
     } else {
-      print('[$isolateMarker] ${rec.level.name}:${rec.loggerName} ${rec.time}: ${rec.message}');
+      print(
+          '[$isolateMarker] ${rec.level.name}:${rec.loggerName} ${rec.time}: ${rec.message}');
     }
   });
 }
@@ -64,21 +66,23 @@ Future<void> main(List<String> args) async {
     port = int.parse(args[0]);
   }
 
-  _log.info("Run isolateCount = $isolateCount, address = $address, port = $port");
+  _log.info(
+      "Run isolateCount = $isolateCount, address = $address, port = $port");
 
   // Used to ensure the requested port is available or to find an available
   // port if `0` is provided.
   final ServerSocket socket =
-  await ServerSocket.bind(address, port, shared: true);
+      await ServerSocket.bind(address, port, shared: true);
 
   port = socket.port;
   final isolates = await Future.wait(
-      Iterable.generate(isolateCount, (_) => IsolateRunner.spawn()), cleanUp: (isolate) {
+      Iterable.generate(isolateCount, (_) => IsolateRunner.spawn()),
+      cleanUp: (isolate) {
     isolate.close();
   });
 
   final List<Future<Object> Function()> stoppers =
-  await Future.wait(isolates.map((IsolateRunner isolate) {
+      await Future.wait(isolates.map((IsolateRunner isolate) {
     return runService(isolate, address, socket.port);
   }), cleanUp: (shutdownServer) {
     shutdownServer();
@@ -88,16 +92,16 @@ Future<void> main(List<String> args) async {
 
   await ProcessSignal.sigint.watch().first;
   for (var stopper in stoppers) {
-        await stopper();
+    await stopper();
   }
   _log.info("Finished");
 }
 
-
 int _isolateId = 0;
 Future<Future<Object> Function()> runService(
     Runner runner, dynamic address, int port) async {
-  final SendPort stopPort = await runner.run(_startIsolateServer, [address, port, ++_isolateId]);
+  final SendPort stopPort =
+      await runner.run(_startIsolateServer, [address, port, ++_isolateId]);
   return () => _sendStop(stopPort);
 }
 
@@ -106,7 +110,7 @@ Future _sendStop(SendPort stopPort) => singleResponseFuture(stopPort.send);
 Future<SendPort> _startIsolateServer(List args) async {
   final dynamic address = args[0];
   final int port = args[1];
-  initLog(args.length>2?"I${args[2]}": null);
+  initLog(args.length > 2 ? "I${args[2]}" : null);
 
   final server = Server([GreeterService()]);
   await server.serve(address: address, port: port, shared: true);
