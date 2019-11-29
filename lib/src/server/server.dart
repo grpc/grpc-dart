@@ -100,7 +100,7 @@ class Server {
           port ?? 443,
           security.securityContext,
           backlog: backlog,
-          shared: shared ,
+          shared: shared,
           v6Only: v6Only);
       server = _secureServer;
     } else {
