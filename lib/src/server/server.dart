@@ -98,7 +98,10 @@ class Server {
       _secureServer = await SecureServerSocket.bind(
           address ?? InternetAddress.anyIPv4,
           port ?? 443,
-          security.securityContext);
+          security.securityContext,
+          backlog: backlog,
+          shared: shared ,
+          v6Only: v6Only);
       server = _secureServer;
     } else {
       _insecureServer = await ServerSocket.bind(
