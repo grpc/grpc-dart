@@ -17,6 +17,7 @@ import 'channel.dart';
 import 'connection.dart';
 import 'http2_connection.dart' show Http2ClientConnection;
 import 'options.dart';
+import 'interceptor.dart';
 
 /// A channel to a virtual gRPC endpoint.
 ///
@@ -29,8 +30,8 @@ class ClientChannel extends ClientChannelBase {
   final ChannelOptions options;
 
   ClientChannel(this.host,
-      {this.port = 443, this.options = const ChannelOptions()})
-      : super();
+      {this.port = 443, this.options = const ChannelOptions(), interceptor})
+      : super(interceptor: interceptor);
 
   @override
   ClientConnection createConnection() {

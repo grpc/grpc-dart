@@ -94,6 +94,7 @@ class ClientCall<Q, R> implements Response {
 
   GrpcTransportStream _stream;
   StreamController<R> _responses;
+  Stream<R> _broadcastResponses;
   StreamSubscription<List<int>> _requestSubscription;
   StreamSubscription<GrpcMessage> _responseSubscription;
 
@@ -102,6 +103,7 @@ class ClientCall<Q, R> implements Response {
 
   ClientCall(this._method, this._requests, this.options) {
     _responses = StreamController(onListen: _onResponseListen);
+    _broadcastResponses = _responses.stream.asBroadcastStream();
     if (options.timeout != null) {
       _timeoutTimer = Timer(options.timeout, _onTimedOut);
     }
@@ -308,7 +310,7 @@ class ClientCall<Q, R> implements Response {
     _stream.terminate();
   }
 
-  Stream<R> get response => _responses.stream;
+  Stream<R> get response => _broadcastResponses;
 
   @override
   Future<Map<String, String>> get headers => _headers.future;

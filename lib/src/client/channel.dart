@@ -20,6 +20,7 @@ import '../shared/status.dart';
 import 'call.dart';
 import 'connection.dart';
 import 'method.dart';
+import 'interceptor.dart';
 
 /// A channel to a virtual RPC endpoint.
 abstract class ClientChannel {
@@ -45,9 +46,15 @@ abstract class ClientChannelBase implements ClientChannel {
   // TODO(jakobr): Multiple connections, load balancing.
   ClientConnection _connection;
 
+  ClientInterceptor _interceptor;
+
   bool _isShutdown = false;
 
-  ClientChannelBase();
+  ClientChannelBase({interceptor}) {
+    _interceptor = interceptor ?? (method, requests, options, invoker) {
+      return invoker(method, requests, options);
+    };
+  }
 
   @override
   Future<void> shutdown() async {
@@ -75,11 +82,18 @@ abstract class ClientChannelBase implements ClientChannel {
   @override
   ClientCall<Q, R> createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
-    final call = ClientCall(method, requests, options);
-    getConnection().then((connection) {
-      if (call.isCancelled) return;
-      connection.dispatchCall(call);
-    }, onError: call.onConnectionError);
-    return call;
+    final ClientInvoker invoker = (method, requests, CallOptions options) {
+      final call = ClientCall<Q, R>(method,
+          requests is Stream<Q> ? requests : requests.map((value) {
+            return value as Q;
+          }),
+          options);
+      getConnection().then((connection) {
+        if (call.isCancelled) return;
+        connection.dispatchCall(call);
+      }, onError: call.onConnectionError);
+      return call;
+    };
+    return _interceptor(method, requests, options, invoker);
   }
 }
