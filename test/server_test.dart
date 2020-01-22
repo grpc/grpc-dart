@@ -288,7 +288,8 @@ void main() {
         return expectedResponse;
       }
 
-      final Interceptor interceptor = (call, method) {
+      final Interceptor interceptor = (call, service, method) {
+        expect(service, isA<TestService>());
         if (method.name == "Unary") {
           return null;
         }
@@ -305,12 +306,14 @@ void main() {
       }
 
       test('with sync interceptor', () => doTest(interceptor));
-      test('with async interceptor',
-          () => doTest((call, method) async => interceptor(call, method)));
+      test(
+          'with async interceptor',
+          () => doTest((call, service, method) async =>
+              interceptor(call, service, method)));
     });
 
     group('returns error if interceptor blocks request', () {
-      final Interceptor interceptor = (call, method) {
+      final Interceptor interceptor = (call, service, method) {
         if (method.name == "Unary") {
           return GrpcError.unauthenticated('Request is unauthenticated');
         }
@@ -328,12 +331,14 @@ void main() {
       }
 
       test('with sync interceptor', () => doTest(interceptor));
-      test('with async interceptor',
-          () => doTest((call, method) async => interceptor(call, method)));
+      test(
+          'with async interceptor',
+          () => doTest((call, service, method) async =>
+              interceptor(call, service, method)));
     });
 
     group('returns internal error if interceptor throws exception', () {
-      final Interceptor interceptor = (call, method) {
+      final Interceptor interceptor = (call, service, method) {
         throw Exception('Reason is unknown');
       };
 
@@ -348,12 +353,14 @@ void main() {
       }
 
       test('with sync interceptor', () => doTest(interceptor));
-      test('with async interceptor',
-          () => doTest((call, method) async => interceptor(call, method)));
+      test(
+          'with async interceptor',
+          () => doTest((call, service, method) async =>
+              interceptor(call, service, method)));
     });
 
     test("don't fail if interceptor await 2 times", () async {
-      final Interceptor interceptor = (call, method) async {
+      final Interceptor interceptor = (call, service, method) async {
         await Future.value();
         await Future.value();
         throw Exception('Reason is unknown');

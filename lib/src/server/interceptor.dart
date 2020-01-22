@@ -11,4 +11,4 @@ import 'service.dart';
 /// If the interceptor throws [Exception], [GrpcError.internal] with exception.toString() will be returned.
 /// If the interceptor returns null, the corresponding [ServiceMethod] of [Service] will be called.
 typedef Interceptor = FutureOr<GrpcError> Function(
-    ServiceCall call, ServiceMethod method);
+    ServiceCall call, Service service, ServiceMethod method);

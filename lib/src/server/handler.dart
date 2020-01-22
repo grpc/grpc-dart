@@ -131,7 +131,7 @@ class ServerHandler_ extends ServiceCall {
   Future<GrpcError> _applyInterceptors() async {
     try {
       for (final interceptor in _interceptors) {
-        final error = await interceptor(this, this._descriptor);
+        final error = await interceptor(this, _service, _descriptor);
         if (error != null) {
           return error;
         }
