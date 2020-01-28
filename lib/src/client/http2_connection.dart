@@ -78,6 +78,7 @@ class Http2ClientConnection implements connection.ClientConnection {
   Future<ClientTransportConnection> connectTransport() async {
     final securityContext = credentials.securityContext;
     Socket socket = await Socket.connect(host, port);
+    socket.setOption(SocketOption.tcpNoDelay, true);
     if (securityContext != null) {
       // Todo(sigurdm): We want to pass supportedProtocols: ['h2']. http://dartbug.com/37950
       socket = await SecureSocket.secure(socket,

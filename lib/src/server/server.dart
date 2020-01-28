@@ -109,6 +109,7 @@ class Server {
       server = _insecureServer;
     }
     server.listen((socket) {
+      socket.setOption(SocketOption.tcpNoDelay, true);
       final connection = ServerTransportConnection.viaSocket(socket,
           settings: http2ServerSettings);
       _connections.add(connection);
