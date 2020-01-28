@@ -77,6 +77,9 @@ class ServerHandler_ extends ServiceCall {
         .transform(grpcDecompressor())
         .listen(_onDataIdle,
             onError: _onError, onDone: _onDoneError, cancelOnError: true);
+    _stream.outgoingMessages.done.then((_) {
+      cancel();
+    });
   }
 
   /// Cancel response subscription, if active. If the stream exits with an
