@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
 import 'dart:math' show atan2, cos, max, min, pi, sin, sqrt;
 
 import 'package:grpc/grpc.dart' as grpc;
