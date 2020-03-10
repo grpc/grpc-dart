@@ -1,12 +1,13 @@
 ///
 //  Generated code. Do not modify.
 //  source: route_guide.proto
-///
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
+//
+// @dart = 2.3
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
 
 import 'dart:async' as $async;
 
-import 'dart:core' as $core show int, String, List;
+import 'dart:core' as $core;
 
 import 'package:grpc/service_api.dart' as $grpc;
 import 'route_guide.pb.dart' as $0;
@@ -99,13 +100,13 @@ abstract class RouteGuideServiceBase extends $grpc.Service {
   }
 
   $async.Future<$0.Feature> getFeature_Pre(
-      $grpc.ServiceCall call, $async.Future request) async {
+      $grpc.ServiceCall call, $async.Future<$0.Point> request) async {
     return getFeature(call, await request);
   }
 
   $async.Stream<$0.Feature> listFeatures_Pre(
-      $grpc.ServiceCall call, $async.Future request) async* {
-    yield* listFeatures(call, (await request) as $0.Rectangle);
+      $grpc.ServiceCall call, $async.Future<$0.Rectangle> request) async* {
+    yield* listFeatures(call, await request);
   }
 
   $async.Future<$0.Feature> getFeature(
