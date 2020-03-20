@@ -84,7 +84,7 @@ class CallOptions {
 class ClientCall<Q, R> implements Response {
   final ClientMethod<Q, R> _method;
   final Stream<Q> _requests;
-  final CallOptions options;
+  CallOptions options;
 
   final _headers = Completer<Map<String, String>>();
   final _trailers = Completer<Map<String, String>>();
