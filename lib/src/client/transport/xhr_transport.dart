@@ -54,7 +54,6 @@ class XhrTransportStream implements GrpcTransportStream {
             if (!_onHeadersReceived(response)) {
               return;
             }
-            print(response.headers);
             response.stream.listen((data) {
               _incomingProcessor.add(Uint8List.fromList(data).buffer);
             }, onDone: _close);
