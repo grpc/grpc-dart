@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
@@ -89,6 +90,12 @@ class XhrTransportStream implements GrpcTransportStream {
     if (!contentType.startsWith('application/grpc')) {
       _onError(
           GrpcError.unavailable('XhrConnection bad Content-Type $contentType'));
+      return false;
+    }
+    final encoding = response.headers['grpc-encoding'];
+    if (encoding != null && encoding != 'gzip') {
+      _onError(GrpcError.unavailable(
+          'XhrConnection unsupported grpc-encoding $encoding'));
       return false;
     }
 
