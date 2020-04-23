@@ -16,8 +16,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:meta/meta.dart';
 import 'package:http/http.dart';
+import 'package:meta/meta.dart';
 
 import '../../client/call.dart';
 import '../../shared/message.dart';
@@ -44,29 +44,27 @@ class XhrTransportStream implements GrpcTransportStream {
   XhrTransportStream(this._client, this._request, {onError, onDone})
       : _onError = onError,
         _onDone = onDone {
-    _outgoingMessages.stream.map(frame).listen(
-        (data) {
-          _request.bodyBytes = data;
-          _client.send(_request).then((response) {
-            if (_incomingMessages.isClosed) {
-              return;
-            }
-            if (!_onHeadersReceived(response)) {
-              return;
-            }
-            response.stream.listen((data) {
-              _incomingProcessor.add(Uint8List.fromList(data).buffer);
-            }, onDone: _close);
-          });
-        },
-        cancelOnError: true,
-        onError: (e, st) {
-          if (_incomingMessages.isClosed) {
-            return;
-          }
-          _onError(GrpcError.unavailable('XhrConnection connection-error'));
-          terminate();
-        });
+    final asyncOnError = (e, st) {
+      if (_incomingMessages.isClosed) {
+        return;
+      }
+      _onError(GrpcError.unavailable('XhrConnection connection-error'));
+      terminate();
+    };
+    _outgoingMessages.stream.map(frame).listen((data) {
+      _request.bodyBytes = data;
+      _client.send(_request).then((response) {
+        if (_incomingMessages.isClosed) {
+          return;
+        }
+        if (!_onHeadersReceived(response)) {
+          return;
+        }
+        response.stream.listen((data) {
+          _incomingProcessor.add(Uint8List.fromList(data).buffer);
+        }, onDone: _close);
+      }).catchError(asyncOnError);
+    }, cancelOnError: true, onError: asyncOnError);
 
     _incomingProcessor.stream
         .transform(GrpcWebDecoder())
