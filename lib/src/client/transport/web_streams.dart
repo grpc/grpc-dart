@@ -40,6 +40,7 @@ class GrpcWebDecoder extends Converter<ByteBuffer, GrpcMessage> {
 
 class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
   static const int frameTypeData = 0x00;
+  static const int frameTypeCompressedData = 0x01;
   static const int frameTypeTrailers = 0x80;
 
   final Sink<GrpcMessage> _out;
@@ -57,7 +58,9 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
   int _parseFrameType(List<int> chunkData) {
     final frameType = chunkData[_chunkOffset];
     _chunkOffset++;
-    if (frameType != frameTypeData && frameType != frameTypeTrailers) {
+    if (frameType != frameTypeData &&
+        frameType != frameTypeTrailers &&
+        frameType != frameTypeCompressedData) {
       throw GrpcError.unimplemented('Invalid frame type: ${frameType}');
     }
     _state = _GrpcWebParseState.Length;
@@ -105,6 +108,9 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
     switch (_frameType) {
       case frameTypeData:
         _out.add(GrpcData(_data, isCompressed: false));
+        break;
+      case frameTypeCompressedData:
+        _out.add(GrpcData(_data, isCompressed: true));
         break;
       case frameTypeTrailers:
         final stringData = String.fromCharCodes(_data);
