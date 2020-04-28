@@ -53,13 +53,17 @@ class XhrTransportStream implements GrpcTransportStream {
     };
     _outgoingMessages.stream.map(frame).listen((data) {
       _request.bodyBytes = data;
+      var firstMessage = true;
       _client.send(_request).then((response) {
         if (_incomingMessages.isClosed) {
           return;
         }
-        if (!_onHeadersReceived(response)) {
-          return;
+        if (firstMessage) {
+          if (!_onHeadersReceived(response)) {
+            return;
+          }
         }
+        firstMessage = false;
         response.stream.listen((data) {
           _incomingProcessor.add(Uint8List.fromList(data).buffer);
         }, onDone: _close);
@@ -116,11 +120,13 @@ class XhrTransportStream implements GrpcTransportStream {
 
 class XhrClientConnection extends ClientConnection {
   final Uri uri;
-  final _client = Client();
+  Client _client;
 
   final Set<XhrTransportStream> _requests = Set<XhrTransportStream>();
 
-  XhrClientConnection(this.uri);
+  XhrClientConnection(this.uri) {
+    _client = createClient();
+  }
 
   String get authority => uri.authority;
   String get scheme => uri.scheme;
@@ -136,6 +142,9 @@ class XhrClientConnection extends ClientConnection {
 
   @visibleForTesting
   Request createHttpRequest(String path) => Request('POST', uri.resolve(path));
+
+  @visibleForTesting
+  Client createClient() => Client();
 
   @override
   GrpcTransportStream makeRequest(String path, Duration timeout,
