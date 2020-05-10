@@ -6,9 +6,9 @@ The [Dart](https://www.dart.dev/) implementation of
 
 # Usage
 
-See the [Dart gRPC Quickstart](https://grpc.io/docs/quickstart/dart.html).
+See the [Dart gRPC Quick Start](https://grpc.io/docs/quickstart/dart).
 
-[grpc-web](https://github.com/grpc/grpc-web) in a browser context is supported by 
+[grpc-web](https://github.com/grpc/grpc-web) in a browser context is supported by
 `package:grpc/grpc_web.dart`.
 
 # Status
@@ -16,12 +16,12 @@ See the [Dart gRPC Quickstart](https://grpc.io/docs/quickstart/dart.html).
 If you experience issues, or if you have feature requests,
 please [open an issue](https://github.com/dart-lang/grpc-dart/issues).
 
-Note that we have limited bandwidth to accept PRs, and that all PRs will require signing the [EasyCLA](https://lfcla.com/).
+Note that we have limited bandwidth to accept PRs, and that all PRs will require signing the [EasyCLA](https://lfcla.com).
 
 # Notes
 
 This library requires Dart SDK version 2.2.0 or later.
 
-It currently supports the [Flutter](https://flutter.dev/) and
+It currently supports the [Flutter](https://flutter.dev) and
 [Dart native](https://dart.dev/platforms) platforms.
 
