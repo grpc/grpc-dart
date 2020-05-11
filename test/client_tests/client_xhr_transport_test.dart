@@ -107,7 +107,6 @@ void main() {
     stream.incomingMessages.listen((message) {
       expect(message, TypeMatcher<GrpcMetadata>());
       if (message is GrpcMetadata) {
-        print(message.metadata);
         message.metadata.forEach((key, value) {
           expect(value, metadata[key]);
         });

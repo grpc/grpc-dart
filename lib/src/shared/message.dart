@@ -16,8 +16,6 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:archive/archive.dart';
-
 abstract class GrpcMessage {}
 
 class GrpcMetadata extends GrpcMessage {
@@ -71,8 +69,8 @@ StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor() =>
         handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
       if (value is GrpcData) {
         if (value.isCompressed) {
-          final decompressedData = GZipDecoder().decodeBytes(value.data);
-          sink.add(GrpcData(decompressedData, isCompressed: false));
+          // TODO(dart-lang/grpc-dart#6): Actually handle decompression.
+          sink.add(GrpcData(value.data, isCompressed: false));
           return;
         }
       }

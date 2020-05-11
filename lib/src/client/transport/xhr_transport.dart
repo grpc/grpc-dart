@@ -93,12 +93,6 @@ class XhrTransportStream implements GrpcTransportStream {
           GrpcError.unavailable('XhrConnection bad Content-Type $contentType'));
       return false;
     }
-    final encoding = response.headers['grpc-encoding'];
-    if (encoding != null && encoding != 'gzip') {
-      _onError(GrpcError.unavailable(
-          'XhrConnection unsupported grpc-encoding $encoding'));
-      return false;
-    }
 
     // Force a metadata message with headers.
     final headers = GrpcMetadata(response.headers);
