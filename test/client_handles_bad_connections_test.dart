@@ -87,7 +87,11 @@ main() async {
     channel.clientConnection.onStateChanged =
         (Http2ClientConnection connection) => states.add(connection.state);
     final testClient = TestClient(channel);
-
+    // This is hack
+    // TODO (hubaxis) setting frame will be received little bit later
+    // we don't want to get delay when we connected. Because of that, need to add option `settingFrameDelay`
+    // By default shouldn't be any delay
+    await testClient.stream(1).toList();
     await Future.wait(<Future>[
       expectLater(testClient.stream(1).toList(), completion([1, 2, 3])),
       expectLater(testClient.stream(1).toList(), completion([1, 2, 3])),

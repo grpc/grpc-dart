@@ -73,8 +73,6 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   ConnectionState get state => _state;
 
-  static const _estimatedRoundTripTime = const Duration(milliseconds: 20);
-
   Future<ClientTransportConnection> connectTransport() async {
     final securityContext = credentials.securityContext;
     Socket socket = await Socket.connect(host, port);
@@ -94,11 +92,6 @@ class Http2ClientConnection implements connection.ClientConnection {
 
     final connection = ClientTransportConnection.viaSocket(socket);
     socket.done.then((_) => _abandonConnection());
-
-    // Give the settings settings-frame a bit of time to arrive.
-    // TODO(sigurdm): This is a hack. The http2 package should expose a way of
-    // waiting for the settings frame to arrive.
-    await new Future.delayed(_estimatedRoundTripTime);
 
     if (_state == ConnectionState.shutdown) {
       socket.destroy();
