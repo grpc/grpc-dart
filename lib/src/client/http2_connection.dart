@@ -217,9 +217,12 @@ class Http2ClientConnection implements connection.ClientConnection {
   void _handleIdleTimeout() {
     if (_timer == null || _state != ConnectionState.ready) return;
     _cancelTimer();
-    _transportConnection
-        ?.finish()
-        ?.catchError((_) => {}); // TODO(jakobr): Log error.
+    var tc = _transportConnection;
+    tc?.finish()
+        ?.timeout(new Duration(milliseconds: 300))
+        ?.catchError((e) {  // TODO(jakobr): Log error.
+          tc.terminate();
+        });
     _transportConnection = null;
     _setState(ConnectionState.idle);
   }
