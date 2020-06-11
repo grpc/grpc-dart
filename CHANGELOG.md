@@ -1,3 +1,9 @@
+## 2.2.0
+
+* Added `applicationDefaultCredentialsAuthenticator` function for creating an
+  authenticator using [Application Default Credentials](https://cloud.google.com/docs/authentication/production).
+* Less latency by using the `tcpNoDelay` option for sockets.
+* Support grpc-web in a non-web setting.
 ## 2.1.3
 
 * Fix bug in grpc-web when receiving an empty trailer.
