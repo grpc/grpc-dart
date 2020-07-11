@@ -22,6 +22,7 @@ const defaultIdleTimeout = Duration(minutes: 5);
 /// connection after precisely 1 hour. So we *proactively* refresh our
 /// connection after 50 minutes. This will avoid one failed RPC call.
 const defaultConnectionTimeOut = Duration(minutes: 50);
+const defaultConnectTimeout = Duration(minutes: 2);
 const defaultUserAgent = 'dart-grpc/2.0.0';
 
 typedef Duration BackoffStrategy(Duration lastBackoff);
@@ -50,11 +51,17 @@ class ChannelOptions {
   final BackoffStrategy backoffStrategy;
   final String userAgent;
 
+  /// The maximum allowed time to wait for a connection to be established.
+  /// If [connectTimeout] is longer than the system level timeout duration,
+  /// a timeout may occur sooner than specified in [connectTimeout].
+  final Duration connectTimeout;
+
   const ChannelOptions({
     this.credentials = const ChannelCredentials.secure(),
     this.idleTimeout = defaultIdleTimeout,
     this.userAgent = defaultUserAgent,
     this.backoffStrategy = defaultBackoffStrategy,
     this.connectionTimeout = defaultConnectionTimeOut,
+    this.connectTimeout = defaultConnectTimeout
   });
 }

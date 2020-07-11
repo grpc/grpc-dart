@@ -77,7 +77,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   Future<ClientTransportConnection> connectTransport() async {
     final securityContext = credentials.securityContext;
-    Socket socket = await Socket.connect(host, port);
+    Socket socket = await Socket.connect(host, port, timeout: options.connectTimeout);
     // Don't wait for io buffers to fill up before sending requests.
     socket.setOption(SocketOption.tcpNoDelay, true);
     if (securityContext != null) {

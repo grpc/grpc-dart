@@ -51,6 +51,7 @@ class FakeChannelOptions implements ChannelOptions {
   ChannelCredentials credentials = const ChannelCredentials.secure();
   Duration idleTimeout = const Duration(seconds: 1);
   Duration connectionTimeout = const Duration(seconds: 10);
+  Duration connectTimeout = const Duration(seconds: 3);
   String userAgent = 'dart-grpc/1.0.0 test';
   BackoffStrategy backoffStrategy = testBackoff;
 }
