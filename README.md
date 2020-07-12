@@ -1,27 +1,38 @@
-The [Dart](https://www.dart.dev/) implementation of
-[gRPC](https://grpc.io/): A high performance, open source, general RPC framework that puts mobile and HTTP/2 first.
+# gRPC Dart
+
+The [Dart][] implementation of [gRPC][]: A high performance, open source,
+general RPC framework that puts mobile and HTTP/2 first.
 
 [![Build Status](https://travis-ci.org/grpc/grpc-dart.svg?branch=master)](https://travis-ci.org/grpc/grpc-dart)
 [![pub package](https://img.shields.io/pub/v/grpc.svg)](https://pub.dev/packages/grpc)
 
-# Usage
 
-See the [Dart gRPC Quick Start](https://grpc.io/docs/quickstart/dart).
+## Learn more
 
-[grpc-web](https://github.com/grpc/grpc-web) in a browser context is supported by
-`package:grpc/grpc_web.dart`.
+- [Quick Start][] - get an app running in minutes
+- [Examples][]
+- [API reference][]
 
-# Status
+For complete documentation, see [Dart gRPC][].
 
-If you experience issues, or if you have feature requests,
-please [open an issue](https://github.com/dart-lang/grpc-dart/issues).
+## Supported platforms
 
-Note that we have limited bandwidth to accept PRs, and that all PRs will require signing the [EasyCLA](https://lfcla.com).
+- [Dart native](https://dart.dev/platforms)
+- [Flutter](https://flutter.dev)
 
-# Notes
+> **Note:** [grpc-web][] is supported by `package:grpc/grpc_web.dart`.
 
-This library requires Dart SDK version 2.2.0 or later.
+## Contributing
 
-It currently supports the [Flutter](https://flutter.dev) and
-[Dart native](https://dart.dev/platforms) platforms.
+If you experience problems or have feature requests, [open an issue][].
 
+Note that we have limited bandwidth to accept PRs, and that all PRs require signing the [EasyCLA](https://lfcla.com).
+
+[API reference]: https://grpc.io/docs/languages/dart/api
+[Dart]: https://dart.dev
+[Dart gRPC]: https://grpc.io/docs/languages/dart
+[Examples]: example
+[gRPC]: https://grpc.io
+[grpc-web]: https://github.com/grpc/grpc-web
+[Quick Start]: https://grpc.io/docs/languages/dart/quickstart
+[open an issue]: https://github.com/dart-lang/grpc-dart/issues/new
