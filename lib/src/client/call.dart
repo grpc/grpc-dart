@@ -242,7 +242,9 @@ class ClientCall<Q, R> implements Response {
       // TODO(jakobr): Parse more!
       if (metadata.containsKey('grpc-status')) {
         final status = int.parse(metadata['grpc-status']);
-        final message = metadata['grpc-message'];
+        final message = metadata['grpc-message'] == null
+            ? null
+            : Uri.decodeFull(metadata['grpc-message']);
         if (status != 0) {
           _responseError(GrpcError.custom(status, message));
         }
@@ -283,7 +285,9 @@ class ClientCall<Q, R> implements Response {
       // If status code is missing, we must treat it as '0'. As in 'success'.
       final statusCode = status != null ? int.parse(status) : 0;
       if (statusCode != 0) {
-        final message = _headerMetadata['grpc-message'];
+        final message = _headerMetadata['grpc-message'] == null
+            ? null
+            : Uri.decodeFull(_headerMetadata['grpc-message']);
         _responseError(GrpcError.custom(statusCode, message));
       }
     }
