@@ -152,6 +152,19 @@ class Server extends ConnectionServer {
       bool v6Only: false,
       bool shared: false}) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
+    bool unix = false;
+    dynamic _address = address;
+    int _port = port;
+    if (address != null) {
+      // `address` which start with 'unix://' prefix, will be parsed as unix socket.
+      RegExp re = RegExp(r'(^unix://)');
+      Match m = re.firstMatch(address);
+      if (m != null) {
+          unix = true;
+          _address = InternetAddress(address.substring(m.end), type: InternetAddressType.unix);
+          _port = 0;
+      }
+    }
     Stream<Socket> server;
     final securityContext = security?.securityContext;
     if (securityContext != null) {
@@ -161,8 +174,8 @@ class Server extends ConnectionServer {
       server = _secureServer;
     } else {
       _insecureServer = await ServerSocket.bind(
-        address ?? InternetAddress.anyIPv4,
-        port ?? 80,
+        _address ?? InternetAddress.anyIPv4,
+        _port ?? 80,
         backlog: backlog,
         shared: shared,
         v6Only: v6Only,
@@ -171,7 +184,9 @@ class Server extends ConnectionServer {
     }
     server.listen((socket) {
       // Don't wait for io buffers to fill up before sending requests.
-      socket.setOption(SocketOption.tcpNoDelay, true);
+      if (!unix) {
+        socket.setOption(SocketOption.tcpNoDelay, true);
+      }
       final connection = ServerTransportConnection.viaSocket(socket,
           settings: http2ServerSettings);
       serveConnection(connection);
