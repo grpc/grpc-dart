@@ -74,7 +74,8 @@ main() async {
       server.port,
       ChannelOptions(
           credentials: ChannelCredentials.secure(
-              certificates: File('test/data/localhost.crt').readAsBytesSync(),
+              certificateBytes:
+                  File('test/data/localhost.crt').readAsBytesSync(),
               authority: 'localhost')),
     ));
     final testClient = TestClient(channel);

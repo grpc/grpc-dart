@@ -23,18 +23,19 @@ const isTlsException = TypeMatcher<TlsException>();
 void main() {
   group('Certificates', () {
     test('report password errors correctly', () async {
-      final certificates = await File('test/data/certstore.p12').readAsBytes();
+      final certificateBytes =
+          await File('test/data/certstore.p12').readAsBytes();
 
       final missingPassword =
-          ChannelCredentials.secure(certificates: certificates);
+          ChannelCredentials.secure(certificateBytes: certificateBytes);
       expect(() => missingPassword.securityContext, throwsA(isTlsException));
 
       final wrongPassword = ChannelCredentials.secure(
-          certificates: certificates, password: 'wrong');
+          certificateBytes: certificateBytes, password: 'wrong');
       expect(() => wrongPassword.securityContext, throwsA(isTlsException));
 
       final correctPassword = ChannelCredentials.secure(
-          certificates: certificates, password: 'correct');
+          certificateBytes: certificateBytes, password: 'correct');
       expect(correctPassword.securityContext, isNotNull);
     });
   });

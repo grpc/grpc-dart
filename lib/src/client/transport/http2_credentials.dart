@@ -44,14 +44,14 @@ class ChannelCredentials {
   const ChannelCredentials.insecure({String authority})
       : this._(false, null, null, authority, null);
 
-  /// Enable TLS and optionally specify the [certificates] to trust. If
-  /// [certificates] is not provided, the default trust store is used.
+  /// Enable TLS and optionally specify the [certificatesBytes] for the certifcate
+  ///  to trust. If [certificatesBytes] is not provided, the default trust store is used.
   const ChannelCredentials.secure(
-      {List<int> certificates,
+      {List<int> certificateBytes,
       String password,
       String authority,
       BadCertificateHandler onBadCertificate})
-      : this._(true, certificates, password, authority, onBadCertificate);
+      : this._(true, certificateBytes, password, authority, onBadCertificate);
 
   SecurityContext get securityContext {
     if (!isSecure) return null;

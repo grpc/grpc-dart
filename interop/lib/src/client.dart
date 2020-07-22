@@ -96,7 +96,7 @@ class Tester {
         trustedRoot = File('ca.pem').readAsBytesSync();
       }
       credentials = ChannelCredentials.secure(
-          certificates: trustedRoot, authority: serverHostOverride);
+          certificateBytes: trustedRoot, authority: serverHostOverride);
     } else {
       credentials = const ChannelCredentials.insecure();
     }
