@@ -160,8 +160,9 @@ class XhrClientConnection extends ClientConnection {
 
   @override
   Future<void> terminate() async {
-    for (XhrTransportStream request in _requests) {
-      request.terminate();
+    while (_requests.isNotEmpty) {
+      final XhrTransportStream request = _requests.first;
+      await request.terminate();
     }
   }
 
