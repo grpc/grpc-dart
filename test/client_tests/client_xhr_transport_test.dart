@@ -261,4 +261,11 @@ void main() {
       }
     }, count: expectedMessages.length));
   });
+
+  test('URL path is not ignored when creating a httpRequest', () {
+    final connection =
+        XhrClientConnection(Uri.parse("http://example.com/grpc/"));
+    expect(connection.createHttpRequest("/service/SomeMethod").url.toString(),
+        "http://example.com/grpc/service/SomeMethod");
+  });
 }
