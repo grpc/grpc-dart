@@ -1,4 +1,4 @@
-// Copyright (c) 2019, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2020, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'src/auth/auth.dart'
-    show HttpBasedAuthenticator, JwtServiceAccountAuthenticator;
+import '../client/channel.dart';
 
-export 'src/client/call.dart' show MetadataProvider, CallOptions;
+void enableTimelineLogging() {
+  ClientChannelBase.enableTimelineLogging = true;
+}
 
-export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
-
-export 'src/client/web_channel.dart' show GrpcWebClientChannel;
-
-export 'src/shared/profiler.dart'
-    show enableTimelineLogging, disableTimelineLogging;
-
-export 'src/shared/status.dart' show StatusCode, GrpcError;
+void disableTimelineLogging() {
+  ClientChannelBase.enableTimelineLogging = false;
+}
