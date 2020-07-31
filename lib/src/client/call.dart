@@ -186,9 +186,7 @@ class ClientCall<Q, R> implements Response {
   }
 
   void _terminateWithError(GrpcError error) {
-    _timeline?.finish(arguments: {
-      'error': error.toString(),
-    });
+    _finishTimelineWithError(error);
     if (!_responses.isClosed) {
       _responses.addError(error);
     }
@@ -263,11 +261,15 @@ class ClientCall<Q, R> implements Response {
     _onResponseListen();
   }
 
+  void _finishTimelineWithError(GrpcError error) {
+    _timeline?.finish(arguments: {
+      'error': error.toString(),
+    });
+  }
+
   void _onTimedOut() {
     final error = GrpcError.deadlineExceeded('Deadline exceeded');
-    _timeline?.finish(arguments: {
-      'timeout': error.toString(),
-    });
+    _finishTimelineWithError(error);
     _responses.addError(error);
     _safeTerminate();
   }
@@ -293,9 +295,7 @@ class ClientCall<Q, R> implements Response {
 
   /// Emit an error response to the user, and tear down this call.
   void _responseError(GrpcError error, [StackTrace stackTrace]) {
-    _timeline?.finish(arguments: {
-      'error': error.toString(),
-    });
+    _finishTimelineWithError(error);
     _responses.addError(error, stackTrace);
     _timeoutTimer?.cancel();
     _requestSubscription?.cancel();
@@ -401,6 +401,12 @@ class ClientCall<Q, R> implements Response {
       /// Process status error if necessary
       _checkForErrorStatus(_headerMetadata);
     }
+
+    // Both headers and trailers should be received.
+    _timeline?.finish(arguments: {
+      'headers': _headers.future.toString(),
+      'trailers': _trailers.future.toString(),
+    });
     _timeoutTimer?.cancel();
     _responses.close();
     _responseSubscription.cancel();
@@ -414,10 +420,7 @@ class ClientCall<Q, R> implements Response {
       error = GrpcError.unknown(error.toString());
     }
 
-    _timeline?.finish(arguments: {
-      'error': error.toString(),
-    });
-
+    _finishTimelineWithError(error);
     _responses.addError(error, stackTrace);
     _timeoutTimer?.cancel();
     _responses.close();
@@ -437,9 +440,7 @@ class ClientCall<Q, R> implements Response {
   @override
   Future<void> cancel() {
     final error = GrpcError.cancelled('Cancelled by client.');
-    _timeline?.finish(arguments: {
-      'cancel': error.toString(),
-    });
+    _finishTimelineWithError(error);
     if (!_responses.isClosed) {
       _responses.addError(error);
     }
