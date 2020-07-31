@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:developer';
 
 import '../shared/status.dart';
 
@@ -47,6 +48,8 @@ abstract class ClientChannelBase implements ClientChannel {
 
   bool _isShutdown = false;
 
+  static bool enableTimelineLogging = false;
+
   ClientChannelBase();
 
   @override
@@ -75,7 +78,13 @@ abstract class ClientChannelBase implements ClientChannel {
   @override
   ClientCall<Q, R> createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
-    final call = ClientCall(method, requests, options);
+    var call;
+    if (enableTimelineLogging) {
+      final timeline = TimelineTask(filterKey: 'grpc/client');
+      call = ClientCall(method, requests, options, timeline);
+    } else {
+      call = ClientCall(method, requests, options, null);
+    }
     getConnection().then((connection) {
       if (call.isCancelled) return;
       connection.dispatchCall(call);
