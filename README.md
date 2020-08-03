@@ -7,28 +7,21 @@ The [Dart](https://www.dart.dev/) implementation of
 
 ## Learn more
 
-- [Quick Start][] - get an app running in minutes
-- [Examples][]
-- [API reference][]
+- [Quick Start](https://grpc.io/docs/languages/dart/quickstart) - get an app running in minutes
+- [Examples](example)
+- [API reference](https://grpc.io/docs/languages/dart/api)
 
-For complete documentation, see [Dart gRPC][].
+For complete documentation, see [Dart gRPC](https://grpc.io/docs/languages/dart).
 
 ## Supported platforms
 
 - [Dart native](https://dart.dev/platforms)
 - [Flutter](https://flutter.dev)
 
-> **Note:** [grpc-web][] is supported by `package:grpc/grpc_web.dart`.
+> **Note:** [grpc-web](https://github.com/grpc/grpc-web) is supported by `package:grpc/grpc_web.dart`.
 
 ## Contributing
 
-If you experience problems or have feature requests, [open an issue][].
+If you experience problems or have feature requests, [open an issue](https://github.com/dart-lang/grpc-dart/issues/new).
 
 Note that we have limited bandwidth to accept PRs, and that all PRs require signing the [EasyCLA](https://lfcla.com).
-
-[API reference]: https://grpc.io/docs/languages/dart/api
-[Dart gRPC]: https://grpc.io/docs/languages/dart
-[Examples]: example
-[grpc-web]: https://github.com/grpc/grpc-web
-[Quick Start]: https://grpc.io/docs/languages/dart/quickstart
-[open an issue]: https://github.com/dart-lang/grpc-dart/issues/new
