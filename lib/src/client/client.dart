@@ -15,8 +15,6 @@
 
 import 'dart:async';
 
-import 'package:grpc/src/client/interceptor.dart';
-
 import 'call.dart';
 import 'channel.dart';
 import 'common.dart';
