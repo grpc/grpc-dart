@@ -70,6 +70,8 @@ class ResponseStream<R> extends DelegatingStream<R>
   final ClientCall<dynamic, R> _call;
 
   ResponseStream(this._call) : super(_call.response);
+
+  ResponseFuture<R> toResponseFuture() => ResponseFuture(this._call);
 }
 
 abstract class _ResponseMixin<Q, R> implements Response {
