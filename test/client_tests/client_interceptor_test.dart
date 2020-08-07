@@ -6,18 +6,32 @@ import 'package:http2/transport.dart';
 import '../src/client_utils.dart';
 import '../src/utils.dart';
 
+class InterceptorInvocation {
+  final int id;
+  final int unary;
+  final int streaming;
+
+  InterceptorInvocation(this.id, this.unary, this.streaming);
+
+  String toString() {
+    return '{id: ${id}, unary: ${unary}, streaming: ${streaming}}';
+  }
+}
+
 class FakeInterceptor
     implements ClientUnaryInterceptor, ClientStreamingInterceptor {
-  final _id;
-  static int _unary = 0;
-  static int _streaming = 0;
+  final int _id;
+  int _unary = 0;
+  int _streaming = 0;
+
+  static final List<InterceptorInvocation> _invocations = new List();
 
   FakeInterceptor(this._id);
 
   @override
   ResponseFuture interceptUnary(ClientMethod method, dynamic request,
       CallOptions options, ClientUnaryInvoker invoker) {
-    _unary++;
+    _invocations.add(InterceptorInvocation(_id, ++_unary, _streaming));
 
     return invoker(method, request, _inject(options));
   }
@@ -25,29 +39,19 @@ class FakeInterceptor
   @override
   ResponseStream interceptStreaming(ClientMethod method, Stream requests,
       CallOptions options, ClientStreamingInvoker invoker) {
-    _streaming++;
+    _invocations.add(InterceptorInvocation(_id, _unary, ++_streaming));
 
     return invoker(method, requests, _inject(options));
   }
 
   CallOptions _inject(CallOptions options) {
-    var value = options.metadata["x-interceptor"];
-    if (value == null) {
-      value = toString();
-    } else {
-      value += ', ' + toString();
-    }
-
-    return options.mergedWith(CallOptions(metadata: {"x-interceptor": value}));
+    return options.mergedWith(CallOptions(metadata: {
+      "x-interceptor": _invocations.map((i) => i.toString()).join(', '),
+    }));
   }
 
   static void tearDown() {
-    _unary = 0;
-    _streaming = 0;
-  }
-
-  String toString() {
-    return '{id: ${_id}, unary: ${_unary}, streaming: ${_streaming}}';
+    _invocations.clear();
   }
 }
 
@@ -108,7 +112,7 @@ main() {
       expectedPath: '/Test/Unary',
       expectedCustomHeaders: {
         "x-interceptor":
-            "{id: 1, unary: 1, streaming: 0}, {id: 2, unary: 2, streaming: 0}"
+            "{id: 1, unary: 1, streaming: 0}, {id: 2, unary: 1, streaming: 0}"
       },
       serverHandlers: [handleRequest],
     );
@@ -190,7 +194,7 @@ main() {
       expectedPath: '/Test/Bidirectional',
       expectedCustomHeaders: {
         "x-interceptor":
-            "{id: 1, unary: 0, streaming: 1}, {id: 2, unary: 0, streaming: 2}"
+            "{id: 1, unary: 0, streaming: 1}, {id: 2, unary: 0, streaming: 1}"
       },
       serverHandlers: [handleRequest, handleRequest, handleRequest],
       doneHandler: handleDone,
