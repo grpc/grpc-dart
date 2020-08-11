@@ -78,13 +78,8 @@ abstract class ClientChannelBase implements ClientChannel {
   @override
   ClientCall<Q, R> createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
-    var call;
-    if (enableTimelineLogging) {
-      final timeline = TimelineTask(filterKey: 'grpc/client');
-      call = ClientCall(method, requests, options, timeline);
-    } else {
-      call = ClientCall(method, requests, options, null);
-    }
+    final call = ClientCall(method, requests, options,
+        enableTimelineLogging ? TimelineTask(filterKey: 'grpc/client') : null);
     getConnection().then((connection) {
       if (call.isCancelled) return;
       connection.dispatchCall(call);

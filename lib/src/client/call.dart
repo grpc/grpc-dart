@@ -322,12 +322,7 @@ class ClientCall<Q, R> implements Response {
         _responseError(GrpcError.custom(statusCode, message));
       }
     }
-
-    // Both headers and trailers should be received.
-    _timeline?.finish(arguments: {
-      'headers': _headers.future.toString(),
-      'trailers': _trailers.future.toString(),
-    });
+    _timeline?.finish();
     _timeoutTimer?.cancel();
     _responses.close();
     _responseSubscription.cancel();

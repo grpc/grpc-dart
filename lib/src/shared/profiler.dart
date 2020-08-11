@@ -15,10 +15,19 @@
 
 import '../client/channel.dart';
 
+/// Enable logging requests and response for clients.
+///
+/// Logging is disabled by default.
 void enableTimelineLogging() {
   ClientChannelBase.enableTimelineLogging = true;
 }
 
+/// Disbale timeline logging for clients.
 void disableTimelineLogging() {
   ClientChannelBase.enableTimelineLogging = false;
+}
+
+/// Get the current status of timeline logging.
+bool getTimelineLoggingStatus() {
+  return ClientChannelBase.enableTimelineLogging;
 }
