@@ -401,12 +401,7 @@ class ClientCall<Q, R> implements Response {
       /// Process status error if necessary
       _checkForErrorStatus(_headerMetadata);
     }
-
-    // Both headers and trailers should be received.
-    _timeline?.finish(arguments: {
-      'headers': _headers.future.toString(),
-      'trailers': _trailers.future.toString(),
-    });
+    _timeline?.finish();
     _timeoutTimer?.cancel();
     _responses.close();
     _responseSubscription.cancel();
