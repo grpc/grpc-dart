@@ -1,3 +1,7 @@
+## 2.2.1
+
+* Avoid insecure connections if the network policy does not allow it.
+
 ## 2.2.0+1
 
 * Relax `crypto` version dependency constraint from `^2.1.5` to `^2.1.4`.
