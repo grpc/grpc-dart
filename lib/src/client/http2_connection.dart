@@ -78,6 +78,9 @@ class Http2ClientConnection implements connection.ClientConnection {
   Future<Socket> _createSocket() async {
     final securityContext = credentials.securityContext;
     if (securityContext == null) {
+      if (!isInsecureConnectionAllowed(host)) {
+        throw StateError("Insecure gRPC is not allowed by platform: $host");
+      }
       return Socket.connect(host, port);
     } else {
       if (options.credentials.authority == null) {
