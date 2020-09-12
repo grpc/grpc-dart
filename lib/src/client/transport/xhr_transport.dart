@@ -23,8 +23,18 @@ import '../../client/call.dart';
 import '../../shared/message.dart';
 import '../../shared/status.dart';
 import '../connection.dart';
+import 'cors.dart' as cors;
 import 'transport.dart';
 import 'web_streams.dart';
+
+const _contentTypeKey = 'Content-Type';
+
+/// All accepted content-type header's prefix.
+const _validContentTypePrefix = [
+  'application/grpc',
+  'application/json+protof',
+  'application/x-protobuf'
+];
 
 class XhrTransportStream implements GrpcTransportStream {
   final Client _client;
@@ -77,8 +87,13 @@ class XhrTransportStream implements GrpcTransportStream {
             onError: _onError, onDone: _incomingMessages.close);
   }
 
+  bool _checkContentType(String contentType) {
+    return _validContentTypePrefix
+        .any((value) => contentType.startsWith(value));
+  }
+
   bool _onHeadersReceived(StreamedResponse response) {
-    final contentType = response.headers['content-type'];
+    final contentType = response.headers[_contentTypeKey];
     if (response.statusCode != 200) {
       _onError(
           GrpcError.unavailable('XhrConnection status ${response.statusCode}'));
@@ -88,7 +103,7 @@ class XhrTransportStream implements GrpcTransportStream {
       _onError(GrpcError.unavailable('XhrConnection missing Content-Type'));
       return false;
     }
-    if (!contentType.startsWith('application/grpc')) {
+    if (!_checkContentType(contentType)) {
       _onError(
           GrpcError.unavailable('XhrConnection bad Content-Type $contentType'));
       return false;
@@ -129,9 +144,11 @@ class XhrClientConnection extends ClientConnection {
     for (final header in metadata.keys) {
       request.headers[header] = metadata[header];
     }
-    request.headers['Content-Type'] = 'application/grpc-web+proto';
-    request.headers['X-User-Agent'] = 'grpc-web-dart/0.1';
-    request.headers['X-Grpc-Web'] = '1';
+    if (_isMissingContentTypeHeader(metadata)) {
+      request.headers['Content-Type'] = 'application/grpc-web+proto';
+      request.headers['X-User-Agent'] = 'grpc-web-dart/0.1';
+      request.headers['X-Grpc-Web'] = '1';
+    }
   }
 
   @visibleForTesting
@@ -142,7 +159,12 @@ class XhrClientConnection extends ClientConnection {
 
   @override
   GrpcTransportStream makeRequest(String path, Duration timeout,
-      Map<String, String> metadata, ErrorHandler onError) {
+      Map<String, String> metadata, ErrorHandler onError,
+      {CallOptions callOptions}) {
+    if (callOptions is WebCallOptions &&
+        callOptions?.bypassCorsPreflight == true) {
+      path = cors.bypassCorsPreflight(metadata, path);
+    }
     final Request request = createHttpRequest(path);
 
     _initializeRequest(request, metadata);
@@ -152,6 +174,15 @@ class XhrClientConnection extends ClientConnection {
         onError: onError, onDone: _removeStream);
     _requests.add(transportStream);
     return transportStream;
+  }
+
+  bool _isMissingContentTypeHeader(Map<String, String> metadata) {
+    for (var entry in metadata.entries) {
+      if (entry.key.toLowerCase() == _contentTypeKey.toLowerCase()) {
+        return false;
+      }
+    }
+    return true;
   }
 
   void _removeStream(XhrTransportStream stream) {

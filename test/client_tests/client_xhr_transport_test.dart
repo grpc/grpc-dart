@@ -14,6 +14,7 @@
 // limitations under the License.
 import 'dart:async';
 
+import 'package:grpc/src/client/call.dart';
 import 'package:grpc/src/client/transport/xhr_transport.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:http/http.dart';
@@ -30,8 +31,10 @@ class MockXhrClientConnection extends XhrClientConnection {
   MockRequest latestRequest = MockRequest();
   final client = MockClient();
 
+  String requestPath;
   @override
   createHttpRequest(String path) {
+    requestPath = path;
     return latestRequest;
   }
 
@@ -59,6 +62,90 @@ void main() {
     expect(
         connection.latestRequest.headers['X-User-Agent'], 'grpc-web-dart/0.1');
     expect(connection.latestRequest.headers['X-Grpc-Web'], '1');
+  });
+
+  test(
+      'Make request sends correct headers and path if bypassCorsPreflight=true',
+      () async {
+    final metadata = {'header_1': 'value_1', 'header_2': 'value_2'};
+    final connection = MockXhrClientConnection();
+    when(connection.latestRequest.headers).thenReturn({});
+
+    connection.makeRequest('path', Duration(seconds: 10), metadata,
+        (error) => fail(error.toString()),
+        callOptions: WebCallOptions(bypassCorsPreflight: true));
+
+    expect(metadata, isEmpty);
+    expect(connection.requestPath,
+        'path?%24httpHeaders=header_1%3Avalue_1%0D%0Aheader_2%3Avalue_2%0D%0AContent-Type%3Aapplication%2Fgrpc-web%2Bproto%0D%0AX-User-Agent%3Agrpc-web-dart%2F0.1%0D%0AX-Grpc-Web%3A1%0D%0A');
+    expect(connection.latestRequest.encoding.name, 'text/plain; charset=x-user-defined');
+  });
+
+  // test('Make request sends correct headers path if only withCredentials=true',
+  //     () async {
+  //   final metadata = {'header_1': 'value_1', 'header_2': 'value_2'};
+  //   final connection = MockXhrClientConnection();
+
+  //   connection.makeRequest('path', Duration(seconds: 10), metadata,
+  //       (error) => fail(error.toString()),
+  //       callOptions: WebCallOptions(withCredentials: true));
+
+  //   expect(metadata, {
+  //     'header_1': 'value_1',
+  //     'header_2': 'value_2',
+  //     'Content-Type': 'application/grpc-web+proto',
+  //     'X-User-Agent': 'grpc-web-dart/0.1',
+  //     'X-Grpc-Web': '1'
+  //   });
+  //   verify(connection.latestRequest
+  //       .setRequestHeader('Content-Type', 'application/grpc-web+proto'));
+  //   verify(connection.latestRequest
+  //       .setRequestHeader('X-User-Agent', 'grpc-web-dart/0.1'));
+  //   verify(connection.latestRequest.setRequestHeader('X-Grpc-Web', '1'));
+  //   verify(connection.latestRequest.open('POST', 'test:path'));
+  //   verify(connection.latestRequest.withCredentials = true);
+  //   verify(connection.latestRequest
+  //       .overrideMimeType('text/plain; charset=x-user-defined'));
+  //   verify(connection.latestRequest.responseType = 'text');
+  // });
+
+  test(
+      'Make request sends correct headers if call options already have '
+      'Content-Type header', () async {
+    final metadata = {'header_1': 'value_1', 'header_2': 'value_2',
+    'Content-Type': 'application/json+protof'};
+    final connection = MockXhrClientConnection();
+    when(connection.latestRequest.headers).thenReturn({});
+
+    connection.makeRequest('/path', Duration(seconds: 10), metadata,
+        (error) => fail(error.toString()));
+
+    expect(metadata, {
+      'header_1': 'value_1',
+      'header_2': 'value_2',
+      'Content-Type': 'application/json+protof',
+    });
+  });
+
+  test('Content-Type header case insensitivity', () async {
+    final metadata = {'header_1': 'value_1', 'CONTENT-TYPE': 'application/json+protof'};
+    final connection = MockXhrClientConnection();
+    when(connection.latestRequest.headers).thenReturn({});
+
+    connection.makeRequest('/path', Duration(seconds: 10), metadata,
+        (error) => fail(error.toString()));
+    expect(metadata, {
+      'header_1': 'value_1',
+      'CONTENT-TYPE': 'application/json+protof',
+    });
+
+    final lowerMetadata = {'header_1': 'value_1', 'content-type': 'application/json+protof'};
+    connection.makeRequest('/path', Duration(seconds: 10), lowerMetadata,
+        (error) => fail(error.toString()));
+    expect(lowerMetadata, {
+      'header_1': 'value_1',
+      'content-type': 'application/json+protof',
+    });
   });
 
   test('Sent data converted to stream properly', () async {
