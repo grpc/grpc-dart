@@ -55,6 +55,7 @@ class XhrTransportStream implements GrpcTransportStream {
       : _onError = onError,
         _onDone = onDone {
     final asyncOnError = (e, st) {
+      print('@@@@@$e');
       if (_incomingMessages.isClosed) {
         return;
       }
@@ -93,7 +94,7 @@ class XhrTransportStream implements GrpcTransportStream {
   }
 
   bool _onHeadersReceived(StreamedResponse response) {
-    final contentType = response.headers[_contentTypeKey];
+    final contentType = _getContentTypeHeader(response.headers)?.value;
     if (response.statusCode != 200) {
       _onError(
           GrpcError.unavailable('XhrConnection status ${response.statusCode}'));
@@ -144,11 +145,6 @@ class XhrClientConnection extends ClientConnection {
     for (final header in metadata.keys) {
       request.headers[header] = metadata[header];
     }
-    if (_isMissingContentTypeHeader(metadata)) {
-      request.headers['Content-Type'] = 'application/grpc-web+proto';
-      request.headers['X-User-Agent'] = 'grpc-web-dart/0.1';
-      request.headers['X-Grpc-Web'] = '1';
-    }
   }
 
   @visibleForTesting
@@ -161,6 +157,12 @@ class XhrClientConnection extends ClientConnection {
   GrpcTransportStream makeRequest(String path, Duration timeout,
       Map<String, String> metadata, ErrorHandler onError,
       {CallOptions callOptions}) {
+    if (_getContentTypeHeader(metadata) == null) {
+      metadata['Content-Type'] = 'application/grpc-web+proto';
+      metadata['X-User-Agent'] = 'grpc-web-dart/0.1';
+      metadata['X-Grpc-Web'] = '1';
+    }
+
     if (callOptions is WebCallOptions &&
         callOptions?.bypassCorsPreflight == true) {
       path = cors.bypassCorsPreflight(metadata, path);
@@ -174,15 +176,6 @@ class XhrClientConnection extends ClientConnection {
         onError: onError, onDone: _removeStream);
     _requests.add(transportStream);
     return transportStream;
-  }
-
-  bool _isMissingContentTypeHeader(Map<String, String> metadata) {
-    for (var entry in metadata.entries) {
-      if (entry.key.toLowerCase() == _contentTypeKey.toLowerCase()) {
-        return false;
-      }
-    }
-    return true;
   }
 
   void _removeStream(XhrTransportStream stream) {
@@ -203,4 +196,13 @@ class XhrClientConnection extends ClientConnection {
 
   @override
   Future<void> shutdown() async {}
+}
+
+MapEntry<String, String> _getContentTypeHeader(Map<String, String> metadata) {
+  for (var entry in metadata.entries) {
+    if (entry.key.toLowerCase() == _contentTypeKey.toLowerCase()) {
+      return entry;
+    }
+  }
+  return null;
 }

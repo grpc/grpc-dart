@@ -116,7 +116,8 @@ class WebCallOptions extends CallOptions {
     final otherOptions = other as WebCallOptions;
     final mergedBypassCorsPreflight =
         otherOptions.bypassCorsPreflight ?? bypassCorsPreflight;
-    final mergedWithCredentials = otherOptions.withCredentials ?? withCredentials;
+    final mergedWithCredentials =
+        otherOptions.withCredentials ?? withCredentials;
     final mergedMetadata = Map.from(metadata)..addAll(otherOptions.metadata);
     final mergedTimeout = otherOptions.timeout ?? timeout;
     final mergedProviders = List.from(metadataProviders)

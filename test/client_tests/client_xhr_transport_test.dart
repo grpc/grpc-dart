@@ -78,7 +78,6 @@ void main() {
     expect(metadata, isEmpty);
     expect(connection.requestPath,
         'path?%24httpHeaders=header_1%3Avalue_1%0D%0Aheader_2%3Avalue_2%0D%0AContent-Type%3Aapplication%2Fgrpc-web%2Bproto%0D%0AX-User-Agent%3Agrpc-web-dart%2F0.1%0D%0AX-Grpc-Web%3A1%0D%0A');
-    expect(connection.latestRequest.encoding.name, 'text/plain; charset=x-user-defined');
   });
 
   // test('Make request sends correct headers path if only withCredentials=true',
@@ -112,8 +111,11 @@ void main() {
   test(
       'Make request sends correct headers if call options already have '
       'Content-Type header', () async {
-    final metadata = {'header_1': 'value_1', 'header_2': 'value_2',
-    'Content-Type': 'application/json+protof'};
+    final metadata = {
+      'header_1': 'value_1',
+      'header_2': 'value_2',
+      'Content-Type': 'application/json+protobuf'
+    };
     final connection = MockXhrClientConnection();
     when(connection.latestRequest.headers).thenReturn({});
 
@@ -123,12 +125,15 @@ void main() {
     expect(metadata, {
       'header_1': 'value_1',
       'header_2': 'value_2',
-      'Content-Type': 'application/json+protof',
+      'Content-Type': 'application/json+protobuf',
     });
   });
 
   test('Content-Type header case insensitivity', () async {
-    final metadata = {'header_1': 'value_1', 'CONTENT-TYPE': 'application/json+protof'};
+    final metadata = {
+      'header_1': 'value_1',
+      'CONTENT-TYPE': 'application/json+protobuf'
+    };
     final connection = MockXhrClientConnection();
     when(connection.latestRequest.headers).thenReturn({});
 
@@ -136,15 +141,18 @@ void main() {
         (error) => fail(error.toString()));
     expect(metadata, {
       'header_1': 'value_1',
-      'CONTENT-TYPE': 'application/json+protof',
+      'CONTENT-TYPE': 'application/json+protobuf',
     });
 
-    final lowerMetadata = {'header_1': 'value_1', 'content-type': 'application/json+protof'};
+    final lowerMetadata = {
+      'header_1': 'value_1',
+      'content-type': 'application/json+protobuf'
+    };
     connection.makeRequest('/path', Duration(seconds: 10), lowerMetadata,
         (error) => fail(error.toString()));
     expect(lowerMetadata, {
       'header_1': 'value_1',
-      'content-type': 'application/json+protof',
+      'content-type': 'application/json+protobuf',
     });
   });
 
