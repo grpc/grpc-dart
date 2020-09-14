@@ -238,7 +238,7 @@ void main() {
   });
 
   test('Call throws if non-zero status is received', () async {
-    const customStatusCode = 17;
+    const customStatusCode = Code.UNKNOWN;
     const customStatusMessage = 'Custom message';
 
     void handleRequest(_) {
@@ -258,7 +258,7 @@ void main() {
   });
 
   test('Call throws decoded message', () async {
-    const customStatusCode = 17;
+    const customStatusCode = Code.UNKNOWN;
     const customStatusMessage = 'エラー';
     const encodedCustomStatusMessage = '%E3%82%A8%E3%83%A9%E3%83%BC';
 

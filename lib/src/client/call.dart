@@ -16,8 +16,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:grpc/src/generated/google/rpc/code.pbenum.dart';
 import 'package:grpc/src/generated/google/rpc/status.pb.dart';
-import 'package:protobuf/protobuf.dart';
 
 import '../shared/message.dart';
 import '../shared/status.dart';
@@ -244,15 +244,14 @@ class ClientCall<Q, R> implements Response {
       _trailers.complete(metadata);
       // TODO(jakobr): Parse more!
       if (metadata.containsKey('grpc-status')) {
-        final status = int.parse(metadata['grpc-status']);
-        final message = metadata['grpc-message'] == null
-            ? null
-            : Uri.decodeFull(metadata['grpc-message']);
-        if (status != 0) {
+        final details =
+            _parseStatusDetails(metadata['grpc-status-details-bin']);
+        final statusCode = details.code;
+        if (statusCode != 0) {
           _responseError(GrpcError.custom(
-            status,
-            message,
-            _decodeStatusDetails(metadata['grpc-status-details-bin']),
+            Code.values[statusCode],
+            details.message,
+            details.details.map((e) => parseGeneratedMessage(e)).toList(),
           ));
         }
       }
@@ -288,18 +287,14 @@ class ClientCall<Q, R> implements Response {
       // Only received a header frame and no data frames, so the header
       // should contain "trailers" as well (Trailers-Only).
       _trailers.complete(_headerMetadata);
-      final status = _headerMetadata['grpc-status'];
-      // If status code is missing, we must treat it as '0'. As in 'success'.
-      final statusCode = status != null ? int.parse(status) : 0;
-
+      final details =
+          _parseStatusDetails(_headerMetadata['grpc-status-details-bin']);
+      final statusCode = details.code;
       if (statusCode != 0) {
-        final message = _headerMetadata['grpc-message'] == null
-            ? null
-            : Uri.decodeFull(_headerMetadata['grpc-message']);
         _responseError(GrpcError.custom(
-          statusCode,
-          message,
-          _decodeStatusDetails(_headerMetadata['grpc-status-details-bin']),
+          Code.values[statusCode],
+          details.message,
+          details.details.map((e) => parseGeneratedMessage(e)).toList(),
         ));
       }
     }
@@ -365,7 +360,7 @@ class ClientCall<Q, R> implements Response {
   }
 }
 
-List<GeneratedMessage> _decodeStatusDetails(String data) {
+Status _parseStatusDetails(String data) {
   /// Parse details out of message. Length must be an even multiple of 4 so we pad it if needed.
   var details = data ?? '';
   while (details.length % 4 != 0) {
@@ -374,5 +369,5 @@ List<GeneratedMessage> _decodeStatusDetails(String data) {
 
   /// Parse each Any type into the correct GeneratedMessage
   final parsedStatus = Status.fromBuffer(base64Url.decode(details));
-  return parsedStatus.details.map((e) => parseGeneratedMessage(e)).toList();
+  return parsedStatus;
 }

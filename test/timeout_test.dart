@@ -132,7 +132,7 @@ void main() {
 
       harness
         ..service.unaryHandler = methodHandler
-        ..expectErrorResponse(StatusCode.deadlineExceeded, 'Deadline exceeded')
+        ..expectErrorResponse(Code.DEADLINE_EXCEEDED, 'Deadline exceeded')
         ..sendRequestHeader('/Test/Unary', timeout: Duration(microseconds: 1));
       await harness.fromServer.done;
     });

@@ -156,14 +156,15 @@ class ServerHarness {
         onDone: expectAsync0(() {}, count: 1));
   }
 
-  void expectErrorResponse(int status, String message) {
-    setupTest([errorTrailerValidator(status, message, validateHeader: true)]);
+  void expectErrorResponse(Code status, String message) {
+    setupTest(
+        [errorTrailerValidator(status.value, message, validateHeader: true)]);
   }
 
-  void expectTrailingErrorResponse(int status, String message) {
+  void expectTrailingErrorResponse(Code status, String message) {
     setupTest([
       headerValidator(),
-      errorTrailerValidator(status, message, validateHeader: false)
+      errorTrailerValidator(status.value, message, validateHeader: false)
     ]);
   }
 

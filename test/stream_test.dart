@@ -69,7 +69,7 @@ void main() {
         await result;
         fail('Did not throw');
       } on GrpcError catch (e) {
-        expect(e.code, StatusCode.unavailable);
+        expect(e.code, Code.UNAVAILABLE);
         expect(e.message, 'Closed in non-idle state');
       }
     });
@@ -84,7 +84,7 @@ void main() {
         await result;
         fail('Did not throw');
       } on GrpcError catch (e) {
-        expect(e.code, StatusCode.unavailable);
+        expect(e.code, Code.UNAVAILABLE);
         expect(e.message, 'Closed in non-idle state');
       }
     });
@@ -101,7 +101,7 @@ void main() {
         await result;
         fail('Did not throw');
       } on GrpcError catch (e) {
-        expect(e.code, StatusCode.unimplemented);
+        expect(e.code, Code.UNIMPLEMENTED);
         expect(e.message, 'Received header while reading data');
       }
     });
@@ -117,7 +117,7 @@ void main() {
         await result;
         fail('Did not throw');
       } on GrpcError catch (e) {
-        expect(e.code, StatusCode.unimplemented);
+        expect(e.code, Code.UNIMPLEMENTED);
         expect(e.message, 'Received header while reading data');
       }
     });
