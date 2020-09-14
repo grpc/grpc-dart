@@ -13,8 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:convert';
-import 'dart:typed_data';
+import 'package:grpc/src/generated/google/protobuf/any.pb.dart';
+import 'package:grpc/src/generated/google/rpc/error_details.pb.dart';
+import 'package:protobuf/protobuf.dart';
 
 class StatusCode {
   /// The operation completed successfully.
@@ -123,7 +124,7 @@ class StatusCode {
 class GrpcError implements Exception {
   final int code;
   final String message;
-  final Uint8List details;
+  final List<GeneratedMessage> details;
 
   /// Custom error code.
   GrpcError.custom(this.code, [this.message, this.details]);
@@ -252,5 +253,43 @@ class GrpcError implements Exception {
   int get hashCode => code.hashCode ^ (message?.hashCode ?? 17);
 
   @override
-  String toString() => 'gRPC Error ($code, $message, ${utf8.decode(details)})';
+  String toString() => 'gRPC Error ($code, $message, $details)';
+}
+
+/// Parse error details into the right kind of GeneratedMessage.
+GeneratedMessage parseGeneratedMessage(Any any) {
+  switch (any.typeUrl) {
+    case 'type.googleapis.com/google.rpc.RetryInfo':
+      return RetryInfo.fromBuffer(any.value);
+
+    case 'type.googleapis.com/google.rpc.DebugInfo':
+      return DebugInfo.fromBuffer(any.value);
+
+    case 'type.googleapis.com/google.rpc.QuotaFailure':
+      return QuotaFailure.fromBuffer(any.value);
+
+    case 'type.googleapis.com/google.rpc.ErrorInfo':
+      return ErrorInfo.fromBuffer(any.value);
+
+    case 'type.googleapis.com/google.rpc.PreconditionFailure':
+      return PreconditionFailure.fromBuffer(any.value);
+
+    case 'type.googleapis.com/google.rpc.BadRequest':
+      return BadRequest.fromBuffer(any.value);
+
+    case 'type.googleapis.com/google.rpc.RequestInfo':
+      return RequestInfo.fromBuffer(any.value);
+
+    case 'type.googleapis.com/google.rpc.ResourceInfo':
+      return ResourceInfo.fromBuffer(any.value);
+
+    case 'type.googleapis.com/google.rpc.Help':
+      return Help.fromBuffer(any.value);
+
+    case 'type.googleapis.com/google.rpc.LocalizedMessage':
+      return LocalizedMessage.fromBuffer(any.value);
+
+    default:
+      return any;
+  }
 }

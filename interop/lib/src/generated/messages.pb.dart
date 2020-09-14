@@ -1,11 +1,11 @@
 ///
 //  Generated code. Do not modify.
 //  source: messages.proto
-///
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
+//
+// @dart = 2.3
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
 
-import 'dart:core' as $core
-    show bool, Deprecated, double, int, List, Map, override, pragma, String;
+import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
@@ -15,7 +15,8 @@ export 'messages.pbenum.dart';
 
 class BoolValue extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('BoolValue',
-      package: const $pb.PackageName('grpc.testing'))
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
     ..aOB(1, 'value')
     ..hasRequiredFields = false;
 
@@ -35,25 +36,34 @@ class BoolValue extends $pb.GeneratedMessage {
   static BoolValue create() => BoolValue._();
   BoolValue createEmptyInstance() => create();
   static $pb.PbList<BoolValue> createRepeated() => $pb.PbList<BoolValue>();
-  static BoolValue getDefault() => _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static BoolValue getDefault() =>
+      _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<BoolValue>(create);
   static BoolValue _defaultInstance;
 
-  $core.bool get value => $_get(0, false);
+  @$pb.TagNumber(1)
+  $core.bool get value => $_getBF(0);
+  @$pb.TagNumber(1)
   set value($core.bool v) {
     $_setBool(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasValue() => $_has(0);
+  @$pb.TagNumber(1)
   void clearValue() => clearField(1);
 }
 
 class Payload extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i =
-      $pb.BuilderInfo('Payload', package: const $pb.PackageName('grpc.testing'))
-        ..e<PayloadType>(1, 'type', $pb.PbFieldType.OE,
-            PayloadType.COMPRESSABLE, PayloadType.valueOf, PayloadType.values)
-        ..a<$core.List<$core.int>>(2, 'body', $pb.PbFieldType.OY)
-        ..hasRequiredFields = false;
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Payload',
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
+    ..e<PayloadType>(1, 'type', $pb.PbFieldType.OE,
+        defaultOrMaker: PayloadType.COMPRESSABLE,
+        valueOf: PayloadType.valueOf,
+        enumValues: PayloadType.values)
+    ..a<$core.List<$core.int>>(2, 'body', $pb.PbFieldType.OY)
+    ..hasRequiredFields = false;
 
   Payload._() : super();
   factory Payload() => create();
@@ -71,29 +81,40 @@ class Payload extends $pb.GeneratedMessage {
   static Payload create() => Payload._();
   Payload createEmptyInstance() => create();
   static $pb.PbList<Payload> createRepeated() => $pb.PbList<Payload>();
-  static Payload getDefault() => _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static Payload getDefault() =>
+      _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload>(create);
   static Payload _defaultInstance;
 
+  @$pb.TagNumber(1)
   PayloadType get type => $_getN(0);
+  @$pb.TagNumber(1)
   set type(PayloadType v) {
     setField(1, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasType() => $_has(0);
+  @$pb.TagNumber(1)
   void clearType() => clearField(1);
 
+  @$pb.TagNumber(2)
   $core.List<$core.int> get body => $_getN(1);
+  @$pb.TagNumber(2)
   set body($core.List<$core.int> v) {
     $_setBytes(1, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasBody() => $_has(1);
+  @$pb.TagNumber(2)
   void clearBody() => clearField(2);
 }
 
 class EchoStatus extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('EchoStatus',
-      package: const $pb.PackageName('grpc.testing'))
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
     ..a<$core.int>(1, 'code', $pb.PbFieldType.O3)
     ..aOS(2, 'message')
     ..hasRequiredFields = false;
@@ -114,42 +135,51 @@ class EchoStatus extends $pb.GeneratedMessage {
   static EchoStatus create() => EchoStatus._();
   EchoStatus createEmptyInstance() => create();
   static $pb.PbList<EchoStatus> createRepeated() => $pb.PbList<EchoStatus>();
-  static EchoStatus getDefault() => _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static EchoStatus getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<EchoStatus>(create);
   static EchoStatus _defaultInstance;
 
-  $core.int get code => $_get(0, 0);
+  @$pb.TagNumber(1)
+  $core.int get code => $_getIZ(0);
+  @$pb.TagNumber(1)
   set code($core.int v) {
     $_setSignedInt32(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasCode() => $_has(0);
+  @$pb.TagNumber(1)
   void clearCode() => clearField(1);
 
-  $core.String get message => $_getS(1, '');
+  @$pb.TagNumber(2)
+  $core.String get message => $_getSZ(1);
+  @$pb.TagNumber(2)
   set message($core.String v) {
     $_setString(1, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasMessage() => $_has(1);
+  @$pb.TagNumber(2)
   void clearMessage() => clearField(2);
 }
 
 class SimpleRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('SimpleRequest',
-      package: const $pb.PackageName('grpc.testing'))
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
     ..e<PayloadType>(1, 'responseType', $pb.PbFieldType.OE,
-        PayloadType.COMPRESSABLE, PayloadType.valueOf, PayloadType.values)
+        defaultOrMaker: PayloadType.COMPRESSABLE,
+        valueOf: PayloadType.valueOf,
+        enumValues: PayloadType.values)
     ..a<$core.int>(2, 'responseSize', $pb.PbFieldType.O3)
-    ..a<Payload>(
-        3, 'payload', $pb.PbFieldType.OM, Payload.getDefault, Payload.create)
+    ..aOM<Payload>(3, 'payload', subBuilder: Payload.create)
     ..aOB(4, 'fillUsername')
     ..aOB(5, 'fillOauthScope')
-    ..a<BoolValue>(6, 'responseCompressed', $pb.PbFieldType.OM,
-        BoolValue.getDefault, BoolValue.create)
-    ..a<EchoStatus>(7, 'responseStatus', $pb.PbFieldType.OM,
-        EchoStatus.getDefault, EchoStatus.create)
-    ..a<BoolValue>(8, 'expectCompressed', $pb.PbFieldType.OM,
-        BoolValue.getDefault, BoolValue.create)
+    ..aOM<BoolValue>(6, 'responseCompressed', subBuilder: BoolValue.create)
+    ..aOM<EchoStatus>(7, 'responseStatus', subBuilder: EchoStatus.create)
+    ..aOM<BoolValue>(8, 'expectCompressed', subBuilder: BoolValue.create)
     ..hasRequiredFields = false;
 
   SimpleRequest._() : super();
@@ -169,79 +199,121 @@ class SimpleRequest extends $pb.GeneratedMessage {
   SimpleRequest createEmptyInstance() => create();
   static $pb.PbList<SimpleRequest> createRepeated() =>
       $pb.PbList<SimpleRequest>();
-  static SimpleRequest getDefault() => _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static SimpleRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<SimpleRequest>(create);
   static SimpleRequest _defaultInstance;
 
+  @$pb.TagNumber(1)
   PayloadType get responseType => $_getN(0);
+  @$pb.TagNumber(1)
   set responseType(PayloadType v) {
     setField(1, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasResponseType() => $_has(0);
+  @$pb.TagNumber(1)
   void clearResponseType() => clearField(1);
 
-  $core.int get responseSize => $_get(1, 0);
+  @$pb.TagNumber(2)
+  $core.int get responseSize => $_getIZ(1);
+  @$pb.TagNumber(2)
   set responseSize($core.int v) {
     $_setSignedInt32(1, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasResponseSize() => $_has(1);
+  @$pb.TagNumber(2)
   void clearResponseSize() => clearField(2);
 
+  @$pb.TagNumber(3)
   Payload get payload => $_getN(2);
+  @$pb.TagNumber(3)
   set payload(Payload v) {
     setField(3, v);
   }
 
+  @$pb.TagNumber(3)
   $core.bool hasPayload() => $_has(2);
+  @$pb.TagNumber(3)
   void clearPayload() => clearField(3);
+  @$pb.TagNumber(3)
+  Payload ensurePayload() => $_ensure(2);
 
-  $core.bool get fillUsername => $_get(3, false);
+  @$pb.TagNumber(4)
+  $core.bool get fillUsername => $_getBF(3);
+  @$pb.TagNumber(4)
   set fillUsername($core.bool v) {
     $_setBool(3, v);
   }
 
+  @$pb.TagNumber(4)
   $core.bool hasFillUsername() => $_has(3);
+  @$pb.TagNumber(4)
   void clearFillUsername() => clearField(4);
 
-  $core.bool get fillOauthScope => $_get(4, false);
+  @$pb.TagNumber(5)
+  $core.bool get fillOauthScope => $_getBF(4);
+  @$pb.TagNumber(5)
   set fillOauthScope($core.bool v) {
     $_setBool(4, v);
   }
 
+  @$pb.TagNumber(5)
   $core.bool hasFillOauthScope() => $_has(4);
+  @$pb.TagNumber(5)
   void clearFillOauthScope() => clearField(5);
 
+  @$pb.TagNumber(6)
   BoolValue get responseCompressed => $_getN(5);
+  @$pb.TagNumber(6)
   set responseCompressed(BoolValue v) {
     setField(6, v);
   }
 
+  @$pb.TagNumber(6)
   $core.bool hasResponseCompressed() => $_has(5);
+  @$pb.TagNumber(6)
   void clearResponseCompressed() => clearField(6);
+  @$pb.TagNumber(6)
+  BoolValue ensureResponseCompressed() => $_ensure(5);
 
+  @$pb.TagNumber(7)
   EchoStatus get responseStatus => $_getN(6);
+  @$pb.TagNumber(7)
   set responseStatus(EchoStatus v) {
     setField(7, v);
   }
 
+  @$pb.TagNumber(7)
   $core.bool hasResponseStatus() => $_has(6);
+  @$pb.TagNumber(7)
   void clearResponseStatus() => clearField(7);
+  @$pb.TagNumber(7)
+  EchoStatus ensureResponseStatus() => $_ensure(6);
 
+  @$pb.TagNumber(8)
   BoolValue get expectCompressed => $_getN(7);
+  @$pb.TagNumber(8)
   set expectCompressed(BoolValue v) {
     setField(8, v);
   }
 
+  @$pb.TagNumber(8)
   $core.bool hasExpectCompressed() => $_has(7);
+  @$pb.TagNumber(8)
   void clearExpectCompressed() => clearField(8);
+  @$pb.TagNumber(8)
+  BoolValue ensureExpectCompressed() => $_ensure(7);
 }
 
 class SimpleResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('SimpleResponse',
-      package: const $pb.PackageName('grpc.testing'))
-    ..a<Payload>(
-        1, 'payload', $pb.PbFieldType.OM, Payload.getDefault, Payload.create)
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
+    ..aOM<Payload>(1, 'payload', subBuilder: Payload.create)
     ..aOS(2, 'username')
     ..aOS(3, 'oauthScope')
     ..hasRequiredFields = false;
@@ -263,41 +335,56 @@ class SimpleResponse extends $pb.GeneratedMessage {
   SimpleResponse createEmptyInstance() => create();
   static $pb.PbList<SimpleResponse> createRepeated() =>
       $pb.PbList<SimpleResponse>();
-  static SimpleResponse getDefault() => _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static SimpleResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<SimpleResponse>(create);
   static SimpleResponse _defaultInstance;
 
+  @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
+  @$pb.TagNumber(1)
   set payload(Payload v) {
     setField(1, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasPayload() => $_has(0);
+  @$pb.TagNumber(1)
   void clearPayload() => clearField(1);
+  @$pb.TagNumber(1)
+  Payload ensurePayload() => $_ensure(0);
 
-  $core.String get username => $_getS(1, '');
+  @$pb.TagNumber(2)
+  $core.String get username => $_getSZ(1);
+  @$pb.TagNumber(2)
   set username($core.String v) {
     $_setString(1, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasUsername() => $_has(1);
+  @$pb.TagNumber(2)
   void clearUsername() => clearField(2);
 
-  $core.String get oauthScope => $_getS(2, '');
+  @$pb.TagNumber(3)
+  $core.String get oauthScope => $_getSZ(2);
+  @$pb.TagNumber(3)
   set oauthScope($core.String v) {
     $_setString(2, v);
   }
 
+  @$pb.TagNumber(3)
   $core.bool hasOauthScope() => $_has(2);
+  @$pb.TagNumber(3)
   void clearOauthScope() => clearField(3);
 }
 
 class StreamingInputCallRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('StreamingInputCallRequest',
-      package: const $pb.PackageName('grpc.testing'))
-    ..a<Payload>(
-        1, 'payload', $pb.PbFieldType.OM, Payload.getDefault, Payload.create)
-    ..a<BoolValue>(2, 'expectCompressed', $pb.PbFieldType.OM,
-        BoolValue.getDefault, BoolValue.create)
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
+    ..aOM<Payload>(1, 'payload', subBuilder: Payload.create)
+    ..aOM<BoolValue>(2, 'expectCompressed', subBuilder: BoolValue.create)
     ..hasRequiredFields = false;
 
   StreamingInputCallRequest._() : super();
@@ -320,31 +407,45 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
   StreamingInputCallRequest createEmptyInstance() => create();
   static $pb.PbList<StreamingInputCallRequest> createRepeated() =>
       $pb.PbList<StreamingInputCallRequest>();
-  static StreamingInputCallRequest getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static StreamingInputCallRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<StreamingInputCallRequest>(create);
   static StreamingInputCallRequest _defaultInstance;
 
+  @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
+  @$pb.TagNumber(1)
   set payload(Payload v) {
     setField(1, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasPayload() => $_has(0);
+  @$pb.TagNumber(1)
   void clearPayload() => clearField(1);
+  @$pb.TagNumber(1)
+  Payload ensurePayload() => $_ensure(0);
 
+  @$pb.TagNumber(2)
   BoolValue get expectCompressed => $_getN(1);
+  @$pb.TagNumber(2)
   set expectCompressed(BoolValue v) {
     setField(2, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasExpectCompressed() => $_has(1);
+  @$pb.TagNumber(2)
   void clearExpectCompressed() => clearField(2);
+  @$pb.TagNumber(2)
+  BoolValue ensureExpectCompressed() => $_ensure(1);
 }
 
 class StreamingInputCallResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       'StreamingInputCallResponse',
-      package: const $pb.PackageName('grpc.testing'))
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
     ..a<$core.int>(1, 'aggregatedPayloadSize', $pb.PbFieldType.O3)
     ..hasRequiredFields = false;
 
@@ -368,26 +469,31 @@ class StreamingInputCallResponse extends $pb.GeneratedMessage {
   StreamingInputCallResponse createEmptyInstance() => create();
   static $pb.PbList<StreamingInputCallResponse> createRepeated() =>
       $pb.PbList<StreamingInputCallResponse>();
-  static StreamingInputCallResponse getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static StreamingInputCallResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<StreamingInputCallResponse>(create);
   static StreamingInputCallResponse _defaultInstance;
 
-  $core.int get aggregatedPayloadSize => $_get(0, 0);
+  @$pb.TagNumber(1)
+  $core.int get aggregatedPayloadSize => $_getIZ(0);
+  @$pb.TagNumber(1)
   set aggregatedPayloadSize($core.int v) {
     $_setSignedInt32(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasAggregatedPayloadSize() => $_has(0);
+  @$pb.TagNumber(1)
   void clearAggregatedPayloadSize() => clearField(1);
 }
 
 class ResponseParameters extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('ResponseParameters',
-      package: const $pb.PackageName('grpc.testing'))
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
     ..a<$core.int>(1, 'size', $pb.PbFieldType.O3)
     ..a<$core.int>(2, 'intervalUs', $pb.PbFieldType.O3)
-    ..a<BoolValue>(3, 'compressed', $pb.PbFieldType.OM, BoolValue.getDefault,
-        BoolValue.create)
+    ..aOM<BoolValue>(3, 'compressed', subBuilder: BoolValue.create)
     ..hasRequiredFields = false;
 
   ResponseParameters._() : super();
@@ -407,47 +513,63 @@ class ResponseParameters extends $pb.GeneratedMessage {
   ResponseParameters createEmptyInstance() => create();
   static $pb.PbList<ResponseParameters> createRepeated() =>
       $pb.PbList<ResponseParameters>();
-  static ResponseParameters getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static ResponseParameters getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ResponseParameters>(create);
   static ResponseParameters _defaultInstance;
 
-  $core.int get size => $_get(0, 0);
+  @$pb.TagNumber(1)
+  $core.int get size => $_getIZ(0);
+  @$pb.TagNumber(1)
   set size($core.int v) {
     $_setSignedInt32(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasSize() => $_has(0);
+  @$pb.TagNumber(1)
   void clearSize() => clearField(1);
 
-  $core.int get intervalUs => $_get(1, 0);
+  @$pb.TagNumber(2)
+  $core.int get intervalUs => $_getIZ(1);
+  @$pb.TagNumber(2)
   set intervalUs($core.int v) {
     $_setSignedInt32(1, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasIntervalUs() => $_has(1);
+  @$pb.TagNumber(2)
   void clearIntervalUs() => clearField(2);
 
+  @$pb.TagNumber(3)
   BoolValue get compressed => $_getN(2);
+  @$pb.TagNumber(3)
   set compressed(BoolValue v) {
     setField(3, v);
   }
 
+  @$pb.TagNumber(3)
   $core.bool hasCompressed() => $_has(2);
+  @$pb.TagNumber(3)
   void clearCompressed() => clearField(3);
+  @$pb.TagNumber(3)
+  BoolValue ensureCompressed() => $_ensure(2);
 }
 
 class StreamingOutputCallRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       'StreamingOutputCallRequest',
-      package: const $pb.PackageName('grpc.testing'))
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
     ..e<PayloadType>(1, 'responseType', $pb.PbFieldType.OE,
-        PayloadType.COMPRESSABLE, PayloadType.valueOf, PayloadType.values)
-    ..pc<ResponseParameters>(
-        2, 'responseParameters', $pb.PbFieldType.PM, ResponseParameters.create)
-    ..a<Payload>(
-        3, 'payload', $pb.PbFieldType.OM, Payload.getDefault, Payload.create)
-    ..a<EchoStatus>(7, 'responseStatus', $pb.PbFieldType.OM,
-        EchoStatus.getDefault, EchoStatus.create)
+        defaultOrMaker: PayloadType.COMPRESSABLE,
+        valueOf: PayloadType.valueOf,
+        enumValues: PayloadType.values)
+    ..pc<ResponseParameters>(2, 'responseParameters', $pb.PbFieldType.PM,
+        subBuilder: ResponseParameters.create)
+    ..aOM<Payload>(3, 'payload', subBuilder: Payload.create)
+    ..aOM<EchoStatus>(7, 'responseStatus', subBuilder: EchoStatus.create)
     ..hasRequiredFields = false;
 
   StreamingOutputCallRequest._() : super();
@@ -470,43 +592,61 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
   StreamingOutputCallRequest createEmptyInstance() => create();
   static $pb.PbList<StreamingOutputCallRequest> createRepeated() =>
       $pb.PbList<StreamingOutputCallRequest>();
-  static StreamingOutputCallRequest getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static StreamingOutputCallRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<StreamingOutputCallRequest>(create);
   static StreamingOutputCallRequest _defaultInstance;
 
+  @$pb.TagNumber(1)
   PayloadType get responseType => $_getN(0);
+  @$pb.TagNumber(1)
   set responseType(PayloadType v) {
     setField(1, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasResponseType() => $_has(0);
+  @$pb.TagNumber(1)
   void clearResponseType() => clearField(1);
 
+  @$pb.TagNumber(2)
   $core.List<ResponseParameters> get responseParameters => $_getList(1);
 
+  @$pb.TagNumber(3)
   Payload get payload => $_getN(2);
+  @$pb.TagNumber(3)
   set payload(Payload v) {
     setField(3, v);
   }
 
+  @$pb.TagNumber(3)
   $core.bool hasPayload() => $_has(2);
+  @$pb.TagNumber(3)
   void clearPayload() => clearField(3);
+  @$pb.TagNumber(3)
+  Payload ensurePayload() => $_ensure(2);
 
+  @$pb.TagNumber(7)
   EchoStatus get responseStatus => $_getN(3);
+  @$pb.TagNumber(7)
   set responseStatus(EchoStatus v) {
     setField(7, v);
   }
 
+  @$pb.TagNumber(7)
   $core.bool hasResponseStatus() => $_has(3);
+  @$pb.TagNumber(7)
   void clearResponseStatus() => clearField(7);
+  @$pb.TagNumber(7)
+  EchoStatus ensureResponseStatus() => $_ensure(3);
 }
 
 class StreamingOutputCallResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       'StreamingOutputCallResponse',
-      package: const $pb.PackageName('grpc.testing'))
-    ..a<Payload>(
-        1, 'payload', $pb.PbFieldType.OM, Payload.getDefault, Payload.create)
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
+    ..aOM<Payload>(1, 'payload', subBuilder: Payload.create)
     ..hasRequiredFields = false;
 
   StreamingOutputCallResponse._() : super();
@@ -530,22 +670,30 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
   StreamingOutputCallResponse createEmptyInstance() => create();
   static $pb.PbList<StreamingOutputCallResponse> createRepeated() =>
       $pb.PbList<StreamingOutputCallResponse>();
-  static StreamingOutputCallResponse getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static StreamingOutputCallResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<StreamingOutputCallResponse>(create);
   static StreamingOutputCallResponse _defaultInstance;
 
+  @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
+  @$pb.TagNumber(1)
   set payload(Payload v) {
     setField(1, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasPayload() => $_has(0);
+  @$pb.TagNumber(1)
   void clearPayload() => clearField(1);
+  @$pb.TagNumber(1)
+  Payload ensurePayload() => $_ensure(0);
 }
 
 class ReconnectParams extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('ReconnectParams',
-      package: const $pb.PackageName('grpc.testing'))
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
     ..a<$core.int>(1, 'maxReconnectBackoffMs', $pb.PbFieldType.O3)
     ..hasRequiredFields = false;
 
@@ -566,22 +714,28 @@ class ReconnectParams extends $pb.GeneratedMessage {
   ReconnectParams createEmptyInstance() => create();
   static $pb.PbList<ReconnectParams> createRepeated() =>
       $pb.PbList<ReconnectParams>();
-  static ReconnectParams getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static ReconnectParams getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ReconnectParams>(create);
   static ReconnectParams _defaultInstance;
 
-  $core.int get maxReconnectBackoffMs => $_get(0, 0);
+  @$pb.TagNumber(1)
+  $core.int get maxReconnectBackoffMs => $_getIZ(0);
+  @$pb.TagNumber(1)
   set maxReconnectBackoffMs($core.int v) {
     $_setSignedInt32(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasMaxReconnectBackoffMs() => $_has(0);
+  @$pb.TagNumber(1)
   void clearMaxReconnectBackoffMs() => clearField(1);
 }
 
 class ReconnectInfo extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('ReconnectInfo',
-      package: const $pb.PackageName('grpc.testing'))
+      package: const $pb.PackageName('grpc.testing'),
+      createEmptyInstance: create)
     ..aOB(1, 'passed')
     ..p<$core.int>(2, 'backoffMs', $pb.PbFieldType.P3)
     ..hasRequiredFields = false;
@@ -603,16 +757,23 @@ class ReconnectInfo extends $pb.GeneratedMessage {
   ReconnectInfo createEmptyInstance() => create();
   static $pb.PbList<ReconnectInfo> createRepeated() =>
       $pb.PbList<ReconnectInfo>();
-  static ReconnectInfo getDefault() => _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static ReconnectInfo getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ReconnectInfo>(create);
   static ReconnectInfo _defaultInstance;
 
-  $core.bool get passed => $_get(0, false);
+  @$pb.TagNumber(1)
+  $core.bool get passed => $_getBF(0);
+  @$pb.TagNumber(1)
   set passed($core.bool v) {
     $_setBool(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasPassed() => $_has(0);
+  @$pb.TagNumber(1)
   void clearPassed() => clearField(1);
 
+  @$pb.TagNumber(2)
   $core.List<$core.int> get backoffMs => $_getList(1);
 }

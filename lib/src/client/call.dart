@@ -15,11 +15,12 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
+
+import 'package:grpc/src/generated/google/rpc/status.pb.dart';
+import 'package:protobuf/protobuf.dart';
 
 import '../shared/message.dart';
 import '../shared/status.dart';
-
 import 'common.dart';
 import 'connection.dart';
 import 'method.dart';
@@ -364,11 +365,14 @@ class ClientCall<Q, R> implements Response {
   }
 }
 
-Uint8List _decodeStatusDetails(String data) {
+List<GeneratedMessage> _decodeStatusDetails(String data) {
   /// Parse details out of message. Length must be an even multiple of 4 so we pad it if needed.
   var details = data ?? '';
   while (details.length % 4 != 0) {
     details += '=';
   }
-  return base64Url.decode(details);
+
+  /// Parse each Any type into the correct GeneratedMessage
+  final parsedStatus = Status.fromBuffer(base64Url.decode(details));
+  return parsedStatus.details.map((e) => parseGeneratedMessage(e)).toList();
 }
