@@ -22,7 +22,6 @@ import 'package:grpc/grpc.dart';
 import 'generated/empty.pb.dart';
 import 'generated/messages.pb.dart';
 import 'generated/test.pbgrpc.dart';
-import 'package:grpc/src/generated/google/rpc/code.pbenum.dart';
 
 const _headerEchoKey = 'x-grpc-test-echo-initial';
 const _headerEchoData = 'test_initial_metadata_value';
@@ -1001,10 +1000,9 @@ class Tester {
   /// * received status message is the same as the sent message for both
   ///   Procedure steps 1 and 2
   Future<void> statusCodeAndMessage() async {
-    final expectedStatus =
-        GrpcError.custom(Code.UNKNOWN, 'test status message');
+    final expectedStatus = GrpcError.custom(2, 'test status message');
     final responseStatus = EchoStatus()
-      ..code = expectedStatus.code.value
+      ..code = expectedStatus.code
       ..message = expectedStatus.message;
     try {
       await client.unaryCall(SimpleRequest()..responseStatus = responseStatus);
@@ -1046,7 +1044,7 @@ class Tester {
       await client.unimplementedCall(Empty());
       throw 'Did not throw.';
     } on GrpcError catch (e) {
-      if (e.code != Code.UNIMPLEMENTED) {
+      if (e.code != StatusCode.unimplemented) {
         throw 'Unexpected status code ${e.code} - ${e.message}.';
       }
     }
@@ -1066,7 +1064,7 @@ class Tester {
       await unimplementedServiceClient.unimplementedCall(Empty());
       throw 'Did not throw.';
     } on GrpcError catch (e) {
-      if (e.code != Code.UNIMPLEMENTED) {
+      if (e.code != StatusCode.unimplemented) {
         throw 'Unexpected status code ${e.code} - ${e.message}.';
       }
     }
@@ -1089,7 +1087,7 @@ class Tester {
       await call;
       throw 'Expected exception.';
     } on GrpcError catch (e) {
-      if (e.code != Code.CANCELLED) {
+      if (e.code != StatusCode.cancelled) {
         throw 'Unexpected status code ${e.code} - ${e.message}';
       }
     }
@@ -1133,7 +1131,7 @@ class Tester {
       call.cancel();
     }, onError: (e) {
       if (e is! GrpcError) completer.completeError('Unexpected error: $e.');
-      if (e.code != Code.CANCELLED) {
+      if (e.code != StatusCode.cancelled) {
         completer
             .completeError('Unexpected status code ${e.code}: ${e.message}.');
       }
@@ -1177,7 +1175,7 @@ class Tester {
       }
       throw 'Expected exception.';
     } on GrpcError catch (e) {
-      if (e.code != Code.DEADLINE_EXCEEDED) {
+      if (e.code != StatusCode.deadlineExceeded) {
         throw 'Unexpected status code ${e.code} - ${e.message}.';
       }
     } finally {

@@ -37,7 +37,8 @@ export 'src/client/options.dart'
         ChannelOptions;
 export 'src/client/transport/http2_credentials.dart'
     show BadCertificateHandler, allowBadCertificates, ChannelCredentials;
-export 'src/generated/google/rpc/code.pb.dart';
+
+/// Status detail types
 export 'src/generated/google/rpc/error_details.pb.dart';
 export 'src/server/call.dart' show ServiceCall;
 export 'src/server/interceptor.dart' show Interceptor;
@@ -47,6 +48,6 @@ export 'src/shared/message.dart'
     show GrpcMessage, GrpcMetadata, GrpcData, grpcDecompressor;
 export 'src/shared/security.dart'
     show supportedAlpnProtocols, createSecurityContext;
-export 'src/shared/status.dart' show GrpcError;
+export 'src/shared/status.dart' show StatusCode, GrpcError;
 export 'src/shared/streams.dart' show GrpcHttpEncoder, GrpcHttpDecoder;
 export 'src/shared/timeout.dart' show toTimeoutString, fromTimeoutString;

@@ -349,7 +349,7 @@ class ServerHandler_ extends ServiceCall {
   }
 
   void _sendError(GrpcError error) {
-    sendTrailers(status: error.code.value, message: error.message);
+    sendTrailers(status: error.code, message: error.message);
   }
 
   void cancel() {
