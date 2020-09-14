@@ -14,6 +14,8 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import '../shared/message.dart';
 import '../shared/status.dart';
@@ -246,7 +248,11 @@ class ClientCall<Q, R> implements Response {
             ? null
             : Uri.decodeFull(metadata['grpc-message']);
         if (status != 0) {
-          _responseError(GrpcError.custom(status, message));
+          _responseError(GrpcError.custom(
+            status,
+            message,
+            _decodeStatusDetails(metadata['grpc-status-details-bin']),
+          ));
         }
       }
     } else {
@@ -284,11 +290,16 @@ class ClientCall<Q, R> implements Response {
       final status = _headerMetadata['grpc-status'];
       // If status code is missing, we must treat it as '0'. As in 'success'.
       final statusCode = status != null ? int.parse(status) : 0;
+
       if (statusCode != 0) {
         final message = _headerMetadata['grpc-message'] == null
             ? null
             : Uri.decodeFull(_headerMetadata['grpc-message']);
-        _responseError(GrpcError.custom(statusCode, message));
+        _responseError(GrpcError.custom(
+          statusCode,
+          message,
+          _decodeStatusDetails(_headerMetadata['grpc-status-details-bin']),
+        ));
       }
     }
     _timeoutTimer?.cancel();
@@ -351,4 +362,13 @@ class ClientCall<Q, R> implements Response {
       await _terminate();
     } catch (_) {}
   }
+}
+
+Uint8List _decodeStatusDetails(String data) {
+  /// Parse details out of message. Length must be an even multiple of 4 so we pad it if needed.
+  var details = data;
+  while (details.length % 4 != 0) {
+    details += '=';
+  }
+  return base64Url.decode(details);
 }
