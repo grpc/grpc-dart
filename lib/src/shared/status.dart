@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'package:grpc/src/generated/google/protobuf/any.pb.dart';
+import 'package:grpc/src/generated/google/rpc/code.pbenum.dart';
 import 'package:grpc/src/generated/google/rpc/error_details.pb.dart';
 import 'package:protobuf/protobuf.dart';
 
@@ -123,31 +124,39 @@ class StatusCode {
 
 class GrpcError implements Exception {
   final int code;
+  final String codeName;
   final String message;
   final List<GeneratedMessage> details;
 
   /// Custom error code.
-  GrpcError.custom(this.code, [this.message, this.details]);
+  GrpcError.custom(this.code, [this.message, this.details])
+      : codeName = getStatusCodeValue(code);
 
   /// The operation completed successfully.
-  GrpcError.ok([this.message, this.details]) : code = StatusCode.ok;
+  GrpcError.ok([this.message, this.details])
+      : code = StatusCode.ok,
+        codeName = getStatusCodeValue(StatusCode.ok);
 
   /// The operation was cancelled (typically by the caller).
   GrpcError.cancelled([this.message, this.details])
-      : code = StatusCode.cancelled;
+      : code = StatusCode.cancelled,
+        codeName = getStatusCodeValue(StatusCode.cancelled);
 
   /// Unknown error. An example of where this error may be returned is if a
   /// Status value received from another address space belongs to an error-space
   /// that is not known in this address space. Also errors raised by APIs that
   /// do not return enough error information may be converted to this error.
-  GrpcError.unknown([this.message, this.details]) : code = StatusCode.unknown;
+  GrpcError.unknown([this.message, this.details])
+      : code = StatusCode.unknown,
+        codeName = getStatusCodeValue(StatusCode.unknown);
 
   /// Client specified an invalid argument. Note that this differs from
   /// [failedPrecondition]. [invalidArgument] indicates arguments that are
   /// problematic regardless of the state of the system (e.g., a malformed file
   /// name).
   GrpcError.invalidArgument([this.message, this.details])
-      : code = StatusCode.invalidArgument;
+      : code = StatusCode.invalidArgument,
+        codeName = getStatusCodeValue(StatusCode.invalidArgument);
 
   /// Deadline expired before operation could complete. For operations that
   /// change the state of the system, this error may be returned even if the
@@ -155,15 +164,19 @@ class GrpcError implements Exception {
   /// from a server could have been delayed long enough for the deadline to
   /// expire.
   GrpcError.deadlineExceeded([this.message, this.details])
-      : code = StatusCode.deadlineExceeded;
+      : code = StatusCode.deadlineExceeded,
+        codeName = getStatusCodeValue(StatusCode.deadlineExceeded);
 
   /// Some requested entity (e.g., file or directory) was not found.
-  GrpcError.notFound([this.message, this.details]) : code = StatusCode.notFound;
+  GrpcError.notFound([this.message, this.details])
+      : code = StatusCode.notFound,
+        codeName = getStatusCodeValue(StatusCode.notFound);
 
   /// Some entity that we attempted to create (e.g., file or directory) already
   /// exists.
   GrpcError.alreadyExists([this.message, this.details])
-      : code = StatusCode.alreadyExists;
+      : code = StatusCode.alreadyExists,
+        codeName = getStatusCodeValue(StatusCode.alreadyExists);
 
   /// The caller does not have permission to execute the specified operation.
   /// [permissionDenied] must not be used for rejections caused by exhausting
@@ -171,12 +184,14 @@ class GrpcError implements Exception {
   /// [permissionDenied] must not be used if the caller cannot be identified
   /// (use [unauthenticated] instead for those errors).
   GrpcError.permissionDenied([this.message, this.details])
-      : code = StatusCode.permissionDenied;
+      : code = StatusCode.permissionDenied,
+        codeName = getStatusCodeValue(StatusCode.permissionDenied);
 
   /// Some resource has been exhausted, perhaps a per-user quota, or perhaps the
   /// entire file system is out of space.
   GrpcError.resourceExhausted([this.message, this.details])
-      : code = StatusCode.resourceExhausted;
+      : code = StatusCode.resourceExhausted,
+        codeName = getStatusCodeValue(StatusCode.resourceExhausted);
 
   /// Operation was rejected because the system is not in a state required for
   /// the operation's execution. For example, directory to be deleted may be
@@ -193,14 +208,17 @@ class GrpcError implements Exception {
   ///     returned since the client should not retry unless they have first
   ///     fixed up the directory by deleting files from it.
   GrpcError.failedPrecondition([this.message, this.details])
-      : code = StatusCode.failedPrecondition;
+      : code = StatusCode.failedPrecondition,
+        codeName = getStatusCodeValue(StatusCode.failedPrecondition);
 
   /// The operation was aborted, typically due to a concurrency issue like
   /// sequencer check failures, transaction aborts, etc.
   ///
   /// See litmus test above for deciding between [failedPrecondition],
   /// [aborted], and [unavailable].
-  GrpcError.aborted([this.message, this.details]) : code = StatusCode.aborted;
+  GrpcError.aborted([this.message, this.details])
+      : code = StatusCode.aborted,
+        codeName = getStatusCodeValue(StatusCode.aborted);
 
   /// Operation was attempted past the valid range. E.g., seeking or reading
   /// past end of file.
@@ -216,16 +234,20 @@ class GrpcError implements Exception {
   /// when it applies so that callers who are iterating through a space can
   /// easily look for an [outOfRange] error to detect when they are done.
   GrpcError.outOfRange([this.message, this.details])
-      : code = StatusCode.outOfRange;
+      : code = StatusCode.outOfRange,
+        codeName = getStatusCodeValue(StatusCode.outOfRange);
 
   /// Operation is not implemented or not supported/enabled in this service.
   GrpcError.unimplemented([this.message, this.details])
-      : code = StatusCode.unimplemented;
+      : code = StatusCode.unimplemented,
+        codeName = getStatusCodeValue(StatusCode.unimplemented);
 
   /// Internal errors. Means some invariants expected by underlying system has
   /// been broken. If you see one of these errors, something is very broken.
   // TODO(sigurdm): This should probably not be an [Exception].
-  GrpcError.internal([this.message, this.details]) : code = StatusCode.internal;
+  GrpcError.internal([this.message, this.details])
+      : code = StatusCode.internal,
+        codeName = getStatusCodeValue(StatusCode.internal);
 
   /// The service is currently unavailable.  This is a most likely a transient
   /// condition and may be corrected by retrying with a backoff.
@@ -233,15 +255,19 @@ class GrpcError implements Exception {
   /// See litmus test above for deciding between [failedPrecondition],
   /// [aborted], and [unavailable].
   GrpcError.unavailable([this.message, this.details])
-      : code = StatusCode.unavailable;
+      : code = StatusCode.unavailable,
+        codeName = getStatusCodeValue(StatusCode.unavailable);
 
   /// Unrecoverable data loss or corruption.
-  GrpcError.dataLoss([this.message, this.details]) : code = StatusCode.dataLoss;
+  GrpcError.dataLoss([this.message, this.details])
+      : code = StatusCode.dataLoss,
+        codeName = getStatusCodeValue(StatusCode.dataLoss);
 
   /// The request does not have valid authentication credentials for the
   /// operation.
   GrpcError.unauthenticated([this.message, this.details])
-      : code = StatusCode.unauthenticated;
+      : code = StatusCode.unauthenticated,
+        codeName = getStatusCodeValue(StatusCode.unauthenticated);
 
   @override
   bool operator ==(other) {
@@ -253,7 +279,16 @@ class GrpcError implements Exception {
   int get hashCode => code.hashCode ^ (message?.hashCode ?? 17);
 
   @override
-  String toString() => 'gRPC Error ($code, $message, $details)';
+  String toString() => 'gRPC Error ($code, $codeName, $message, $details)';
+}
+
+/// Given a status code, return the name
+String getStatusCodeValue(int code) {
+  if (code > Code.values.length - 1) {
+    return Code.UNKNOWN.name;
+  } else {
+    return Code.values[code].name;
+  }
 }
 
 /// Parse error details into the right kind of GeneratedMessage.
