@@ -244,13 +244,16 @@ class ClientCall<Q, R> implements Response {
       _trailers.complete(metadata);
       // TODO(jakobr): Parse more!
       if (metadata.containsKey('grpc-status')) {
-        final status = int.parse(metadata['grpc-status']);
-        final message = metadata['grpc-message'] == null
-            ? null
-            : Uri.decodeFull(metadata['grpc-message']);
-        if (status != 0) {
+        final status = metadata['grpc-status'];
+        final statusCode = status != null ? int.parse(status) : 0;
+
+        if (statusCode != 0) {
+          final message = metadata['grpc-message'] == null
+              ? null
+              : Uri.decodeFull(metadata['grpc-message']);
+
           _responseError(GrpcError.custom(
-            status,
+            statusCode,
             message,
             _decodeStatusDetails(metadata['grpc-status-details-bin']),
           ));
@@ -289,13 +292,13 @@ class ClientCall<Q, R> implements Response {
       // should contain "trailers" as well (Trailers-Only).
       _trailers.complete(_headerMetadata);
       final status = _headerMetadata['grpc-status'];
-      // If status code is missing, we must treat it as '0'. As in 'success'.
       final statusCode = status != null ? int.parse(status) : 0;
 
       if (statusCode != 0) {
         final message = _headerMetadata['grpc-message'] == null
             ? null
             : Uri.decodeFull(_headerMetadata['grpc-message']);
+
         _responseError(GrpcError.custom(
           statusCode,
           message,

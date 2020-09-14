@@ -279,7 +279,8 @@ class GrpcError implements Exception {
   int get hashCode => code.hashCode ^ (message?.hashCode ?? 17);
 
   @override
-  String toString() => 'gRPC Error ($code, $codeName, $message, $details)';
+  String toString() =>
+      'gRPC Error (code: $code, codeName: $codeName, message: $message, details: $details)';
 }
 
 /// Given a status code, return the name
@@ -287,7 +288,9 @@ String getStatusCodeValue(int code) {
   if (code > Code.values.length - 1) {
     return Code.UNKNOWN.name;
   } else {
-    return Code.values[code].name;
+    return Code.values
+        .firstWhere((e) => e.value == code, orElse: () => Code.UNKNOWN)
+        .name;
   }
 }
 
