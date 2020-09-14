@@ -366,7 +366,7 @@ class ClientCall<Q, R> implements Response {
 
 Uint8List _decodeStatusDetails(String data) {
   /// Parse details out of message. Length must be an even multiple of 4 so we pad it if needed.
-  var details = data;
+  var details = data ?? '';
   while (details.length % 4 != 0) {
     details += '=';
   }
