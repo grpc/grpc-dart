@@ -255,7 +255,7 @@ class ClientCall<Q, R> implements Response {
           _responseError(GrpcError.custom(
             statusCode,
             message,
-            _decodeStatusDetails(metadata['grpc-status-details-bin']),
+            decodeStatusDetails(metadata['grpc-status-details-bin']),
           ));
         }
       }
@@ -302,7 +302,7 @@ class ClientCall<Q, R> implements Response {
         _responseError(GrpcError.custom(
           statusCode,
           message,
-          _decodeStatusDetails(_headerMetadata['grpc-status-details-bin']),
+          decodeStatusDetails(_headerMetadata['grpc-status-details-bin']),
         ));
       }
     }
@@ -368,14 +368,22 @@ class ClientCall<Q, R> implements Response {
   }
 }
 
-List<GeneratedMessage> _decodeStatusDetails(String data) {
-  /// Parse details out of message. Length must be an even multiple of 4 so we pad it if needed.
-  var details = data ?? '';
-  while (details.length % 4 != 0) {
-    details += '=';
+/// Given a string, ensure the length is a multiple of 4, adding padding if needed.
+String padBase64Multiple4(String input) {
+  var data = input ?? '';
+  while (data.length % 4 != 0) {
+    data += '=';
   }
+  return data;
+}
 
-  /// Parse each Any type into the correct GeneratedMessage
-  final parsedStatus = Status.fromBuffer(base64Url.decode(details));
-  return parsedStatus.details.map((e) => parseGeneratedMessage(e)).toList();
+List<GeneratedMessage> decodeStatusDetails(String data) {
+  try {
+    /// Parse each Any type into the correct GeneratedMessage
+    final parsedStatus =
+        Status.fromBuffer(base64Url.decode(padBase64Multiple4(data)));
+    return parsedStatus.details.map((e) => parseGeneratedMessage(e)).toList();
+  } catch (e) {
+    return <GeneratedMessage>[];
+  }
 }
