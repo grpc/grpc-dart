@@ -1,3 +1,6 @@
+## 2.3.0
+* Added parsing of response error details from `grpc-status-details-bin` to provide access to all provided exception details in the `GrpcError` thrown in Dart, via [#349](https://github.com/grpc/grpc-dart/pull/349).
+
 ## 2.2.0+1
 
 * Relax `crypto` version dependency constraint from `^2.1.5` to `^2.1.4`.
