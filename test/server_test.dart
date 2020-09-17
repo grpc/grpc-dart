@@ -167,6 +167,20 @@ void main() {
     await harness.fromServer.done;
   });
 
+  test('Server returns encoded error for unary call', () async {
+    Future<int> methodHandler(ServiceCall call, Future<int> request) async {
+      throw GrpcError.unknown("エラー");
+    }
+
+    harness
+      ..service.unaryHandler = methodHandler
+      ..expectErrorResponse(StatusCode.unknown, '%E3%82%A8%E3%83%A9%E3%83%BC')
+      ..sendRequestHeader('/Test/Unary')
+      ..sendData(dummyValue)
+      ..toServer.close();
+    await harness.fromServer.done;
+  });
+
   test('Server returns error if multiple headers are received for unary call',
       () async {
     harness
