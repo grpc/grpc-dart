@@ -293,7 +293,8 @@ class ServerHandler_ extends ServiceCall {
     _customTrailers = null;
     outgoingTrailersMap['grpc-status'] = status.toString();
     if (message != null) {
-      outgoingTrailersMap['grpc-message'] = message;
+      outgoingTrailersMap['grpc-message'] =
+          Uri.encodeFull(message).replaceAll("%20", " ");
     }
 
     final outgoingTrailers = <Header>[];
