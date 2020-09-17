@@ -1,20 +1,25 @@
 ///
 //  Generated code. Do not modify.
 //  source: google/protobuf/any.proto
-///
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
+//
+// @dart = 2.3
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
 
-import 'dart:core' as $core
-    show bool, Deprecated, double, int, List, Map, override, pragma, String;
+import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-class Any extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i =
-      $pb.BuilderInfo('Any', package: const $pb.PackageName('google.protobuf'))
-        ..aOS(1, 'typeUrl')
-        ..a<$core.List<$core.int>>(2, 'value', $pb.PbFieldType.OY)
-        ..hasRequiredFields = false;
+import 'package:protobuf/src/protobuf/mixins/well_known.dart' as $mixin;
+
+class Any extends $pb.GeneratedMessage with $mixin.AnyMixin {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Any',
+      package: const $pb.PackageName('google.protobuf'),
+      createEmptyInstance: create,
+      toProto3Json: $mixin.AnyMixin.toProto3JsonHelper,
+      fromProto3Json: $mixin.AnyMixin.fromProto3JsonHelper)
+    ..aOS(1, 'typeUrl')
+    ..a<$core.List<$core.int>>(2, 'value', $pb.PbFieldType.OY)
+    ..hasRequiredFields = false;
 
   Any._() : super();
   factory Any() => create();
@@ -32,47 +37,34 @@ class Any extends $pb.GeneratedMessage {
   static Any create() => Any._();
   Any createEmptyInstance() => create();
   static $pb.PbList<Any> createRepeated() => $pb.PbList<Any>();
-  static Any getDefault() => _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static Any getDefault() =>
+      _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Any>(create);
   static Any _defaultInstance;
 
-  $core.String get typeUrl => $_getS(0, '');
+  @$pb.TagNumber(1)
+  $core.String get typeUrl => $_getSZ(0);
+  @$pb.TagNumber(1)
   set typeUrl($core.String v) {
     $_setString(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasTypeUrl() => $_has(0);
+  @$pb.TagNumber(1)
   void clearTypeUrl() => clearField(1);
 
+  @$pb.TagNumber(2)
   $core.List<$core.int> get value => $_getN(1);
+  @$pb.TagNumber(2)
   set value($core.List<$core.int> v) {
     $_setBytes(1, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasValue() => $_has(1);
+  @$pb.TagNumber(2)
   void clearValue() => clearField(2);
-
-  /// Unpacks the message in [value] into [instance].
-  ///
-  /// Throws a [InvalidProtocolBufferException] if [typeUrl] does not correspond
-  /// to the type of [instance].
-  ///
-  /// A typical usage would be `any.unpackInto(Message())`.
-  ///
-  /// Returns [instance].
-  T unpackInto<T extends $pb.GeneratedMessage>(T instance,
-      {$pb.ExtensionRegistry extensionRegistry = $pb.ExtensionRegistry.EMPTY}) {
-    $pb.unpackIntoHelper(value, instance, typeUrl,
-        extensionRegistry: extensionRegistry);
-    return instance;
-  }
-
-  /// Returns `true` if the encoded message matches the type of [instance].
-  ///
-  /// Can be used with a default instance:
-  /// `any.canUnpackInto(Message.getDefault())`
-  $core.bool canUnpackInto($pb.GeneratedMessage instance) {
-    return $pb.canUnpackIntoHelper(instance, typeUrl);
-  }
 
   /// Creates a new [Any] encoding [message].
   ///
@@ -80,8 +72,8 @@ class Any extends $pb.GeneratedMessage {
   /// the fully qualified name of the type of [message].
   static Any pack($pb.GeneratedMessage message,
       {$core.String typeUrlPrefix = 'type.googleapis.com'}) {
-    return Any()
-      ..value = message.writeToBuffer()
-      ..typeUrl = '${typeUrlPrefix}/${message.info_.qualifiedMessageName}';
+    final result = create();
+    $mixin.AnyMixin.packIntoAny(result, message, typeUrlPrefix: typeUrlPrefix);
+    return result;
   }
 }
