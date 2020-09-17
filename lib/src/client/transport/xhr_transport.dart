@@ -135,8 +135,8 @@ class XhrClientConnection extends ClientConnection {
   }
 
   // When dart codes are generated from service.proto,
-  // it has a leading slash. Therefore, it's currently not possible to use the
-  // path gets ignored. Hence, remove the leading slash.
+  // it has a leading slash. Therefore, the path is ignored as it starts from
+  // the root URL. Hence, we remove the leading slash here.
   //
   // For example, we want to keep '/grpc/' path for gRPC web.
   //
