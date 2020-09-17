@@ -117,7 +117,7 @@ class StatusCode {
   static const unauthenticated = 16;
 }
 
-class GrpcError {
+class GrpcError implements Exception {
   final int code;
   final String message;
 
@@ -214,6 +214,7 @@ class GrpcError {
 
   /// Internal errors. Means some invariants expected by underlying system has
   /// been broken. If you see one of these errors, something is very broken.
+  // TODO(sigurdm): This should probably not be an [Exception].
   GrpcError.internal([this.message]) : code = StatusCode.internal;
 
   /// The service is currently unavailable.  This is a most likely a transient

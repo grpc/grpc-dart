@@ -130,7 +130,6 @@ class ClientCall<Q, R> implements Response {
     return sanitizedMetadata;
   }
 
-
 // TODO(sigurdm): Find out why we do this.
   static String audiencePath(ClientMethod method) {
     final lastSlashPos = method.path.lastIndexOf('/');
@@ -138,7 +137,6 @@ class ClientCall<Q, R> implements Response {
         ? method.path
         : method.path.substring(0, lastSlashPos);
   }
-
 
   void onConnectionReady(ClientConnection connection) {
     if (isCancelled) return;
@@ -149,8 +147,8 @@ class ClientCall<Q, R> implements Response {
       final metadata = Map<String, String>.from(options.metadata);
       Future.forEach(
               options.metadataProviders,
-              (provider) => provider(
-                  metadata, '${connection.scheme}://${connection.authority}${audiencePath(_method)}'))
+              (provider) => provider(metadata,
+                  '${connection.scheme}://${connection.authority}${audiencePath(_method)}'))
           .then((_) => _sendRequest(connection, _sanitizeMetadata(metadata)))
           .catchError(_onMetadataProviderError);
     }
@@ -244,7 +242,9 @@ class ClientCall<Q, R> implements Response {
       // TODO(jakobr): Parse more!
       if (metadata.containsKey('grpc-status')) {
         final status = int.parse(metadata['grpc-status']);
-        final message = metadata['grpc-message'];
+        final message = metadata['grpc-message'] == null
+            ? null
+            : Uri.decodeFull(metadata['grpc-message']);
         if (status != 0) {
           _responseError(GrpcError.custom(status, message));
         }
@@ -285,7 +285,9 @@ class ClientCall<Q, R> implements Response {
       // If status code is missing, we must treat it as '0'. As in 'success'.
       final statusCode = status != null ? int.parse(status) : 0;
       if (statusCode != 0) {
-        final message = _headerMetadata['grpc-message'];
+        final message = _headerMetadata['grpc-message'] == null
+            ? null
+            : Uri.decodeFull(_headerMetadata['grpc-message']);
         _responseError(GrpcError.custom(statusCode, message));
       }
     }

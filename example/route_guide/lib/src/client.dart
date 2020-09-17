@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
 import 'dart:math' show Random;
 
 import 'package:grpc/grpc.dart';
@@ -23,11 +22,10 @@ import 'generated/route_guide.pb.dart';
 import 'generated/route_guide.pbgrpc.dart';
 
 class Client {
-  ClientChannel channel;
   RouteGuideClient stub;
 
   Future<void> main(List<String> args) async {
-    channel = ClientChannel('127.0.0.1',
+    final channel = ClientChannel('127.0.0.1',
         port: 8080,
         options:
             const ChannelOptions(credentials: ChannelCredentials.insecure()));

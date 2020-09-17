@@ -50,6 +50,7 @@ Duration testBackoff(Duration lastBackoff) => const Duration(milliseconds: 1);
 class FakeChannelOptions implements ChannelOptions {
   ChannelCredentials credentials = const ChannelCredentials.secure();
   Duration idleTimeout = const Duration(seconds: 1);
+  Duration connectionTimeout = const Duration(seconds: 10);
   String userAgent = 'dart-grpc/1.0.0 test';
   BackoffStrategy backoffStrategy = testBackoff;
 }
@@ -128,6 +129,7 @@ class ClientHarness {
     when(transport.makeRequest(any, endStream: anyNamed('endStream')))
         .thenReturn(stream);
     when(transport.onActiveStateChanged = captureAny).thenReturn(null);
+    when(transport.isOpen).thenReturn(true);
     when(stream.outgoingMessages).thenReturn(fromClient.sink);
     when(stream.incomingMessages).thenAnswer((_) => toClient.stream);
     client = TestClient(channel);

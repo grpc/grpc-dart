@@ -14,8 +14,6 @@
 // limitations under the License.
 
 /// Dart implementation of the gRPC helloworld.Greeter server.
-import 'dart:async';
-
 import 'package:grpc/grpc.dart';
 
 import 'package:helloworld/src/generated/helloworld.pb.dart';

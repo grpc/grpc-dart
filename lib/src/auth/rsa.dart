@@ -91,7 +91,6 @@ class RS256Signer {
   }
 }
 
-
 class ASN1Parser {
   static const INTEGER_TAG = 0x02;
   static const OCTET_STRING_TAG = 0x04;
@@ -221,7 +220,6 @@ class ASN1ObjectIdentifier extends ASN1Object {
 }
 
 class ASN1Null extends ASN1Object {}
-
 
 /// Represents integers obtained while creating a Public/Private key pair.
 class RSAPrivateKey {

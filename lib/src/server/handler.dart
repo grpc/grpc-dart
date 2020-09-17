@@ -77,6 +77,9 @@ class ServerHandler_ extends ServiceCall {
         .transform(grpcDecompressor())
         .listen(_onDataIdle,
             onError: _onError, onDone: _onDoneError, cancelOnError: true);
+    _stream.outgoingMessages.done.then((_) {
+      cancel();
+    });
   }
 
   /// Cancel response subscription, if active. If the stream exits with an
@@ -283,13 +286,15 @@ class ServerHandler_ extends ServiceCall {
       _customHeaders..remove(':status')..remove('content-type');
       outgoingTrailersMap.addAll(_customHeaders);
       _customHeaders = null;
+      _headersSent = true;
     }
     _customTrailers..remove(':status')..remove('content-type');
     outgoingTrailersMap.addAll(_customTrailers);
     _customTrailers = null;
     outgoingTrailersMap['grpc-status'] = status.toString();
     if (message != null) {
-      outgoingTrailersMap['grpc-message'] = message;
+      outgoingTrailersMap['grpc-message'] =
+          Uri.encodeFull(message).replaceAll("%20", " ");
     }
 
     final outgoingTrailers = <Header>[];

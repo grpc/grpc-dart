@@ -85,22 +85,39 @@ class Server {
   Service lookupService(String service) => _services[service];
 
   Future<void> serve(
-      {dynamic address, int port, ServerTlsCredentials security}) async {
+      {dynamic address,
+      int port,
+      ServerTlsCredentials security,
+      ServerSettings http2ServerSettings,
+      int backlog: 0,
+      bool v6Only: false,
+      bool shared: false}) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
     Stream<Socket> server;
     if (security != null) {
       _secureServer = await SecureServerSocket.bind(
           address ?? InternetAddress.anyIPv4,
           port ?? 443,
-          security.securityContext);
+          security.securityContext,
+          backlog: backlog,
+          shared: shared,
+          v6Only: v6Only);
       server = _secureServer;
     } else {
       _insecureServer = await ServerSocket.bind(
-          address ?? InternetAddress.anyIPv4, port ?? 80);
+        address ?? InternetAddress.anyIPv4,
+        port ?? 80,
+        backlog: backlog,
+        shared: shared,
+        v6Only: v6Only,
+      );
       server = _insecureServer;
     }
     server.listen((socket) {
-      final connection = ServerTransportConnection.viaSocket(socket);
+      // Don't wait for io buffers to fill up before sending requests.
+      socket.setOption(SocketOption.tcpNoDelay, true);
+      final connection = ServerTransportConnection.viaSocket(socket,
+          settings: http2ServerSettings);
       _connections.add(connection);
       ServerHandler_ handler;
       // TODO(jakobr): Set active state handlers, close connection after idle
