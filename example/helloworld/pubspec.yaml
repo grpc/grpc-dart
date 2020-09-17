@@ -9,7 +9,4 @@ dependencies:
   async: ^2.2.0
   grpc:
     path: ../../
-  protobuf: ^0.13.12
-
-dev_dependencies:
-  test: ^1.6.4
+  protobuf: ^1.0.1

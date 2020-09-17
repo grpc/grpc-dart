@@ -4,24 +4,24 @@ The [Dart](https://www.dart.dev/) implementation of
 [![Build Status](https://travis-ci.org/grpc/grpc-dart.svg?branch=master)](https://travis-ci.org/grpc/grpc-dart)
 [![pub package](https://img.shields.io/pub/v/grpc.svg)](https://pub.dev/packages/grpc)
 
-# Usage
 
-See the [Dart gRPC Quickstart](https://grpc.io/docs/quickstart/dart.html).
+## Learn more
 
-[grpc-web](https://github.com/grpc/grpc-web) in a browser context is supported by 
-`package:grpc/grpc_web.dart`.
+- [Quick Start](https://grpc.io/docs/languages/dart/quickstart) - get an app running in minutes
+- [Examples](example)
+- [API reference](https://grpc.io/docs/languages/dart/api)
 
-# Status
+For complete documentation, see [Dart gRPC](https://grpc.io/docs/languages/dart).
 
-If you experience issues, or if you have feature requests,
-please [open an issue](https://github.com/dart-lang/grpc-dart/issues).
+## Supported platforms
 
-Note that we have limited bandwidth to accept PRs, and that all PRs will require signing the [EasyCLA](https://lfcla.com/).
+- [Dart native](https://dart.dev/platforms)
+- [Flutter](https://flutter.dev)
 
-# Notes
+> **Note:** [grpc-web](https://github.com/grpc/grpc-web) is supported by `package:grpc/grpc_web.dart`.
 
-This library requires Dart SDK version 2.2.0 or later.
+## Contributing
 
-It currently supports the [Flutter](https://flutter.dev/) and
-[Dart native](https://dart.dev/platforms) platforms.
+If you experience problems or have feature requests, [open an issue](https://github.com/dart-lang/grpc-dart/issues/new).
 
+Note that we have limited bandwidth to accept PRs, and that all PRs require signing the [EasyCLA](https://lfcla.com).

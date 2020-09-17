@@ -105,10 +105,17 @@ class Server {
       server = _secureServer;
     } else {
       _insecureServer = await ServerSocket.bind(
-          address ?? InternetAddress.anyIPv4, port ?? 80, backlog: backlog, shared: shared , v6Only: v6Only);
+        address ?? InternetAddress.anyIPv4,
+        port ?? 80,
+        backlog: backlog,
+        shared: shared,
+        v6Only: v6Only,
+      );
       server = _insecureServer;
     }
     server.listen((socket) {
+      // Don't wait for io buffers to fill up before sending requests.
+      socket.setOption(SocketOption.tcpNoDelay, true);
       final connection = ServerTransportConnection.viaSocket(socket,
           settings: http2ServerSettings);
       _connections.add(connection);

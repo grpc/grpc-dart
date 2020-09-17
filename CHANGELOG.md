@@ -1,3 +1,14 @@
+## 2.2.0+1
+
+* Relax `crypto` version dependency constraint from `^2.1.5` to `^2.1.4`.
+
+## 2.2.0
+
+* Added `applicationDefaultCredentialsAuthenticator` function for creating an
+  authenticator using [Application Default Credentials](https://cloud.google.com/docs/authentication/production).
+* Less latency by using the `tcpNoDelay` option for sockets.
+* Support grpc-web in a non-web setting.
+
 ## 2.1.3
 
 * Fix bug in grpc-web when receiving an empty trailer.
@@ -36,7 +47,7 @@
 
 ## 2.0.0+1
 
-* Fix imports to ensure grpc-web.dart has no accidental transitive dependencies on dart:io.
+* Fix imports to ensure `grpc_web.dart` has no accidental transitive dependencies on dart:io.
 
 ## 2.0.0
 

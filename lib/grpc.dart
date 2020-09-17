@@ -20,7 +20,10 @@ export 'src/auth/auth.dart'
         JwtServiceAccountAuthenticator;
 
 export 'src/auth/auth_io.dart'
-    show ComputeEngineAuthenticator, ServiceAccountAuthenticator;
+    show
+        applicationDefaultCredentialsAuthenticator,
+        ComputeEngineAuthenticator,
+        ServiceAccountAuthenticator;
 
 export 'src/client/call.dart' show CallOptions, ClientCall, MetadataProvider;
 export 'src/client/client.dart' show Client;
