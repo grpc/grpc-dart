@@ -257,6 +257,27 @@ void main() {
     );
   });
 
+  test('Call throws decoded message', () async {
+    const customStatusCode = 17;
+    const customStatusMessage = 'エラー';
+    const encodedCustomStatusMessage = '%E3%82%A8%E3%83%A9%E3%83%BC';
+
+    void handleRequest(_) {
+      harness.toClient.add(HeadersStreamMessage([
+        Header.ascii('grpc-status', '$customStatusCode'),
+        Header.ascii('grpc-message', encodedCustomStatusMessage)
+      ], endStream: true));
+      harness.toClient.close();
+    }
+
+    await harness.runFailureTest(
+      clientCall: harness.client.unary(dummyValue),
+      expectedException:
+          GrpcError.custom(customStatusCode, customStatusMessage),
+      serverHandlers: [handleRequest],
+    );
+  });
+
   test('Call throws on response stream errors', () async {
     void handleRequest(_) {
       harness.toClient.addError('Test error');
@@ -325,24 +346,6 @@ void main() {
       serverHandlers: [handleRequest],
     );
   }
-
-  test('Connection errors are reported', () async {
-    final connectionStates = <ConnectionState>[];
-    harness.connection.connectionError = 'Connection error';
-    harness.connection.onStateChanged = (connection) {
-      final state = connection.state;
-      connectionStates.add(state);
-    };
-
-    final expectedException =
-        GrpcError.unavailable('Error connecting: Connection error');
-
-    await harness.expectThrows(
-        harness.client.unary(dummyValue), expectedException);
-
-    expect(
-        connectionStates, [ConnectionState.connecting, ConnectionState.idle]);
-  });
 
   test('Connections time out if idle', () async {
     final done = Completer();
