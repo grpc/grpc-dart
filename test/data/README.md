@@ -21,5 +21,5 @@ of extensions (EKU and SAN) are crucial for satisfying
 [Mac OS X requirements](https://support.apple.com/en-us/HT210176) for TLS
 certificates.
 
-If these are not satisfied tests would hang and spew cryptic "Connection
+If these are not satisfied tests will hang and spew cryptic "Connection
 terminated during handshake" errors.
