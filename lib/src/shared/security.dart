@@ -17,10 +17,5 @@ import 'dart:io';
 
 const supportedAlpnProtocols = ['grpc-exp', 'h2'];
 
-// TODO: Simplify once we have a stable Dart 1.25 release (update pubspec to
-// require SDK >=1.25.0, and remove check for alpnSupported).
 SecurityContext createSecurityContext(bool isServer) =>
-    SecurityContext.alpnSupported
-        ? (SecurityContext()
-          ..setAlpnProtocols(supportedAlpnProtocols, isServer))
-        : SecurityContext();
+    SecurityContext()..setAlpnProtocols(supportedAlpnProtocols, isServer);
