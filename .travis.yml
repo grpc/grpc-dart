@@ -9,7 +9,7 @@ addons:
 before_install:
   - if [ $TRAVIS_OS_NAME = windows ]; then choco install googlechrome ; fi
   - ./tool/install-grpcwebproxy.sh
-  - export PATH=$PATH:/tmp/grpcwebproxy
+  - export PATH="$PATH:/tmp/grpcwebproxy"
 
 # Run against both the dev and stable channel.
 dart:

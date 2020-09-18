@@ -1,6 +1,7 @@
 #!/bin/sh
 
 VERSION=v0.13.0
+SUFFIX=
 
 case $TRAVIS_OS_NAME in
   linux)
@@ -11,6 +12,7 @@ case $TRAVIS_OS_NAME in
     ;;
   windows)
     VARIANT=win64.exe
+    SUFFIX=.exe
     ;;
 esac
 
@@ -19,7 +21,7 @@ BINARY=grpcwebproxy-${VERSION}-${VARIANT}
 wget https://github.com/improbable-eng/grpc-web/releases/download/${VERSION}/${BINARY}.zip -O /tmp/grpcwebproxy.zip
 rm -rf /tmp/grpcwebproxy
 mkdir /tmp/grpcwebproxy
-pushd /tmp/grpcwebproxy
+cd /tmp/grpcwebproxy
 unzip /tmp/grpcwebproxy.zip
-mv dist/${BINARY} ./grpcwebproxy
-popd
+mv dist/${BINARY} ./grpcwebproxy${SUFFIX}
+
