@@ -1,5 +1,11 @@
+## 2.4.0
+
+* Added decoding/parsing of `grpc-status-details-bin` to pass all response exception details to the `GrpcError` thrown in Dart, via [#349](https://github.com/grpc/grpc-dart/pull/349).
+
 ## 2.3.0
-* Added parsing of response error details from `grpc-status-details-bin` to provide access to all provided exception details in the `GrpcError` thrown in Dart, via [#349](https://github.com/grpc/grpc-dart/pull/349).
+
+* Revert [PR #287](https://github.com/grpc/grpc-dart/pull/287), which allowed
+using gRPC-web in native environments but also broke streaming.
 
 ## 2.2.0+1
 
