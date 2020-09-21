@@ -215,6 +215,24 @@ class ClientCall<Q, R> implements Response {
     _stream.terminate();
   }
 
+  /// If there's an error status then process it as a response error
+  void _checkForErrorStatus(Map<String, String> metadata) {
+    final status = metadata['grpc-status'];
+    final statusCode = int.parse(status ?? '0');
+
+    if (statusCode != 0) {
+      final message = metadata['grpc-message'] == null
+          ? null
+          : Uri.decodeFull(metadata['grpc-message']);
+
+      _responseError(GrpcError.custom(
+        statusCode,
+        message,
+        decodeStatusDetails(metadata['grpc-status-details-bin']),
+      ));
+    }
+  }
+
   /// Data handler for responses coming from the server. Handles header/trailer
   /// metadata, and forwards response objects to [_responses].
   void _onResponseData(GrpcMessage data) {
@@ -241,22 +259,9 @@ class ClientCall<Q, R> implements Response {
       }
       final metadata = data.metadata;
       _trailers.complete(metadata);
-      if (metadata.containsKey('grpc-status')) {
-        final status = metadata['grpc-status'];
-        final statusCode = status != null ? int.parse(status) : 0;
 
-        if (statusCode != 0) {
-          final message = metadata['grpc-message'] == null
-              ? null
-              : Uri.decodeFull(metadata['grpc-message']);
-
-          _responseError(GrpcError.custom(
-            statusCode,
-            message,
-            decodeStatusDetails(metadata['grpc-status-details-bin']),
-          ));
-        }
-      }
+      /// Process status error if necessary
+      _checkForErrorStatus(metadata);
     } else {
       _responseError(GrpcError.unimplemented('Unexpected frame received'));
     }
@@ -289,20 +294,9 @@ class ClientCall<Q, R> implements Response {
       // Only received a header frame and no data frames, so the header
       // should contain "trailers" as well (Trailers-Only).
       _trailers.complete(_headerMetadata);
-      final status = _headerMetadata['grpc-status'];
-      final statusCode = status != null ? int.parse(status) : 0;
 
-      if (statusCode != 0) {
-        final message = _headerMetadata['grpc-message'] == null
-            ? null
-            : Uri.decodeFull(_headerMetadata['grpc-message']);
-
-        _responseError(GrpcError.custom(
-          statusCode,
-          message,
-          decodeStatusDetails(_headerMetadata['grpc-status-details-bin']),
-        ));
-      }
+      /// Process status error if necessary
+      _checkForErrorStatus(_headerMetadata);
     }
     _timeoutTimer?.cancel();
     _responses.close();
@@ -366,21 +360,12 @@ class ClientCall<Q, R> implements Response {
   }
 }
 
-/// Given a string, ensure the length is a multiple of 4, adding padding if needed.
-String padBase64Multiple4(String input) {
-  var data = input ?? '';
-  while (data.length % 4 != 0) {
-    data += '=';
-  }
-  return data;
-}
-
 List<GeneratedMessage> decodeStatusDetails(String data) {
   try {
     /// Parse each Any type into the correct GeneratedMessage
-    final parsedStatus =
-        Status.fromBuffer(base64Url.decode(padBase64Multiple4(data)));
-    return parsedStatus.details.map((e) => parseGeneratedMessage(e)).toList();
+    final parsedStatus = Status.fromBuffer(
+        base64Url.decode(data.padRight((data.length + 3) & ~3, '=')));
+    return parsedStatus.details.map(parseErrorDetailsFromAny).toList();
   } catch (e) {
     return <GeneratedMessage>[];
   }

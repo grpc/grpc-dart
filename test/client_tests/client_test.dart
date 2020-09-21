@@ -406,34 +406,6 @@ void main() {
   });
 
   test(
-      'padBase64Multiple4 should pad a string that is not a length multiple of 4',
-      () {
-    final str = '111';
-    final padded = padBase64Multiple4(str);
-    expect(padded, '111=');
-  });
-
-  test(
-      'padBase64Multiple4 should return the original string if it is a multiple of 4',
-      () {
-    final str = '1111';
-    final padded = padBase64Multiple4(str);
-    expect(padded, '1111');
-  });
-
-  test('padBase64Multiple4 should handle empty string', () {
-    final str = '';
-    final padded = padBase64Multiple4(str);
-    expect(padded, '');
-  });
-
-  test('padBase64Multiple4 should handle null string', () {
-    final str = null;
-    final padded = padBase64Multiple4(str);
-    expect(padded, '');
-  });
-
-  test(
       'decodeStatusDetails should decode details into a List<GeneratedMessage> if base64 present',
       () {
     final decodedDetails = decodeStatusDetails(
@@ -462,7 +434,7 @@ void main() {
     expect(status.details, isNotEmpty);
 
     final detailItem = status.details.first;
-    final parsedResult = parseGeneratedMessage(detailItem);
+    final parsedResult = parseErrorDetailsFromAny(detailItem);
     expect(parsedResult, isA<BadRequest>());
 
     final castedResult = parsedResult as BadRequest;
@@ -470,15 +442,6 @@ void main() {
     expect(castedResult.fieldViolations.first.field_1, 'amount');
     expect(castedResult.fieldViolations.first.description,
         'The required currency conversion would result in a zero value payment');
-  });
-
-  test('getStatusCodeValue should return the right status code', () {
-    expect(getStatusCodeValue(1), 'CANCELLED');
-  });
-
-  test('getStatusCodeValue should return UNKNOWN for an invalid status code',
-      () {
-    expect(getStatusCodeValue(99), 'UNKNOWN');
   });
 
   test('Call should throw details embedded in the headers', () async {
