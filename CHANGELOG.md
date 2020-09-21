@@ -1,7 +1,7 @@
-## 2.2.0+2
+## 2.3.0
 
-* Revert PR #287, which allowed using gRPC-web in native environments but also
-broke streaming.
+* Revert [PR #287](https://github.com/grpc/grpc-dart/pull/287), which allowed
+using gRPC-web in native environments but also broke streaming.
 
 ## 2.2.0+1
 
