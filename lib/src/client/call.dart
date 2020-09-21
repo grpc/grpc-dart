@@ -231,7 +231,6 @@ class ClientCall<Q, R> implements Response {
       _hasReceivedResponses = true;
     } else if (data is GrpcMetadata) {
       if (!_headers.isCompleted) {
-        // TODO(jakobr): Parse, and extract common headers.
         _headerMetadata = data.metadata;
         _headers.complete(_headerMetadata);
         return;
@@ -242,7 +241,6 @@ class ClientCall<Q, R> implements Response {
       }
       final metadata = data.metadata;
       _trailers.complete(metadata);
-      // TODO(jakobr): Parse more!
       if (metadata.containsKey('grpc-status')) {
         final status = metadata['grpc-status'];
         final statusCode = status != null ? int.parse(status) : 0;
