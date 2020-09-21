@@ -1,3 +1,8 @@
+## 2.2.0+2
+
+* Revert PR #287, which allowed using gRPC-web in native environments but also
+broke streaming.
+
 ## 2.2.0+1
 
 * Relax `crypto` version dependency constraint from `^2.1.5` to `^2.1.4`.
