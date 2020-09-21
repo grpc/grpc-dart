@@ -25,3 +25,6 @@ For complete documentation, see [Dart gRPC](https://grpc.io/docs/languages/dart)
 If you experience problems or have feature requests, [open an issue](https://github.com/dart-lang/grpc-dart/issues/new).
 
 Note that we have limited bandwidth to accept PRs, and that all PRs require signing the [EasyCLA](https://lfcla.com).
+
+## Updating protobuf definitions
+Sometimes we might need to update the generated dart files from the protos included in `lib/src/protos`. To do this, run the script `tool/regenerate.sh` from the project root and it will update the generated dart files in `lib/src/geneerated`.
