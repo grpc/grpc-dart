@@ -98,11 +98,7 @@ main() async {
       ChannelOptions(credentials: ChannelCredentials.insecure()),
     ));
     final testClient = TestClient(channel);
-    await testClient
-        .stream(1)
-        .toList()
-        .catchError((error) => expect(error, isA<GrpcError>()));
-
+    await expectLater(testClient.stream(1).toList(), throwsA(isA<GrpcError>()));
     server.shutdown();
   });
 }
