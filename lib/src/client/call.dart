@@ -17,6 +17,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:grpc/src/generated/google/rpc/status.pb.dart';
+import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
 
 import '../shared/message.dart';
@@ -360,6 +361,7 @@ class ClientCall<Q, R> implements Response {
   }
 }
 
+@visibleForTesting
 List<GeneratedMessage> decodeStatusDetails(String data) {
   try {
     /// Parse each Any type into the correct GeneratedMessage
