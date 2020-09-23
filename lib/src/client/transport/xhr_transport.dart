@@ -32,7 +32,7 @@ const _contentTypeKey = 'Content-Type';
 /// All accepted content-type header's prefix.
 const _validContentTypePrefix = [
   'application/grpc',
-  'application/json+protof',
+  'application/json+protobuf',
   'application/x-protobuf'
 ];
 

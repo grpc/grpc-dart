@@ -102,41 +102,37 @@ void main() {
   test(
       'Make request sends correct headers if call options already have '
       'Content-Type header', () async {
-    final metadata = {'header_1': 'value_1', 'header_2': 'value_2'};
+    final metadata = {'header_1': 'value_1', 'header_2': 'value_2',
+    'Content-Type': 'application/json+protobuf'};
     final connection = MockXhrClientConnection();
 
     connection.makeRequest('/path', Duration(seconds: 10), metadata,
-        (error) => fail(error.toString()),
-        callOptions: WebCallOptions(
-            metadata: {'Content-Type': 'application/json+protof'}));
+        (error) => fail(error.toString()));
 
     expect(metadata, {
       'header_1': 'value_1',
       'header_2': 'value_2',
-      'Content-Type': 'application/json+protof',
+      'Content-Type': 'application/json+protobuf',
     });
   });
 
   test('Content-Type header case insensitivity', () async {
-    final metadata = {'header_1': 'value_1'};
+    final metadata = {'header_1': 'value_1', 'CONTENT-TYPE': 'application/json+protobuf'};
     final connection = MockXhrClientConnection();
 
     connection.makeRequest('/path', Duration(seconds: 10), metadata,
-        (error) => fail(error.toString()),
-        callOptions: WebCallOptions(
-            metadata: {'CONTENT-TYPE': 'application/json+protof'}));
+        (error) => fail(error.toString()));
     expect(metadata, {
       'header_1': 'value_1',
-      'Content-Type': 'application/json+protof',
+      'CONTENT-TYPE': 'application/json+protobuf',
     });
 
-    connection.makeRequest('/path', Duration(seconds: 10), metadata,
-        (error) => fail(error.toString()),
-        callOptions: WebCallOptions(
-            metadata: {'content-type': 'application/json+protof'}));
-    expect(metadata, {
+    final lowerMetadata = {'header_1': 'value_1', 'content-type': 'application/json+protobuf'};
+    connection.makeRequest('/path', Duration(seconds: 10), lowerMetadata,
+        (error) => fail(error.toString()));
+    expect(lowerMetadata, {
       'header_1': 'value_1',
-      'Content-Type': 'application/json+protof',
+      'Content-Type': 'application/json+protobuf',
     });
   });
 
