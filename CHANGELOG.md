@@ -1,8 +1,14 @@
-## 2.3.0
+## 2.4.0
 
 * Add the ability to bypass CORS preflight requests. This matches the JS implementation
   of gRPC-web, assuming a proxy server (gRPC-web suggests [Envoy](https://www.envoyproxy.io/)).
   For information regarding how to configure, see the [JS gRPC-web guide](https://github.com/grpc/grpc-web#quick-start).
+
+## 2.4.0
+
+* Revert [PR #287](https://github.com/grpc/grpc-dart/pull/287), which allowed
+using gRPC-web in native environments but also broke streaming.
+
 
 ## 2.2.0+1
 
