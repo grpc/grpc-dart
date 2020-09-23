@@ -82,7 +82,21 @@ class CallOptions {
 
 /// Runtime options for gRPC-web.
 class WebCallOptions extends CallOptions {
+  /// Whether to eliminate the CORS preflight request.
+  ///
+  /// If set to [true], all HTTP headers will be packed into an '$httpHeaders'
+  /// query parameter, which should downgrade complex CORS requests into
+  /// simple ones. This eliminates an extra roundtrip.
+  ///
+  /// For this to work correctly, a proxy server must be set up that
+  /// understands the query parameter and can unpack/send the original
+  /// list of headers to the server endpoint.
   final bool bypassCorsPreflight;
+
+  /// Whether to send credentials along with the XHR.
+  ///
+  /// This may be required for proxying or wherever the server
+  /// needs to otherwise inspect client cookies for that domain.
   final bool withCredentials;
   // TODO(mightyvoice): add a list of extra QueryParameter for gRPC.
 

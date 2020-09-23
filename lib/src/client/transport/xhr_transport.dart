@@ -107,8 +107,7 @@ class XhrTransportStream implements GrpcTransportStream {
   }
 
   bool _checkContentType(String contentType) {
-    return _validContentTypePrefix
-        .any((value) => contentType.startsWith(value));
+    return _validContentTypePrefix.any(contentType.startsWith);
   }
 
   _onHeadersReceived() {
@@ -186,13 +185,14 @@ class XhrClientConnection extends ClientConnection {
       metadata['X-Grpc-Web'] = '1';
     }
 
+    var requestUri = uri.resolve(path);
     if (callOptions is WebCallOptions &&
         callOptions.bypassCorsPreflight == true) {
-      path = cors.bypassCorsPreflight(metadata, path);
+      requestUri = cors.moveHttpHeadersToQueryParam(metadata, requestUri);
     }
 
     final HttpRequest request = createHttpRequest();
-    request.open('POST', uri.resolve(path).toString());
+    request.open('POST', requestUri.toString());
     if (callOptions is WebCallOptions && callOptions.withCredentials == true) {
       request.withCredentials = true;
     }

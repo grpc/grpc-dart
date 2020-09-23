@@ -1,8 +1,6 @@
 ## 2.4.0
 
-* Add the ability to bypass CORS preflight requests. This matches the JS implementation
-  of gRPC-web, assuming a proxy server (gRPC-web suggests [Envoy](https://www.envoyproxy.io/)).
-  For information regarding how to configure, see the [JS gRPC-web guide](https://github.com/grpc/grpc-web#quick-start).
+* Add the ability to bypass CORS preflight requests.
 
 ## 2.3.0
 

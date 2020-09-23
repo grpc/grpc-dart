@@ -14,14 +14,12 @@
 
 // Provides CORS support for HTTP based RPC requests.
 
-import '../query_parameter.dart';
-
 /// The default URL parameter name to overwrite http headers with a URL param
 /// to avoid CORS preflight.
 ///
 /// This comes from the JS impl details at
 /// https://github.com/whatwg/fetch/issues/210#issue-129531743.
-const _httpHeadersParamName = '\$httpHeaders';
+const _httpHeadersParamName = r'$httpHeaders';
 
 // TODO(mightyvoice): Add the const parameter name for HTTP method if not
 // always use POST for gRPC-web.
@@ -30,47 +28,22 @@ const _httpHeadersParamName = '\$httpHeaders';
 /// not trigger a CORS preflight request and returns the new path with extra
 /// query parameters.
 ///
-/// For more info on exactly what may trigger CORS preflight, see
-/// https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS.
-/// Basically, there are three restrictions:
-///
-/// 1. There are only a few request headers that won't trigger preflight. This
-/// implementation just always appends all of them as a specially formatted
-/// URL param.
-///
-/// 2. 'Content-Type' specifically is restricted to
-/// 'application/x-www-url-form-encoded', 'multipart/form-data', and
-/// 'text/plain'.
-String bypassCorsPreflight(Map<String, String> metadata, String path) {
-  final params = <QueryParameter>[];
-
-  // Writes all request headers into the URL.
-  if (metadata.isNotEmpty) {
-    final headerParam = _generateHttpHeadersOverwriteParam(metadata);
-    params.add(QueryParameter(_httpHeadersParamName, headerParam));
-    metadata.clear();
+/// A proxy server that understands the '$httpHeaders' query parameter
+/// is required for this to work correctly.
+Uri moveHttpHeadersToQueryParam(Map<String, String> metadata, Uri requestUri) {
+  // Nothing to do if there are no headers.
+  if (metadata.isEmpty) {
+    return requestUri;
   }
 
-  final query = QueryParameter.buildQuery(params);
-
-  // Appends the query to current path.
-  if (path.contains('?') && path.contains('=')) {
-    path = '$path&$query';
-  } else {
-    path = '$path?$query';
-  }
-  return path;
+  final paramValue = _generateHttpHeadersOverwriteParam(metadata);
+  metadata.clear();
+  return requestUri.replace(
+      queryParameters: Map.of(requestUri.queryParameters)
+        ..[_httpHeadersParamName] = paramValue);
 }
 
 /// Generates the URL parameter value with custom headers encoded as
 /// HTTP/1.1 headers block.
-String _generateHttpHeadersOverwriteParam(Map<String, String> headers) {
-  final result = StringBuffer();
-  headers.forEach((key, value) {
-    result.write(key);
-    result.write(':');
-    result.write(value);
-    result.write('\r\n');
-  });
-  return result.toString();
-}
+String _generateHttpHeadersOverwriteParam(Map<String, String> headers) =>
+    headers.entries.map((e) => '${e.key}:${e.value}\r\n').join();
