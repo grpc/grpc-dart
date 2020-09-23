@@ -361,10 +361,18 @@ class ClientCall<Q, R> implements Response {
   }
 }
 
+/// Given a string of base64url data, attempt to parse a Status object from it.
+/// Once parsed, it will then map each detail item and attempt to parse it into
+/// its respective GeneratedMessage type, returning the list of parsed detail items
+/// as a `List<GeneratedMessage>`.
+///
+/// Prior to creating the Status object we pad the data to ensure its length is
+/// an even multiple of 4, which is a requirement in Dart when decoding base64url data.
+///
+/// If any errors are thrown during decoding/parsing, it will return an empty list.
 @visibleForTesting
 List<GeneratedMessage> decodeStatusDetails(String data) {
   try {
-    /// Parse each Any type into the correct GeneratedMessage
     final parsedStatus = Status.fromBuffer(
         base64Url.decode(data.padRight((data.length + 3) & ~3, '=')));
     return parsedStatus.details.map(parseErrorDetailsFromAny).toList();
