@@ -81,7 +81,7 @@ void main() {
     verify(connection.latestRequest.responseType = 'text');
   });
 
-test(
+  test(
       'Make request sends correct headers and path if bypassCorsPreflight=true',
       () async {
     final metadata = {'header_1': 'value_1', 'header_2': 'value_2'};
