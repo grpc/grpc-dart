@@ -4,7 +4,7 @@
   of gRPC-web, assuming a proxy server (gRPC-web suggests [Envoy](https://www.envoyproxy.io/)).
   For information regarding how to configure, see the [JS gRPC-web guide](https://github.com/grpc/grpc-web#quick-start).
 
-## 2.4.0
+## 2.3.0
 
 * Revert [PR #287](https://github.com/grpc/grpc-dart/pull/287), which allowed
 using gRPC-web in native environments but also broke streaming.
