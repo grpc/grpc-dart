@@ -102,8 +102,11 @@ void main() {
   test(
       'Make request sends correct headers if call options already have '
       'Content-Type header', () async {
-    final metadata = {'header_1': 'value_1', 'header_2': 'value_2',
-    'Content-Type': 'application/json+protobuf'};
+    final metadata = {
+      'header_1': 'value_1',
+      'header_2': 'value_2',
+      'Content-Type': 'application/json+protobuf'
+    };
     final connection = MockXhrClientConnection();
 
     connection.makeRequest('/path', Duration(seconds: 10), metadata,
@@ -117,7 +120,10 @@ void main() {
   });
 
   test('Content-Type header case insensitivity', () async {
-    final metadata = {'header_1': 'value_1', 'CONTENT-TYPE': 'application/json+protobuf'};
+    final metadata = {
+      'header_1': 'value_1',
+      'CONTENT-TYPE': 'application/json+protobuf'
+    };
     final connection = MockXhrClientConnection();
 
     connection.makeRequest('/path', Duration(seconds: 10), metadata,
@@ -127,12 +133,15 @@ void main() {
       'CONTENT-TYPE': 'application/json+protobuf',
     });
 
-    final lowerMetadata = {'header_1': 'value_1', 'content-type': 'application/json+protobuf'};
+    final lowerMetadata = {
+      'header_1': 'value_1',
+      'content-type': 'application/json+protobuf'
+    };
     connection.makeRequest('/path', Duration(seconds: 10), lowerMetadata,
         (error) => fail(error.toString()));
     expect(lowerMetadata, {
       'header_1': 'value_1',
-      'Content-Type': 'application/json+protobuf',
+      'content-type': 'application/json+protobuf',
     });
   });
 
