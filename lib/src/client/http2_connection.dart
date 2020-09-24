@@ -75,20 +75,33 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   static const _estimatedRoundTripTime = const Duration(milliseconds: 20);
 
-  Future<ClientTransportConnection> connectTransport() async {
+  Future<Socket> _createSocket() async {
     final securityContext = credentials.securityContext;
-    Socket socket = await Socket.connect(host, port);
-    if (securityContext != null) {
-      // Todo(sigurdm): We want to pass supportedProtocols: ['h2']. http://dartbug.com/37950
-      socket = await SecureSocket.secure(socket,
-          // This is not really the host, but the authority to verify the TLC
-          // connection against.
-          //
-          // We don't use `this.authority` here, as that includes the port.
-          host: options.credentials.authority ?? host,
-          context: securityContext,
-          onBadCertificate: _validateBadCertificate);
+    if (securityContext == null) {
+      return Socket.connect(host, port);
+    } else {
+      if (options.credentials.authority == null) {
+        return SecureSocket.connect(host, port,
+            context: securityContext,
+            onBadCertificate: _validateBadCertificate);
+      } else {
+        // Todo(sigurdm): We want to pass supportedProtocols: ['h2']. http://dartbug.com/37950
+        return SecureSocket.secure(await Socket.connect(host, port),
+            // This is not really the host, but the authority to verify the TLC
+            // connection against.
+            //
+            // We don't use `this.authority` here, as that includes the port.
+            host: options.credentials.authority,
+            context: securityContext,
+            onBadCertificate: _validateBadCertificate);
+      }
     }
+  }
+
+  Future<ClientTransportConnection> connectTransport() async {
+    final Socket socket = await _createSocket();
+    // Don't wait for io buffers to fill up before sending requests.
+    socket.setOption(SocketOption.tcpNoDelay, true);
 
     final connection = ClientTransportConnection.viaSocket(socket);
     socket.done.then((_) => _abandonConnection());
@@ -250,9 +263,8 @@ class Http2ClientConnection implements connection.ClientConnection {
     }
     // TODO(jakobr): Log error.
     _cancelTimer();
-    _pendingCalls.forEach((call) => _failCall(call, error));
-    _pendingCalls.clear();
     _setState(ConnectionState.idle);
+    _connect();
   }
 
   void _handleReconnect() {
