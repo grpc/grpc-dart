@@ -7,6 +7,7 @@ import 'package:grpc/src/client/channel.dart' hide ClientChannel;
 import 'package:grpc/src/client/connection.dart';
 import 'package:grpc/src/client/http2_connection.dart';
 import 'package:test/test.dart';
+import 'common.dart';
 
 class TestClient extends Client {
   static final _$stream = ClientMethod<int, int>('/test.TestService/stream',
@@ -45,40 +46,43 @@ class FixedConnectionClientChannel extends ClientChannelBase {
   ClientConnection createConnection() => clientConnection;
 }
 
+void testCase01(InternetAddress address) async {
+  final Server server = Server([TestService()]);
+  await server.serve(address: address, port: 0);
+
+  final channel = FixedConnectionClientChannel(Http2ClientConnection(
+    address,
+    server.port,
+    ChannelOptions(credentials: ChannelCredentials.insecure()),
+  ));
+  final testClient = TestClient(channel);
+  expect(await testClient.stream(1).toList(), [1, 2, 3]);
+  server.shutdown();
+}
+
+void testCase02(InternetAddress address) async {
+  final Server server = Server([TestService()]);
+  await server.serve(
+      address: address,
+      port: 0,
+      security: ServerTlsCredentials(
+          certificate: File('test/data/localhost.crt').readAsBytesSync(),
+          privateKey: File('test/data/localhost.key').readAsBytesSync()));
+
+  final channel = FixedConnectionClientChannel(Http2ClientConnection(
+    address,
+    server.port,
+    ChannelOptions(
+        credentials: ChannelCredentials.secure(
+            certificates: File('test/data/localhost.crt').readAsBytesSync(),
+            authority: 'localhost')),
+  ));
+  final testClient = TestClient(channel);
+  expect(await testClient.stream(1).toList(), [1, 2, 3]);
+  server.shutdown();
+}
+
 main() async {
-  test('round trip insecure connection', () async {
-    final Server server = Server([TestService()]);
-    await server.serve(address: 'localhost', port: 0);
-
-    final channel = FixedConnectionClientChannel(Http2ClientConnection(
-      'localhost',
-      server.port,
-      ChannelOptions(credentials: ChannelCredentials.insecure()),
-    ));
-    final testClient = TestClient(channel);
-    expect(await testClient.stream(1).toList(), [1, 2, 3]);
-    server.shutdown();
-  });
-
-  test('round trip secure connection', () async {
-    final Server server = Server([TestService()]);
-    await server.serve(
-        address: 'localhost',
-        port: 0,
-        security: ServerTlsCredentials(
-            certificate: File('test/data/localhost.crt').readAsBytesSync(),
-            privateKey: File('test/data/localhost.key').readAsBytesSync()));
-
-    final channel = FixedConnectionClientChannel(Http2ClientConnection(
-      'localhost',
-      server.port,
-      ChannelOptions(
-          credentials: ChannelCredentials.secure(
-              certificates: File('test/data/localhost.crt').readAsBytesSync(),
-              authority: 'localhost')),
-    ));
-    final testClient = TestClient(channel);
-    expect(await testClient.stream(1).toList(), [1, 2, 3]);
-    server.shutdown();
-  });
+  testTcpAndUds('round trip insecure connection', 'localhost', testCase01);
+  testTcpAndUds('round trip secure connection', 'localhost', testCase02);
 }

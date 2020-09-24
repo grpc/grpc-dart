@@ -25,7 +25,10 @@ import 'options.dart';
 /// RPCs on the same channel may be sent to different connections, depending on
 /// load balancing settings.
 class ClientChannel extends ClientChannelBase {
-  final String host;
+  /// Starts the [Server] with the given options.
+  ///  [address] can be either a [String] or an [InternetAddress], in the   latter
+  ///  case it can be a Unix Domain Socket address.
+  final Object host;
   final int port;
   final ChannelOptions options;
 
