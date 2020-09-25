@@ -80,6 +80,69 @@ class CallOptions {
   }
 }
 
+/// Runtime options for gRPC-web.
+class WebCallOptions extends CallOptions {
+  /// Whether to eliminate the CORS preflight request.
+  ///
+  /// If set to [true], all HTTP headers will be packed into an '$httpHeaders'
+  /// query parameter, which should downgrade complex CORS requests into
+  /// simple ones. This eliminates an extra roundtrip.
+  ///
+  /// For this to work correctly, a proxy server must be set up that
+  /// understands the query parameter and can unpack/send the original
+  /// list of headers to the server endpoint.
+  final bool bypassCorsPreflight;
+
+  /// Whether to send credentials along with the XHR.
+  ///
+  /// This may be required for proxying or wherever the server
+  /// needs to otherwise inspect client cookies for that domain.
+  final bool withCredentials;
+  // TODO(mightyvoice): add a list of extra QueryParameter for gRPC.
+
+  WebCallOptions._(Map<String, String> metadata, Duration timeout,
+      List<MetadataProvider> metadataProviders,
+      {this.bypassCorsPreflight, this.withCredentials})
+      : super._(metadata, timeout, metadataProviders);
+
+  /// Creates a [WebCallOptions] object.
+  ///
+  /// [WebCallOptions] can specify static [metadata], [timeout],
+  /// metadata [providers] of [CallOptions], [bypassCorsPreflight] and
+  /// [withCredentials] for CORS request.
+  factory WebCallOptions(
+      {Map<String, String> metadata,
+      Duration timeout,
+      List<MetadataProvider> providers,
+      bool bypassCorsPreflight,
+      bool withCredentials}) {
+    return WebCallOptions._(Map.unmodifiable(metadata ?? {}), timeout,
+        List.unmodifiable(providers ?? []),
+        bypassCorsPreflight: bypassCorsPreflight ?? false,
+        withCredentials: withCredentials ?? false);
+  }
+
+  @override
+  CallOptions mergedWith(CallOptions other) {
+    if (other == null) return this;
+    if (other is! WebCallOptions) return super.mergedWith(other);
+
+    final otherOptions = other as WebCallOptions;
+    final mergedBypassCorsPreflight =
+        otherOptions.bypassCorsPreflight ?? bypassCorsPreflight;
+    final mergedWithCredentials =
+        otherOptions.withCredentials ?? withCredentials;
+    final mergedMetadata = Map.from(metadata)..addAll(otherOptions.metadata);
+    final mergedTimeout = otherOptions.timeout ?? timeout;
+    final mergedProviders = List.from(metadataProviders)
+      ..addAll(otherOptions.metadataProviders);
+    return WebCallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
+        List.unmodifiable(mergedProviders),
+        bypassCorsPreflight: mergedBypassCorsPreflight,
+        withCredentials: mergedWithCredentials);
+  }
+}
+
 /// An active call to a gRPC endpoint.
 class ClientCall<Q, R> implements Response {
   final ClientMethod<Q, R> _method;

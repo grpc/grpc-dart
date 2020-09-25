@@ -16,7 +16,8 @@
 export 'src/auth/auth.dart'
     show HttpBasedAuthenticator, JwtServiceAccountAuthenticator;
 
-export 'src/client/call.dart' show MetadataProvider, CallOptions;
+export 'src/client/call.dart'
+    show MetadataProvider, CallOptions, WebCallOptions;
 
 export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
 
