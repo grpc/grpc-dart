@@ -1,3 +1,7 @@
+## 2.4.0
+
+* Add the ability to bypass CORS preflight requests.
+
 ## 2.3.0
 
 * Revert [PR #287](https://github.com/grpc/grpc-dart/pull/287), which allowed
