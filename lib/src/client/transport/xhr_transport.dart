@@ -68,8 +68,10 @@ class XhrTransportStream implements GrpcTransportStream {
           break;
         case HttpRequest.DONE:
           if (_request.status != 200) {
-            _onError(GrpcError.unavailable(
-                'XhrConnection status ${_request.status}'));
+            _onError(
+                GrpcError.unavailable(
+                    'XhrConnection status ${_request.status}'),
+                StackTrace.current);
           } else {
             _close();
           }
@@ -81,7 +83,8 @@ class XhrTransportStream implements GrpcTransportStream {
       if (_incomingMessages.isClosed) {
         return;
       }
-      _onError(GrpcError.unavailable('XhrConnection connection-error'));
+      _onError(GrpcError.unavailable('XhrConnection connection-error'),
+          StackTrace.current);
       terminate();
     });
 
@@ -113,21 +116,24 @@ class XhrTransportStream implements GrpcTransportStream {
   _onHeadersReceived() {
     final contentType = _request.getResponseHeader(_contentTypeKey);
     if (_request.status != 200) {
-      _onError(
-          GrpcError.unavailable('XhrConnection status ${_request.status}'));
+      _onError(GrpcError.unavailable('XhrConnection status ${_request.status}'),
+          StackTrace.current);
       return;
     }
     if (contentType == null) {
-      _onError(GrpcError.unavailable('XhrConnection missing Content-Type'));
+      _onError(GrpcError.unavailable('XhrConnection missing Content-Type'),
+          StackTrace.current);
       return;
     }
     if (!_checkContentType(contentType)) {
       _onError(
-          GrpcError.unavailable('XhrConnection bad Content-Type $contentType'));
+          GrpcError.unavailable('XhrConnection bad Content-Type $contentType'),
+          StackTrace.current);
       return;
     }
     if (_request.response == null) {
-      _onError(GrpcError.unavailable('XhrConnection request null response'));
+      _onError(GrpcError.unavailable('XhrConnection request null response'),
+          StackTrace.current);
       return;
     }
 

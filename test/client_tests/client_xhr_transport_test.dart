@@ -69,7 +69,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     connection.makeRequest('path', Duration(seconds: 10), metadata,
-        (error) => fail(error.toString()));
+        (error, _) => fail(error.toString()));
 
     verify(connection.latestRequest
         .setRequestHeader('Content-Type', 'application/grpc-web+proto'));
@@ -88,7 +88,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     connection.makeRequest('path', Duration(seconds: 10), metadata,
-        (error) => fail(error.toString()),
+        (error, _) => fail(error.toString()),
         callOptions: WebCallOptions(bypassCorsPreflight: true));
 
     expect(metadata, isEmpty);
@@ -110,7 +110,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     connection.makeRequest('/path', Duration(seconds: 10), metadata,
-        (error) => fail(error.toString()));
+        (error, _) => fail(error.toString()));
 
     expect(metadata, {
       'header_1': 'value_1',
@@ -127,7 +127,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     connection.makeRequest('/path', Duration(seconds: 10), metadata,
-        (error) => fail(error.toString()));
+        (error, _) => fail(error.toString()));
     expect(metadata, {
       'header_1': 'value_1',
       'CONTENT-TYPE': 'application/json+protobuf',
@@ -138,7 +138,7 @@ void main() {
       'content-type': 'application/json+protobuf'
     };
     connection.makeRequest('/path', Duration(seconds: 10), lowerMetadata,
-        (error) => fail(error.toString()));
+        (error, _) => fail(error.toString()));
     expect(lowerMetadata, {
       'header_1': 'value_1',
       'content-type': 'application/json+protobuf',
@@ -151,7 +151,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     connection.makeRequest('path', Duration(seconds: 10), metadata,
-        (error) => fail(error.toString()),
+        (error, _) => fail(error.toString()),
         callOptions: WebCallOptions(withCredentials: true));
 
     expect(metadata, {
@@ -182,7 +182,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('path', Duration(seconds: 10),
-        metadata, (error) => fail(error.toString()));
+        metadata, (error, _) => fail(error.toString()));
 
     final data = List.filled(10, 0);
     stream.outgoingMessages.add(data);
@@ -202,7 +202,7 @@ void main() {
     final transport = MockXhrClientConnection();
 
     final stream = transport.makeRequest('test_path', Duration(seconds: 10),
-        metadata, (error) => fail(error.toString()));
+        metadata, (error, _) => fail(error.toString()));
 
     stream.incomingMessages.listen((message) {
       expect(message, TypeMatcher<GrpcMetadata>());
@@ -223,7 +223,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        {}, (error) => fail(error.toString()));
+        {}, (error, _) => fail(error.toString()));
 
     final encodedTrailers = frame(trailers.entries
         .map((e) => '${e.key}:${e.value}')
@@ -254,7 +254,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        {}, (error) => fail(error.toString()));
+        {}, (error, _) => fail(error.toString()));
 
     final encoded = frame(''.codeUnits);
     encoded[0] = 0x80; // Mark this frame as trailers.
@@ -285,7 +285,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        metadata, (error) => fail(error.toString()));
+        metadata, (error, _) => fail(error.toString()));
     final data = List<int>.filled(10, 224);
     final encoded = frame(data);
     final encodedString = String.fromCharCodes(encoded);
@@ -315,7 +315,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        metadata, (error) => fail(error.toString()));
+        metadata, (error, _) => fail(error.toString()));
 
     final data = <List<int>>[
       List<int>.filled(10, 224),

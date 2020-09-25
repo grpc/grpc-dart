@@ -266,8 +266,8 @@ class ClientCall<Q, R> implements Response {
   }
 
   /// Emit an error response to the user, and tear down this call.
-  void _responseError(GrpcError error) {
-    _responses.addError(error);
+  void _responseError(GrpcError error, [StackTrace stackTrace]) {
+    _responses.addError(error, stackTrace);
     _timeoutTimer?.cancel();
     _requestSubscription?.cancel();
     _responseSubscription.cancel();
@@ -287,8 +287,12 @@ class ClientCall<Q, R> implements Response {
         _responseError(GrpcError.unimplemented('Received data after trailers'));
         return;
       }
-      _responses.add(_method.responseDeserializer(data.data));
-      _hasReceivedResponses = true;
+      try {
+        _responses.add(_method.responseDeserializer(data.data));
+        _hasReceivedResponses = true;
+      } catch (e, s) {
+        _responseError(GrpcError.dataLoss('Error parsing response'), s);
+      }
     } else if (data is GrpcMetadata) {
       if (!_headers.isCompleted) {
         // TODO(jakobr): Parse, and extract common headers.
@@ -319,12 +323,12 @@ class ClientCall<Q, R> implements Response {
 
   /// Handler for response errors. Forward the error to the [_responses] stream,
   /// wrapped if necessary.
-  void _onResponseError(error) {
+  void _onResponseError(error, StackTrace stackTrace) {
     if (error is GrpcError) {
-      _responseError(error);
+      _responseError(error, stackTrace);
       return;
     }
-    _responseError(GrpcError.unknown(error.toString()));
+    _responseError(GrpcError.unknown(error.toString()), stackTrace);
   }
 
   /// Handles closure of the response stream. Verifies that server has sent
@@ -362,12 +366,12 @@ class ClientCall<Q, R> implements Response {
   /// Error handler for the requests stream. Something went wrong while trying
   /// to send the request to the server. Abort the request, and forward the
   /// error to the user code on the [_responses] stream.
-  void _onRequestError(error, [StackTrace stackTrace]) {
+  void _onRequestError(error, StackTrace stackTrace) {
     if (error is! GrpcError) {
       error = GrpcError.unknown(error.toString());
     }
 
-    _responses.addError(error);
+    _responses.addError(error, stackTrace);
     _timeoutTimer?.cancel();
     _responses.close();
     _requestSubscription?.cancel();
