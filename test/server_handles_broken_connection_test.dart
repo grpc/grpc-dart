@@ -70,26 +70,28 @@ void client(clientData) async {
 }
 
 void testCase01(InternetAddress address) async {
-    grpc.Server server;
-    server = grpc.Server([
-      TestService(
-          finallyCallback: expectAsync0(() {
-        server.shutdown();
-      }, reason: 'the producer should get cancelled'))
-    ]);
-    await server.serve(address: address, port: 0);
-    final receivePort = ReceivePort();
-    Isolate.spawn(
-        client,
-        ClientData(
-            address: address,
-            port: server.port,
-            sendPort: receivePort.sendPort));
-    receivePort.listen(expectAsync1((e) {
-      expect(e, isA<grpc.GrpcError>());
-    }, reason: 'the client should send an error from the destroyed channel'));
+  grpc.Server server;
+  server = grpc.Server([
+    TestService(
+        finallyCallback: expectAsync0(() {
+      expect(server.shutdown(), completes);
+    }, reason: 'the producer should get cancelled'))
+  ]);
+  await server.serve(address: address, port: 0);
+  final receivePort = ReceivePort();
+  Isolate.spawn(
+      client,
+      ClientData(
+          address: address, port: server.port, sendPort: receivePort.sendPort));
+  receivePort.listen(expectAsync1((e) {
+    expect(e, isA<grpc.GrpcError>());
+    receivePort.close();
+  }, reason: 'the client should send an error from the destroyed channel'));
 }
 
 main() async {
-  testTcpAndUds("the client interrupting the connection does not crash the server", 'localhost', testCase01);
+  testTcpAndUds(
+      "the client interrupting the connection does not crash the server",
+      'localhost',
+      testCase01);
 }

@@ -17,8 +17,8 @@ import 'dart:async';
 import 'package:test/test.dart';
 
 /// Test functionality for both TCP and Unix domain sockets.
-void testTcpAndUds(
-    String name, String host, FutureOr<void> Function(InternetAddress) testCase) {
+void testTcpAndUds(String name, String host,
+    FutureOr<void> Function(InternetAddress) testCase) {
   test(name, () async {
     final address = await InternetAddress.lookup(host);
     await testCase(address.first);
@@ -32,10 +32,7 @@ void testTcpAndUds(
     final tempDir = await Directory.systemTemp.createTemp();
     final address = InternetAddress(tempDir.path + '/socket',
         type: InternetAddressType.unix);
-    try {
-      await testCase(address);
-    } finally {
-      await tempDir.delete(recursive: true);
-    }
+    addTearDown(() => tempDir.delete(recursive: true));
+    await testCase(address);
   });
 }
