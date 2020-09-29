@@ -208,8 +208,9 @@ class ClientHarness {
     try {
       await future;
       fail('Did not throw');
-    } catch (e) {
+    } catch (e, st) {
       expect(e, exception);
+      expect(st, isNot(equals(StackTrace.current)));
     }
   }
 
