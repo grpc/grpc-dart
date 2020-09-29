@@ -159,12 +159,10 @@ class Server {
         handler?.cancel();
         _connections.remove(connection);
       });
-    }, onError: (error) {
-      _printSocketError(error);
-    });
+    }, onError: _printSocketError);
   }
 
-  void _printSocketError(String error) {
+  void _printSocketError(Object error) {
     print('Socket error: $error');
   }
 
