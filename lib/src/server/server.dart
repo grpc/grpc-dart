@@ -146,8 +146,8 @@ class Server extends ConnectionServer {
   Service lookupService(String service) => _services[service];
 
   /// Starts the [Server] with the given options.
-  ///  [address] can be either a [String] or an [InternetAddress], in the   latter
-  ///  case it can be a Unix Domain Socket address.
+  /// [address] can be either a [String] or an [InternetAddress], in the latter
+  /// case it can be a Unix Domain Socket address.
   Future<void> serve(
       {dynamic address,
       int port,

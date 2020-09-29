@@ -26,8 +26,8 @@ import 'options.dart';
 /// load balancing settings.
 class ClientChannel extends ClientChannelBase {
   /// Starts the [Server] with the given options.
-  ///  [address] can be either a [String] or an [InternetAddress], in the   latter
-  ///  case it can be a Unix Domain Socket address.
+  /// [address] can be either a [String] or an [InternetAddress], in the latter
+  /// case it can be a Unix Domain Socket address.
   final Object host;
   final int port;
   final ChannelOptions options;

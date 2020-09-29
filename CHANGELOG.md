@@ -1,7 +1,12 @@
+## 2.7.0-dev
+
+* Change minimum required Dart SDK to 2.8 to enable access to Unix domain sockets.
+* Add support for Unix domain sockets in `Socket.serve` and `ClientChannel`.
+
 ## 2.6.0
 
 * Create gRPC servers and clients with [Server|Client]TransportConnnection.
-  This allows callers to propvide their own transport configuration, such
+  This allows callers to provide their own transport configuration, such
   as their own implementation of streams and sinks instead of sockets.
 
 ## 2.5.0

@@ -16,7 +16,6 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
-import 'dart:io';
 
 import 'package:http2/transport.dart';
 
