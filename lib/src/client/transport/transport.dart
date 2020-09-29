@@ -19,7 +19,7 @@ import '../../shared/message.dart';
 
 typedef void SocketClosedHandler();
 typedef void ActiveStateHandler(bool isActive);
-typedef void ErrorHandler(error);
+typedef void ErrorHandler(error, StackTrace stackTrace);
 
 abstract class GrpcTransportStream {
   Stream<GrpcMessage> get incomingMessages;

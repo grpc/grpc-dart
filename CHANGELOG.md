@@ -1,3 +1,8 @@
+## 2.4.1
+
+* Plumb stacktraces through request / response stream error handlers.
+* Catch and forward any errors decoding the response.
+
 ## 2.4.0
 
 * Add the ability to bypass CORS preflight requests.

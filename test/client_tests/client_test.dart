@@ -290,6 +290,27 @@ void main() {
     );
   });
 
+  test('Call throws if unable to decode response', () async {
+    const responseValue = 19;
+
+    void handleRequest(StreamMessage message) {
+      harness
+        ..sendResponseHeader()
+        ..sendResponseValue(responseValue)
+        ..sendResponseTrailer();
+    }
+
+    harness.client = TestClient(harness.channel, decode: (bytes) {
+      throw "error decoding";
+    });
+
+    await harness.runFailureTest(
+      clientCall: harness.client.unary(dummyValue),
+      expectedException: GrpcError.dataLoss('Error parsing response'),
+      serverHandlers: [handleRequest],
+    );
+  });
+
   test('Call forwards known response stream errors', () async {
     final expectedException = GrpcError.dataLoss('Oops!');
 
