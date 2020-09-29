@@ -120,12 +120,8 @@ class Server {
     final securityContext = security?.securityContext;
     if (securityContext != null) {
       _secureServer = await SecureServerSocket.bind(
-          address ?? InternetAddress.anyIPv4,
-          port ?? 443,
-          securityContext,
-          backlog: backlog,
-          shared: shared,
-          v6Only: v6Only);
+          address ?? InternetAddress.anyIPv4, port ?? 443, securityContext,
+          backlog: backlog, shared: shared, v6Only: v6Only);
       server = _secureServer;
     } else {
       _insecureServer = await ServerSocket.bind(
