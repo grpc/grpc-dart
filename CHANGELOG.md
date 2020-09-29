@@ -1,3 +1,8 @@
+## 2.5.0
+
+* Expose a `validateClient` method for server credentials so gRPC server
+  users may know when clients are loopback addresses.
+
 ## 2.4.1
 
 * Plumb stacktraces through request / response stream error handlers.

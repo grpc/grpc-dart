@@ -43,7 +43,8 @@ export 'src/client/transport/http2_credentials.dart'
 
 export 'src/server/call.dart' show ServiceCall;
 export 'src/server/interceptor.dart' show Interceptor;
-export 'src/server/server.dart' show ServerTlsCredentials, Server;
+export 'src/server/server.dart' show ServerCredentials,
+        ServerLocalCredentials, ServerTlsCredentials, Server;
 export 'src/server/service.dart' show ServiceMethod, Service;
 
 export 'src/shared/message.dart'
