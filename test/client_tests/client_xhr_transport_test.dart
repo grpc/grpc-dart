@@ -18,6 +18,7 @@ import 'dart:async';
 
 import 'dart:html';
 
+import 'package:grpc/src/client/call.dart';
 import 'package:grpc/src/client/transport/xhr_transport.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:mockito/mockito.dart';
@@ -68,13 +69,105 @@ void main() {
     final connection = MockXhrClientConnection();
 
     connection.makeRequest('path', Duration(seconds: 10), metadata,
-        (error) => fail(error.toString()));
+        (error, _) => fail(error.toString()));
 
     verify(connection.latestRequest
         .setRequestHeader('Content-Type', 'application/grpc-web+proto'));
     verify(connection.latestRequest
         .setRequestHeader('X-User-Agent', 'grpc-web-dart/0.1'));
     verify(connection.latestRequest.setRequestHeader('X-Grpc-Web', '1'));
+    verify(connection.latestRequest
+        .overrideMimeType('text/plain; charset=x-user-defined'));
+    verify(connection.latestRequest.responseType = 'text');
+  });
+
+  test(
+      'Make request sends correct headers and path if bypassCorsPreflight=true',
+      () async {
+    final metadata = {'header_1': 'value_1', 'header_2': 'value_2'};
+    final connection = MockXhrClientConnection();
+
+    connection.makeRequest('path', Duration(seconds: 10), metadata,
+        (error, _) => fail(error.toString()),
+        callOptions: WebCallOptions(bypassCorsPreflight: true));
+
+    expect(metadata, isEmpty);
+    verify(connection.latestRequest.open('POST',
+        'test:path?%24httpHeaders=header_1%3Avalue_1%0D%0Aheader_2%3Avalue_2%0D%0AContent-Type%3Aapplication%2Fgrpc-web%2Bproto%0D%0AX-User-Agent%3Agrpc-web-dart%2F0.1%0D%0AX-Grpc-Web%3A1%0D%0A'));
+    verify(connection.latestRequest
+        .overrideMimeType('text/plain; charset=x-user-defined'));
+    verify(connection.latestRequest.responseType = 'text');
+  });
+
+  test(
+      'Make request sends correct headers if call options already have '
+      'Content-Type header', () async {
+    final metadata = {
+      'header_1': 'value_1',
+      'header_2': 'value_2',
+      'Content-Type': 'application/json+protobuf'
+    };
+    final connection = MockXhrClientConnection();
+
+    connection.makeRequest('/path', Duration(seconds: 10), metadata,
+        (error, _) => fail(error.toString()));
+
+    expect(metadata, {
+      'header_1': 'value_1',
+      'header_2': 'value_2',
+      'Content-Type': 'application/json+protobuf',
+    });
+  });
+
+  test('Content-Type header case insensitivity', () async {
+    final metadata = {
+      'header_1': 'value_1',
+      'CONTENT-TYPE': 'application/json+protobuf'
+    };
+    final connection = MockXhrClientConnection();
+
+    connection.makeRequest('/path', Duration(seconds: 10), metadata,
+        (error, _) => fail(error.toString()));
+    expect(metadata, {
+      'header_1': 'value_1',
+      'CONTENT-TYPE': 'application/json+protobuf',
+    });
+
+    final lowerMetadata = {
+      'header_1': 'value_1',
+      'content-type': 'application/json+protobuf'
+    };
+    connection.makeRequest('/path', Duration(seconds: 10), lowerMetadata,
+        (error, _) => fail(error.toString()));
+    expect(lowerMetadata, {
+      'header_1': 'value_1',
+      'content-type': 'application/json+protobuf',
+    });
+  });
+
+  test('Make request sends correct headers path if only withCredentials=true',
+      () async {
+    final metadata = {'header_1': 'value_1', 'header_2': 'value_2'};
+    final connection = MockXhrClientConnection();
+
+    connection.makeRequest('path', Duration(seconds: 10), metadata,
+        (error, _) => fail(error.toString()),
+        callOptions: WebCallOptions(withCredentials: true));
+
+    expect(metadata, {
+      'header_1': 'value_1',
+      'header_2': 'value_2',
+      'Content-Type': 'application/grpc-web+proto',
+      'X-User-Agent': 'grpc-web-dart/0.1',
+      'X-Grpc-Web': '1'
+    });
+    verify(connection.latestRequest
+        .setRequestHeader('Content-Type', 'application/grpc-web+proto'));
+    verify(connection.latestRequest
+        .setRequestHeader('X-User-Agent', 'grpc-web-dart/0.1'));
+    verify(connection.latestRequest.setRequestHeader('X-Grpc-Web', '1'));
+    verify(connection.latestRequest.open('POST', 'test:path'));
+    verify(connection.latestRequest.withCredentials = true);
     verify(connection.latestRequest
         .overrideMimeType('text/plain; charset=x-user-defined'));
     verify(connection.latestRequest.responseType = 'text');
@@ -89,7 +182,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('path', Duration(seconds: 10),
-        metadata, (error) => fail(error.toString()));
+        metadata, (error, _) => fail(error.toString()));
 
     final data = List.filled(10, 0);
     stream.outgoingMessages.add(data);
@@ -109,7 +202,7 @@ void main() {
     final transport = MockXhrClientConnection();
 
     final stream = transport.makeRequest('test_path', Duration(seconds: 10),
-        metadata, (error) => fail(error.toString()));
+        metadata, (error, _) => fail(error.toString()));
 
     stream.incomingMessages.listen((message) {
       expect(message, TypeMatcher<GrpcMetadata>());
@@ -130,7 +223,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        {}, (error) => fail(error.toString()));
+        {}, (error, _) => fail(error.toString()));
 
     final encodedTrailers = frame(trailers.entries
         .map((e) => '${e.key}:${e.value}')
@@ -161,7 +254,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        {}, (error) => fail(error.toString()));
+        {}, (error, _) => fail(error.toString()));
 
     final encoded = frame(''.codeUnits);
     encoded[0] = 0x80; // Mark this frame as trailers.
@@ -192,7 +285,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        metadata, (error) => fail(error.toString()));
+        metadata, (error, _) => fail(error.toString()));
     final data = List<int>.filled(10, 224);
     final encoded = frame(data);
     final encodedString = String.fromCharCodes(encoded);
@@ -222,7 +315,7 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        metadata, (error) => fail(error.toString()));
+        metadata, (error, _) => fail(error.toString()));
 
     final data = <List<int>>[
       List<int>.filled(10, 224),

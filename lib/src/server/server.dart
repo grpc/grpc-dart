@@ -25,7 +25,27 @@ import 'handler.dart';
 import 'interceptor.dart';
 import 'service.dart';
 
-class ServerTlsCredentials {
+/// Wrapper around grpc_server_credentials, a way to authenticate a server.
+abstract class ServerCredentials {
+  /// Validates incoming connection. Returns [true] if connection is
+  /// allowed to proceed.
+  bool validateClient(Socket socket) => true;
+
+  /// Creates [SecurityContext] from these credentials if possible.
+  /// Otherwise returns [null].
+  SecurityContext get securityContext;
+}
+
+/// Set of credentials that only allows local TCP connections.
+class ServerLocalCredentials extends ServerCredentials {
+  @override
+  bool validateClient(Socket socket) => socket.remoteAddress.isLoopback;
+
+  @override
+  SecurityContext get securityContext => null;
+}
+
+class ServerTlsCredentials extends ServerCredentials {
   final List<int> certificate;
   final String certificatePassword;
   final List<int> privateKey;
@@ -52,6 +72,9 @@ class ServerTlsCredentials {
     }
     return context;
   }
+
+  @override
+  bool validateClient(Socket socket) => true;
 }
 
 /// A gRPC server.
@@ -87,21 +110,18 @@ class Server {
   Future<void> serve(
       {dynamic address,
       int port,
-      ServerTlsCredentials security,
+      ServerCredentials security,
       ServerSettings http2ServerSettings,
       int backlog: 0,
       bool v6Only: false,
       bool shared: false}) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
     Stream<Socket> server;
-    if (security != null) {
+    final securityContext = security?.securityContext;
+    if (securityContext != null) {
       _secureServer = await SecureServerSocket.bind(
-          address ?? InternetAddress.anyIPv4,
-          port ?? 443,
-          security.securityContext,
-          backlog: backlog,
-          shared: shared,
-          v6Only: v6Only);
+          address ?? InternetAddress.anyIPv4, port ?? 443, securityContext,
+          backlog: backlog, shared: shared, v6Only: v6Only);
       server = _secureServer;
     } else {
       _insecureServer = await ServerSocket.bind(
@@ -119,6 +139,11 @@ class Server {
       final connection = ServerTransportConnection.viaSocket(socket,
           settings: http2ServerSettings);
       _connections.add(connection);
+      if (security != null && !security.validateClient(socket)) {
+        _printSocketError(
+            'cannot serve $address:$port - unable to validate client socket');
+        return socket.close();
+      }
       ServerHandler_ handler;
       // TODO(jakobr): Set active state handlers, close connection after idle
       // timeout.
@@ -134,9 +159,11 @@ class Server {
         handler?.cancel();
         _connections.remove(connection);
       });
-    }, onError: (error) {
-      print('Socket error: $error');
-    });
+    }, onError: _printSocketError);
+  }
+
+  void _printSocketError(Object error) {
+    print('Socket error: $error');
   }
 
   @visibleForTesting
