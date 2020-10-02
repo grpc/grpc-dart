@@ -263,8 +263,9 @@ class Http2ClientConnection implements connection.ClientConnection {
     }
     // TODO(jakobr): Log error.
     _cancelTimer();
+    _pendingCalls.forEach((call) => _failCall(call, error));
+    _pendingCalls.clear();
     _setState(ConnectionState.idle);
-    _connect();
   }
 
   void _handleReconnect() {
