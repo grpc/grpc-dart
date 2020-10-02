@@ -178,7 +178,8 @@ class Http2ClientConnection implements connection.ClientConnection {
   }
 
   GrpcTransportStream makeRequest(String path, Duration timeout,
-      Map<String, String> metadata, ErrorHandler onRequestFailure) {
+      Map<String, String> metadata, ErrorHandler onRequestFailure,
+      {CallOptions callOptions}) {
     final headers = createCallHeaders(
         credentials.isSecure, authority, path, timeout, metadata,
         userAgent: options.userAgent);

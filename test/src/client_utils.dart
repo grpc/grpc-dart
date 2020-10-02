@@ -69,17 +69,24 @@ class FakeChannel extends ClientChannel {
 typedef ServerMessageHandler = void Function(StreamMessage message);
 
 class TestClient extends Client {
-  static final _$unary =
-      ClientMethod<int, int>('/Test/Unary', mockEncode, mockDecode);
-  static final _$clientStreaming =
-      ClientMethod<int, int>('/Test/ClientStreaming', mockEncode, mockDecode);
-  static final _$serverStreaming =
-      ClientMethod<int, int>('/Test/ServerStreaming', mockEncode, mockDecode);
-  static final _$bidirectional =
-      ClientMethod<int, int>('/Test/Bidirectional', mockEncode, mockDecode);
+  ClientMethod<int, int> _$unary;
+  ClientMethod<int, int> _$clientStreaming;
+  ClientMethod<int, int> _$serverStreaming;
+  ClientMethod<int, int> _$bidirectional;
 
-  TestClient(ClientChannel channel, {CallOptions options})
-      : super(channel, options: options);
+  final int Function(List<int> value) decode;
+
+  TestClient(ClientChannel channel,
+      {CallOptions options, this.decode: mockDecode})
+      : super(channel, options: options) {
+    _$unary = ClientMethod<int, int>('/Test/Unary', mockEncode, decode);
+    _$clientStreaming =
+        ClientMethod<int, int>('/Test/ClientStreaming', mockEncode, decode);
+    _$serverStreaming =
+        ClientMethod<int, int>('/Test/ServerStreaming', mockEncode, decode);
+    _$bidirectional =
+        ClientMethod<int, int>('/Test/Bidirectional', mockEncode, decode);
+  }
 
   ResponseFuture<int> unary(int request, {CallOptions options}) {
     final call =
@@ -201,8 +208,9 @@ class ClientHarness {
     try {
       await future;
       fail('Did not throw');
-    } catch (e) {
+    } catch (e, st) {
       expect(e, exception);
+      expect(st, isNot(equals(StackTrace.current)));
     }
   }
 

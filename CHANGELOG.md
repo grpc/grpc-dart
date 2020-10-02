@@ -1,3 +1,17 @@
+## 2.5.0
+
+* Expose a `validateClient` method for server credentials so gRPC server
+  users may know when clients are loopback addresses.
+
+## 2.4.1
+
+* Plumb stacktraces through request / response stream error handlers.
+* Catch and forward any errors decoding the response.
+
+## 2.4.0
+
+* Add the ability to bypass CORS preflight requests.
+
 ## 2.3.0
 
 * Revert [PR #287](https://github.com/grpc/grpc-dart/pull/287), which allowed
