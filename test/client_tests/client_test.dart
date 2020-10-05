@@ -368,6 +368,24 @@ void main() {
     );
   }
 
+  test('Connection errors are reported', () async {
+    final connectionStates = <ConnectionState>[];
+    harness.connection.connectionError = 'Connection error';
+    harness.connection.onStateChanged = (connection) {
+      final state = connection.state;
+      connectionStates.add(state);
+    };
+
+    final expectedException =
+        GrpcError.unavailable('Error connecting: Connection error');
+
+    await harness.expectThrows(
+        harness.client.unary(dummyValue), expectedException);
+
+    expect(
+        connectionStates, [ConnectionState.connecting, ConnectionState.idle]);
+  });
+
   test('Connections time out if idle', () async {
     final done = Completer();
     final connectionStates = <ConnectionState>[];
