@@ -25,19 +25,15 @@ import 'method.dart';
 class Client {
   final ClientChannel _channel;
   final CallOptions _options;
-  final List<ClientUnaryInterceptor> _unaryInterceptors;
-  final List<ClientStreamingInterceptor> _streamingInterceptors;
+  final List<ClientInterceptor> _interceptors;
 
+  /// Interceptors will be applied in direct order before making a request.
   Client(this._channel,
-      {CallOptions options,
-      Iterable<ClientUnaryInterceptor> unaryInterceptors,
-      Iterable<ClientStreamingInterceptor> streamingInterceptors})
+      {CallOptions options, Iterable<ClientInterceptor> interceptors})
       : _options = options ?? CallOptions(),
-        _unaryInterceptors =
-            List.unmodifiable(unaryInterceptors ?? Iterable.empty()),
-        _streamingInterceptors =
-            List.unmodifiable(streamingInterceptors ?? Iterable.empty());
+        _interceptors = List.unmodifiable(interceptors ?? Iterable.empty());
 
+  @Deprecated('createCall will be removed as it does not support interceptors')
   ClientCall<Q, R> $createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests,
       {CallOptions options}) {
@@ -46,14 +42,14 @@ class Client {
 
   ResponseFuture<R> $createUnaryCall<Q, R>(ClientMethod<Q, R> method, Q request,
       {CallOptions options}) {
-    ClientUnaryInvoker invoker = (method, request, options) =>
+    ClientUnaryInvoker<Q, R> invoker = (method, request, options) =>
         ResponseFuture<R>(
             _channel.createCall<Q, R>(method, Stream.value(request), options));
 
-    for (final interceptor in _unaryInterceptors.reversed) {
+    for (final interceptor in _interceptors.reversed) {
       final delegate = invoker;
       invoker = (method, request, options) =>
-          interceptor.interceptUnary(method, request, options, delegate);
+          interceptor.interceptUnary<Q, R>(method, request, options, delegate);
     }
 
     return invoker(method, request, _options.mergedWith(options));
@@ -62,13 +58,13 @@ class Client {
   ResponseStream<R> $createStreamingCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests,
       {CallOptions options}) {
-    ClientStreamingInvoker invoker = (method, request, options) =>
+    ClientStreamingInvoker<Q, R> invoker = (method, request, options) =>
         ResponseStream<R>(_channel.createCall<Q, R>(method, requests, options));
 
-    for (final interceptor in _streamingInterceptors.reversed) {
+    for (final interceptor in _interceptors.reversed) {
       final delegate = invoker;
-      invoker = (method, requests, options) =>
-          interceptor.interceptStreaming(method, requests, options, delegate);
+      invoker = (method, requests, options) => interceptor
+          .interceptStreaming<Q, R>(method, requests, options, delegate);
     }
 
     return invoker(method, requests, _options.mergedWith(options));

@@ -35,11 +35,7 @@ export 'src/client/http2_channel.dart'
     show ClientChannel, ClientTransportConnectorChannel;
 
 export 'src/client/interceptor.dart'
-    show
-        ClientUnaryInterceptor,
-        ClientStreamingInterceptor,
-        ClientUnaryInvoker,
-        ClientStreamingInvoker;
+    show ClientInterceptor, ClientUnaryInvoker, ClientStreamingInvoker;
 
 export 'src/client/method.dart' show ClientMethod;
 export 'src/client/options.dart'

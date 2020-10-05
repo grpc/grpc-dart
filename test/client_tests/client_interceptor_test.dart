@@ -18,8 +18,7 @@ class InterceptorInvocation {
   }
 }
 
-class FakeInterceptor
-    implements ClientUnaryInterceptor, ClientStreamingInterceptor {
+class FakeInterceptor implements ClientInterceptor {
   final int _id;
   int _unary = 0;
   int _streaming = 0;
@@ -29,16 +28,19 @@ class FakeInterceptor
   FakeInterceptor(this._id);
 
   @override
-  ResponseFuture interceptUnary(ClientMethod method, dynamic request,
-      CallOptions options, ClientUnaryInvoker invoker) {
+  ResponseFuture<R> interceptUnary<Q, R>(ClientMethod<Q, R> method, Q request,
+      CallOptions options, ClientUnaryInvoker<Q, R> invoker) {
     _invocations.add(InterceptorInvocation(_id, ++_unary, _streaming));
 
     return invoker(method, request, _inject(options));
   }
 
   @override
-  ResponseStream interceptStreaming(ClientMethod method, Stream requests,
-      CallOptions options, ClientStreamingInvoker invoker) {
+  ResponseStream<R> interceptStreaming<Q, R>(
+      ClientMethod<Q, R> method,
+      Stream<Q> requests,
+      CallOptions options,
+      ClientStreamingInvoker<Q, R> invoker) {
     _invocations.add(InterceptorInvocation(_id, _unary, ++_streaming));
 
     return invoker(method, requests, _inject(options));
@@ -58,7 +60,7 @@ class FakeInterceptor
 main() {
   test('single unary interceptor', () async {
     final harness = ClientHarness()
-      ..unaryInterceptors = [FakeInterceptor(1)]
+      ..interceptors = [FakeInterceptor(1)]
       ..setUp();
 
     const requestValue = 17;
@@ -90,7 +92,7 @@ main() {
 
   test('multiple unary interceptors', () async {
     final harness = ClientHarness()
-      ..unaryInterceptors = [FakeInterceptor(1), FakeInterceptor(2)]
+      ..interceptors = [FakeInterceptor(1), FakeInterceptor(2)]
       ..setUp();
 
     const requestValue = 17;
@@ -123,7 +125,7 @@ main() {
 
   test('single streaming interceptor', () async {
     final harness = ClientHarness()
-      ..streamingInterceptors = [FakeInterceptor(1)]
+      ..interceptors = [FakeInterceptor(1)]
       ..setUp();
 
     const requests = [1, 15, 7];
@@ -164,7 +166,7 @@ main() {
 
   test('multiple streaming interceptors', () async {
     final harness = ClientHarness()
-      ..streamingInterceptors = [FakeInterceptor(1), FakeInterceptor(2)]
+      ..interceptors = [FakeInterceptor(1), FakeInterceptor(2)]
       ..setUp();
 
     const requests = [1, 15, 7];

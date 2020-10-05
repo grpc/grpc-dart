@@ -106,13 +106,9 @@ class TestClient extends Client {
 
   TestClient(base.ClientChannel channel,
       {CallOptions options,
-      Iterable<ClientUnaryInterceptor> unaryInterceptors,
-      Iterable<ClientStreamingInterceptor> streamingInterceptors,
+      Iterable<ClientInterceptor> interceptors,
       this.decode: mockDecode})
-      : super(channel,
-            options: options,
-            unaryInterceptors: unaryInterceptors,
-            streamingInterceptors: streamingInterceptors) {
+      : super(channel, options: options, interceptors: interceptors) {
     _$unary = ClientMethod<int, int>('/Test/Unary', mockEncode, decode);
     _$clientStreaming =
         ClientMethod<int, int>('/Test/ClientStreaming', mockEncode, decode);
@@ -129,7 +125,7 @@ class TestClient extends Client {
   ResponseFuture<int> clientStreaming(Stream<int> request,
       {CallOptions options}) {
     return $createStreamingCall(_$clientStreaming, request, options: options)
-        .toResponseFuture();
+        .single;
   }
 
   ResponseStream<int> serverStreaming(int request, {CallOptions options}) {
@@ -199,8 +195,7 @@ abstract class _Harness {
   StreamController<StreamMessage> fromClient;
   StreamController<StreamMessage> toClient;
 
-  Iterable<ClientUnaryInterceptor> unaryInterceptors;
-  Iterable<ClientStreamingInterceptor> streamingInterceptors;
+  Iterable<ClientInterceptor> interceptors;
 
   TestClient client;
 
@@ -221,9 +216,7 @@ abstract class _Harness {
     when(transport.isOpen).thenReturn(true);
     when(stream.outgoingMessages).thenReturn(fromClient.sink);
     when(stream.incomingMessages).thenAnswer((_) => toClient.stream);
-    client = TestClient(channel,
-        unaryInterceptors: unaryInterceptors,
-        streamingInterceptors: streamingInterceptors);
+    client = TestClient(channel, interceptors: interceptors);
   }
 
   void tearDown() {

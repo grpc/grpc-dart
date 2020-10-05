@@ -1,24 +1,29 @@
-import 'package:grpc/service_api.dart';
-
 import 'call.dart';
+import 'common.dart';
 import 'method.dart';
 
-typedef ClientUnaryInvoker = ResponseFuture Function(
-    ClientMethod method, dynamic request, CallOptions options);
+typedef ClientUnaryInvoker<Q, R> = ResponseFuture<R> Function(
+    ClientMethod method, Q request, CallOptions options);
 
-class ClientUnaryInterceptor {
-  ResponseFuture interceptUnary(ClientMethod method, dynamic request,
-      CallOptions options, ClientUnaryInvoker invoker) {
+typedef ClientStreamingInvoker<Q, R> = ResponseStream<R> Function(
+    ClientMethod method, Stream<Q> requests, CallOptions options);
+
+/// ClientInterceptors intercepts client unary and streaming calls before
+/// they are executed.
+///
+/// Invoker argument either calls next interceptor in the chain or performs
+/// the call if it is last in chain.
+abstract class ClientInterceptor {
+  ResponseFuture<R> interceptUnary<Q, R>(ClientMethod<Q, R> method, Q request,
+      CallOptions options, ClientUnaryInvoker<Q, R> invoker) {
     return invoker(method, request, options);
   }
-}
 
-typedef ClientStreamingInvoker = ResponseStream Function(
-    ClientMethod method, Stream requests, CallOptions options);
-
-class ClientStreamingInterceptor {
-  ResponseStream interceptStreaming(ClientMethod method, Stream requests,
-      CallOptions options, ClientStreamingInvoker invoker) {
+  ResponseStream<R> interceptStreaming<Q, R>(
+      ClientMethod<Q, R> method,
+      Stream<Q> requests,
+      CallOptions options,
+      ClientStreamingInvoker<Q, R> invoker) {
     return invoker(method, requests, options);
   }
 }
