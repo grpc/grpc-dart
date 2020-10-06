@@ -77,6 +77,52 @@ class ServerTlsCredentials extends ServerCredentials {
   bool validateClient(Socket socket) => true;
 }
 
+/// A gRPC server that serves via provided [ServerTransportConnection]s.
+///
+/// Unlike [Server], the caller has the responsibility of configuring and
+/// managing the connection from a client.
+class ConnectionServer {
+  final Map<String, Service> _services = {};
+  final List<Interceptor> _interceptors;
+
+  final _connections = <ServerTransportConnection>[];
+
+  /// Create a server for the given [services].
+  ConnectionServer(List<Service> services,
+      [List<Interceptor> interceptors = const <Interceptor>[]])
+      : _interceptors = interceptors {
+    for (final service in services) {
+      _services[service.$name] = service;
+    }
+  }
+
+  Service lookupService(String service) => _services[service];
+
+  Future<void> serveConnection(ServerTransportConnection connection) async {
+    _connections.add(connection);
+    ServerHandler_ handler;
+    // TODO(jakobr): Set active state handlers, close connection after idle
+    // timeout.
+    connection.incomingStreams.listen((stream) {
+      handler = serveStream_(stream);
+    }, onError: (error) {
+      print('Connection error: $error');
+    }, onDone: () {
+      // TODO(sigurdm): This is not correct behavior in the presence of
+      // half-closed tcp streams.
+      // Half-closed  streams seems to not be fully supported by package:http2.
+      // https://github.com/dart-lang/http2/issues/42
+      handler?.cancel();
+      _connections.remove(connection);
+    });
+  }
+
+  @visibleForTesting
+  ServerHandler_ serveStream_(ServerTransportStream stream) {
+    return ServerHandler_(lookupService, stream, _interceptors)..handle();
+  }
+}
+
 /// A gRPC server.
 ///
 /// Listens for incoming RPCs, dispatching them to the right [Service] handler.
@@ -158,51 +204,5 @@ class Server extends ConnectionServer {
     await Future.wait(done);
     _insecureServer = null;
     _secureServer = null;
-  }
-}
-
-/// A gRPC server that serves via provided [ServerTransportConnection]s.
-///
-/// Unlike [Server], the caller has the responsibility of configuring and
-/// managing the connection from a client.
-class ConnectionServer {
-  final Map<String, Service> _services = {};
-  final List<Interceptor> _interceptors;
-
-  final _connections = <ServerTransportConnection>[];
-
-  /// Create a server for the given [services].
-  ConnectionServer(List<Service> services,
-      [List<Interceptor> interceptors = const <Interceptor>[]])
-      : _interceptors = interceptors {
-    for (final service in services) {
-      _services[service.$name] = service;
-    }
-  }
-
-  Service lookupService(String service) => _services[service];
-
-  Future<void> serveConnection(ServerTransportConnection connection) async {
-    _connections.add(connection);
-    ServerHandler_ handler;
-    // TODO(jakobr): Set active state handlers, close connection after idle
-    // timeout.
-    connection.incomingStreams.listen((stream) {
-      handler = serveStream_(stream);
-    }, onError: (error) {
-      print('Connection error: $error');
-    }, onDone: () {
-      // TODO(sigurdm): This is not correct behavior in the presence of
-      // half-closed tcp streams.
-      // Half-closed  streams seems to not be fully supported by package:http2.
-      // https://github.com/dart-lang/http2/issues/42
-      handler?.cancel();
-      _connections.remove(connection);
-    });
-  }
-
-  @visibleForTesting
-  ServerHandler_ serveStream_(ServerTransportStream stream) {
-    return ServerHandler_(lookupService, stream, _interceptors)..handle();
   }
 }
