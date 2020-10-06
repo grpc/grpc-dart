@@ -14,14 +14,14 @@ typedef ClientStreamingInvoker<Q, R> = ResponseStream<R> Function(
 /// To modify [CallOptions] make a clone using [CallOptions.mergedWith].
 abstract class ClientInterceptor {
   // Intercept unary call.
-  // This method is called when method sends single request and receives single response.
+  // This method is called when client sends single request and receives single response.
   ResponseFuture<R> interceptUnary<Q, R>(ClientMethod<Q, R> method, Q request,
       CallOptions options, ClientUnaryInvoker<Q, R> invoker) {
     return invoker(method, request, options);
   }
 
   // Intercept streaming call.
-  // This method is called when method sends either request or response stream.
+  // This method is called when client sends either request or response stream.
   ResponseStream<R> interceptStreaming<Q, R>(
       ClientMethod<Q, R> method,
       Stream<Q> requests,
