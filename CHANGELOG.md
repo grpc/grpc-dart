@@ -1,3 +1,9 @@
+## 2.6.0
+
+* Create gRPC servers and clients with [Server|Client]TransportConnnection.
+  This allows callers to propvide their own transport configuration, such
+  as their own implementation of streams and sinks instead of sockets.
+
 ## 2.5.0
 
 * Expose a `validateClient` method for server credentials so gRPC server
