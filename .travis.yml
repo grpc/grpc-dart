@@ -7,17 +7,7 @@ addons:
 
 # The Chrome addon does not work on windows
 before_install:
-- |-
-    if [ $TRAVIS_OS_NAME = windows ]; then
-      # Installer is pulled from the official Google build source (which
-      # provides the latest version only) so its hash changes whenever a new
-      # version of Chrome is released, after which Chocolatey package gets
-      # updated (which normally resolves hash mismatch) but currently the
-      # package is stuck in moderation causing installation to fail.
-      # Hardcode checksum of the official installer for now.
-      chksum=43F1E6481A9F537D1591469124AFB9F804C830C6D38AF2820971947469DC2F3A
-      choco install --download-checksum=$chksum googlechrome
-    fi
+  - if [ $TRAVIS_OS_NAME = windows ]; then choco install googlechrome ; fi
 
 # Run against both the dev and stable channel.
 dart:
