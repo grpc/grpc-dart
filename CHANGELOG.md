@@ -1,3 +1,10 @@
+## 2.6.1
+
+* Create Securesocket directly when credentials.authority is not present
+  instead of always creating an insecure socket first and upgrading.
+* Throw on insecure connections when disallowed by clients dealing with
+  socket code.
+
 ## 2.6.0
 
 * Create gRPC servers and clients with [Server|Client]TransportConnnection.
