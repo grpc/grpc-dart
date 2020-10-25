@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'channel.dart';
+import 'client_transport_connector.dart';
 import 'connection.dart';
 import 'http2_connection.dart' show Http2ClientConnection;
 import 'options.dart';
@@ -35,5 +36,19 @@ class ClientChannel extends ClientChannelBase {
   @override
   ClientConnection createConnection() {
     return Http2ClientConnection(host, port, options);
+  }
+}
+
+class ClientTransportConnectorChannel extends ClientChannelBase {
+  final ClientTransportConnector transportConnector;
+  final ChannelOptions options;
+
+  ClientTransportConnectorChannel(this.transportConnector,
+      {this.options = const ChannelOptions()});
+
+  @override
+  ClientConnection createConnection() {
+    return Http2ClientConnection.fromClientTransportConnector(
+        transportConnector, options);
   }
 }
