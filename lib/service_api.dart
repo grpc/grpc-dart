@@ -18,7 +18,7 @@
 /// Mainly intended to be imported by generated code.
 library service_api;
 
-export 'src/client/call.dart' show CallOptions;
+export 'src/client/call.dart' show CallOptions, MetadataProvider;
 export 'src/client/channel.dart' show ClientChannel;
 export 'src/client/client.dart' show Client;
 export 'src/client/common.dart' show ResponseFuture, ResponseStream;

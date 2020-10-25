@@ -1,4 +1,4 @@
-// Copyright (c) 2017, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2020, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,10 +26,10 @@ import '../src/utils.dart';
 void main() {
   const dummyValue = 0;
 
-  ClientHarness harness;
+  ClientTransportConnectorHarness harness;
 
   setUp(() {
-    harness = ClientHarness()..setUp();
+    harness = ClientTransportConnectorHarness()..setUp();
   });
 
   tearDown(() {
@@ -245,27 +245,6 @@ void main() {
       harness.toClient.add(HeadersStreamMessage([
         Header.ascii('grpc-status', '$customStatusCode'),
         Header.ascii('grpc-message', customStatusMessage)
-      ], endStream: true));
-      harness.toClient.close();
-    }
-
-    await harness.runFailureTest(
-      clientCall: harness.client.unary(dummyValue),
-      expectedException:
-          GrpcError.custom(customStatusCode, customStatusMessage),
-      serverHandlers: [handleRequest],
-    );
-  });
-
-  test('Call throws decoded message', () async {
-    const customStatusCode = 17;
-    const customStatusMessage = 'エラー';
-    const encodedCustomStatusMessage = '%E3%82%A8%E3%83%A9%E3%83%BC';
-
-    void handleRequest(_) {
-      harness.toClient.add(HeadersStreamMessage([
-        Header.ascii('grpc-status', '$customStatusCode'),
-        Header.ascii('grpc-message', encodedCustomStatusMessage)
       ], endStream: true));
       harness.toClient.close();
     }
