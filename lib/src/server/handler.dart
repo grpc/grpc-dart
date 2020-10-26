@@ -164,8 +164,14 @@ class ServerHandler_ extends ServiceCall {
 
     final error = _onMetadata();
     if (error != null) {
+      if (!_requests.isClosed) {
+        _requests
+          ..addError(error)
+          ..close();
+      }
       _sendError(error);
-      _sinkIncoming();
+      _onDone();
+      _stream.terminate();
       return;
     }
 

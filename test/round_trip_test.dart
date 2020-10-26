@@ -99,6 +99,6 @@ main() async {
     ));
     final testClient = TestClient(channel);
     await expectLater(testClient.stream(1).toList(), throwsA(isA<GrpcError>()));
-    server.shutdown();
+    await server.shutdown();
   });
 }
