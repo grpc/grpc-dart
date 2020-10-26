@@ -1,4 +1,4 @@
-## 2.4.0
+## 2.7.0
 
 * Added decoding/parsing of `grpc-status-details-bin` to pass all response exception details to the `GrpcError` thrown in Dart, via [#349](https://github.com/grpc/grpc-dart/pull/349).
 
