@@ -2,6 +2,26 @@
 
 * Added decoding/parsing of `grpc-status-details-bin` to pass all response exception details to the `GrpcError` thrown in Dart, via [#349](https://github.com/grpc/grpc-dart/pull/349).
 
+## 2.6.0
+
+* Create gRPC servers and clients with [Server|Client]TransportConnnection.
+  This allows callers to propvide their own transport configuration, such
+  as their own implementation of streams and sinks instead of sockets.
+
+## 2.5.0
+
+* Expose a `validateClient` method for server credentials so gRPC server
+  users may know when clients are loopback addresses.
+
+## 2.4.1
+
+* Plumb stacktraces through request / response stream error handlers.
+* Catch and forward any errors decoding the response.
+
+## 2.4.0
+
+* Add the ability to bypass CORS preflight requests.
+
 ## 2.3.0
 
 * Revert [PR #287](https://github.com/grpc/grpc-dart/pull/287), which allowed

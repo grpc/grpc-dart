@@ -84,6 +84,69 @@ class CallOptions {
   }
 }
 
+/// Runtime options for gRPC-web.
+class WebCallOptions extends CallOptions {
+  /// Whether to eliminate the CORS preflight request.
+  ///
+  /// If set to [true], all HTTP headers will be packed into an '$httpHeaders'
+  /// query parameter, which should downgrade complex CORS requests into
+  /// simple ones. This eliminates an extra roundtrip.
+  ///
+  /// For this to work correctly, a proxy server must be set up that
+  /// understands the query parameter and can unpack/send the original
+  /// list of headers to the server endpoint.
+  final bool bypassCorsPreflight;
+
+  /// Whether to send credentials along with the XHR.
+  ///
+  /// This may be required for proxying or wherever the server
+  /// needs to otherwise inspect client cookies for that domain.
+  final bool withCredentials;
+  // TODO(mightyvoice): add a list of extra QueryParameter for gRPC.
+
+  WebCallOptions._(Map<String, String> metadata, Duration timeout,
+      List<MetadataProvider> metadataProviders,
+      {this.bypassCorsPreflight, this.withCredentials})
+      : super._(metadata, timeout, metadataProviders);
+
+  /// Creates a [WebCallOptions] object.
+  ///
+  /// [WebCallOptions] can specify static [metadata], [timeout],
+  /// metadata [providers] of [CallOptions], [bypassCorsPreflight] and
+  /// [withCredentials] for CORS request.
+  factory WebCallOptions(
+      {Map<String, String> metadata,
+      Duration timeout,
+      List<MetadataProvider> providers,
+      bool bypassCorsPreflight,
+      bool withCredentials}) {
+    return WebCallOptions._(Map.unmodifiable(metadata ?? {}), timeout,
+        List.unmodifiable(providers ?? []),
+        bypassCorsPreflight: bypassCorsPreflight ?? false,
+        withCredentials: withCredentials ?? false);
+  }
+
+  @override
+  CallOptions mergedWith(CallOptions other) {
+    if (other == null) return this;
+    if (other is! WebCallOptions) return super.mergedWith(other);
+
+    final otherOptions = other as WebCallOptions;
+    final mergedBypassCorsPreflight =
+        otherOptions.bypassCorsPreflight ?? bypassCorsPreflight;
+    final mergedWithCredentials =
+        otherOptions.withCredentials ?? withCredentials;
+    final mergedMetadata = Map.from(metadata)..addAll(otherOptions.metadata);
+    final mergedTimeout = otherOptions.timeout ?? timeout;
+    final mergedProviders = List.from(metadataProviders)
+      ..addAll(otherOptions.metadataProviders);
+    return WebCallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
+        List.unmodifiable(mergedProviders),
+        bypassCorsPreflight: mergedBypassCorsPreflight,
+        withCredentials: mergedWithCredentials);
+  }
+}
+
 /// An active call to a gRPC endpoint.
 class ClientCall<Q, R> implements Response {
   final ClientMethod<Q, R> _method;
@@ -207,8 +270,8 @@ class ClientCall<Q, R> implements Response {
   }
 
   /// Emit an error response to the user, and tear down this call.
-  void _responseError(GrpcError error) {
-    _responses.addError(error);
+  void _responseError(GrpcError error, [StackTrace stackTrace]) {
+    _responses.addError(error, stackTrace);
     _timeoutTimer?.cancel();
     _requestSubscription?.cancel();
     _responseSubscription.cancel();
@@ -246,8 +309,12 @@ class ClientCall<Q, R> implements Response {
         _responseError(GrpcError.unimplemented('Received data after trailers'));
         return;
       }
-      _responses.add(_method.responseDeserializer(data.data));
-      _hasReceivedResponses = true;
+      try {
+        _responses.add(_method.responseDeserializer(data.data));
+        _hasReceivedResponses = true;
+      } catch (e, s) {
+        _responseError(GrpcError.dataLoss('Error parsing response'), s);
+      }
     } else if (data is GrpcMetadata) {
       if (!_headers.isCompleted) {
         _headerMetadata = data.metadata;
@@ -270,12 +337,12 @@ class ClientCall<Q, R> implements Response {
 
   /// Handler for response errors. Forward the error to the [_responses] stream,
   /// wrapped if necessary.
-  void _onResponseError(error) {
+  void _onResponseError(error, StackTrace stackTrace) {
     if (error is GrpcError) {
-      _responseError(error);
+      _responseError(error, stackTrace);
       return;
     }
-    _responseError(GrpcError.unknown(error.toString()));
+    _responseError(GrpcError.unknown(error.toString()), stackTrace);
   }
 
   /// Handles closure of the response stream. Verifies that server has sent
@@ -307,12 +374,12 @@ class ClientCall<Q, R> implements Response {
   /// Error handler for the requests stream. Something went wrong while trying
   /// to send the request to the server. Abort the request, and forward the
   /// error to the user code on the [_responses] stream.
-  void _onRequestError(error, [StackTrace stackTrace]) {
+  void _onRequestError(error, StackTrace stackTrace) {
     if (error is! GrpcError) {
       error = GrpcError.unknown(error.toString());
     }
 
-    _responses.addError(error);
+    _responses.addError(error, stackTrace);
     _timeoutTimer?.cancel();
     _responses.close();
     _requestSubscription?.cancel();

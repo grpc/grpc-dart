@@ -116,23 +116,40 @@ class TestServerStream extends ServerTransportStream {
   ServerTransportStream push(List<Header> requestHeaders) => null;
 }
 
-class ServerHarness {
-  final toServer = StreamController<StreamMessage>();
-  final fromServer = StreamController<StreamMessage>();
-  final service = TestService();
-  final interceptor = TestInterceptor();
-
-  Server server;
-
-  ServerHarness() {
-    server = Server(<Service>[service], <Interceptor>[interceptor]);
-  }
+class ServerHarness extends _Harness {
+  @override
+  ConnectionServer createServer() =>
+      Server(<Service>[service], <Interceptor>[interceptor]);
 
   static ServiceMethod<int, int> createMethod(String name,
       Function methodHandler, bool clientStreaming, bool serverStreaming) {
     return ServiceMethod<int, int>(name, methodHandler, clientStreaming,
         serverStreaming, mockDecode, mockEncode);
   }
+}
+
+class ConnectionServerHarness extends _Harness {
+  @override
+  ConnectionServer createServer() =>
+      ConnectionServer(<Service>[service], <Interceptor>[interceptor]);
+
+  static ServiceMethod<int, int> createMethod(String name,
+      Function methodHandler, bool clientStreaming, bool serverStreaming) {
+    return ServiceMethod<int, int>(name, methodHandler, clientStreaming,
+        serverStreaming, mockDecode, mockEncode);
+  }
+}
+
+abstract class _Harness {
+  final toServer = StreamController<StreamMessage>();
+  final fromServer = StreamController<StreamMessage>();
+  final service = TestService();
+  final interceptor = TestInterceptor();
+  ConnectionServer _server;
+
+  ConnectionServer createServer();
+
+  ConnectionServer get server => _server ??= createServer();
 
   void setUp() {
     final stream = TestServerStream(toServer.stream, fromServer.sink);

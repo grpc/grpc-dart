@@ -25,9 +25,12 @@ export 'src/auth/auth_io.dart'
         ServiceAccountAuthenticator;
 export 'src/client/call.dart' show CallOptions, ClientCall, MetadataProvider;
 export 'src/client/client.dart' show Client;
+export 'src/client/client_transport_connector.dart'
+    show ClientTransportConnector;
 export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
 export 'src/client/connection.dart' show ConnectionState;
-export 'src/client/http2_channel.dart' show ClientChannel;
+export 'src/client/http2_channel.dart'
+    show ClientChannel, ClientTransportConnectorChannel;
 export 'src/client/method.dart' show ClientMethod;
 export 'src/client/options.dart'
     show
@@ -42,7 +45,13 @@ export 'src/client/transport/http2_credentials.dart'
 export 'src/generated/google/rpc/error_details.pb.dart';
 export 'src/server/call.dart' show ServiceCall;
 export 'src/server/interceptor.dart' show Interceptor;
-export 'src/server/server.dart' show ServerTlsCredentials, Server;
+export 'src/server/server.dart'
+    show
+        ServerCredentials,
+        ServerLocalCredentials,
+        ServerTlsCredentials,
+        ConnectionServer,
+        Server;
 export 'src/server/service.dart' show ServiceMethod, Service;
 export 'src/shared/message.dart'
     show GrpcMessage, GrpcMetadata, GrpcData, grpcDecompressor;
