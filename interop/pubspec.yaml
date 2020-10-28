@@ -11,7 +11,7 @@ dependencies:
   collection: ^1.14.11
   grpc:
     path: ../
-  protobuf: ^0.13.12
+  protobuf: ^1.0.1
 
 dev_dependencies:
   test: ^1.6.4

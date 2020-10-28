@@ -67,3 +67,6 @@ early on.
 
 - Exceptions to the rules can be made if there's a compelling reason for doing
 so.
+
+## Updating protobuf definitions
+Sometimes we might need to update the generated dart files from the protos included in `lib/src/protos`. To do this, run the script `tool/regenerate.sh` from the project root and it will update the generated dart files in `lib/src/geneerated`.
