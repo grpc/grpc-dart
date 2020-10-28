@@ -34,6 +34,12 @@ class TestService extends Service {
   }
 }
 
+class TestServiceWithOnMetadataException extends TestService {
+  void $onMetadata(ServiceCall context) {
+    throw Exception('business exception');
+  }
+}
+
 class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
   List<ConnectionState> states = <ConnectionState>[];
@@ -79,5 +85,19 @@ main() async {
     final testClient = TestClient(channel);
     expect(await testClient.stream(1).toList(), [1, 2, 3]);
     server.shutdown();
+  });
+
+  test('exception in onMetadataException', () async {
+    final Server server = Server([TestServiceWithOnMetadataException()]);
+    await server.serve(address: 'localhost', port: 0);
+
+    final channel = FixedConnectionClientChannel(Http2ClientConnection(
+      'localhost',
+      server.port,
+      ChannelOptions(credentials: ChannelCredentials.insecure()),
+    ));
+    final testClient = TestClient(channel);
+    await expectLater(testClient.stream(1).toList(), throwsA(isA<GrpcError>()));
+    await server.shutdown();
   });
 }
