@@ -14,10 +14,15 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:grpc/grpc.dart';
+import 'package:grpc/src/client/call.dart';
 import 'package:grpc/src/client/http2_connection.dart';
+import 'package:grpc/src/generated/google/rpc/status.pb.dart';
+import 'package:grpc/src/shared/status.dart';
 import 'package:http2/transport.dart';
+import 'package:protobuf/protobuf.dart';
 import 'package:test/test.dart';
 
 import '../src/client_utils.dart';
@@ -290,6 +295,27 @@ void main() {
     );
   });
 
+  test('Call throws if unable to decode response', () async {
+    const responseValue = 19;
+
+    void handleRequest(StreamMessage message) {
+      harness
+        ..sendResponseHeader()
+        ..sendResponseValue(responseValue)
+        ..sendResponseTrailer();
+    }
+
+    harness.client = TestClient(harness.channel, decode: (bytes) {
+      throw "error decoding";
+    });
+
+    await harness.runFailureTest(
+      clientCall: harness.client.unary(dummyValue),
+      expectedException: GrpcError.dataLoss('Error parsing response'),
+      serverHandlers: [handleRequest],
+    );
+  });
+
   test('Call forwards known response stream errors', () async {
     final expectedException = GrpcError.dataLoss('Oops!');
 
@@ -347,6 +373,24 @@ void main() {
     );
   }
 
+  test('Connection errors are reported', () async {
+    final connectionStates = <ConnectionState>[];
+    harness.connection.connectionError = 'Connection error';
+    harness.connection.onStateChanged = (connection) {
+      final state = connection.state;
+      connectionStates.add(state);
+    };
+
+    final expectedException =
+        GrpcError.unavailable('Error connecting: Connection error');
+
+    await harness.expectThrows(
+        harness.client.unary(dummyValue), expectedException);
+
+    expect(
+        connectionStates, [ConnectionState.connecting, ConnectionState.idle]);
+  });
+
   test('Connections time out if idle', () async {
     final done = Completer();
     final connectionStates = <ConnectionState>[];
@@ -398,5 +442,70 @@ void main() {
         'myauthority.com');
     expect(Http2ClientConnection('localhost', null, channelOptions).authority,
         'myauthority.com');
+  });
+
+  test(
+      'decodeStatusDetails should decode details into a List<GeneratedMessage> if base64 present',
+      () {
+    final decodedDetails = decodeStatusDetails(
+        'CAMSEGFtb3VudCB0b28gc21hbGwafgopdHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUucnBjLkJhZFJlcXVlc3QSUQpPCgZhbW91bnQSRVRoZSByZXF1aXJlZCBjdXJyZW5jeSBjb252ZXJzaW9uIHdvdWxkIHJlc3VsdCBpbiBhIHplcm8gdmFsdWUgcGF5bWVudA');
+    expect(decodedDetails, isA<List<GeneratedMessage>>());
+    expect(decodedDetails.length, 1);
+  });
+
+  test(
+      'decodeStatusDetails should decode details into an empty list for an invalid base64 string',
+      () {
+    final decodedDetails = decodeStatusDetails('xxxxxxxxxxxxxxxxxxxxxx');
+    expect(decodedDetails, isA<List<GeneratedMessage>>());
+    expect(decodedDetails.length, 0);
+  });
+
+  test('decodeStatusDetails should handle a null input', () {
+    final decodedDetails = decodeStatusDetails(null);
+    expect(decodedDetails, isA<List<GeneratedMessage>>());
+    expect(decodedDetails.length, 0);
+  });
+
+  test('parseGeneratedMessage should parse out a valid Any type', () {
+    final status = Status.fromBuffer(base64Url.decode(
+        'CAMSEGFtb3VudCB0b28gc21hbGwafgopdHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUucnBjLkJhZFJlcXVlc3QSUQpPCgZhbW91bnQSRVRoZSByZXF1aXJlZCBjdXJyZW5jeSBjb252ZXJzaW9uIHdvdWxkIHJlc3VsdCBpbiBhIHplcm8gdmFsdWUgcGF5bWVudA=='));
+    expect(status.details, isNotEmpty);
+
+    final detailItem = status.details.first;
+    final parsedResult = parseErrorDetailsFromAny(detailItem);
+    expect(parsedResult, isA<BadRequest>());
+
+    final castedResult = parsedResult as BadRequest;
+    expect(castedResult.fieldViolations, isNotEmpty);
+    expect(castedResult.fieldViolations.first.field_1, 'amount');
+    expect(castedResult.fieldViolations.first.description,
+        'The required currency conversion would result in a zero value payment');
+  });
+
+  test('Call should throw details embedded in the headers', () async {
+    final code = StatusCode.invalidArgument;
+    final message = 'amount too small';
+    final details =
+        'CAMSEGFtb3VudCB0b28gc21hbGwafgopdHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUucnBjLkJhZFJlcXVlc3QSUQpPCgZhbW91bnQSRVRoZSByZXF1aXJlZCBjdXJyZW5jeSBjb252ZXJzaW9uIHdvdWxkIHJlc3VsdCBpbiBhIHplcm8gdmFsdWUgcGF5bWVudA';
+
+    void handleRequest(_) {
+      harness.toClient.add(HeadersStreamMessage([
+        Header.ascii('grpc-status', code.toString()),
+        Header.ascii('grpc-message', message),
+        Header.ascii('grpc-status-details-bin', details),
+      ], endStream: true));
+      harness.toClient.close();
+    }
+
+    await harness.runFailureTest(
+      clientCall: harness.client.unary(dummyValue),
+      expectedException: GrpcError.custom(
+        code,
+        message,
+        decodeStatusDetails(details),
+      ),
+      serverHandlers: [handleRequest],
+    );
   });
 }

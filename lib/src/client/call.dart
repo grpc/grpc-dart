@@ -14,10 +14,14 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
+
+import 'package:grpc/src/generated/google/rpc/status.pb.dart';
+import 'package:meta/meta.dart';
+import 'package:protobuf/protobuf.dart';
 
 import '../shared/message.dart';
 import '../shared/status.dart';
-
 import 'common.dart';
 import 'connection.dart';
 import 'method.dart';
@@ -77,6 +81,69 @@ class CallOptions {
       ..addAll(other.metadataProviders);
     return CallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
         List.unmodifiable(mergedProviders));
+  }
+}
+
+/// Runtime options for gRPC-web.
+class WebCallOptions extends CallOptions {
+  /// Whether to eliminate the CORS preflight request.
+  ///
+  /// If set to [true], all HTTP headers will be packed into an '$httpHeaders'
+  /// query parameter, which should downgrade complex CORS requests into
+  /// simple ones. This eliminates an extra roundtrip.
+  ///
+  /// For this to work correctly, a proxy server must be set up that
+  /// understands the query parameter and can unpack/send the original
+  /// list of headers to the server endpoint.
+  final bool bypassCorsPreflight;
+
+  /// Whether to send credentials along with the XHR.
+  ///
+  /// This may be required for proxying or wherever the server
+  /// needs to otherwise inspect client cookies for that domain.
+  final bool withCredentials;
+  // TODO(mightyvoice): add a list of extra QueryParameter for gRPC.
+
+  WebCallOptions._(Map<String, String> metadata, Duration timeout,
+      List<MetadataProvider> metadataProviders,
+      {this.bypassCorsPreflight, this.withCredentials})
+      : super._(metadata, timeout, metadataProviders);
+
+  /// Creates a [WebCallOptions] object.
+  ///
+  /// [WebCallOptions] can specify static [metadata], [timeout],
+  /// metadata [providers] of [CallOptions], [bypassCorsPreflight] and
+  /// [withCredentials] for CORS request.
+  factory WebCallOptions(
+      {Map<String, String> metadata,
+      Duration timeout,
+      List<MetadataProvider> providers,
+      bool bypassCorsPreflight,
+      bool withCredentials}) {
+    return WebCallOptions._(Map.unmodifiable(metadata ?? {}), timeout,
+        List.unmodifiable(providers ?? []),
+        bypassCorsPreflight: bypassCorsPreflight ?? false,
+        withCredentials: withCredentials ?? false);
+  }
+
+  @override
+  CallOptions mergedWith(CallOptions other) {
+    if (other == null) return this;
+    if (other is! WebCallOptions) return super.mergedWith(other);
+
+    final otherOptions = other as WebCallOptions;
+    final mergedBypassCorsPreflight =
+        otherOptions.bypassCorsPreflight ?? bypassCorsPreflight;
+    final mergedWithCredentials =
+        otherOptions.withCredentials ?? withCredentials;
+    final mergedMetadata = Map.from(metadata)..addAll(otherOptions.metadata);
+    final mergedTimeout = otherOptions.timeout ?? timeout;
+    final mergedProviders = List.from(metadataProviders)
+      ..addAll(otherOptions.metadataProviders);
+    return WebCallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
+        List.unmodifiable(mergedProviders),
+        bypassCorsPreflight: mergedBypassCorsPreflight,
+        withCredentials: mergedWithCredentials);
   }
 }
 
@@ -203,13 +270,31 @@ class ClientCall<Q, R> implements Response {
   }
 
   /// Emit an error response to the user, and tear down this call.
-  void _responseError(GrpcError error) {
-    _responses.addError(error);
+  void _responseError(GrpcError error, [StackTrace stackTrace]) {
+    _responses.addError(error, stackTrace);
     _timeoutTimer?.cancel();
     _requestSubscription?.cancel();
     _responseSubscription.cancel();
     _responses.close();
     _stream.terminate();
+  }
+
+  /// If there's an error status then process it as a response error
+  void _checkForErrorStatus(Map<String, String> metadata) {
+    final status = metadata['grpc-status'];
+    final statusCode = int.parse(status ?? '0');
+
+    if (statusCode != 0) {
+      final message = metadata['grpc-message'] == null
+          ? null
+          : Uri.decodeFull(metadata['grpc-message']);
+
+      _responseError(GrpcError.custom(
+        statusCode,
+        message,
+        decodeStatusDetails(metadata['grpc-status-details-bin']),
+      ));
+    }
   }
 
   /// Data handler for responses coming from the server. Handles header/trailer
@@ -224,11 +309,14 @@ class ClientCall<Q, R> implements Response {
         _responseError(GrpcError.unimplemented('Received data after trailers'));
         return;
       }
-      _responses.add(_method.responseDeserializer(data.data));
-      _hasReceivedResponses = true;
+      try {
+        _responses.add(_method.responseDeserializer(data.data));
+        _hasReceivedResponses = true;
+      } catch (e, s) {
+        _responseError(GrpcError.dataLoss('Error parsing response'), s);
+      }
     } else if (data is GrpcMetadata) {
       if (!_headers.isCompleted) {
-        // TODO(jakobr): Parse, and extract common headers.
         _headerMetadata = data.metadata;
         _headers.complete(_headerMetadata);
         return;
@@ -239,16 +327,9 @@ class ClientCall<Q, R> implements Response {
       }
       final metadata = data.metadata;
       _trailers.complete(metadata);
-      // TODO(jakobr): Parse more!
-      if (metadata.containsKey('grpc-status')) {
-        final status = int.parse(metadata['grpc-status']);
-        final message = metadata['grpc-message'] == null
-            ? null
-            : Uri.decodeFull(metadata['grpc-message']);
-        if (status != 0) {
-          _responseError(GrpcError.custom(status, message));
-        }
-      }
+
+      /// Process status error if necessary
+      _checkForErrorStatus(metadata);
     } else {
       _responseError(GrpcError.unimplemented('Unexpected frame received'));
     }
@@ -256,12 +337,12 @@ class ClientCall<Q, R> implements Response {
 
   /// Handler for response errors. Forward the error to the [_responses] stream,
   /// wrapped if necessary.
-  void _onResponseError(error) {
+  void _onResponseError(error, StackTrace stackTrace) {
     if (error is GrpcError) {
-      _responseError(error);
+      _responseError(error, stackTrace);
       return;
     }
-    _responseError(GrpcError.unknown(error.toString()));
+    _responseError(GrpcError.unknown(error.toString()), stackTrace);
   }
 
   /// Handles closure of the response stream. Verifies that server has sent
@@ -281,15 +362,9 @@ class ClientCall<Q, R> implements Response {
       // Only received a header frame and no data frames, so the header
       // should contain "trailers" as well (Trailers-Only).
       _trailers.complete(_headerMetadata);
-      final status = _headerMetadata['grpc-status'];
-      // If status code is missing, we must treat it as '0'. As in 'success'.
-      final statusCode = status != null ? int.parse(status) : 0;
-      if (statusCode != 0) {
-        final message = _headerMetadata['grpc-message'] == null
-            ? null
-            : Uri.decodeFull(_headerMetadata['grpc-message']);
-        _responseError(GrpcError.custom(statusCode, message));
-      }
+
+      /// Process status error if necessary
+      _checkForErrorStatus(_headerMetadata);
     }
     _timeoutTimer?.cancel();
     _responses.close();
@@ -299,12 +374,12 @@ class ClientCall<Q, R> implements Response {
   /// Error handler for the requests stream. Something went wrong while trying
   /// to send the request to the server. Abort the request, and forward the
   /// error to the user code on the [_responses] stream.
-  void _onRequestError(error, [StackTrace stackTrace]) {
+  void _onRequestError(error, StackTrace stackTrace) {
     if (error is! GrpcError) {
       error = GrpcError.unknown(error.toString());
     }
 
-    _responses.addError(error);
+    _responses.addError(error, stackTrace);
     _timeoutTimer?.cancel();
     _responses.close();
     _requestSubscription?.cancel();
@@ -350,5 +425,25 @@ class ClientCall<Q, R> implements Response {
     try {
       await _terminate();
     } catch (_) {}
+  }
+}
+
+/// Given a string of base64url data, attempt to parse a Status object from it.
+/// Once parsed, it will then map each detail item and attempt to parse it into
+/// its respective GeneratedMessage type, returning the list of parsed detail items
+/// as a `List<GeneratedMessage>`.
+///
+/// Prior to creating the Status object we pad the data to ensure its length is
+/// an even multiple of 4, which is a requirement in Dart when decoding base64url data.
+///
+/// If any errors are thrown during decoding/parsing, it will return an empty list.
+@visibleForTesting
+List<GeneratedMessage> decodeStatusDetails(String data) {
+  try {
+    final parsedStatus = Status.fromBuffer(
+        base64Url.decode(data.padRight((data.length + 3) & ~3, '=')));
+    return parsedStatus.details.map(parseErrorDetailsFromAny).toList();
+  } catch (e) {
+    return <GeneratedMessage>[];
   }
 }

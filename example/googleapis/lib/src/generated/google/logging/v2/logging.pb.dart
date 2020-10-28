@@ -1,21 +1,22 @@
 ///
 //  Generated code. Do not modify.
 //  source: google/logging/v2/logging.proto
-///
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
+//
+// @dart = 2.3
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
 
-import 'dart:core' as $core
-    show bool, Deprecated, double, int, List, Map, override, pragma, String;
+import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import '../../api/monitored_resource.pb.dart' as $2;
-import 'log_entry.pb.dart' as $3;
-import '../../rpc/status.pb.dart' as $4;
+import '../../api/monitored_resource.pb.dart' as $3;
+import 'log_entry.pb.dart' as $4;
+import '../../rpc/status.pb.dart' as $5;
 
 class DeleteLogRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('DeleteLogRequest',
-      package: const $pb.PackageName('google.logging.v2'))
+      package: const $pb.PackageName('google.logging.v2'),
+      createEmptyInstance: create)
     ..aOS(1, 'logName')
     ..hasRequiredFields = false;
 
@@ -36,36 +37,38 @@ class DeleteLogRequest extends $pb.GeneratedMessage {
   DeleteLogRequest createEmptyInstance() => create();
   static $pb.PbList<DeleteLogRequest> createRepeated() =>
       $pb.PbList<DeleteLogRequest>();
-  static DeleteLogRequest getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static DeleteLogRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<DeleteLogRequest>(create);
   static DeleteLogRequest _defaultInstance;
 
-  $core.String get logName => $_getS(0, '');
+  @$pb.TagNumber(1)
+  $core.String get logName => $_getSZ(0);
+  @$pb.TagNumber(1)
   set logName($core.String v) {
     $_setString(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasLogName() => $_has(0);
+  @$pb.TagNumber(1)
   void clearLogName() => clearField(1);
 }
 
 class WriteLogEntriesRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('WriteLogEntriesRequest',
-      package: const $pb.PackageName('google.logging.v2'))
+      package: const $pb.PackageName('google.logging.v2'),
+      createEmptyInstance: create)
     ..aOS(1, 'logName')
-    ..a<$2.MonitoredResource>(2, 'resource', $pb.PbFieldType.OM,
-        $2.MonitoredResource.getDefault, $2.MonitoredResource.create)
-    ..m<$core.String, $core.String>(
-        3,
-        'labels',
-        'WriteLogEntriesRequest.LabelsEntry',
-        $pb.PbFieldType.OS,
-        $pb.PbFieldType.OS,
-        null,
-        null,
-        null,
-        const $pb.PackageName('google.logging.v2'))
-    ..pc<$3.LogEntry>(4, 'entries', $pb.PbFieldType.PM, $3.LogEntry.create)
+    ..aOM<$3.MonitoredResource>(2, 'resource',
+        subBuilder: $3.MonitoredResource.create)
+    ..m<$core.String, $core.String>(3, 'labels',
+        entryClassName: 'WriteLogEntriesRequest.LabelsEntry',
+        keyFieldType: $pb.PbFieldType.OS,
+        valueFieldType: $pb.PbFieldType.OS,
+        packageName: const $pb.PackageName('google.logging.v2'))
+    ..pc<$4.LogEntry>(4, 'entries', $pb.PbFieldType.PM,
+        subBuilder: $4.LogEntry.create)
     ..aOB(5, 'partialSuccess')
     ..aOB(6, 'dryRun')
     ..hasRequiredFields = false;
@@ -89,50 +92,72 @@ class WriteLogEntriesRequest extends $pb.GeneratedMessage {
   WriteLogEntriesRequest createEmptyInstance() => create();
   static $pb.PbList<WriteLogEntriesRequest> createRepeated() =>
       $pb.PbList<WriteLogEntriesRequest>();
-  static WriteLogEntriesRequest getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static WriteLogEntriesRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<WriteLogEntriesRequest>(create);
   static WriteLogEntriesRequest _defaultInstance;
 
-  $core.String get logName => $_getS(0, '');
+  @$pb.TagNumber(1)
+  $core.String get logName => $_getSZ(0);
+  @$pb.TagNumber(1)
   set logName($core.String v) {
     $_setString(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasLogName() => $_has(0);
+  @$pb.TagNumber(1)
   void clearLogName() => clearField(1);
 
-  $2.MonitoredResource get resource => $_getN(1);
-  set resource($2.MonitoredResource v) {
+  @$pb.TagNumber(2)
+  $3.MonitoredResource get resource => $_getN(1);
+  @$pb.TagNumber(2)
+  set resource($3.MonitoredResource v) {
     setField(2, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasResource() => $_has(1);
+  @$pb.TagNumber(2)
   void clearResource() => clearField(2);
+  @$pb.TagNumber(2)
+  $3.MonitoredResource ensureResource() => $_ensure(1);
 
+  @$pb.TagNumber(3)
   $core.Map<$core.String, $core.String> get labels => $_getMap(2);
 
-  $core.List<$3.LogEntry> get entries => $_getList(3);
+  @$pb.TagNumber(4)
+  $core.List<$4.LogEntry> get entries => $_getList(3);
 
-  $core.bool get partialSuccess => $_get(4, false);
+  @$pb.TagNumber(5)
+  $core.bool get partialSuccess => $_getBF(4);
+  @$pb.TagNumber(5)
   set partialSuccess($core.bool v) {
     $_setBool(4, v);
   }
 
+  @$pb.TagNumber(5)
   $core.bool hasPartialSuccess() => $_has(4);
+  @$pb.TagNumber(5)
   void clearPartialSuccess() => clearField(5);
 
-  $core.bool get dryRun => $_get(5, false);
+  @$pb.TagNumber(6)
+  $core.bool get dryRun => $_getBF(5);
+  @$pb.TagNumber(6)
   set dryRun($core.bool v) {
     $_setBool(5, v);
   }
 
+  @$pb.TagNumber(6)
   $core.bool hasDryRun() => $_has(5);
+  @$pb.TagNumber(6)
   void clearDryRun() => clearField(6);
 }
 
 class WriteLogEntriesResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('WriteLogEntriesResponse',
-      package: const $pb.PackageName('google.logging.v2'))
+      package: const $pb.PackageName('google.logging.v2'),
+      createEmptyInstance: create)
     ..hasRequiredFields = false;
 
   WriteLogEntriesResponse._() : super();
@@ -154,25 +179,23 @@ class WriteLogEntriesResponse extends $pb.GeneratedMessage {
   WriteLogEntriesResponse createEmptyInstance() => create();
   static $pb.PbList<WriteLogEntriesResponse> createRepeated() =>
       $pb.PbList<WriteLogEntriesResponse>();
-  static WriteLogEntriesResponse getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static WriteLogEntriesResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<WriteLogEntriesResponse>(create);
   static WriteLogEntriesResponse _defaultInstance;
 }
 
 class WriteLogEntriesPartialErrors extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       'WriteLogEntriesPartialErrors',
-      package: const $pb.PackageName('google.logging.v2'))
-    ..m<$core.int, $4.Status>(
-        1,
-        'logEntryErrors',
-        'WriteLogEntriesPartialErrors.LogEntryErrorsEntry',
-        $pb.PbFieldType.O3,
-        $pb.PbFieldType.OM,
-        $4.Status.create,
-        null,
-        null,
-        const $pb.PackageName('google.logging.v2'))
+      package: const $pb.PackageName('google.logging.v2'),
+      createEmptyInstance: create)
+    ..m<$core.int, $5.Status>(1, 'logEntryErrors',
+        entryClassName: 'WriteLogEntriesPartialErrors.LogEntryErrorsEntry',
+        keyFieldType: $pb.PbFieldType.O3,
+        valueFieldType: $pb.PbFieldType.OM,
+        valueCreator: $5.Status.create,
+        packageName: const $pb.PackageName('google.logging.v2'))
     ..hasRequiredFields = false;
 
   WriteLogEntriesPartialErrors._() : super();
@@ -196,17 +219,19 @@ class WriteLogEntriesPartialErrors extends $pb.GeneratedMessage {
   WriteLogEntriesPartialErrors createEmptyInstance() => create();
   static $pb.PbList<WriteLogEntriesPartialErrors> createRepeated() =>
       $pb.PbList<WriteLogEntriesPartialErrors>();
-  static WriteLogEntriesPartialErrors getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static WriteLogEntriesPartialErrors getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<WriteLogEntriesPartialErrors>(create);
   static WriteLogEntriesPartialErrors _defaultInstance;
 
-  $core.Map<$core.int, $4.Status> get logEntryErrors => $_getMap(0);
+  @$pb.TagNumber(1)
+  $core.Map<$core.int, $5.Status> get logEntryErrors => $_getMap(0);
 }
 
 class ListLogEntriesRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('ListLogEntriesRequest',
-      package: const $pb.PackageName('google.logging.v2'))
-    ..pPS(1, 'projectIds')
+      package: const $pb.PackageName('google.logging.v2'),
+      createEmptyInstance: create)
     ..aOS(2, 'filter')
     ..aOS(3, 'orderBy')
     ..a<$core.int>(4, 'pageSize', $pb.PbFieldType.O3)
@@ -233,52 +258,69 @@ class ListLogEntriesRequest extends $pb.GeneratedMessage {
   ListLogEntriesRequest createEmptyInstance() => create();
   static $pb.PbList<ListLogEntriesRequest> createRepeated() =>
       $pb.PbList<ListLogEntriesRequest>();
-  static ListLogEntriesRequest getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static ListLogEntriesRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ListLogEntriesRequest>(create);
   static ListLogEntriesRequest _defaultInstance;
 
-  @$core.Deprecated('This field is deprecated.')
-  $core.List<$core.String> get projectIds => $_getList(0);
-
-  $core.String get filter => $_getS(1, '');
+  @$pb.TagNumber(2)
+  $core.String get filter => $_getSZ(0);
+  @$pb.TagNumber(2)
   set filter($core.String v) {
+    $_setString(0, v);
+  }
+
+  @$pb.TagNumber(2)
+  $core.bool hasFilter() => $_has(0);
+  @$pb.TagNumber(2)
+  void clearFilter() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get orderBy => $_getSZ(1);
+  @$pb.TagNumber(3)
+  set orderBy($core.String v) {
     $_setString(1, v);
   }
 
-  $core.bool hasFilter() => $_has(1);
-  void clearFilter() => clearField(2);
-
-  $core.String get orderBy => $_getS(2, '');
-  set orderBy($core.String v) {
-    $_setString(2, v);
-  }
-
-  $core.bool hasOrderBy() => $_has(2);
+  @$pb.TagNumber(3)
+  $core.bool hasOrderBy() => $_has(1);
+  @$pb.TagNumber(3)
   void clearOrderBy() => clearField(3);
 
-  $core.int get pageSize => $_get(3, 0);
+  @$pb.TagNumber(4)
+  $core.int get pageSize => $_getIZ(2);
+  @$pb.TagNumber(4)
   set pageSize($core.int v) {
-    $_setSignedInt32(3, v);
+    $_setSignedInt32(2, v);
   }
 
-  $core.bool hasPageSize() => $_has(3);
+  @$pb.TagNumber(4)
+  $core.bool hasPageSize() => $_has(2);
+  @$pb.TagNumber(4)
   void clearPageSize() => clearField(4);
 
-  $core.String get pageToken => $_getS(4, '');
+  @$pb.TagNumber(5)
+  $core.String get pageToken => $_getSZ(3);
+  @$pb.TagNumber(5)
   set pageToken($core.String v) {
-    $_setString(4, v);
+    $_setString(3, v);
   }
 
-  $core.bool hasPageToken() => $_has(4);
+  @$pb.TagNumber(5)
+  $core.bool hasPageToken() => $_has(3);
+  @$pb.TagNumber(5)
   void clearPageToken() => clearField(5);
 
-  $core.List<$core.String> get resourceNames => $_getList(5);
+  @$pb.TagNumber(8)
+  $core.List<$core.String> get resourceNames => $_getList(4);
 }
 
 class ListLogEntriesResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('ListLogEntriesResponse',
-      package: const $pb.PackageName('google.logging.v2'))
-    ..pc<$3.LogEntry>(1, 'entries', $pb.PbFieldType.PM, $3.LogEntry.create)
+      package: const $pb.PackageName('google.logging.v2'),
+      createEmptyInstance: create)
+    ..pc<$4.LogEntry>(1, 'entries', $pb.PbFieldType.PM,
+        subBuilder: $4.LogEntry.create)
     ..aOS(2, 'nextPageToken')
     ..hasRequiredFields = false;
 
@@ -301,25 +343,32 @@ class ListLogEntriesResponse extends $pb.GeneratedMessage {
   ListLogEntriesResponse createEmptyInstance() => create();
   static $pb.PbList<ListLogEntriesResponse> createRepeated() =>
       $pb.PbList<ListLogEntriesResponse>();
-  static ListLogEntriesResponse getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static ListLogEntriesResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ListLogEntriesResponse>(create);
   static ListLogEntriesResponse _defaultInstance;
 
-  $core.List<$3.LogEntry> get entries => $_getList(0);
+  @$pb.TagNumber(1)
+  $core.List<$4.LogEntry> get entries => $_getList(0);
 
-  $core.String get nextPageToken => $_getS(1, '');
+  @$pb.TagNumber(2)
+  $core.String get nextPageToken => $_getSZ(1);
+  @$pb.TagNumber(2)
   set nextPageToken($core.String v) {
     $_setString(1, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasNextPageToken() => $_has(1);
+  @$pb.TagNumber(2)
   void clearNextPageToken() => clearField(2);
 }
 
 class ListMonitoredResourceDescriptorsRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       'ListMonitoredResourceDescriptorsRequest',
-      package: const $pb.PackageName('google.logging.v2'))
+      package: const $pb.PackageName('google.logging.v2'),
+      createEmptyInstance: create)
     ..a<$core.int>(1, 'pageSize', $pb.PbFieldType.O3)
     ..aOS(2, 'pageToken')
     ..hasRequiredFields = false;
@@ -346,33 +395,45 @@ class ListMonitoredResourceDescriptorsRequest extends $pb.GeneratedMessage {
   ListMonitoredResourceDescriptorsRequest createEmptyInstance() => create();
   static $pb.PbList<ListMonitoredResourceDescriptorsRequest> createRepeated() =>
       $pb.PbList<ListMonitoredResourceDescriptorsRequest>();
+  @$core.pragma('dart2js:noInline')
   static ListMonitoredResourceDescriptorsRequest getDefault() =>
-      _defaultInstance ??= create()..freeze();
+      _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<
+          ListMonitoredResourceDescriptorsRequest>(create);
   static ListMonitoredResourceDescriptorsRequest _defaultInstance;
 
-  $core.int get pageSize => $_get(0, 0);
+  @$pb.TagNumber(1)
+  $core.int get pageSize => $_getIZ(0);
+  @$pb.TagNumber(1)
   set pageSize($core.int v) {
     $_setSignedInt32(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasPageSize() => $_has(0);
+  @$pb.TagNumber(1)
   void clearPageSize() => clearField(1);
 
-  $core.String get pageToken => $_getS(1, '');
+  @$pb.TagNumber(2)
+  $core.String get pageToken => $_getSZ(1);
+  @$pb.TagNumber(2)
   set pageToken($core.String v) {
     $_setString(1, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasPageToken() => $_has(1);
+  @$pb.TagNumber(2)
   void clearPageToken() => clearField(2);
 }
 
 class ListMonitoredResourceDescriptorsResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       'ListMonitoredResourceDescriptorsResponse',
-      package: const $pb.PackageName('google.logging.v2'))
-    ..pc<$2.MonitoredResourceDescriptor>(1, 'resourceDescriptors',
-        $pb.PbFieldType.PM, $2.MonitoredResourceDescriptor.create)
+      package: const $pb.PackageName('google.logging.v2'),
+      createEmptyInstance: create)
+    ..pc<$3.MonitoredResourceDescriptor>(
+        1, 'resourceDescriptors', $pb.PbFieldType.PM,
+        subBuilder: $3.MonitoredResourceDescriptor.create)
     ..aOS(2, 'nextPageToken')
     ..hasRequiredFields = false;
 
@@ -399,25 +460,33 @@ class ListMonitoredResourceDescriptorsResponse extends $pb.GeneratedMessage {
   static $pb.PbList<ListMonitoredResourceDescriptorsResponse>
       createRepeated() =>
           $pb.PbList<ListMonitoredResourceDescriptorsResponse>();
+  @$core.pragma('dart2js:noInline')
   static ListMonitoredResourceDescriptorsResponse getDefault() =>
-      _defaultInstance ??= create()..freeze();
+      _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<
+          ListMonitoredResourceDescriptorsResponse>(create);
   static ListMonitoredResourceDescriptorsResponse _defaultInstance;
 
-  $core.List<$2.MonitoredResourceDescriptor> get resourceDescriptors =>
+  @$pb.TagNumber(1)
+  $core.List<$3.MonitoredResourceDescriptor> get resourceDescriptors =>
       $_getList(0);
 
-  $core.String get nextPageToken => $_getS(1, '');
+  @$pb.TagNumber(2)
+  $core.String get nextPageToken => $_getSZ(1);
+  @$pb.TagNumber(2)
   set nextPageToken($core.String v) {
     $_setString(1, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasNextPageToken() => $_has(1);
+  @$pb.TagNumber(2)
   void clearNextPageToken() => clearField(2);
 }
 
 class ListLogsRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('ListLogsRequest',
-      package: const $pb.PackageName('google.logging.v2'))
+      package: const $pb.PackageName('google.logging.v2'),
+      createEmptyInstance: create)
     ..aOS(1, 'parent')
     ..a<$core.int>(2, 'pageSize', $pb.PbFieldType.O3)
     ..aOS(3, 'pageToken')
@@ -440,38 +509,52 @@ class ListLogsRequest extends $pb.GeneratedMessage {
   ListLogsRequest createEmptyInstance() => create();
   static $pb.PbList<ListLogsRequest> createRepeated() =>
       $pb.PbList<ListLogsRequest>();
-  static ListLogsRequest getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static ListLogsRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ListLogsRequest>(create);
   static ListLogsRequest _defaultInstance;
 
-  $core.String get parent => $_getS(0, '');
+  @$pb.TagNumber(1)
+  $core.String get parent => $_getSZ(0);
+  @$pb.TagNumber(1)
   set parent($core.String v) {
     $_setString(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasParent() => $_has(0);
+  @$pb.TagNumber(1)
   void clearParent() => clearField(1);
 
-  $core.int get pageSize => $_get(1, 0);
+  @$pb.TagNumber(2)
+  $core.int get pageSize => $_getIZ(1);
+  @$pb.TagNumber(2)
   set pageSize($core.int v) {
     $_setSignedInt32(1, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasPageSize() => $_has(1);
+  @$pb.TagNumber(2)
   void clearPageSize() => clearField(2);
 
-  $core.String get pageToken => $_getS(2, '');
+  @$pb.TagNumber(3)
+  $core.String get pageToken => $_getSZ(2);
+  @$pb.TagNumber(3)
   set pageToken($core.String v) {
     $_setString(2, v);
   }
 
+  @$pb.TagNumber(3)
   $core.bool hasPageToken() => $_has(2);
+  @$pb.TagNumber(3)
   void clearPageToken() => clearField(3);
 }
 
 class ListLogsResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('ListLogsResponse',
-      package: const $pb.PackageName('google.logging.v2'))
+      package: const $pb.PackageName('google.logging.v2'),
+      createEmptyInstance: create)
     ..aOS(2, 'nextPageToken')
     ..pPS(3, 'logNames')
     ..hasRequiredFields = false;
@@ -493,17 +576,23 @@ class ListLogsResponse extends $pb.GeneratedMessage {
   ListLogsResponse createEmptyInstance() => create();
   static $pb.PbList<ListLogsResponse> createRepeated() =>
       $pb.PbList<ListLogsResponse>();
-  static ListLogsResponse getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static ListLogsResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ListLogsResponse>(create);
   static ListLogsResponse _defaultInstance;
 
-  $core.String get nextPageToken => $_getS(0, '');
+  @$pb.TagNumber(2)
+  $core.String get nextPageToken => $_getSZ(0);
+  @$pb.TagNumber(2)
   set nextPageToken($core.String v) {
     $_setString(0, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasNextPageToken() => $_has(0);
+  @$pb.TagNumber(2)
   void clearNextPageToken() => clearField(2);
 
+  @$pb.TagNumber(3)
   $core.List<$core.String> get logNames => $_getList(1);
 }

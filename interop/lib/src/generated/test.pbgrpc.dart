@@ -1,12 +1,13 @@
 ///
 //  Generated code. Do not modify.
 //  source: test.proto
-///
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
+//
+// @dart = 2.3
+// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
 
 import 'dart:async' as $async;
 
-import 'dart:core' as $core show int, String, List;
+import 'dart:core' as $core;
 
 import 'package:grpc/service_api.dart' as $grpc;
 import 'empty.pb.dart' as $0;
@@ -193,28 +194,28 @@ abstract class TestServiceBase extends $grpc.Service {
   }
 
   $async.Future<$0.Empty> emptyCall_Pre(
-      $grpc.ServiceCall call, $async.Future request) async {
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
     return emptyCall(call, await request);
   }
 
   $async.Future<$1.SimpleResponse> unaryCall_Pre(
-      $grpc.ServiceCall call, $async.Future request) async {
+      $grpc.ServiceCall call, $async.Future<$1.SimpleRequest> request) async {
     return unaryCall(call, await request);
   }
 
   $async.Future<$1.SimpleResponse> cacheableUnaryCall_Pre(
-      $grpc.ServiceCall call, $async.Future request) async {
+      $grpc.ServiceCall call, $async.Future<$1.SimpleRequest> request) async {
     return cacheableUnaryCall(call, await request);
   }
 
   $async.Stream<$1.StreamingOutputCallResponse> streamingOutputCall_Pre(
-      $grpc.ServiceCall call, $async.Future request) async* {
-    yield* streamingOutputCall(
-        call, (await request) as $1.StreamingOutputCallRequest);
+      $grpc.ServiceCall call,
+      $async.Future<$1.StreamingOutputCallRequest> request) async* {
+    yield* streamingOutputCall(call, await request);
   }
 
   $async.Future<$0.Empty> unimplementedCall_Pre(
-      $grpc.ServiceCall call, $async.Future request) async {
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
     return unimplementedCall(call, await request);
   }
 
@@ -271,7 +272,7 @@ abstract class UnimplementedServiceBase extends $grpc.Service {
   }
 
   $async.Future<$0.Empty> unimplementedCall_Pre(
-      $grpc.ServiceCall call, $async.Future request) async {
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
     return unimplementedCall(call, await request);
   }
 
@@ -329,12 +330,12 @@ abstract class ReconnectServiceBase extends $grpc.Service {
   }
 
   $async.Future<$0.Empty> start_Pre(
-      $grpc.ServiceCall call, $async.Future request) async {
+      $grpc.ServiceCall call, $async.Future<$1.ReconnectParams> request) async {
     return start(call, await request);
   }
 
   $async.Future<$1.ReconnectInfo> stop_Pre(
-      $grpc.ServiceCall call, $async.Future request) async {
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
     return stop(call, await request);
   }
 
