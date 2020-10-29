@@ -3,15 +3,15 @@ description: Dart implementation of gRPC, a high performance, open-source univer
 
 version: 2.7.0
 
-author: Dart Team <misc@dartlang.org>
 homepage: https://github.com/dart-lang/grpc-dart
 
 environment:
-  sdk: ">=2.2.0 <3.0.0"
+  sdk: '>=2.3.0 <3.0.0'
 
 dependencies:
   async: ^2.2.0
   crypto: ^2.1.4
+  fixnum: ^0.10.11
   googleapis_auth: ^0.2.7
   meta: ^1.1.6
   http: ^0.12.0
