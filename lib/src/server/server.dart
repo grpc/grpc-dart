@@ -105,8 +105,10 @@ class ConnectionServer {
     // timeout.
     connection.incomingStreams.listen((stream) {
       handler = serveStream_(stream);
-    }, onError: (error) {
-      print('Connection error: $error');
+    }, onError: (error, stackTrace) {
+      if (error is Error) {
+        Zone.current.handleUncaughtError(error, stackTrace);
+      }
     }, onDone: () {
       // TODO(sigurdm): This is not correct behavior in the presence of
       // half-closed tcp streams.
@@ -175,11 +177,11 @@ class Server extends ConnectionServer {
       final connection = ServerTransportConnection.viaSocket(socket,
           settings: http2ServerSettings);
       serveConnection(connection);
-    }, onError: _printSocketError);
-  }
-
-  void _printSocketError(Object error) {
-    print('Socket error: $error');
+    }, onError: (error, stackTrace) {
+      if (error is Error) {
+        Zone.current.handleUncaughtError(error, stackTrace);
+      }
+    });
   }
 
   @visibleForTesting
