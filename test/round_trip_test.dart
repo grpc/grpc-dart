@@ -27,10 +27,15 @@ class TestService extends Service {
         (List<int> value) => value[0], (int value) => [value]));
   }
 
+  static const requestFiniteStream = 1;
+  static const requestInfiniteStream = 2;
+
   Stream<int> stream(ServiceCall call, Future request) async* {
-    yield 1;
-    yield 2;
-    yield 3;
+    final isInfinite = 2 == await request;
+    for (var i = 1; i <= 3 || isInfinite; i++) {
+      yield i;
+      await Future.delayed(Duration(milliseconds: 100));
+    }
   }
 }
 
@@ -61,7 +66,8 @@ main() async {
       ChannelOptions(credentials: ChannelCredentials.insecure()),
     ));
     final testClient = TestClient(channel);
-    expect(await testClient.stream(1).toList(), [1, 2, 3]);
+    expect(await testClient.stream(TestService.requestFiniteStream).toList(),
+        [1, 2, 3]);
     server.shutdown();
   });
 
@@ -83,7 +89,8 @@ main() async {
               authority: 'localhost')),
     ));
     final testClient = TestClient(channel);
-    expect(await testClient.stream(1).toList(), [1, 2, 3]);
+    expect(await testClient.stream(TestService.requestFiniteStream).toList(),
+        [1, 2, 3]);
     server.shutdown();
   });
 
@@ -97,7 +104,24 @@ main() async {
       ChannelOptions(credentials: ChannelCredentials.insecure()),
     ));
     final testClient = TestClient(channel);
-    await expectLater(testClient.stream(1).toList(), throwsA(isA<GrpcError>()));
+    await expectLater(
+        testClient.stream(TestService.requestFiniteStream).toList(),
+        throwsA(isA<GrpcError>()));
+    await server.shutdown();
+  });
+
+  test('cancellation of streaming subscription propagates properly', () async {
+    final Server server = Server([TestService()]);
+    await server.serve(address: 'localhost', port: 0);
+
+    final channel = FixedConnectionClientChannel(Http2ClientConnection(
+      'localhost',
+      server.port,
+      ChannelOptions(credentials: ChannelCredentials.insecure()),
+    ));
+    final testClient = TestClient(channel);
+    expect(await testClient.stream(TestService.requestInfiniteStream).first, 1);
+    await channel.shutdown();
     await server.shutdown();
   });
 }
