@@ -1,6 +1,10 @@
 ## 2.7.0
 
-* Added decoding/parsing of `grpc-status-details-bin` to pass all response exception details to the `GrpcError` thrown in Dart, via [#349](https://github.com/grpc/grpc-dart/pull/349).
+* Added decoding/parsing of `grpc-status-details-bin` to pass all response
+  exception details to the `GrpcError` thrown in Dart, via
+  [#349](https://github.com/grpc/grpc-dart/pull/349).
+* Dart SDK constraint is bumped to `>=2.3.0 <3.0.0` due to language version
+  in the generated protobuf code.
 
 ## 2.6.0
 
