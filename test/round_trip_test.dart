@@ -14,9 +14,8 @@ class TestClient extends Client {
 
   TestClient(api.ClientChannel channel) : super(channel);
   ResponseStream<int> stream(int request, {CallOptions options}) {
-    final call =
-        $createCall(_$stream, Stream.fromIterable([request]), options: options);
-    return ResponseStream(call);
+    return $createStreamingCall(_$stream, Stream.value(request),
+        options: options);
   }
 }
 

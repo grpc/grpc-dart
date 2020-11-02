@@ -31,6 +31,10 @@ export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
 export 'src/client/connection.dart' show ConnectionState;
 export 'src/client/http2_channel.dart'
     show ClientChannel, ClientTransportConnectorChannel;
+
+export 'src/client/interceptor.dart'
+    show ClientInterceptor, ClientUnaryInvoker, ClientStreamingInvoker;
+
 export 'src/client/method.dart' show ClientMethod;
 export 'src/client/options.dart'
     show

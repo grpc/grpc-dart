@@ -16,9 +16,8 @@ class TestClient extends grpc.Client {
 
   TestClient(ClientChannel channel) : super(channel);
   grpc.ResponseStream<int> stream(int request, {grpc.CallOptions options}) {
-    final call =
-        $createCall(_$stream, Stream.fromIterable([request]), options: options);
-    return grpc.ResponseStream(call);
+    return $createStreamingCall(_$stream, Stream.value(request),
+        options: options);
   }
 }
 
