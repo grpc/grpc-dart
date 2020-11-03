@@ -2,6 +2,7 @@
 
 VERSION=v0.13.0
 SUFFIX=
+WGET=wget
 
 case $TRAVIS_OS_NAME in
   linux)
@@ -26,12 +27,13 @@ case $MATRIX_OS in
   windows-latest)
     VARIANT=win64.exe
     SUFFIX=.exe
+    WGET=C:/msys64/usr/bin/wget.exe
     ;;
 esac
 
 BINARY=grpcwebproxy-${VERSION}-${VARIANT}
 
-wget https://github.com/improbable-eng/grpc-web/releases/download/${VERSION}/${BINARY}.zip -O /tmp/grpcwebproxy.zip
+${WGET} https://github.com/improbable-eng/grpc-web/releases/download/${VERSION}/${BINARY}.zip -O /tmp/grpcwebproxy.zip
 rm -rf /tmp/grpcwebproxy
 mkdir /tmp/grpcwebproxy
 cd /tmp/grpcwebproxy
