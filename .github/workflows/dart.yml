@@ -3,9 +3,9 @@ name: Dart
 on:
   # Run CI on pushes to the master branch, and on PRs against master.
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 jobs:
   # Check code formating and static analysis on a single OS (linux)
