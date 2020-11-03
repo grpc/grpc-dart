@@ -24,8 +24,17 @@ jobs:
         run: dart pub get
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed .
-      - name: Analyze code
-        run: dart analyze
+      - name: Analyze code (lib and test)
+        run: dart analyze lib test
+      - name: Analyze code (introp and examples)
+        run: |
+          for example in interop example/*/; do
+            cd $example
+            echo [Analyzing $example]
+            dart pub get
+            dart analyze .
+          done
+        shell: bash
 
   # Run tests on a matrix consisting of three dimensions:
   # 1. OS: mac, windows, linux
