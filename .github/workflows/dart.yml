@@ -1,15 +1,15 @@
 name: Dart
 
 on:
-  # Run CI on pushes to the master branch, and on PRs against master.
+# Run CI on pushes to the master branch, and on PRs against master.
   push:
     branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
-  # Check code formating and static analysis on a single OS (linux)
-  # against Dart stable and dev.
+# Check code formating and static analysis on a single OS (linux)
+# against Dart stable and dev.
   analyze:
     runs-on: ubuntu-latest
 
@@ -27,10 +27,10 @@ jobs:
       - name: Analyze code
         run: dart analyze
 
-  # Run tests on a matrix consisting of three dimensions:
-  # 1. OS: mac, windows, linux
-  # 2. release channel: stable, dev
-  # 3. TODO: Dart execution mode: native, web
+# Run tests on a matrix consisting of three dimensions:
+# 1. OS: mac, windows, linux
+# 2. release channel: stable, dev
+# 3. TODO: Dart execution mode: native, web
   test:
     needs: analyze
     runs-on: ${{ matrix.os }}
