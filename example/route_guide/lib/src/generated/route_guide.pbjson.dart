@@ -16,8 +16,22 @@ const Point$json = const {
 const Rectangle$json = const {
   '1': 'Rectangle',
   '2': const [
-    const {'1': 'lo', '3': 1, '4': 1, '5': 11, '6': '.routeguide.Point', '10': 'lo'},
-    const {'1': 'hi', '3': 2, '4': 1, '5': 11, '6': '.routeguide.Point', '10': 'hi'},
+    const {
+      '1': 'lo',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.routeguide.Point',
+      '10': 'lo'
+    },
+    const {
+      '1': 'hi',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.routeguide.Point',
+      '10': 'hi'
+    },
   ],
 };
 
@@ -25,14 +39,28 @@ const Feature$json = const {
   '1': 'Feature',
   '2': const [
     const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
-    const {'1': 'location', '3': 2, '4': 1, '5': 11, '6': '.routeguide.Point', '10': 'location'},
+    const {
+      '1': 'location',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.routeguide.Point',
+      '10': 'location'
+    },
   ],
 };
 
 const RouteNote$json = const {
   '1': 'RouteNote',
   '2': const [
-    const {'1': 'location', '3': 1, '4': 1, '5': 11, '6': '.routeguide.Point', '10': 'location'},
+    const {
+      '1': 'location',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.routeguide.Point',
+      '10': 'location'
+    },
     const {'1': 'message', '3': 2, '4': 1, '5': 9, '10': 'message'},
   ],
 };
@@ -46,4 +74,3 @@ const RouteSummary$json = const {
     const {'1': 'elapsed_time', '3': 4, '4': 1, '5': 5, '10': 'elapsedTime'},
   ],
 };
-
