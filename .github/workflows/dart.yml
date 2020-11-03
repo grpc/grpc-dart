@@ -1,20 +1,49 @@
-name: Dart CI
+name: Dart
 
 on:
+  # Run CI on pushes to the master branch, and on PRs against master.
   push:
-    branches: [ master ]
+    branches: [main]
   pull_request:
-    branches: [ master ]
+    branches: [main]
 
 jobs:
-  build:
-
+  # Check code formating and static analysis on a single OS (linux)
+  # against Dart stable and dev.
+  analyze:
     runs-on: ubuntu-latest
 
-    container:
-      image:  google/dart:latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: pub get
+      - uses: actions/checkout@v2
+      - uses: cedx/setup-dart@v2
+        with:
+          release-channel: stable
+      - name: Report version
+        run: dart --version
+      - name: Install dependencies
+        run: dart pub get
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Analyze code
+        run: dart analyze
+
+  # Run tests on a matrix consisting of three dimensions:
+  # 1. OS: mac, windows, linux
+  # 2. release channel: stable, dev
+  # 3. TODO: Dart execution mode: native, web
+  test:
+    needs: analyze
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        sdk: [stable, dev]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: cedx/setup-dart@v2
+      - name: Report version
+        run: dart --version
+      - name: Install dependencies
+        run: dart pub get
+      - name: Run tests
+        run: dart test
