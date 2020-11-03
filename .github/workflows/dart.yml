@@ -48,12 +48,21 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         sdk: [stable, dev]
+        platform: [vm, chrome]
     steps:
       - uses: actions/checkout@v2
       - uses: cedx/setup-dart@v2
+        with:
+          release-channel: ${{ matrix.sdk }}
       - name: Report version
         run: dart --version
+      - name: Install grpcwebproxy
+        if: ${{ matrix.platform == 'web' }}
+        run: |
+          ./tool/install-grpcwebproxy.sh
+          echo "/tmp/grpcwebproxy" >> $GITHUB_PATH
+        shell: bash
       - name: Install dependencies
         run: dart pub get
       - name: Run tests
-        run: dart test
+        run: dart test --platform ${{ matrix.platform }}
