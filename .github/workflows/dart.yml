@@ -29,10 +29,11 @@ jobs:
       - name: Analyze code (introp and examples)
         run: |
           for example in interop example/*/; do
-            cd $example
+            pushd $example
             echo [Analyzing $example]
             dart pub get
             dart analyze .
+            popd
           done
         shell: bash
 
