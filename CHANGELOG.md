@@ -1,3 +1,13 @@
+## 2.8.0-dev
+
+* Added support for client interceptors, which can be configured through
+  `Client` constructor's `interceptors` parameter. Interceptors will be
+  executed by `Client.$createStreamingCall` and `Client.$createUnaryCall`.
+  Using interceptors requires regenerating client stubs using version 19.2.0 or
+  newer of protobuf compiler plugin.
+* `Client.$createCall` is deprecated because it does not invoke client
+  interceptors.
+
 ## 2.7.0
 
 * Added decoding/parsing of `grpc-status-details-bin` to pass all response
