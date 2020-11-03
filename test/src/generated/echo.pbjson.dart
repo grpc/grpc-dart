@@ -24,7 +24,13 @@ const ServerStreamingEchoRequest$json = const {
   '2': const [
     const {'1': 'message', '3': 1, '4': 1, '5': 9, '10': 'message'},
     const {'1': 'message_count', '3': 2, '4': 1, '5': 5, '10': 'messageCount'},
-    const {'1': 'message_interval', '3': 3, '4': 1, '5': 5, '10': 'messageInterval'},
+    const {
+      '1': 'message_interval',
+      '3': 3,
+      '4': 1,
+      '5': 5,
+      '10': 'messageInterval'
+    },
   ],
 };
 
@@ -34,4 +40,3 @@ const ServerStreamingEchoResponse$json = const {
     const {'1': 'message', '3': 1, '4': 1, '5': 9, '10': 'message'},
   ],
 };
-
