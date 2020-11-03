@@ -57,7 +57,7 @@ jobs:
       - name: Report version
         run: dart --version
       - name: Install grpcwebproxy
-        if: ${{ matrix.platform == 'web' }}
+        if: ${{ matrix.platform == 'chrome' }}
         run: |
           ./tool/install-grpcwebproxy.sh
           echo "/tmp/grpcwebproxy" >> $GITHUB_PATH
