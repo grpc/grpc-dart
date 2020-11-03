@@ -1,4 +1,8 @@
 # Lint rules and documentation, see http://dart-lang.github.io/linter/lints
+analyzer:
+  exclude:
+  - example/**
+  - interop/**
 linter:
   rules:
     - avoid_init_to_null
