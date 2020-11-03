@@ -16,6 +16,19 @@ case $TRAVIS_OS_NAME in
     ;;
 esac
 
+case $MATRIX_OS in
+  ubuntu-latest)
+    VARIANT=linux-x86_64
+    ;;
+  macos-latest)
+    VARIANT=osx-x86_64
+    ;;
+  windows-latest)
+    VARIANT=win64.exe
+    SUFFIX=.exe
+    ;;
+esac
+
 BINARY=grpcwebproxy-${VERSION}-${VARIANT}
 
 wget https://github.com/improbable-eng/grpc-web/releases/download/${VERSION}/${BINARY}.zip -O /tmp/grpcwebproxy.zip

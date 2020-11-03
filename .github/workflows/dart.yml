@@ -61,6 +61,8 @@ jobs:
         run: |
           ./tool/install-grpcwebproxy.sh
           echo "/tmp/grpcwebproxy" >> $GITHUB_PATH
+        env:
+          MATRIX_OS: ${{ matrix.os }}
         shell: bash
       - name: Install dependencies
         run: dart pub get
