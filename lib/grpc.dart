@@ -60,7 +60,7 @@ export 'src/server/service.dart' show ServiceMethod, Service;
 export 'src/shared/message.dart'
     show GrpcMessage, GrpcMetadata, GrpcData, grpcDecompressor;
 
-export 'src/shared/profiler.dart';
+export 'src/shared/profiler.dart' show isTimelineLoggingEnabled;
 
 export 'src/shared/security.dart'
     show supportedAlpnProtocols, createSecurityContext;

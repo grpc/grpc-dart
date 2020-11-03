@@ -15,17 +15,16 @@
 
 @TestOn('vm')
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:grpc/grpc.dart';
 import 'package:grpc/service_api.dart' as api;
 import 'package:grpc/src/client/channel.dart' hide ClientChannel;
 import 'package:grpc/src/client/connection.dart';
 import 'package:grpc/src/client/http2_connection.dart';
+import 'package:grpc/src/shared/profiler.dart';
+import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-import 'package:vm_service/vm_service.dart';
-import 'package:vm_service/vm_service_io.dart';
-
-import 'test_util.dart';
 
 const String path = '/test.TestService/stream';
 
@@ -66,11 +65,56 @@ class FixedConnectionClientChannel extends ClientChannelBase {
   ClientConnection createConnection() => clientConnection;
 }
 
+class FakeTimelineTask extends Fake implements TimelineTask {
+  final String filterKey;
+  static final List<Map> events = [];
+  String name;
+
+  FakeTimelineTask({TimelineTask parent, this.filterKey});
+
+  void start(String name, {Map arguments}) {
+    name = name;
+    events.add({
+      'ph': 'b',
+      'name': name,
+      'args': {
+        if (filterKey != null) 'filterKey': filterKey,
+        if (arguments != null) ...arguments,
+      }
+    });
+  }
+
+  void instant(String name, {Map arguments}) {
+    events.add({
+      'ph': 'i',
+      'name': name,
+      'args': {
+        if (filterKey != null) 'filterKey': filterKey,
+        if (arguments != null) ...arguments,
+      }
+    });
+  }
+
+  void finish({Map arguments}) {
+    events.add({
+      'ph': 'e',
+      'name': name,
+      'args': {
+        if (filterKey != null) 'filterKey': filterKey,
+        if (arguments != null) ...arguments,
+      }
+    });
+  }
+}
+
+TimelineTask fakeTimelineTaskFactory({String filterKey}) =>
+    FakeTimelineTask(filterKey: filterKey);
+
 testee() async {
   final Server server = Server([TestService()]);
   await server.serve(address: 'localhost', port: 0);
-
-  enableTimelineLogging();
+  isTimelineLoggingEnabled = true;
+  timelineTaskFactory = fakeTimelineTaskFactory;
   final channel = FixedConnectionClientChannel(Http2ClientConnection(
     'localhost',
     server.port,
@@ -128,12 +172,11 @@ void checkFinishEvent(List<Map> events) {
   expect(e, isNotNull);
 }
 
-var tests = <IsolateTest>[
-  (VmService service, IsolateRef i) async {
-    final timeline = await service.getVMTimeline();
-    final events = timeline.traceEvents
-        .where((e) => e.json['args']['filterKey'] == 'grpc/client')
-        .map((e) => e.json)
+main([args = const <String>[]]) {
+  test('Test gRPC timeline logging', () async {
+    await testee();
+    final events = FakeTimelineTask.events
+        .where((e) => e['args']['filterKey'] == 'grpc/client')
         .toList();
     checkStartEvent(events);
     checkSendEvent(events);
@@ -141,8 +184,5 @@ var tests = <IsolateTest>[
     checkReceiveEvent(events);
     checkReceiveMetaDataEvent(events);
     checkFinishEvent(events);
-  },
-];
-
-main([args = const <String>[]]) async => runIsolateTests(args, tests,
-    testeeBefore: testee, extraArgs: ['--timeline_streams=Dart']);
+  });
+}

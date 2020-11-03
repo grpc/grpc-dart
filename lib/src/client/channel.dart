@@ -16,6 +16,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import '../shared/profiler.dart';
 import '../shared/status.dart';
 
 import 'call.dart';
@@ -78,8 +79,13 @@ abstract class ClientChannelBase implements ClientChannel {
   @override
   ClientCall<Q, R> createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
-    final call = ClientCall(method, requests, options,
-        enableTimelineLogging ? TimelineTask(filterKey: 'grpc/client') : null);
+    final call = ClientCall(
+        method,
+        requests,
+        options,
+        isTimelineLoggingEnabled
+            ? timelineTaskFactory(filterKey: 'grpc/client')
+            : null);
     getConnection().then((connection) {
       if (call.isCancelled) return;
       connection.dispatchCall(call);

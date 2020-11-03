@@ -13,21 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import '../client/channel.dart';
+import 'dart:developer';
+
+import 'package:meta/meta.dart';
+
+@visibleForTesting
+typedef TimelineTask TimelineTaskFactory({String filterKey});
+
+@visibleForTesting
+TimelineTaskFactory timelineTaskFactory = _defaultTimelineTaskFactory;
+
+TimelineTask _defaultTimelineTaskFactory({String filterKey}) =>
+    TimelineTask(filterKey: filterKey);
 
 /// Enable logging requests and response for clients.
 ///
 /// Logging is disabled by default.
-void enableTimelineLogging() {
-  ClientChannelBase.enableTimelineLogging = true;
-}
-
-/// Disbale timeline logging for clients.
-void disableTimelineLogging() {
-  ClientChannelBase.enableTimelineLogging = false;
-}
-
-/// Get the current status of timeline logging.
-bool getTimelineLoggingStatus() {
-  return ClientChannelBase.enableTimelineLogging;
-}
+bool isTimelineLoggingEnabled = false;
