@@ -25,9 +25,7 @@ jobs:
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed .
       - name: Analyze code (lib and test)
-        run: |
-          dart analyze lib
-          dart analyze test
+        run: dart analyze .
       - name: Analyze code (introp and examples)
         run: |
           for example in interop example/*/; do
