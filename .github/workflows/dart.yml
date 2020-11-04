@@ -52,7 +52,7 @@ jobs:
         exclude:
           # We only run Chrome tests on Linux. No need to run them
           # on Windows and Mac because they are platform independent.
-          - os: windows
+          - os: windows-latest
             platform: chrome
           - os: macos-latest
             platform: chrome
