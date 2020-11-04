@@ -18,12 +18,14 @@ import 'dart:developer';
 import 'package:meta/meta.dart';
 
 @visibleForTesting
-typedef TimelineTask TimelineTaskFactory({String filterKey, TimelineTask parent});
+typedef TimelineTask TimelineTaskFactory(
+    {String filterKey, TimelineTask parent});
 
 @visibleForTesting
 TimelineTaskFactory timelineTaskFactory = _defaultTimelineTaskFactory;
 
-TimelineTask _defaultTimelineTaskFactory({String filterKey, TimelineTask parent}) =>
+TimelineTask _defaultTimelineTaskFactory(
+        {String filterKey, TimelineTask parent}) =>
     TimelineTask(filterKey: filterKey, parent: parent);
 
 const String clientTimelineFilterKey = 'grpc/client';
