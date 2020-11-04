@@ -253,8 +253,6 @@ class ClientCall<Q, R> implements Response {
             'data': data.toString(),
           });
           _requestTimeline?.finish();
-          _responseTimeline = timelineTaskFactory(
-              parent: _requestTimeline, filterKey: clientTimelineFilterKey);
           return _method.requestSerializer(data);
         })
         .handleError(_onRequestError)
@@ -353,6 +351,10 @@ class ClientCall<Q, R> implements Response {
     } else if (data is GrpcMetadata) {
       if (!_headers.isCompleted) {
         _headerMetadata = data.metadata;
+        if (_requestTimeline != null) {
+          _responseTimeline = timelineTaskFactory(
+              parent: _requestTimeline, filterKey: clientTimelineFilterKey);
+        }
         _responseTimeline?.start('gRPC Response');
         _responseTimeline?.instant('Metadata received', arguments: {
           'headers': _headerMetadata.toString(),
