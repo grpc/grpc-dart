@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -ex
+
 VERSION=v0.13.0
 SUFFIX=
 WGET=wget
