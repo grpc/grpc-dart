@@ -84,7 +84,7 @@ abstract class ClientChannelBase implements ClientChannel {
         requests,
         options,
         isTimelineLoggingEnabled
-            ? timelineTaskFactory(filterKey: 'grpc/client')
+            ? timelineTaskFactory(filterKey: clientTimelineFilterKey)
             : null);
     getConnection().then((connection) {
       if (call.isCancelled) return;

@@ -18,13 +18,15 @@ import 'dart:developer';
 import 'package:meta/meta.dart';
 
 @visibleForTesting
-typedef TimelineTask TimelineTaskFactory({String filterKey});
+typedef TimelineTask TimelineTaskFactory({String filterKey, TimelineTask parent});
 
 @visibleForTesting
 TimelineTaskFactory timelineTaskFactory = _defaultTimelineTaskFactory;
 
-TimelineTask _defaultTimelineTaskFactory({String filterKey}) =>
-    TimelineTask(filterKey: filterKey);
+TimelineTask _defaultTimelineTaskFactory({String filterKey, TimelineTask parent}) =>
+    TimelineTask(filterKey: filterKey, parent: parent);
+
+const String clientTimelineFilterKey = 'grpc/client';
 
 /// Enable logging requests and response for clients.
 ///

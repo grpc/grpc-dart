@@ -66,26 +66,42 @@ class FixedConnectionClientChannel extends ClientChannelBase {
 }
 
 class FakeTimelineTask extends Fake implements TimelineTask {
-  final String filterKey;
+  static final List<FakeTimelineTask> tasks = [];
   static final List<Map> events = [];
-  String name;
+  static int _idCount = 0;
 
-  FakeTimelineTask({TimelineTask parent, this.filterKey});
+  final String filterKey;
+  final TimelineTask parent;
+  final int id = _idCount++;
+  int _startFinishCount = 0;
+
+  factory FakeTimelineTask({TimelineTask parent, String filterKey}) {
+    final task = FakeTimelineTask._(parent: parent, filterKey: filterKey);
+    tasks.add(task);
+    return task;
+  }
+
+  FakeTimelineTask._({this.parent, this.filterKey});
+
+  bool get isComplete => _startFinishCount == 0;
 
   void start(String name, {Map arguments}) {
-    name = name;
     events.add({
+      'id': id,
       'ph': 'b',
       'name': name,
       'args': {
         if (filterKey != null) 'filterKey': filterKey,
+        if (parent != null) 'parentId': (parent as FakeTimelineTask).id,
         if (arguments != null) ...arguments,
       }
     });
+    ++_startFinishCount;
   }
 
   void instant(String name, {Map arguments}) {
     events.add({
+      'id': id,
       'ph': 'i',
       'name': name,
       'args': {
@@ -97,18 +113,20 @@ class FakeTimelineTask extends Fake implements TimelineTask {
 
   void finish({Map arguments}) {
     events.add({
+      'id': id,
       'ph': 'e',
-      'name': name,
       'args': {
         if (filterKey != null) 'filterKey': filterKey,
         if (arguments != null) ...arguments,
       }
     });
+    --_startFinishCount;
+    expect(_startFinishCount >= 0, true);
   }
 }
 
-TimelineTask fakeTimelineTaskFactory({String filterKey}) =>
-    FakeTimelineTask(filterKey: filterKey);
+TimelineTask fakeTimelineTaskFactory({String filterKey, TimelineTask parent}) =>
+    FakeTimelineTask(filterKey: filterKey, parent: parent);
 
 testee() async {
   final Server server = Server([TestService()]);
@@ -126,9 +144,17 @@ testee() async {
 }
 
 void checkStartEvent(List<Map> events) {
-  final e = events.firstWhere((e) => e['ph'] == 'b');
-  expect(e['args']['method'], isNotNull);
-  expect(e['args']['method'], equals(path));
+  final e = events.where((e) => e['ph'] == 'b').toList();
+  expect(e.length, 2);
+
+  expect(e[0]['name'], 'gRPC Request: $path');
+  expect(e[0]['id'], 0);
+  expect(e[0]['args']['method'], isNotNull);
+  expect(e[0]['args']['method'], equals(path));
+
+  expect(e[1]['name'], 'gRPC Response');
+  expect(e[1]['id'], 1);
+  expect(e[1]['args']['parentId'], 0);
 }
 
 void checkSendEvent(List<Map> events) {
@@ -147,6 +173,7 @@ void checkReceiveEvent(List<Map> events) {
   expect(events.length, equals(3));
   int sum = 0;
   for (final e in events) {
+    expect(e['id'], 1);
     // 3 elements are 1, 2 and 3.
     sum |= 1 << int.parse(e['args']['data']);
   }
@@ -157,6 +184,7 @@ void checkReceiveMetaDataEvent(List<Map> events) {
   events = events.where((e) => e['name'] == 'Metadata received').toList();
   expect(events.length, equals(2));
   for (final e in events) {
+    expect(e['id'], 1);
     if (e['args']['headers'] != null) {
       final header = e['args']['headers'];
       expect(header, contains('status: 200'));
@@ -168,13 +196,16 @@ void checkReceiveMetaDataEvent(List<Map> events) {
 }
 
 void checkFinishEvent(List<Map> events) {
-  final e = events.firstWhere((e) => e['ph'] == 'e');
-  expect(e, isNotNull);
+  final e = events.where((e) => e['ph'] == 'e').toList();
+  expect(e.length, 2);
 }
 
 main([args = const <String>[]]) {
   test('Test gRPC timeline logging', () async {
     await testee();
+    for (final task in FakeTimelineTask.tasks) {
+      expect(task.isComplete, true);
+    }
     final events = FakeTimelineTask.events
         .where((e) => e['args']['filterKey'] == 'grpc/client')
         .toList();
