@@ -12,12 +12,14 @@ jobs:
   # against Dart stable and dev.
   analyze:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        sdk: [stable, dev]
     steps:
       - uses: actions/checkout@v2
       - uses: cedx/setup-dart@v2
         with:
-          release-channel: stable
+          release-channel: ${{ matrix.sdk }}
       - name: Report version
         run: dart --version
       - name: Install dependencies
