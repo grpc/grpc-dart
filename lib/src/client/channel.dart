@@ -14,7 +14,6 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:developer';
 
 import '../shared/profiler.dart';
 import '../shared/status.dart';
@@ -48,8 +47,6 @@ abstract class ClientChannelBase implements ClientChannel {
   ClientConnection _connection;
 
   bool _isShutdown = false;
-
-  static bool enableTimelineLogging = false;
 
   ClientChannelBase();
 

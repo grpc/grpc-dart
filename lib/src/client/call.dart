@@ -172,8 +172,8 @@ class ClientCall<Q, R> implements Response {
   final TimelineTask _requestTimeline;
   TimelineTask _responseTimeline;
 
-  ClientCall(
-      this._method, this._requests, this.options, this._requestTimeline) {
+  ClientCall(this._method, this._requests, this.options,
+      [this._requestTimeline]) {
     _requestTimeline?.start('gRPC Request: ${_method.path}', arguments: {
       'method': _method.path,
       'timeout': options?.timeout?.toString(),
