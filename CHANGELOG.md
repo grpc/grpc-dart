@@ -7,6 +7,8 @@
   newer of protobuf compiler plugin.
 * `Client.$createCall` is deprecated because it does not invoke client
   interceptors.
+* Fix an issue [#380](https://github.com/grpc/grpc-dart/issues/380) causing
+  incorrect duplicated headers in gRPC-Web requests.
 
 ## 2.7.0
 
