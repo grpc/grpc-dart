@@ -11,8 +11,9 @@ folder, i.e., .../example/helloworld/, first get the dependencies by running:
 ```sh
 $ pub get
 ```
+## Run TCP sample code
 
-Then, to run the server:
+Start the server:
 
 ```sh
 $ dart bin/server.dart
@@ -23,6 +24,21 @@ Likewise, to run the client:
 ```sh
 $ dart bin/client.dart
 ```
+## Run UDS sample code
+
+Start the server:
+
+```sh
+$ dart bin/unix_server.dart
+```
+
+Likewise, to run the client:
+
+```sh
+$ dart bin/unix_client.dart
+```
+
+>**Note** the `UDS` only support *nix plantform.
 
 # Regenerate the stubs
 
