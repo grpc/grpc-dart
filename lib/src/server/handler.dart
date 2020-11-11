@@ -131,6 +131,18 @@ class ServerHandler_ extends ServiceCall {
     _startStreamingRequest();
   }
 
+  GrpcError _onMetadata() {
+    try {
+      _service.$onMetadata(this);
+    } on GrpcError catch (error) {
+      return error;
+    } catch (error) {
+      final grpcError = GrpcError.internal(error.toString());
+      return grpcError;
+    }
+    return null;
+  }
+
   Future<GrpcError> _applyInterceptors() async {
     try {
       for (final interceptor in _interceptors) {
@@ -150,7 +162,19 @@ class ServerHandler_ extends ServiceCall {
     _requests = _descriptor.createRequestStream(_incomingSubscription);
     _incomingSubscription.onData(_onDataActive);
 
-    _service.$onMetadata(this);
+    final error = _onMetadata();
+    if (error != null) {
+      if (!_requests.isClosed) {
+        _requests
+          ..addError(error)
+          ..close();
+      }
+      _sendError(error);
+      _onDone();
+      _stream.terminate();
+      return;
+    }
+
     _responses = _descriptor.handle(this, _requests.stream);
 
     _responseSubscription = _responses.listen(_onResponse,
