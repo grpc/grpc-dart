@@ -61,7 +61,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   Duration _currentReconnectDelay;
 
-  Http2ClientConnection(String host, int port, this.options)
+  Http2ClientConnection(Object host, int port, this.options)
       : _transportConnector = _SocketTransportConnector(host, port, options);
 
   Http2ClientConnection.fromClientTransportConnector(
@@ -298,7 +298,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 }
 
 class _SocketTransportConnector implements ClientTransportConnector {
-  final String _host;
+  final Object _host;
   final int _port;
   final ChannelOptions _options;
   Socket _socket;
@@ -310,7 +310,9 @@ class _SocketTransportConnector implements ClientTransportConnector {
     final securityContext = _options.credentials.securityContext;
     _socket = await Socket.connect(_host, _port);
     // Don't wait for io buffers to fill up before sending requests.
-    _socket.setOption(SocketOption.tcpNoDelay, true);
+    if (_socket.address.type != InternetAddressType.unix) {
+      _socket.setOption(SocketOption.tcpNoDelay, true);
+    }
     if (securityContext != null) {
       // Todo(sigurdm): We want to pass supportedProtocols: ['h2'].
       // http://dartbug.com/37950

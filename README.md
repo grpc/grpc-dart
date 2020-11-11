@@ -19,6 +19,7 @@ For complete documentation, see [Dart gRPC](https://grpc.io/docs/languages/dart)
 - [Flutter](https://flutter.dev)
 
 > **Note:** [grpc-web](https://github.com/grpc/grpc-web) is supported by `package:grpc/grpc_web.dart`.
+> **UDS-unix domain socket** is supported with sdk version >= 2.8.0.
 
 ## Contributing
 
