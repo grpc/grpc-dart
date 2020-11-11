@@ -21,7 +21,8 @@ import 'package:helloworld/src/generated/helloworld.pb.dart';
 import 'package:helloworld/src/generated/helloworld.pbgrpc.dart';
 
 Future<void> main(List<String> args) async {
-  final udsAddress = InternetAddress('localhost', type: InternetAddressType.unix);
+  final udsAddress =
+      InternetAddress('localhost', type: InternetAddressType.unix);
   final channel = ClientChannel(
     udsAddress,
     port: 0,

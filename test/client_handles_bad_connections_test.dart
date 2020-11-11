@@ -49,7 +49,8 @@ class FixedConnectionClientChannel extends ClientChannelBase {
 }
 
 main() async {
-  testTcpAndUds('client reconnects after the connection gets old', (address) async {
+  testTcpAndUds('client reconnects after the connection gets old',
+      (address) async {
     // client reconnect after a short delay.
     final grpc.Server server = grpc.Server([TestService()]);
     await server.serve(address: address, port: 0);
