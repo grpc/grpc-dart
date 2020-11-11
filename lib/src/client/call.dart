@@ -131,17 +131,24 @@ class WebCallOptions extends CallOptions {
   @override
   CallOptions mergedWith(CallOptions other) {
     if (other == null) return this;
-    if (other is! WebCallOptions) return super.mergedWith(other);
+
+    final mergedMetadata = Map.from(metadata)..addAll(other.metadata);
+    final mergedTimeout = other.timeout ?? timeout;
+    final mergedProviders = List.from(metadataProviders)
+      ..addAll(other.metadataProviders);
+
+    if (other is! WebCallOptions) {
+      return WebCallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
+          List.unmodifiable(mergedProviders),
+          bypassCorsPreflight: bypassCorsPreflight,
+          withCredentials: withCredentials);
+    }
 
     final otherOptions = other as WebCallOptions;
     final mergedBypassCorsPreflight =
         otherOptions.bypassCorsPreflight ?? bypassCorsPreflight;
     final mergedWithCredentials =
         otherOptions.withCredentials ?? withCredentials;
-    final mergedMetadata = Map.from(metadata)..addAll(otherOptions.metadata);
-    final mergedTimeout = otherOptions.timeout ?? timeout;
-    final mergedProviders = List.from(metadataProviders)
-      ..addAll(otherOptions.metadataProviders);
     return WebCallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
         List.unmodifiable(mergedProviders),
         bypassCorsPreflight: mergedBypassCorsPreflight,
