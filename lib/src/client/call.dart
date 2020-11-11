@@ -15,12 +15,14 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:grpc/src/generated/google/rpc/status.pb.dart';
 import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
 
 import '../shared/message.dart';
+import '../shared/profiler.dart';
 import '../shared/status.dart';
 import 'common.dart';
 import 'connection.dart';
@@ -174,7 +176,15 @@ class ClientCall<Q, R> implements Response {
   bool isCancelled = false;
   Timer _timeoutTimer;
 
-  ClientCall(this._method, this._requests, this.options) {
+  final TimelineTask _requestTimeline;
+  TimelineTask _responseTimeline;
+
+  ClientCall(this._method, this._requests, this.options,
+      [this._requestTimeline]) {
+    _requestTimeline?.start('gRPC Request: ${_method.path}', arguments: {
+      'method': _method.path,
+      'timeout': options?.timeout?.toString(),
+    });
     _responses = StreamController(onListen: _onResponseListen);
     if (options.timeout != null) {
       _timeoutTimer = Timer(options.timeout, _onTimedOut);
@@ -186,6 +196,7 @@ class ClientCall<Q, R> implements Response {
   }
 
   void _terminateWithError(GrpcError error) {
+    _finishTimelineWithError(error, _requestTimeline);
     if (!_responses.isClosed) {
       _responses.addError(error);
     }
@@ -240,8 +251,17 @@ class ClientCall<Q, R> implements Response {
       _terminateWithError(GrpcError.unavailable('Error making call: $e'));
       return;
     }
+    _requestTimeline?.instant('Request sent', arguments: {
+      'metadata': metadata,
+    });
     _requestSubscription = _requests
-        .map(_method.requestSerializer)
+        .map((data) {
+          _requestTimeline?.instant('Data sent', arguments: {
+            'data': data.toString(),
+          });
+          _requestTimeline?.finish();
+          return _method.requestSerializer(data);
+        })
         .handleError(_onRequestError)
         .listen(_stream.outgoingMessages.add,
             onError: _stream.outgoingMessages.addError,
@@ -252,8 +272,16 @@ class ClientCall<Q, R> implements Response {
     _onResponseListen();
   }
 
+  void _finishTimelineWithError(GrpcError error, TimelineTask timeline) {
+    timeline?.finish(arguments: {
+      'error': error.toString(),
+    });
+  }
+
   void _onTimedOut() {
-    _responses.addError(GrpcError.deadlineExceeded('Deadline exceeded'));
+    final error = GrpcError.deadlineExceeded('Deadline exceeded');
+    _finishTimelineWithError(error, _requestTimeline);
+    _responses.addError(error);
     _safeTerminate();
   }
 
@@ -278,6 +306,7 @@ class ClientCall<Q, R> implements Response {
 
   /// Emit an error response to the user, and tear down this call.
   void _responseError(GrpcError error, [StackTrace stackTrace]) {
+    _finishTimelineWithError(error, _responseTimeline);
     _responses.addError(error, stackTrace);
     _timeoutTimer?.cancel();
     _requestSubscription?.cancel();
@@ -317,7 +346,11 @@ class ClientCall<Q, R> implements Response {
         return;
       }
       try {
-        _responses.add(_method.responseDeserializer(data.data));
+        final decodedData = _method.responseDeserializer(data.data);
+        _responseTimeline?.instant('Data received', arguments: {
+          'data': decodedData.toString(),
+        });
+        _responses.add(decodedData);
         _hasReceivedResponses = true;
       } catch (e, s) {
         _responseError(GrpcError.dataLoss('Error parsing response'), s);
@@ -325,6 +358,14 @@ class ClientCall<Q, R> implements Response {
     } else if (data is GrpcMetadata) {
       if (!_headers.isCompleted) {
         _headerMetadata = data.metadata;
+        if (_requestTimeline != null) {
+          _responseTimeline = timelineTaskFactory(
+              parent: _requestTimeline, filterKey: clientTimelineFilterKey);
+        }
+        _responseTimeline?.start('gRPC Response');
+        _responseTimeline?.instant('Metadata received', arguments: {
+          'headers': _headerMetadata.toString(),
+        });
         _headers.complete(_headerMetadata);
         return;
       }
@@ -333,6 +374,9 @@ class ClientCall<Q, R> implements Response {
         return;
       }
       final metadata = data.metadata;
+      _responseTimeline?.instant('Metadata received', arguments: {
+        'trailers': metadata.toString(),
+      });
       _trailers.complete(metadata);
 
       /// Process status error if necessary
@@ -373,6 +417,7 @@ class ClientCall<Q, R> implements Response {
       /// Process status error if necessary
       _checkForErrorStatus(_headerMetadata);
     }
+    _responseTimeline?.finish();
     _timeoutTimer?.cancel();
     _responses.close();
     _responseSubscription.cancel();
@@ -386,6 +431,7 @@ class ClientCall<Q, R> implements Response {
       error = GrpcError.unknown(error.toString());
     }
 
+    _finishTimelineWithError(error, _requestTimeline);
     _responses.addError(error, stackTrace);
     _timeoutTimer?.cancel();
     _responses.close();
@@ -405,7 +451,9 @@ class ClientCall<Q, R> implements Response {
   @override
   Future<void> cancel() {
     if (!_responses.isClosed) {
-      _responses.addError(GrpcError.cancelled('Cancelled by client.'));
+      final error = GrpcError.cancelled('Cancelled by client.');
+      _responses.addError(error);
+      _finishTimelineWithError(error, _requestTimeline);
     }
     return _terminate();
   }
