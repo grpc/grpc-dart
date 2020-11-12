@@ -15,13 +15,9 @@
 
 import 'dart:developer';
 
-import 'package:meta/meta.dart';
-
-@visibleForTesting
 typedef TimelineTask TimelineTaskFactory(
     {String filterKey, TimelineTask parent});
 
-@visibleForTesting
 TimelineTaskFactory timelineTaskFactory = _defaultTimelineTaskFactory;
 
 TimelineTask _defaultTimelineTaskFactory(
