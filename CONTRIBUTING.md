@@ -37,18 +37,22 @@ pub get
 pub run test
 ```
 
+gRPC-web tests require [`envoy`](
+https://www.envoyproxy.io/docs/envoy/latest/start/start.html) binary to be
+available in the PATH.
+
 ## Guidelines for Pull Requests
 
 How to get your contributions merged smoothly and quickly.
- 
+
 - Create **small PRs** that are narrowly focused on **addressing a single
-concern**. 
+concern**.
 
 - For speculative changes, consider opening an issue and discussing it first.
- 
+
 - Provide a good **PR description** as a record of **what** change is being made
 and **why** it was made. Link to a github issue if it exists.
- 
+
 - Unless your PR is trivial, you should expect there will be review comments
 that you'll need to address before merging. We expect you to be reasonably
 responsive to those comments, otherwise the PR will be closed after 2-3 weeks of
@@ -60,6 +64,9 @@ can't really merge your change).
 - **All tests need to be passing** before your change can be merged. We
 recommend you **run tests locally** before creating your PR to catch breakages
 early on.
- 
+
 - Exceptions to the rules can be made if there's a compelling reason for doing
 so.
+
+## Updating protobuf definitions
+Sometimes we might need to update the generated dart files from the protos included in `lib/src/protos`. To do this, run the script `tool/regenerate.sh` from the project root and it will update the generated dart files in `lib/src/geneerated`.

@@ -3,7 +3,7 @@
 //  source: route_guide.proto
 //
 // @dart = 2.3
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 const Point$json = const {
   '1': 'Point',
@@ -16,8 +16,22 @@ const Point$json = const {
 const Rectangle$json = const {
   '1': 'Rectangle',
   '2': const [
-    const {'1': 'lo', '3': 1, '4': 1, '5': 11, '6': '.routeguide.Point', '10': 'lo'},
-    const {'1': 'hi', '3': 2, '4': 1, '5': 11, '6': '.routeguide.Point', '10': 'hi'},
+    const {
+      '1': 'lo',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.routeguide.Point',
+      '10': 'lo'
+    },
+    const {
+      '1': 'hi',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.routeguide.Point',
+      '10': 'hi'
+    },
   ],
 };
 
@@ -25,14 +39,28 @@ const Feature$json = const {
   '1': 'Feature',
   '2': const [
     const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
-    const {'1': 'location', '3': 2, '4': 1, '5': 11, '6': '.routeguide.Point', '10': 'location'},
+    const {
+      '1': 'location',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.routeguide.Point',
+      '10': 'location'
+    },
   ],
 };
 
 const RouteNote$json = const {
   '1': 'RouteNote',
   '2': const [
-    const {'1': 'location', '3': 1, '4': 1, '5': 11, '6': '.routeguide.Point', '10': 'location'},
+    const {
+      '1': 'location',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.routeguide.Point',
+      '10': 'location'
+    },
     const {'1': 'message', '3': 2, '4': 1, '5': 9, '10': 'message'},
   ],
 };
@@ -46,4 +74,3 @@ const RouteSummary$json = const {
     const {'1': 'elapsed_time', '3': 4, '4': 1, '5': 5, '10': 'elapsedTime'},
   ],
 };
-

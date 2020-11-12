@@ -3,7 +3,7 @@
 //  source: route_guide.proto
 //
 // @dart = 2.3
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:async' as $async;
 
@@ -31,37 +31,34 @@ class RouteGuideClient extends $grpc.Client {
       ($0.RouteNote value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.RouteNote.fromBuffer(value));
 
-  RouteGuideClient($grpc.ClientChannel channel, {$grpc.CallOptions options})
-      : super(channel, options: options);
+  RouteGuideClient($grpc.ClientChannel channel,
+      {$grpc.CallOptions options,
+      $core.Iterable<$grpc.ClientInterceptor> interceptors})
+      : super(channel, options: options, interceptors: interceptors);
 
   $grpc.ResponseFuture<$0.Feature> getFeature($0.Point request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(
-        _$getFeature, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$getFeature, request, options: options);
   }
 
   $grpc.ResponseStream<$0.Feature> listFeatures($0.Rectangle request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(
+    return $createStreamingCall(
         _$listFeatures, $async.Stream.fromIterable([request]),
         options: options);
-    return $grpc.ResponseStream(call);
   }
 
   $grpc.ResponseFuture<$0.RouteSummary> recordRoute(
       $async.Stream<$0.Point> request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$recordRoute, request, options: options);
-    return $grpc.ResponseFuture(call);
+    return $createStreamingCall(_$recordRoute, request, options: options)
+        .single;
   }
 
   $grpc.ResponseStream<$0.RouteNote> routeChat(
       $async.Stream<$0.RouteNote> request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$routeChat, request, options: options);
-    return $grpc.ResponseStream(call);
+    return $createStreamingCall(_$routeChat, request, options: options);
   }
 }
 

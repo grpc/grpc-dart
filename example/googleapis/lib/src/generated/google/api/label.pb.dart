@@ -1,11 +1,11 @@
 ///
 //  Generated code. Do not modify.
 //  source: google/api/label.proto
-///
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
+//
+// @dart = 2.3
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
-import 'dart:core' as $core
-    show bool, Deprecated, double, int, List, Map, override, pragma, String;
+import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
@@ -14,17 +14,31 @@ import 'label.pbenum.dart';
 export 'label.pbenum.dart';
 
 class LabelDescriptor extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('LabelDescriptor',
-      package: const $pb.PackageName('google.api'))
-    ..aOS(1, 'key')
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'LabelDescriptor',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.api'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'key')
     ..e<LabelDescriptor_ValueType>(
         2,
-        'valueType',
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'valueType',
         $pb.PbFieldType.OE,
-        LabelDescriptor_ValueType.STRING,
-        LabelDescriptor_ValueType.valueOf,
-        LabelDescriptor_ValueType.values)
-    ..aOS(3, 'description')
+        defaultOrMaker: LabelDescriptor_ValueType.STRING,
+        valueOf: LabelDescriptor_ValueType.valueOf,
+        enumValues: LabelDescriptor_ValueType.values)
+    ..aOS(
+        3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'description')
     ..hasRequiredFields = false;
 
   LabelDescriptor._() : super();
@@ -35,40 +49,60 @@ class LabelDescriptor extends $pb.GeneratedMessage {
   factory LabelDescriptor.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   LabelDescriptor clone() => LabelDescriptor()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   LabelDescriptor copyWith(void Function(LabelDescriptor) updates) =>
-      super.copyWith((message) => updates(message as LabelDescriptor));
+      super.copyWith((message) =>
+          updates(message as LabelDescriptor)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static LabelDescriptor create() => LabelDescriptor._();
   LabelDescriptor createEmptyInstance() => create();
   static $pb.PbList<LabelDescriptor> createRepeated() =>
       $pb.PbList<LabelDescriptor>();
-  static LabelDescriptor getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static LabelDescriptor getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<LabelDescriptor>(create);
   static LabelDescriptor _defaultInstance;
 
-  $core.String get key => $_getS(0, '');
+  @$pb.TagNumber(1)
+  $core.String get key => $_getSZ(0);
+  @$pb.TagNumber(1)
   set key($core.String v) {
     $_setString(0, v);
   }
 
+  @$pb.TagNumber(1)
   $core.bool hasKey() => $_has(0);
+  @$pb.TagNumber(1)
   void clearKey() => clearField(1);
 
+  @$pb.TagNumber(2)
   LabelDescriptor_ValueType get valueType => $_getN(1);
+  @$pb.TagNumber(2)
   set valueType(LabelDescriptor_ValueType v) {
     setField(2, v);
   }
 
+  @$pb.TagNumber(2)
   $core.bool hasValueType() => $_has(1);
+  @$pb.TagNumber(2)
   void clearValueType() => clearField(2);
 
-  $core.String get description => $_getS(2, '');
+  @$pb.TagNumber(3)
+  $core.String get description => $_getSZ(2);
+  @$pb.TagNumber(3)
   set description($core.String v) {
     $_setString(2, v);
   }
 
+  @$pb.TagNumber(3)
   $core.bool hasDescription() => $_has(2);
+  @$pb.TagNumber(3)
   void clearDescription() => clearField(3);
 }

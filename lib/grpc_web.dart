@@ -23,4 +23,6 @@ export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
 
 export 'src/client/web_channel.dart' show GrpcWebClientChannel;
 
+export 'src/shared/profiler.dart' show isTimelineLoggingEnabled;
+
 export 'src/shared/status.dart' show StatusCode, GrpcError;

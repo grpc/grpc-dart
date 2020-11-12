@@ -1,3 +1,31 @@
+## 2.8.0-dev
+
+* Added support for client interceptors, which can be configured through
+  `Client` constructor's `interceptors` parameter. Interceptors will be
+  executed by `Client.$createStreamingCall` and `Client.$createUnaryCall`.
+  Using interceptors requires regenerating client stubs using version 19.2.0 or
+  newer of protobuf compiler plugin.
+* `Client.$createCall` is deprecated because it does not invoke client
+  interceptors.
+* Fix an issue [#380](https://github.com/grpc/grpc-dart/issues/380) causing
+  incorrect duplicated headers in gRPC-Web requests.
+* Change minimum required Dart SDK to 2.8 to enable access to Unix domain sockets.
+* Add support for Unix domain sockets in `Socket.serve` and `ClientChannel`.
+
+## 2.7.0
+
+* Added decoding/parsing of `grpc-status-details-bin` to pass all response
+  exception details to the `GrpcError` thrown in Dart, via
+  [#349](https://github.com/grpc/grpc-dart/pull/349).
+* Dart SDK constraint is bumped to `>=2.3.0 <3.0.0` due to language version
+  in the generated protobuf code.
+
+## 2.6.0
+
+* Create gRPC servers and clients with [Server|Client]TransportConnnection.
+  This allows callers to provide their own transport configuration, such
+  as their own implementation of streams and sinks instead of sockets.
+
 ## 2.5.0
 
 * Expose a `validateClient` method for server credentials so gRPC server
