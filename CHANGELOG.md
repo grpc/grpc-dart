@@ -11,6 +11,8 @@
   incorrect duplicated headers in gRPC-Web requests.
 * Change minimum required Dart SDK to 2.8 to enable access to Unix domain sockets.
 * Add support for Unix domain sockets in `Socket.serve` and `ClientChannel`.
+* Fix an issue [#331](https://github.com/grpc/grpc-dart/issues/331) causing
+  an exception in `GrpcWebClientChannel.terminate()`.
 
 ## 2.7.0
 
