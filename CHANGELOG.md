@@ -1,4 +1,4 @@
-## 2.8.0-dev
+## 2.8.0
 
 * Added support for client interceptors, which can be configured through
   `Client` constructor's `interceptors` parameter. Interceptors will be
