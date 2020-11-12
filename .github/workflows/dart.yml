@@ -27,14 +27,14 @@ jobs:
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed .
       - name: Analyze code (lib and test)
-        run: dart analyze .
+        run: dart analyze --fatal-infos .
       - name: Analyze code (introp and examples)
         run: |
           for example in interop example/*/; do
             pushd $example
             echo [Analyzing $example]
             dart pub get
-            dart analyze .
+            dart analyze --fatal-infos .
             popd
           done
         shell: bash

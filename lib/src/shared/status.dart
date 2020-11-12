@@ -16,7 +16,6 @@
 import 'package:grpc/src/generated/google/protobuf/any.pb.dart';
 import 'package:grpc/src/generated/google/rpc/code.pbenum.dart';
 import 'package:grpc/src/generated/google/rpc/error_details.pb.dart';
-import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
 
 class StatusCode {

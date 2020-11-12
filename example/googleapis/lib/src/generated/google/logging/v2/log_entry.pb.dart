@@ -3,7 +3,7 @@
 //  source: google/logging/v2/log_entry.proto
 //
 // @dart = 2.3
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
 
@@ -27,36 +27,38 @@ class LogEntry extends $pb.GeneratedMessage {
     6: LogEntry_Payload.jsonPayload,
     0: LogEntry_Payload.notSet
   };
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('LogEntry',
-      package: const $pb.PackageName('google.logging.v2'),
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'LogEntry',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.logging.v2'),
       createEmptyInstance: create)
     ..oo(0, [2, 3, 6])
-    ..aOM<$0.Any>(2, 'protoPayload', subBuilder: $0.Any.create)
-    ..aOS(3, 'textPayload')
-    ..aOS(4, 'insertId')
-    ..aOM<$1.Struct>(6, 'jsonPayload', subBuilder: $1.Struct.create)
-    ..aOM<$2.HttpRequest>(7, 'httpRequest', subBuilder: $2.HttpRequest.create)
-    ..aOM<$3.MonitoredResource>(8, 'resource',
-        subBuilder: $3.MonitoredResource.create)
-    ..aOM<$4.Timestamp>(9, 'timestamp', subBuilder: $4.Timestamp.create)
-    ..e<$5.LogSeverity>(10, 'severity', $pb.PbFieldType.OE,
-        defaultOrMaker: $5.LogSeverity.DEFAULT,
-        valueOf: $5.LogSeverity.valueOf,
-        enumValues: $5.LogSeverity.values)
-    ..m<$core.String, $core.String>(11, 'labels',
-        entryClassName: 'LogEntry.LabelsEntry',
-        keyFieldType: $pb.PbFieldType.OS,
-        valueFieldType: $pb.PbFieldType.OS,
-        packageName: const $pb.PackageName('google.logging.v2'))
-    ..aOS(12, 'logName')
-    ..aOM<LogEntryOperation>(15, 'operation',
-        subBuilder: LogEntryOperation.create)
-    ..aOS(22, 'trace')
-    ..aOM<LogEntrySourceLocation>(23, 'sourceLocation',
-        subBuilder: LogEntrySourceLocation.create)
-    ..aOM<$4.Timestamp>(24, 'receiveTimestamp', subBuilder: $4.Timestamp.create)
-    ..aOS(27, 'spanId')
-    ..aOB(30, 'traceSampled')
+    ..aOM<$0.Any>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'protoPayload',
+        subBuilder: $0.Any.create)
+    ..aOS(3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'textPayload')
+    ..aOS(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'insertId')
+    ..aOM<$1.Struct>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'jsonPayload', subBuilder: $1.Struct.create)
+    ..aOM<$2.HttpRequest>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'httpRequest', subBuilder: $2.HttpRequest.create)
+    ..aOM<$3.MonitoredResource>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'resource', subBuilder: $3.MonitoredResource.create)
+    ..aOM<$4.Timestamp>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'timestamp', subBuilder: $4.Timestamp.create)
+    ..e<$5.LogSeverity>(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'severity', $pb.PbFieldType.OE, defaultOrMaker: $5.LogSeverity.DEFAULT, valueOf: $5.LogSeverity.valueOf, enumValues: $5.LogSeverity.values)
+    ..m<$core.String, $core.String>(11, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'labels', entryClassName: 'LogEntry.LabelsEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('google.logging.v2'))
+    ..aOS(12, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'logName')
+    ..aOM<LogEntryOperation>(15, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'operation', subBuilder: LogEntryOperation.create)
+    ..aOS(22, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'trace')
+    ..aOM<LogEntrySourceLocation>(23, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'sourceLocation', subBuilder: LogEntrySourceLocation.create)
+    ..aOM<$4.Timestamp>(24, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'receiveTimestamp', subBuilder: $4.Timestamp.create)
+    ..aOS(27, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'spanId')
+    ..aOB(30, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'traceSampled')
     ..hasRequiredFields = false;
 
   LogEntry._() : super();
@@ -67,9 +69,16 @@ class LogEntry extends $pb.GeneratedMessage {
   factory LogEntry.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   LogEntry clone() => LogEntry()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   LogEntry copyWith(void Function(LogEntry) updates) =>
-      super.copyWith((message) => updates(message as LogEntry));
+      super.copyWith((message) =>
+          updates(message as LogEntry)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static LogEntry create() => LogEntry._();
@@ -284,13 +293,32 @@ class LogEntry extends $pb.GeneratedMessage {
 }
 
 class LogEntryOperation extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('LogEntryOperation',
-      package: const $pb.PackageName('google.logging.v2'),
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'LogEntryOperation',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.logging.v2'),
       createEmptyInstance: create)
-    ..aOS(1, 'id')
-    ..aOS(2, 'producer')
-    ..aOB(3, 'first')
-    ..aOB(4, 'last')
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'id')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'producer')
+    ..aOB(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'first')
+    ..aOB(4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'last')
     ..hasRequiredFields = false;
 
   LogEntryOperation._() : super();
@@ -301,9 +329,16 @@ class LogEntryOperation extends $pb.GeneratedMessage {
   factory LogEntryOperation.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   LogEntryOperation clone() => LogEntryOperation()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   LogEntryOperation copyWith(void Function(LogEntryOperation) updates) =>
-      super.copyWith((message) => updates(message as LogEntryOperation));
+      super.copyWith((message) => updates(
+          message as LogEntryOperation)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static LogEntryOperation create() => LogEntryOperation._();
@@ -365,12 +400,30 @@ class LogEntryOperation extends $pb.GeneratedMessage {
 }
 
 class LogEntrySourceLocation extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('LogEntrySourceLocation',
-      package: const $pb.PackageName('google.logging.v2'),
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'LogEntrySourceLocation',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.logging.v2'),
       createEmptyInstance: create)
-    ..aOS(1, 'file')
-    ..aInt64(2, 'line')
-    ..aOS(3, 'function')
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'file')
+    ..aInt64(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'line')
+    ..aOS(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'function')
     ..hasRequiredFields = false;
 
   LogEntrySourceLocation._() : super();
@@ -381,11 +434,18 @@ class LogEntrySourceLocation extends $pb.GeneratedMessage {
   factory LogEntrySourceLocation.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   LogEntrySourceLocation clone() =>
       LogEntrySourceLocation()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   LogEntrySourceLocation copyWith(
           void Function(LogEntrySourceLocation) updates) =>
-      super.copyWith((message) => updates(message as LogEntrySourceLocation));
+      super.copyWith((message) => updates(
+          message as LogEntrySourceLocation)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static LogEntrySourceLocation create() => LogEntrySourceLocation._();

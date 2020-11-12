@@ -1,6 +1,5 @@
 @TestOn('vm')
 import 'dart:async';
-import 'dart:io';
 import 'package:grpc/grpc.dart' as grpc;
 import 'package:grpc/service_api.dart';
 import 'package:grpc/src/client/channel.dart';

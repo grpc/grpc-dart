@@ -12,8 +12,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
 import 'package:test/test.dart';
 
 /// Test functionality for both TCP and Unix domain sockets.

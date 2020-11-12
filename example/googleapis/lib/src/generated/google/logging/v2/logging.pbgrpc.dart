@@ -3,7 +3,7 @@
 //  source: google/logging/v2/logging.proto
 //
 // @dart = 2.3
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:async' as $async;
 
@@ -47,49 +47,38 @@ class LoggingServiceV2Client extends $grpc.Client {
               $2.ListLogsResponse.fromBuffer(value));
 
   LoggingServiceV2Client($grpc.ClientChannel channel,
-      {$grpc.CallOptions options})
-      : super(channel, options: options);
+      {$grpc.CallOptions options,
+      $core.Iterable<$grpc.ClientInterceptor> interceptors})
+      : super(channel, options: options, interceptors: interceptors);
 
   $grpc.ResponseFuture<$1.Empty> deleteLog($2.DeleteLogRequest request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$deleteLog, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$deleteLog, request, options: options);
   }
 
   $grpc.ResponseFuture<$2.WriteLogEntriesResponse> writeLogEntries(
       $2.WriteLogEntriesRequest request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(
-        _$writeLogEntries, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$writeLogEntries, request, options: options);
   }
 
   $grpc.ResponseFuture<$2.ListLogEntriesResponse> listLogEntries(
       $2.ListLogEntriesRequest request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(
-        _$listLogEntries, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$listLogEntries, request, options: options);
   }
 
   $grpc.ResponseFuture<$2.ListMonitoredResourceDescriptorsResponse>
       listMonitoredResourceDescriptors(
           $2.ListMonitoredResourceDescriptorsRequest request,
           {$grpc.CallOptions options}) {
-    final call = $createCall(_$listMonitoredResourceDescriptors,
-        $async.Stream.fromIterable([request]),
+    return $createUnaryCall(_$listMonitoredResourceDescriptors, request,
         options: options);
-    return $grpc.ResponseFuture(call);
   }
 
   $grpc.ResponseFuture<$2.ListLogsResponse> listLogs($2.ListLogsRequest request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$listLogs, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$listLogs, request, options: options);
   }
 }
 
