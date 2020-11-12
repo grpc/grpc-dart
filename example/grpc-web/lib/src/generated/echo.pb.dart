@@ -1,183 +1,286 @@
 ///
 //  Generated code. Do not modify.
 //  source: echo.proto
-///
-// ignore_for_file: non_constant_identifier_names,library_prefixes,unused_import
+//
+// @dart = 2.3
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
-// ignore: UNUSED_SHOWN_NAME
-import 'dart:core' show int, bool, double, String, List, Map, override;
+import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class EchoRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('EchoRequest',
-      package: const $pb.PackageName('grpc.gateway.testing'))
-    ..aOS(1, 'message')
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'EchoRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'grpc.gateway.testing'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'message')
     ..hasRequiredFields = false;
 
-  EchoRequest() : super();
-  EchoRequest.fromBuffer(List<int> i,
-      [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  EchoRequest.fromJson(String i,
-      [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  EchoRequest._() : super();
+  factory EchoRequest() => create();
+  factory EchoRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory EchoRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   EchoRequest clone() => EchoRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   EchoRequest copyWith(void Function(EchoRequest) updates) =>
-      super.copyWith((message) => updates(message as EchoRequest));
+      super.copyWith((message) =>
+          updates(message as EchoRequest)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
-  static EchoRequest create() => EchoRequest();
+  @$core.pragma('dart2js:noInline')
+  static EchoRequest create() => EchoRequest._();
   EchoRequest createEmptyInstance() => create();
   static $pb.PbList<EchoRequest> createRepeated() => $pb.PbList<EchoRequest>();
-  static EchoRequest getDefault() => _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static EchoRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<EchoRequest>(create);
   static EchoRequest _defaultInstance;
-  static void $checkItem(EchoRequest v) {
-    if (v is! EchoRequest) $pb.checkItemFailed(v, _i.qualifiedMessageName);
-  }
 
-  String get message => $_getS(0, '');
-  set message(String v) {
+  @$pb.TagNumber(1)
+  $core.String get message => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set message($core.String v) {
     $_setString(0, v);
   }
 
-  bool hasMessage() => $_has(0);
+  @$pb.TagNumber(1)
+  $core.bool hasMessage() => $_has(0);
+  @$pb.TagNumber(1)
   void clearMessage() => clearField(1);
 }
 
 class EchoResponse extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('EchoResponse',
-      package: const $pb.PackageName('grpc.gateway.testing'))
-    ..aOS(1, 'message')
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'EchoResponse',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'grpc.gateway.testing'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'message')
     ..hasRequiredFields = false;
 
-  EchoResponse() : super();
-  EchoResponse.fromBuffer(List<int> i,
-      [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  EchoResponse.fromJson(String i,
-      [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  EchoResponse._() : super();
+  factory EchoResponse() => create();
+  factory EchoResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory EchoResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   EchoResponse clone() => EchoResponse()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   EchoResponse copyWith(void Function(EchoResponse) updates) =>
-      super.copyWith((message) => updates(message as EchoResponse));
+      super.copyWith((message) =>
+          updates(message as EchoResponse)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
-  static EchoResponse create() => EchoResponse();
+  @$core.pragma('dart2js:noInline')
+  static EchoResponse create() => EchoResponse._();
   EchoResponse createEmptyInstance() => create();
   static $pb.PbList<EchoResponse> createRepeated() =>
       $pb.PbList<EchoResponse>();
-  static EchoResponse getDefault() => _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static EchoResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<EchoResponse>(create);
   static EchoResponse _defaultInstance;
-  static void $checkItem(EchoResponse v) {
-    if (v is! EchoResponse) $pb.checkItemFailed(v, _i.qualifiedMessageName);
-  }
 
-  String get message => $_getS(0, '');
-  set message(String v) {
+  @$pb.TagNumber(1)
+  $core.String get message => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set message($core.String v) {
     $_setString(0, v);
   }
 
-  bool hasMessage() => $_has(0);
+  @$pb.TagNumber(1)
+  $core.bool hasMessage() => $_has(0);
+  @$pb.TagNumber(1)
   void clearMessage() => clearField(1);
 }
 
 class ServerStreamingEchoRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      'ServerStreamingEchoRequest',
-      package: const $pb.PackageName('grpc.gateway.testing'))
-    ..aOS(1, 'message')
-    ..a<int>(2, 'messageCount', $pb.PbFieldType.O3)
-    ..a<int>(3, 'messageInterval', $pb.PbFieldType.O3)
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'ServerStreamingEchoRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'grpc.gateway.testing'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'message')
+    ..a<$core.int>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'messageCount',
+        $pb.PbFieldType.O3)
+    ..a<$core.int>(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'messageInterval',
+        $pb.PbFieldType.O3)
     ..hasRequiredFields = false;
 
-  ServerStreamingEchoRequest() : super();
-  ServerStreamingEchoRequest.fromBuffer(List<int> i,
-      [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  ServerStreamingEchoRequest.fromJson(String i,
-      [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  ServerStreamingEchoRequest._() : super();
+  factory ServerStreamingEchoRequest() => create();
+  factory ServerStreamingEchoRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ServerStreamingEchoRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   ServerStreamingEchoRequest clone() =>
       ServerStreamingEchoRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   ServerStreamingEchoRequest copyWith(
           void Function(ServerStreamingEchoRequest) updates) =>
-      super.copyWith(
-          (message) => updates(message as ServerStreamingEchoRequest));
+      super.copyWith((message) => updates(message
+          as ServerStreamingEchoRequest)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
-  static ServerStreamingEchoRequest create() => ServerStreamingEchoRequest();
+  @$core.pragma('dart2js:noInline')
+  static ServerStreamingEchoRequest create() => ServerStreamingEchoRequest._();
   ServerStreamingEchoRequest createEmptyInstance() => create();
   static $pb.PbList<ServerStreamingEchoRequest> createRepeated() =>
       $pb.PbList<ServerStreamingEchoRequest>();
-  static ServerStreamingEchoRequest getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static ServerStreamingEchoRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ServerStreamingEchoRequest>(create);
   static ServerStreamingEchoRequest _defaultInstance;
-  static void $checkItem(ServerStreamingEchoRequest v) {
-    if (v is! ServerStreamingEchoRequest)
-      $pb.checkItemFailed(v, _i.qualifiedMessageName);
-  }
 
-  String get message => $_getS(0, '');
-  set message(String v) {
+  @$pb.TagNumber(1)
+  $core.String get message => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set message($core.String v) {
     $_setString(0, v);
   }
 
-  bool hasMessage() => $_has(0);
+  @$pb.TagNumber(1)
+  $core.bool hasMessage() => $_has(0);
+  @$pb.TagNumber(1)
   void clearMessage() => clearField(1);
 
-  int get messageCount => $_get(1, 0);
-  set messageCount(int v) {
+  @$pb.TagNumber(2)
+  $core.int get messageCount => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set messageCount($core.int v) {
     $_setSignedInt32(1, v);
   }
 
-  bool hasMessageCount() => $_has(1);
+  @$pb.TagNumber(2)
+  $core.bool hasMessageCount() => $_has(1);
+  @$pb.TagNumber(2)
   void clearMessageCount() => clearField(2);
 
-  int get messageInterval => $_get(2, 0);
-  set messageInterval(int v) {
+  @$pb.TagNumber(3)
+  $core.int get messageInterval => $_getIZ(2);
+  @$pb.TagNumber(3)
+  set messageInterval($core.int v) {
     $_setSignedInt32(2, v);
   }
 
-  bool hasMessageInterval() => $_has(2);
+  @$pb.TagNumber(3)
+  $core.bool hasMessageInterval() => $_has(2);
+  @$pb.TagNumber(3)
   void clearMessageInterval() => clearField(3);
 }
 
 class ServerStreamingEchoResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      'ServerStreamingEchoResponse',
-      package: const $pb.PackageName('grpc.gateway.testing'))
-    ..aOS(1, 'message')
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'ServerStreamingEchoResponse',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'grpc.gateway.testing'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'message')
     ..hasRequiredFields = false;
 
-  ServerStreamingEchoResponse() : super();
-  ServerStreamingEchoResponse.fromBuffer(List<int> i,
-      [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY])
-      : super.fromBuffer(i, r);
-  ServerStreamingEchoResponse.fromJson(String i,
-      [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY])
-      : super.fromJson(i, r);
+  ServerStreamingEchoResponse._() : super();
+  factory ServerStreamingEchoResponse() => create();
+  factory ServerStreamingEchoResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ServerStreamingEchoResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   ServerStreamingEchoResponse clone() =>
       ServerStreamingEchoResponse()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   ServerStreamingEchoResponse copyWith(
           void Function(ServerStreamingEchoResponse) updates) =>
-      super.copyWith(
-          (message) => updates(message as ServerStreamingEchoResponse));
+      super.copyWith((message) => updates(message
+          as ServerStreamingEchoResponse)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
-  static ServerStreamingEchoResponse create() => ServerStreamingEchoResponse();
+  @$core.pragma('dart2js:noInline')
+  static ServerStreamingEchoResponse create() =>
+      ServerStreamingEchoResponse._();
   ServerStreamingEchoResponse createEmptyInstance() => create();
   static $pb.PbList<ServerStreamingEchoResponse> createRepeated() =>
       $pb.PbList<ServerStreamingEchoResponse>();
-  static ServerStreamingEchoResponse getDefault() =>
-      _defaultInstance ??= create()..freeze();
+  @$core.pragma('dart2js:noInline')
+  static ServerStreamingEchoResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ServerStreamingEchoResponse>(create);
   static ServerStreamingEchoResponse _defaultInstance;
-  static void $checkItem(ServerStreamingEchoResponse v) {
-    if (v is! ServerStreamingEchoResponse)
-      $pb.checkItemFailed(v, _i.qualifiedMessageName);
-  }
 
-  String get message => $_getS(0, '');
-  set message(String v) {
+  @$pb.TagNumber(1)
+  $core.String get message => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set message($core.String v) {
     $_setString(0, v);
   }
 
-  bool hasMessage() => $_has(0);
+  @$pb.TagNumber(1)
+  $core.bool hasMessage() => $_has(0);
+  @$pb.TagNumber(1)
   void clearMessage() => clearField(1);
 }

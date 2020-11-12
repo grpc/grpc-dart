@@ -3,17 +3,34 @@
 //  source: route_guide.proto
 //
 // @dart = 2.3
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class Point extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Point',
-      package: const $pb.PackageName('routeguide'), createEmptyInstance: create)
-    ..a<$core.int>(1, 'latitude', $pb.PbFieldType.O3)
-    ..a<$core.int>(2, 'longitude', $pb.PbFieldType.O3)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'Point',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'routeguide'),
+      createEmptyInstance: create)
+    ..a<$core.int>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'latitude',
+        $pb.PbFieldType.O3)
+    ..a<$core.int>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'longitude',
+        $pb.PbFieldType.O3)
     ..hasRequiredFields = false;
 
   Point._() : super();
@@ -24,9 +41,15 @@ class Point extends $pb.GeneratedMessage {
   factory Point.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   Point clone() => Point()..mergeFromMessage(this);
-  Point copyWith(void Function(Point) updates) =>
-      super.copyWith((message) => updates(message as Point));
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  Point copyWith(void Function(Point) updates) => super.copyWith(
+      (message) => updates(message as Point)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Point create() => Point._();
@@ -63,10 +86,21 @@ class Point extends $pb.GeneratedMessage {
 }
 
 class Rectangle extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Rectangle',
-      package: const $pb.PackageName('routeguide'), createEmptyInstance: create)
-    ..aOM<Point>(1, 'lo', subBuilder: Point.create)
-    ..aOM<Point>(2, 'hi', subBuilder: Point.create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'Rectangle',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'routeguide'),
+      createEmptyInstance: create)
+    ..aOM<Point>(1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'lo',
+        subBuilder: Point.create)
+    ..aOM<Point>(2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'hi',
+        subBuilder: Point.create)
     ..hasRequiredFields = false;
 
   Rectangle._() : super();
@@ -77,9 +111,16 @@ class Rectangle extends $pb.GeneratedMessage {
   factory Rectangle.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   Rectangle clone() => Rectangle()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   Rectangle copyWith(void Function(Rectangle) updates) =>
-      super.copyWith((message) => updates(message as Rectangle));
+      super.copyWith((message) =>
+          updates(message as Rectangle)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Rectangle create() => Rectangle._();
@@ -120,10 +161,26 @@ class Rectangle extends $pb.GeneratedMessage {
 }
 
 class Feature extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Feature',
-      package: const $pb.PackageName('routeguide'), createEmptyInstance: create)
-    ..aOS(1, 'name')
-    ..aOM<Point>(2, 'location', subBuilder: Point.create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'Feature',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'routeguide'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'name')
+    ..aOM<Point>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'location',
+        subBuilder: Point.create)
     ..hasRequiredFields = false;
 
   Feature._() : super();
@@ -134,9 +191,16 @@ class Feature extends $pb.GeneratedMessage {
   factory Feature.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   Feature clone() => Feature()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   Feature copyWith(void Function(Feature) updates) =>
-      super.copyWith((message) => updates(message as Feature));
+      super.copyWith((message) =>
+          updates(message as Feature)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Feature create() => Feature._();
@@ -175,10 +239,26 @@ class Feature extends $pb.GeneratedMessage {
 }
 
 class RouteNote extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('RouteNote',
-      package: const $pb.PackageName('routeguide'), createEmptyInstance: create)
-    ..aOM<Point>(1, 'location', subBuilder: Point.create)
-    ..aOS(2, 'message')
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'RouteNote',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'routeguide'),
+      createEmptyInstance: create)
+    ..aOM<Point>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'location',
+        subBuilder: Point.create)
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'message')
     ..hasRequiredFields = false;
 
   RouteNote._() : super();
@@ -189,9 +269,16 @@ class RouteNote extends $pb.GeneratedMessage {
   factory RouteNote.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   RouteNote clone() => RouteNote()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   RouteNote copyWith(void Function(RouteNote) updates) =>
-      super.copyWith((message) => updates(message as RouteNote));
+      super.copyWith((message) =>
+          updates(message as RouteNote)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static RouteNote create() => RouteNote._();
@@ -230,12 +317,32 @@ class RouteNote extends $pb.GeneratedMessage {
 }
 
 class RouteSummary extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('RouteSummary',
-      package: const $pb.PackageName('routeguide'), createEmptyInstance: create)
-    ..a<$core.int>(1, 'pointCount', $pb.PbFieldType.O3)
-    ..a<$core.int>(2, 'featureCount', $pb.PbFieldType.O3)
-    ..a<$core.int>(3, 'distance', $pb.PbFieldType.O3)
-    ..a<$core.int>(4, 'elapsedTime', $pb.PbFieldType.O3)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'RouteSummary',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'routeguide'),
+      createEmptyInstance: create)
+    ..a<$core.int>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'pointCount',
+        $pb.PbFieldType.O3)
+    ..a<$core.int>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'featureCount',
+        $pb.PbFieldType.O3)
+    ..a<$core.int>(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'distance',
+        $pb.PbFieldType.O3)
+    ..a<$core.int>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'elapsedTime', $pb.PbFieldType.O3)
     ..hasRequiredFields = false;
 
   RouteSummary._() : super();
@@ -246,9 +353,16 @@ class RouteSummary extends $pb.GeneratedMessage {
   factory RouteSummary.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   RouteSummary clone() => RouteSummary()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   RouteSummary copyWith(void Function(RouteSummary) updates) =>
-      super.copyWith((message) => updates(message as RouteSummary));
+      super.copyWith((message) =>
+          updates(message as RouteSummary)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static RouteSummary create() => RouteSummary._();

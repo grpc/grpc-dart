@@ -3,7 +3,7 @@
 //  source: google/logging/type/http_request.proto
 //
 // @dart = 2.3
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
 
@@ -13,24 +13,45 @@ import 'package:protobuf/protobuf.dart' as $pb;
 import '../../protobuf/duration.pb.dart' as $0;
 
 class HttpRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('HttpRequest',
-      package: const $pb.PackageName('google.logging.type'),
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'HttpRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.logging.type'),
       createEmptyInstance: create)
-    ..aOS(1, 'requestMethod')
-    ..aOS(2, 'requestUrl')
-    ..aInt64(3, 'requestSize')
-    ..a<$core.int>(4, 'status', $pb.PbFieldType.O3)
-    ..aInt64(5, 'responseSize')
-    ..aOS(6, 'userAgent')
-    ..aOS(7, 'remoteIp')
-    ..aOS(8, 'referer')
-    ..aOB(9, 'cacheHit')
-    ..aOB(10, 'cacheValidatedWithOriginServer')
-    ..aOB(11, 'cacheLookup')
-    ..aInt64(12, 'cacheFillBytes')
-    ..aOS(13, 'serverIp')
-    ..aOM<$0.Duration>(14, 'latency', subBuilder: $0.Duration.create)
-    ..aOS(15, 'protocol')
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'requestMethod')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'requestUrl')
+    ..aInt64(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'requestSize')
+    ..a<$core.int>(
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'status',
+        $pb.PbFieldType.O3)
+    ..aInt64(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'responseSize')
+    ..aOS(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'userAgent')
+    ..aOS(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'remoteIp')
+    ..aOS(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'referer')
+    ..aOB(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'cacheHit')
+    ..aOB(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'cacheValidatedWithOriginServer')
+    ..aOB(11, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'cacheLookup')
+    ..aInt64(12, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'cacheFillBytes')
+    ..aOS(13, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'serverIp')
+    ..aOM<$0.Duration>(14, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'latency', subBuilder: $0.Duration.create)
+    ..aOS(15, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'protocol')
     ..hasRequiredFields = false;
 
   HttpRequest._() : super();
@@ -41,9 +62,16 @@ class HttpRequest extends $pb.GeneratedMessage {
   factory HttpRequest.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   HttpRequest clone() => HttpRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   HttpRequest copyWith(void Function(HttpRequest) updates) =>
-      super.copyWith((message) => updates(message as HttpRequest));
+      super.copyWith((message) =>
+          updates(message as HttpRequest)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static HttpRequest create() => HttpRequest._();

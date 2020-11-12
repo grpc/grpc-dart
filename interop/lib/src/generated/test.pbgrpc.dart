@@ -3,7 +3,7 @@
 //  source: test.proto
 //
 // @dart = 2.3
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:async' as $async;
 
@@ -58,68 +58,57 @@ class TestServiceClient extends $grpc.Client {
       ($0.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
 
-  TestServiceClient($grpc.ClientChannel channel, {$grpc.CallOptions options})
-      : super(channel, options: options);
+  TestServiceClient($grpc.ClientChannel channel,
+      {$grpc.CallOptions options,
+      $core.Iterable<$grpc.ClientInterceptor> interceptors})
+      : super(channel, options: options, interceptors: interceptors);
 
   $grpc.ResponseFuture<$0.Empty> emptyCall($0.Empty request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$emptyCall, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$emptyCall, request, options: options);
   }
 
   $grpc.ResponseFuture<$1.SimpleResponse> unaryCall($1.SimpleRequest request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$unaryCall, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$unaryCall, request, options: options);
   }
 
   $grpc.ResponseFuture<$1.SimpleResponse> cacheableUnaryCall(
       $1.SimpleRequest request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(
-        _$cacheableUnaryCall, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$cacheableUnaryCall, request, options: options);
   }
 
   $grpc.ResponseStream<$1.StreamingOutputCallResponse> streamingOutputCall(
       $1.StreamingOutputCallRequest request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(
+    return $createStreamingCall(
         _$streamingOutputCall, $async.Stream.fromIterable([request]),
         options: options);
-    return $grpc.ResponseStream(call);
   }
 
   $grpc.ResponseFuture<$1.StreamingInputCallResponse> streamingInputCall(
       $async.Stream<$1.StreamingInputCallRequest> request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$streamingInputCall, request, options: options);
-    return $grpc.ResponseFuture(call);
+    return $createStreamingCall(_$streamingInputCall, request, options: options)
+        .single;
   }
 
   $grpc.ResponseStream<$1.StreamingOutputCallResponse> fullDuplexCall(
       $async.Stream<$1.StreamingOutputCallRequest> request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$fullDuplexCall, request, options: options);
-    return $grpc.ResponseStream(call);
+    return $createStreamingCall(_$fullDuplexCall, request, options: options);
   }
 
   $grpc.ResponseStream<$1.StreamingOutputCallResponse> halfDuplexCall(
       $async.Stream<$1.StreamingOutputCallRequest> request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$halfDuplexCall, request, options: options);
-    return $grpc.ResponseStream(call);
+    return $createStreamingCall(_$halfDuplexCall, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.Empty> unimplementedCall($0.Empty request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(
-        _$unimplementedCall, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$unimplementedCall, request, options: options);
   }
 }
 
@@ -246,15 +235,13 @@ class UnimplementedServiceClient extends $grpc.Client {
       ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
 
   UnimplementedServiceClient($grpc.ClientChannel channel,
-      {$grpc.CallOptions options})
-      : super(channel, options: options);
+      {$grpc.CallOptions options,
+      $core.Iterable<$grpc.ClientInterceptor> interceptors})
+      : super(channel, options: options, interceptors: interceptors);
 
   $grpc.ResponseFuture<$0.Empty> unimplementedCall($0.Empty request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(
-        _$unimplementedCall, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$unimplementedCall, request, options: options);
   }
 }
 
@@ -291,21 +278,18 @@ class ReconnectServiceClient extends $grpc.Client {
       ($core.List<$core.int> value) => $1.ReconnectInfo.fromBuffer(value));
 
   ReconnectServiceClient($grpc.ClientChannel channel,
-      {$grpc.CallOptions options})
-      : super(channel, options: options);
+      {$grpc.CallOptions options,
+      $core.Iterable<$grpc.ClientInterceptor> interceptors})
+      : super(channel, options: options, interceptors: interceptors);
 
   $grpc.ResponseFuture<$0.Empty> start($1.ReconnectParams request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$start, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$start, request, options: options);
   }
 
   $grpc.ResponseFuture<$1.ReconnectInfo> stop($0.Empty request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$stop, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$stop, request, options: options);
   }
 }
 

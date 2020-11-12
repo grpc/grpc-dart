@@ -49,11 +49,11 @@ class RS256Signer {
   RS256Signer(this._rsaKey);
 
   List<int> sign(List<int> bytes) {
-    var digest = _digestInfo(sha256.convert(bytes).bytes);
-    var modulusLen = (_rsaKey.bitLength + 7) ~/ 8;
+    final digest = _digestInfo(sha256.convert(bytes).bytes);
+    final modulusLen = (_rsaKey.bitLength + 7) ~/ 8;
 
-    var block = new Uint8List(modulusLen);
-    var padLength = block.length - digest.length - 3;
+    final block = new Uint8List(modulusLen);
+    final padLength = block.length - digest.length - 3;
     block[0] = 0x00;
     block[1] = 0x01;
     block.fillRange(2, 2 + padLength, 0xFF);
@@ -68,7 +68,7 @@ class RS256Signer {
     //     digest OCTET STRING
     // }
     var offset = 0;
-    var digestInfo = new Uint8List(
+    final digestInfo = new Uint8List(
         2 + 2 + _RSA_SHA256_ALGORITHM_IDENTIFIER.length + 2 + 2 + hash.length);
     {
       // DigestInfo
@@ -103,9 +103,9 @@ class ASN1Parser {
       throw new ArgumentError("Invalid DER encoding: $msg");
     }
 
-    var data = new ByteData.view(bytes.buffer);
+    final data = new ByteData.view(bytes.buffer);
     int offset = 0;
-    int end = bytes.length;
+    final end = bytes.length;
 
     checkNBytesAvailable(int n) {
       if ((offset + n) > end) {
@@ -116,7 +116,7 @@ class ASN1Parser {
     List<int> readBytes(int n) {
       checkNBytesAvailable(n);
 
-      var integerBytes = bytes.sublist(offset, offset + n);
+      final integerBytes = bytes.sublist(offset, offset + n);
       offset += n;
       return integerBytes;
     }
@@ -124,7 +124,7 @@ class ASN1Parser {
     int readEncodedLength() {
       checkNBytesAvailable(1);
 
-      var lengthByte = data.getUint8(offset++);
+      final lengthByte = data.getUint8(offset++);
 
       // Short length encoding form: This byte is the length itself.
       if (lengthByte < 0x80) {
@@ -147,7 +147,7 @@ class ASN1Parser {
 
     void readNullBytes() {
       checkNBytesAvailable(1);
-      var nullByte = data.getUint8(offset++);
+      final nullByte = data.getUint8(offset++);
       if (nullByte != 0x00) {
         invalidFormat('Null byte expect, but was: $nullByte.');
       }
@@ -155,28 +155,28 @@ class ASN1Parser {
 
     ASN1Object decodeObject() {
       checkNBytesAvailable(1);
-      var tag = bytes[offset++];
+      final tag = bytes[offset++];
       switch (tag) {
         case INTEGER_TAG:
-          int size = readEncodedLength();
+          final size = readEncodedLength();
           return new ASN1Integer(RSAAlgorithm.bytes2BigInt(readBytes(size)));
         case OCTET_STRING_TAG:
-          var size = readEncodedLength();
+          final size = readEncodedLength();
           return new ASN1OctetString(readBytes(size));
         case NULL_TAG:
           readNullBytes();
           return new ASN1Null();
         case OBJECT_ID_TAG:
-          var size = readEncodedLength();
+          final size = readEncodedLength();
           return new ASN1ObjectIdentifier(readBytes(size));
         case SEQUENCE_TAG:
-          var lengthInBytes = readEncodedLength();
+          final lengthInBytes = readEncodedLength();
           if ((offset + lengthInBytes) > end) {
             invalidFormat('Tried to read more bytes than available.');
           }
-          int endOfSequence = offset + lengthInBytes;
+          final endOfSequence = offset + lengthInBytes;
 
-          var objects = <ASN1Object>[];
+          final objects = <ASN1Object>[];
           while (offset < endOfSequence) {
             objects.add(decodeObject());
           }
@@ -189,7 +189,7 @@ class ASN1Parser {
       return null;
     }
 
-    var obj = decodeObject();
+    final obj = decodeObject();
     if (offset != bytes.length) {
       throw new ArgumentError('More bytes than expected in ASN1 encoding.');
     }
@@ -264,8 +264,8 @@ abstract class RSAAlgorithm {
   /// result should be encoded. Zero bytes will be used for padding.
   static List<int> encrypt(
       RSAPrivateKey key, List<int> bytes, int intendedLength) {
-    var message = bytes2BigInt(bytes);
-    var encryptedMessage = _encryptInteger(key, message);
+    final message = bytes2BigInt(bytes);
+    final encryptedMessage = _encryptInteger(key, message);
     return integer2Bytes(encryptedMessage, intendedLength);
   }
 
@@ -273,7 +273,7 @@ abstract class RSAAlgorithm {
     // The following is equivalent to `_modPow(x, key.d, key.n) but is much
     // more efficient. It exploits the fact that we have dmp1/dmq1.
     var xp = _modPow(x % key.p, key.dmp1, key.p);
-    var xq = _modPow(x % key.q, key.dmq1, key.q);
+    final xq = _modPow(x % key.q, key.dmq1, key.q);
     while (xp < xq) {
       xp += key.p;
     }
@@ -311,7 +311,7 @@ abstract class RSAAlgorithm {
     if (integer < BigInt.one) {
       throw new ArgumentError('Only positive integers are supported.');
     }
-    var bytes = new Uint8List(intendedLength);
+    final bytes = new Uint8List(intendedLength);
     for (int i = bytes.length - 1; i >= 0; i--) {
       bytes[i] = (integer & _bigIntFF).toInt();
       integer >>= 8;

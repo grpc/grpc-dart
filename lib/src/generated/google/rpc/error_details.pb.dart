@@ -3,7 +3,7 @@
 //  source: google/rpc/error_details.proto
 //
 // @dart = 2.3
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
 
@@ -12,9 +12,21 @@ import 'package:protobuf/protobuf.dart' as $pb;
 import '../protobuf/duration.pb.dart' as $1;
 
 class RetryInfo extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('RetryInfo',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..aOM<$1.Duration>(1, 'retryDelay', subBuilder: $1.Duration.create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'RetryInfo',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..aOM<$1.Duration>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'retryDelay',
+        subBuilder: $1.Duration.create)
     ..hasRequiredFields = false;
 
   RetryInfo._() : super();
@@ -25,9 +37,16 @@ class RetryInfo extends $pb.GeneratedMessage {
   factory RetryInfo.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   RetryInfo clone() => RetryInfo()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   RetryInfo copyWith(void Function(RetryInfo) updates) =>
-      super.copyWith((message) => updates(message as RetryInfo));
+      super.copyWith((message) =>
+          updates(message as RetryInfo)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static RetryInfo create() => RetryInfo._();
@@ -54,10 +73,25 @@ class RetryInfo extends $pb.GeneratedMessage {
 }
 
 class DebugInfo extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('DebugInfo',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..pPS(1, 'stackEntries')
-    ..aOS(2, 'detail')
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'DebugInfo',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..pPS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'stackEntries')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'detail')
     ..hasRequiredFields = false;
 
   DebugInfo._() : super();
@@ -68,9 +102,16 @@ class DebugInfo extends $pb.GeneratedMessage {
   factory DebugInfo.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   DebugInfo clone() => DebugInfo()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   DebugInfo copyWith(void Function(DebugInfo) updates) =>
-      super.copyWith((message) => updates(message as DebugInfo));
+      super.copyWith((message) =>
+          updates(message as DebugInfo)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static DebugInfo create() => DebugInfo._();
@@ -98,10 +139,25 @@ class DebugInfo extends $pb.GeneratedMessage {
 }
 
 class QuotaFailure_Violation extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('QuotaFailure.Violation',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..aOS(1, 'subject')
-    ..aOS(2, 'description')
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'QuotaFailure.Violation',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'subject')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'description')
     ..hasRequiredFields = false;
 
   QuotaFailure_Violation._() : super();
@@ -112,11 +168,18 @@ class QuotaFailure_Violation extends $pb.GeneratedMessage {
   factory QuotaFailure_Violation.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   QuotaFailure_Violation clone() =>
       QuotaFailure_Violation()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   QuotaFailure_Violation copyWith(
           void Function(QuotaFailure_Violation) updates) =>
-      super.copyWith((message) => updates(message as QuotaFailure_Violation));
+      super.copyWith((message) => updates(
+          message as QuotaFailure_Violation)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static QuotaFailure_Violation create() => QuotaFailure_Violation._();
@@ -154,9 +217,21 @@ class QuotaFailure_Violation extends $pb.GeneratedMessage {
 }
 
 class QuotaFailure extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('QuotaFailure',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..pc<QuotaFailure_Violation>(1, 'violations', $pb.PbFieldType.PM,
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'QuotaFailure',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..pc<QuotaFailure_Violation>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'violations',
+        $pb.PbFieldType.PM,
         subBuilder: QuotaFailure_Violation.create)
     ..hasRequiredFields = false;
 
@@ -168,9 +243,16 @@ class QuotaFailure extends $pb.GeneratedMessage {
   factory QuotaFailure.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   QuotaFailure clone() => QuotaFailure()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   QuotaFailure copyWith(void Function(QuotaFailure) updates) =>
-      super.copyWith((message) => updates(message as QuotaFailure));
+      super.copyWith((message) =>
+          updates(message as QuotaFailure)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static QuotaFailure create() => QuotaFailure._();
@@ -187,11 +269,30 @@ class QuotaFailure extends $pb.GeneratedMessage {
 }
 
 class ErrorInfo extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('ErrorInfo',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..aOS(1, 'reason')
-    ..aOS(2, 'domain')
-    ..m<$core.String, $core.String>(3, 'metadata',
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'ErrorInfo',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'reason')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'domain')
+    ..m<$core.String, $core.String>(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'metadata',
         entryClassName: 'ErrorInfo.MetadataEntry',
         keyFieldType: $pb.PbFieldType.OS,
         valueFieldType: $pb.PbFieldType.OS,
@@ -206,9 +307,16 @@ class ErrorInfo extends $pb.GeneratedMessage {
   factory ErrorInfo.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   ErrorInfo clone() => ErrorInfo()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   ErrorInfo copyWith(void Function(ErrorInfo) updates) =>
-      super.copyWith((message) => updates(message as ErrorInfo));
+      super.copyWith((message) =>
+          updates(message as ErrorInfo)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ErrorInfo create() => ErrorInfo._();
@@ -249,12 +357,29 @@ class ErrorInfo extends $pb.GeneratedMessage {
 
 class PreconditionFailure_Violation extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      'PreconditionFailure.Violation',
-      package: const $pb.PackageName('google.rpc'),
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'PreconditionFailure.Violation',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
       createEmptyInstance: create)
-    ..aOS(1, 'type')
-    ..aOS(2, 'subject')
-    ..aOS(3, 'description')
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'type')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'subject')
+    ..aOS(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'description')
     ..hasRequiredFields = false;
 
   PreconditionFailure_Violation._() : super();
@@ -265,12 +390,18 @@ class PreconditionFailure_Violation extends $pb.GeneratedMessage {
   factory PreconditionFailure_Violation.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   PreconditionFailure_Violation clone() =>
       PreconditionFailure_Violation()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   PreconditionFailure_Violation copyWith(
           void Function(PreconditionFailure_Violation) updates) =>
-      super.copyWith(
-          (message) => updates(message as PreconditionFailure_Violation));
+      super.copyWith((message) => updates(message
+          as PreconditionFailure_Violation)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static PreconditionFailure_Violation create() =>
@@ -321,9 +452,21 @@ class PreconditionFailure_Violation extends $pb.GeneratedMessage {
 }
 
 class PreconditionFailure extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('PreconditionFailure',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..pc<PreconditionFailure_Violation>(1, 'violations', $pb.PbFieldType.PM,
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'PreconditionFailure',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..pc<PreconditionFailure_Violation>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'violations',
+        $pb.PbFieldType.PM,
         subBuilder: PreconditionFailure_Violation.create)
     ..hasRequiredFields = false;
 
@@ -335,9 +478,16 @@ class PreconditionFailure extends $pb.GeneratedMessage {
   factory PreconditionFailure.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   PreconditionFailure clone() => PreconditionFailure()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   PreconditionFailure copyWith(void Function(PreconditionFailure) updates) =>
-      super.copyWith((message) => updates(message as PreconditionFailure));
+      super.copyWith((message) => updates(
+          message as PreconditionFailure)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static PreconditionFailure create() => PreconditionFailure._();
@@ -354,10 +504,25 @@ class PreconditionFailure extends $pb.GeneratedMessage {
 }
 
 class BadRequest_FieldViolation extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('BadRequest.FieldViolation',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..aOS(1, 'field')
-    ..aOS(2, 'description')
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'BadRequest.FieldViolation',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'field')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'description')
     ..hasRequiredFields = false;
 
   BadRequest_FieldViolation._() : super();
@@ -368,12 +533,18 @@ class BadRequest_FieldViolation extends $pb.GeneratedMessage {
   factory BadRequest_FieldViolation.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   BadRequest_FieldViolation clone() =>
       BadRequest_FieldViolation()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   BadRequest_FieldViolation copyWith(
           void Function(BadRequest_FieldViolation) updates) =>
-      super
-          .copyWith((message) => updates(message as BadRequest_FieldViolation));
+      super.copyWith((message) => updates(message
+          as BadRequest_FieldViolation)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static BadRequest_FieldViolation create() => BadRequest_FieldViolation._();
@@ -411,9 +582,21 @@ class BadRequest_FieldViolation extends $pb.GeneratedMessage {
 }
 
 class BadRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('BadRequest',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..pc<BadRequest_FieldViolation>(1, 'fieldViolations', $pb.PbFieldType.PM,
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'BadRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..pc<BadRequest_FieldViolation>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'fieldViolations',
+        $pb.PbFieldType.PM,
         subBuilder: BadRequest_FieldViolation.create)
     ..hasRequiredFields = false;
 
@@ -425,9 +608,16 @@ class BadRequest extends $pb.GeneratedMessage {
   factory BadRequest.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   BadRequest clone() => BadRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   BadRequest copyWith(void Function(BadRequest) updates) =>
-      super.copyWith((message) => updates(message as BadRequest));
+      super.copyWith((message) =>
+          updates(message as BadRequest)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static BadRequest create() => BadRequest._();
@@ -443,10 +633,25 @@ class BadRequest extends $pb.GeneratedMessage {
 }
 
 class RequestInfo extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('RequestInfo',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..aOS(1, 'requestId')
-    ..aOS(2, 'servingData')
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'RequestInfo',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'requestId')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'servingData')
     ..hasRequiredFields = false;
 
   RequestInfo._() : super();
@@ -457,9 +662,16 @@ class RequestInfo extends $pb.GeneratedMessage {
   factory RequestInfo.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   RequestInfo clone() => RequestInfo()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   RequestInfo copyWith(void Function(RequestInfo) updates) =>
-      super.copyWith((message) => updates(message as RequestInfo));
+      super.copyWith((message) =>
+          updates(message as RequestInfo)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static RequestInfo create() => RequestInfo._();
@@ -496,12 +708,32 @@ class RequestInfo extends $pb.GeneratedMessage {
 }
 
 class ResourceInfo extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('ResourceInfo',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..aOS(1, 'resourceType')
-    ..aOS(2, 'resourceName')
-    ..aOS(3, 'owner')
-    ..aOS(4, 'description')
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'ResourceInfo',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'resourceType')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'resourceName')
+    ..aOS(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'owner')
+    ..aOS(4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'description')
     ..hasRequiredFields = false;
 
   ResourceInfo._() : super();
@@ -512,9 +744,16 @@ class ResourceInfo extends $pb.GeneratedMessage {
   factory ResourceInfo.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   ResourceInfo clone() => ResourceInfo()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   ResourceInfo copyWith(void Function(ResourceInfo) updates) =>
-      super.copyWith((message) => updates(message as ResourceInfo));
+      super.copyWith((message) =>
+          updates(message as ResourceInfo)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ResourceInfo create() => ResourceInfo._();
@@ -576,10 +815,25 @@ class ResourceInfo extends $pb.GeneratedMessage {
 }
 
 class Help_Link extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Help.Link',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..aOS(1, 'description')
-    ..aOS(2, 'url')
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'Help.Link',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'description')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'url')
     ..hasRequiredFields = false;
 
   Help_Link._() : super();
@@ -590,9 +844,16 @@ class Help_Link extends $pb.GeneratedMessage {
   factory Help_Link.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   Help_Link clone() => Help_Link()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   Help_Link copyWith(void Function(Help_Link) updates) =>
-      super.copyWith((message) => updates(message as Help_Link));
+      super.copyWith((message) =>
+          updates(message as Help_Link)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Help_Link create() => Help_Link._();
@@ -629,9 +890,21 @@ class Help_Link extends $pb.GeneratedMessage {
 }
 
 class Help extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('Help',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..pc<Help_Link>(1, 'links', $pb.PbFieldType.PM,
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'Help',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..pc<Help_Link>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'links',
+        $pb.PbFieldType.PM,
         subBuilder: Help_Link.create)
     ..hasRequiredFields = false;
 
@@ -643,9 +916,15 @@ class Help extends $pb.GeneratedMessage {
   factory Help.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   Help clone() => Help()..mergeFromMessage(this);
-  Help copyWith(void Function(Help) updates) =>
-      super.copyWith((message) => updates(message as Help));
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  Help copyWith(void Function(Help) updates) => super.copyWith(
+      (message) => updates(message as Help)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Help create() => Help._();
@@ -661,10 +940,25 @@ class Help extends $pb.GeneratedMessage {
 }
 
 class LocalizedMessage extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo('LocalizedMessage',
-      package: const $pb.PackageName('google.rpc'), createEmptyInstance: create)
-    ..aOS(1, 'locale')
-    ..aOS(2, 'message')
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'LocalizedMessage',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.rpc'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'locale')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'message')
     ..hasRequiredFields = false;
 
   LocalizedMessage._() : super();
@@ -675,9 +969,16 @@ class LocalizedMessage extends $pb.GeneratedMessage {
   factory LocalizedMessage.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
   LocalizedMessage clone() => LocalizedMessage()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
   LocalizedMessage copyWith(void Function(LocalizedMessage) updates) =>
-      super.copyWith((message) => updates(message as LocalizedMessage));
+      super.copyWith((message) => updates(
+          message as LocalizedMessage)); // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static LocalizedMessage create() => LocalizedMessage._();
