@@ -214,8 +214,9 @@ class XhrClientConnection extends ClientConnection {
 
   @override
   Future<void> terminate() async {
-    final requests = List.of(_requests);
-    requests.forEach((request) => request.terminate());
+    for (var request in List.of(_requests)) {
+      request.terminate();
+    }
   }
 
   @override
