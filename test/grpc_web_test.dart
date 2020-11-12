@@ -54,6 +54,8 @@ void main() {
     expect(maxDelay, lessThan(500));
   });
 
+  // Verify that terminate does not cause an exception when terminating
+  // channel with multiple active requests.
   test("terminate works", () async {
     final channel = GrpcWebClientChannel.xhr(server.uri);
     final service = EchoServiceClient(channel);
