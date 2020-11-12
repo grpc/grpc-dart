@@ -145,6 +145,11 @@ class Server extends ConnectionServer {
     return null;
   }
 
+  Service lookupService(String service) => _services[service];
+
+  /// Starts the [Server] with the given options.
+  /// [address] can be either a [String] or an [InternetAddress], in the latter
+  /// case it can be a Unix Domain Socket address.
   Future<void> serve(
       {dynamic address,
       int port,
@@ -173,7 +178,9 @@ class Server extends ConnectionServer {
     }
     server.listen((socket) {
       // Don't wait for io buffers to fill up before sending requests.
-      socket.setOption(SocketOption.tcpNoDelay, true);
+      if (socket.address.type != InternetAddressType.unix) {
+        socket.setOption(SocketOption.tcpNoDelay, true);
+      }
       final connection = ServerTransportConnection.viaSocket(socket,
           settings: http2ServerSettings);
       serveConnection(connection);
