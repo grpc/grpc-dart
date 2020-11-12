@@ -37,9 +37,9 @@ pub get
 pub run test
 ```
 
-gRPC-web tests require [`grpcwebproxy`](
-https://github.com/improbable-eng/grpc-web/tree/master/go/grpcwebproxy) by
-Improbable Engineering to be available in the PATH. Pre-built binaries are [available](https://github.com/improbable-eng/grpc-web/releases).
+gRPC-web tests require [`envoy`](
+https://www.envoyproxy.io/docs/envoy/latest/start/start.html) binary to be
+available in the PATH.
 
 ## Guidelines for Pull Requests
 

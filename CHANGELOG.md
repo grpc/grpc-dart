@@ -7,6 +7,8 @@
   newer of protobuf compiler plugin.
 * `Client.$createCall` is deprecated because it does not invoke client
   interceptors.
+* Fix an issue [#380](https://github.com/grpc/grpc-dart/issues/380) causing
+  incorrect duplicated headers in gRPC-Web requests.
 * Change minimum required Dart SDK to 2.8 to enable access to Unix domain sockets.
 * Add support for Unix domain sockets in `Socket.serve` and `ClientChannel`.
 
