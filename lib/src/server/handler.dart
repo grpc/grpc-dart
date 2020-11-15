@@ -128,12 +128,12 @@ class ServerHandler_ extends ServiceCall {
       return;
     }
 
-    _startStreamingRequest();
+    await _startStreamingRequest();
   }
 
-  GrpcError _onMetadata() {
+  Future<GrpcError> _onMetadata() async {
     try {
-      _service.$onMetadata(this);
+      await _service.$onMetadata(this);
     } on GrpcError catch (error) {
       return error;
     } catch (error) {
@@ -158,11 +158,12 @@ class ServerHandler_ extends ServiceCall {
     return null;
   }
 
-  void _startStreamingRequest() {
+  Future _startStreamingRequest() async {
     _requests = _descriptor.createRequestStream(_incomingSubscription);
     _incomingSubscription.onData(_onDataActive);
 
-    final error = _onMetadata();
+    final error = await _onMetadata();
+
     if (error != null) {
       if (!_requests.isClosed) {
         _requests

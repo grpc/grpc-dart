@@ -13,10 +13,17 @@ class TestClient extends Client {
   static final _$stream = ClientMethod<int, int>('/test.TestService/stream',
       (int value) => [value], (List<int> value) => value[0]);
 
+  static final _$getFlag = ClientMethod<int, int>('/test.TestService/getFlag',
+      (int value) => [value], (List<int> value) => value[0]);
+
   TestClient(api.ClientChannel channel) : super(channel);
   ResponseStream<int> stream(int request, {CallOptions options}) {
     return $createStreamingCall(_$stream, Stream.value(request),
         options: options);
+  }
+
+  ResponseFuture<int> getFlag(int request, {CallOptions options}) {
+    return $createUnaryCall(_$getFlag, request);
   }
 }
 
@@ -26,6 +33,9 @@ class TestService extends Service {
   TestService() {
     $addMethod(ServiceMethod<int, int>('stream', stream, false, true,
         (List<int> value) => value[0], (int value) => [value]));
+
+    $addMethod(ServiceMethod<int, int>('getFlag', getFlag, false, false,
+        (List<int> value) => 0, (value) => [value]));
   }
 
   static const requestFiniteStream = 1;
@@ -38,11 +48,38 @@ class TestService extends Service {
       await Future.delayed(Duration(milliseconds: 100));
     }
   }
+
+  int flag = 0;
+
+  void $onMetadata(ServiceCall context) {
+    flag = 1;
+  }
+
+  Future<int> getFlag(ServiceCall call, Future request) async {
+    return flag;
+  }
+}
+
+class TestServiceWithAsyncOnMetadata extends TestService {
+  Future $onMetadata(ServiceCall context) async {
+    flag = 2;
+    await Future.delayed(Duration(milliseconds: 100), () async {
+      flag = 3;
+    });
+  }
 }
 
 class TestServiceWithOnMetadataException extends TestService {
   void $onMetadata(ServiceCall context) {
     throw Exception('business exception');
+  }
+}
+
+class TestServiceWithAsyncOnMetadataException extends TestService {
+  Future $onMetadata(ServiceCall context) async {
+    await Future.delayed(Duration(milliseconds: 100), () async {
+      throw Exception('delayed business exception');
+    });
   }
 }
 
@@ -97,7 +134,35 @@ main() async {
     server.shutdown();
   });
 
-  test('exception in onMetadataException', () async {
+  test('sync onMetadata runs in correct order', () async {
+    final Server server = Server([TestService()]);
+    await server.serve(address: 'localhost', port: 0);
+
+    final channel = FixedConnectionClientChannel(Http2ClientConnection(
+      'localhost',
+      server.port,
+      ChannelOptions(credentials: ChannelCredentials.insecure()),
+    ));
+    final testClient = TestClient(channel);
+
+    expect(await testClient.getFlag(0), 1);
+  });
+
+  test('async onMetadata runs in correct order', () async {
+    final Server server = Server([TestServiceWithAsyncOnMetadata()]);
+    await server.serve(address: 'localhost', port: 0);
+
+    final channel = FixedConnectionClientChannel(Http2ClientConnection(
+      'localhost',
+      server.port,
+      ChannelOptions(credentials: ChannelCredentials.insecure()),
+    ));
+    final testClient = TestClient(channel);
+
+    expect(await testClient.getFlag(0), 3);
+  });
+
+  test('exception in onMetadataException for stream call', () async {
     final Server server = Server([TestServiceWithOnMetadataException()]);
     await server.serve(address: 'localhost', port: 0);
 
@@ -110,6 +175,50 @@ main() async {
     await expectLater(
         testClient.stream(TestService.requestFiniteStream).toList(),
         throwsA(isA<GrpcError>()));
+    await server.shutdown();
+  });
+
+  test('exception in onMetadataException for unary call', () async {
+    final Server server = Server([TestServiceWithOnMetadataException()]);
+    await server.serve(address: 'localhost', port: 0);
+
+    final channel = FixedConnectionClientChannel(Http2ClientConnection(
+      'localhost',
+      server.port,
+      ChannelOptions(credentials: ChannelCredentials.insecure()),
+    ));
+    final testClient = TestClient(channel);
+    await expectLater(testClient.getFlag(0), throwsA(isA<GrpcError>()));
+    await server.shutdown();
+  });
+
+  test('exception in asyncOnMetadataException', () async {
+    final Server server = Server([TestServiceWithAsyncOnMetadataException()]);
+    await server.serve(address: 'localhost', port: 0);
+
+    final channel = FixedConnectionClientChannel(Http2ClientConnection(
+      'localhost',
+      server.port,
+      ChannelOptions(credentials: ChannelCredentials.insecure()),
+    ));
+    final testClient = TestClient(channel);
+    await expectLater(
+        testClient.stream(TestService.requestFiniteStream).toList(),
+        throwsA(isA<GrpcError>()));
+    await server.shutdown();
+  });
+
+  test('exception in asyncOnMetadataException for unary call', () async {
+    final Server server = Server([TestServiceWithAsyncOnMetadataException()]);
+    await server.serve(address: 'localhost', port: 0);
+
+    final channel = FixedConnectionClientChannel(Http2ClientConnection(
+      'localhost',
+      server.port,
+      ChannelOptions(credentials: ChannelCredentials.insecure()),
+    ));
+    final testClient = TestClient(channel);
+    await expect(testClient.getFlag(0), throwsA(isA<GrpcError>()));
     await server.shutdown();
   });
 

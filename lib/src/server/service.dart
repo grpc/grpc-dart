@@ -102,7 +102,7 @@ abstract class Service {
   ///
   /// Services can override this method to provide common handling of incoming
   /// metadata from the client.
-  void $onMetadata(ServiceCall context) {}
+  FutureOr $onMetadata(ServiceCall context) async {}
 
   ServiceMethod $lookupMethod(String name) => _$methods[name];
 }
