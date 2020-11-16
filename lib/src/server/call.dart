@@ -39,6 +39,10 @@ abstract class ServiceCall {
   /// Returns [true] if the client has canceled this call.
   bool get isCanceled;
 
+  /// Data that can be attached to the service call to
+  /// be shared between $onMetadata even and the service methods.
+  Object customData;
+
   /// Send response headers. This is done automatically before sending the first
   /// response message, but can be done manually before the first response is
   /// ready, if necessary.

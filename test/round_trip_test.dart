@@ -49,22 +49,20 @@ class TestService extends Service {
     }
   }
 
-  int flag = 0;
-
   void $onMetadata(ServiceCall context) {
-    flag = 1;
+    context.customData = 1;
   }
 
   Future<int> getFlag(ServiceCall call, Future request) async {
-    return flag;
+    return call.customData as int;
   }
 }
 
 class TestServiceWithAsyncOnMetadata extends TestService {
   Future $onMetadata(ServiceCall context) async {
-    flag = 2;
+    context.customData = 2;
     await Future.delayed(Duration(milliseconds: 100), () async {
-      flag = 3;
+      context.customData = 3;
     });
   }
 }
