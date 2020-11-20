@@ -1,3 +1,47 @@
+## 2.8.0
+
+* Added support for client interceptors, which can be configured through
+  `Client` constructor's `interceptors` parameter. Interceptors will be
+  executed by `Client.$createStreamingCall` and `Client.$createUnaryCall`.
+  Using interceptors requires regenerating client stubs using version 19.2.0 or
+  newer of protobuf compiler plugin.
+* `Client.$createCall` is deprecated because it does not invoke client
+  interceptors.
+* Fix issue [#380](https://github.com/grpc/grpc-dart/issues/380) causing
+  incorrect duplicated headers in gRPC-Web requests.
+* Change minimum required Dart SDK to 2.8 to enable access to Unix domain sockets.
+* Add support for Unix domain sockets in `Socket.serve` and `ClientChannel`.
+* Fix issue [#331](https://github.com/grpc/grpc-dart/issues/331) causing
+  an exception in `GrpcWebClientChannel.terminate()`.
+
+## 2.7.0
+
+* Added decoding/parsing of `grpc-status-details-bin` to pass all response
+  exception details to the `GrpcError` thrown in Dart, via
+  [#349](https://github.com/grpc/grpc-dart/pull/349).
+* Dart SDK constraint is bumped to `>=2.3.0 <3.0.0` due to language version
+  in the generated protobuf code.
+
+## 2.6.0
+
+* Create gRPC servers and clients with [Server|Client]TransportConnnection.
+  This allows callers to provide their own transport configuration, such
+  as their own implementation of streams and sinks instead of sockets.
+
+## 2.5.0
+
+* Expose a `validateClient` method for server credentials so gRPC server
+  users may know when clients are loopback addresses.
+
+## 2.4.1
+
+* Plumb stacktraces through request / response stream error handlers.
+* Catch and forward any errors decoding the response.
+
+## 2.4.0
+
+* Add the ability to bypass CORS preflight requests.
+
 ## 2.3.0
 
 * Revert [PR #287](https://github.com/grpc/grpc-dart/pull/287), which allowed

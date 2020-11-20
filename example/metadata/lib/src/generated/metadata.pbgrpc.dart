@@ -1,12 +1,13 @@
 ///
 //  Generated code. Do not modify.
 //  source: metadata.proto
-///
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
+//
+// @dart = 2.3
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:async' as $async;
 
-import 'dart:core' as $core show int, String, List;
+import 'dart:core' as $core;
 
 import 'package:grpc/service_api.dart' as $grpc;
 import 'metadata.pb.dart' as $0;
@@ -26,27 +27,26 @@ class MetadataClient extends $grpc.Client {
       ($0.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Number.fromBuffer(value));
 
-  MetadataClient($grpc.ClientChannel channel, {$grpc.CallOptions options})
-      : super(channel, options: options);
+  MetadataClient($grpc.ClientChannel channel,
+      {$grpc.CallOptions options,
+      $core.Iterable<$grpc.ClientInterceptor> interceptors})
+      : super(channel, options: options, interceptors: interceptors);
 
   $grpc.ResponseFuture<$0.Record> echo($0.Record request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$echo, $async.Stream.fromIterable([request]),
-        options: options);
-    return $grpc.ResponseFuture(call);
+    return $createUnaryCall(_$echo, request, options: options);
   }
 
   $grpc.ResponseStream<$0.Number> addOne($async.Stream<$0.Number> request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$addOne, request, options: options);
-    return $grpc.ResponseStream(call);
+    return $createStreamingCall(_$addOne, request, options: options);
   }
 
   $grpc.ResponseStream<$0.Number> fibonacci($0.Empty request,
       {$grpc.CallOptions options}) {
-    final call = $createCall(_$fibonacci, $async.Stream.fromIterable([request]),
+    return $createStreamingCall(
+        _$fibonacci, $async.Stream.fromIterable([request]),
         options: options);
-    return $grpc.ResponseStream(call);
   }
 }
 
@@ -78,13 +78,13 @@ abstract class MetadataServiceBase extends $grpc.Service {
   }
 
   $async.Future<$0.Record> echo_Pre(
-      $grpc.ServiceCall call, $async.Future request) async {
+      $grpc.ServiceCall call, $async.Future<$0.Record> request) async {
     return echo(call, await request);
   }
 
   $async.Stream<$0.Number> fibonacci_Pre(
-      $grpc.ServiceCall call, $async.Future request) async* {
-    yield* fibonacci(call, (await request) as $0.Empty);
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async* {
+    yield* fibonacci(call, await request);
   }
 
   $async.Future<$0.Record> echo($grpc.ServiceCall call, $0.Record request);

@@ -1,15 +1,20 @@
 ///
 //  Generated code. Do not modify.
 //  source: google/protobuf/struct.proto
-///
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
+//
+// @dart = 2.3
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
-// ignore_for_file: UNDEFINED_SHOWN_NAME,UNUSED_SHOWN_NAME
-import 'dart:core' as $core show int, dynamic, String, List, Map;
+// ignore_for_file: UNDEFINED_SHOWN_NAME
+import 'dart:core' as $core;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class NullValue extends $pb.ProtobufEnum {
-  static const NullValue NULL_VALUE = NullValue._(0, 'NULL_VALUE');
+  static const NullValue NULL_VALUE = NullValue._(
+      0,
+      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
+          ? ''
+          : 'NULL_VALUE');
 
   static const $core.List<NullValue> values = <NullValue>[
     NULL_VALUE,

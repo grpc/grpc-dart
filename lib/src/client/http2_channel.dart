@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'channel.dart';
+import 'client_transport_connector.dart';
 import 'connection.dart';
 import 'http2_connection.dart' show Http2ClientConnection;
 import 'options.dart';
@@ -24,7 +25,10 @@ import 'options.dart';
 /// RPCs on the same channel may be sent to different connections, depending on
 /// load balancing settings.
 class ClientChannel extends ClientChannelBase {
-  final String host;
+  /// Starts the [Server] with the given options.
+  /// [address] can be either a [String] or an [InternetAddress], in the latter
+  /// case it can be a Unix Domain Socket address.
+  final Object host;
   final int port;
   final ChannelOptions options;
 
@@ -35,5 +39,19 @@ class ClientChannel extends ClientChannelBase {
   @override
   ClientConnection createConnection() {
     return Http2ClientConnection(host, port, options);
+  }
+}
+
+class ClientTransportConnectorChannel extends ClientChannelBase {
+  final ClientTransportConnector transportConnector;
+  final ChannelOptions options;
+
+  ClientTransportConnectorChannel(this.transportConnector,
+      {this.options = const ChannelOptions()});
+
+  @override
+  ClientConnection createConnection() {
+    return Http2ClientConnection.fromClientTransportConnector(
+        transportConnector, options);
   }
 }

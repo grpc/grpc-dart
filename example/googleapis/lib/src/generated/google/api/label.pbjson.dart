@@ -1,14 +1,15 @@
 ///
 //  Generated code. Do not modify.
 //  source: google/api/label.proto
-///
-// ignore_for_file: camel_case_types,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name
+//
+// @dart = 2.3
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
-const LabelDescriptor$json = {
+const LabelDescriptor$json = const {
   '1': 'LabelDescriptor',
-  '2': [
-    {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
-    {
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    const {
       '1': 'value_type',
       '3': 2,
       '4': 1,
@@ -16,16 +17,16 @@ const LabelDescriptor$json = {
       '6': '.google.api.LabelDescriptor.ValueType',
       '10': 'valueType'
     },
-    {'1': 'description', '3': 3, '4': 1, '5': 9, '10': 'description'},
+    const {'1': 'description', '3': 3, '4': 1, '5': 9, '10': 'description'},
   ],
-  '4': [LabelDescriptor_ValueType$json],
+  '4': const [LabelDescriptor_ValueType$json],
 };
 
-const LabelDescriptor_ValueType$json = {
+const LabelDescriptor_ValueType$json = const {
   '1': 'ValueType',
-  '2': [
-    {'1': 'STRING', '2': 0},
-    {'1': 'BOOL', '2': 1},
-    {'1': 'INT64', '2': 2},
+  '2': const [
+    const {'1': 'STRING', '2': 0},
+    const {'1': 'BOOL', '2': 1},
+    const {'1': 'INT64', '2': 2},
   ],
 };
