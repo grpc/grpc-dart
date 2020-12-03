@@ -1,6 +1,6 @@
 import 'package:archive/archive.dart';
 
-class Codec {
+abstract class Codec {
   /// Returns the message encoding that this compressor uses.
   ///
   /// This can be values such as "gzip", "deflate", "snappy", etc.
@@ -20,18 +20,18 @@ class Codec {
 class Identity implements Codec {
   const Identity();
 
-  @Override
-  public List<int> decompress(List<int> inputStream) {
+  @override
+  List<int> decompress(List<int> inputStream) {
   return inputStream;
   }
 
-  @Override
-  public String getMessageEncoding() {
+  @override
+  String getMessageEncoding() {
     return "identity";
   }
 
-  @Override
-  public List<int> compress(List<int> outputStream) {
+  @override
+  List<int> compress(List<int> outputStream) {
     return outputStream;
   }
 }
@@ -40,18 +40,18 @@ class Identity implements Codec {
 class Gzip implements Codec {
   const Gzip();
 
-  @Override
-  public List<int> decompress(List<int> inputStream) {
-    return GZipEncoder().encode(inputStream);
+  @override
+  List<int> decompress(List<int> inputStream) {
+    return GZipDecoder().decodeBytes(inputStream);
   }
 
-  @Override
-  public String getMessageEncoding() {
+  @override
+  String getMessageEncoding() {
     return "gzip";
   }
 
-  @Override
-  public List<int> compress(List<int> outputStream) {
-    return GZipDecoder().decodeBytes(outputStream);
+  @override
+  List<int> compress(List<int> outputStream) {
+    return GZipEncoder().encode(outputStream);
   }
 }
