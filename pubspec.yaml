@@ -9,6 +9,7 @@ environment:
   sdk: '>=2.8.0 <3.0.0'
 
 dependencies:
+  archive: ^2.0.13
   async: ^2.2.0
   crypto: ^2.1.4
   fixnum: ^0.10.11
