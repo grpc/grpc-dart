@@ -19,6 +19,7 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
+import '../shared/codec.dart';
 import '../shared/security.dart';
 
 import 'handler.dart';
@@ -84,13 +85,17 @@ class ServerTlsCredentials extends ServerCredentials {
 class ConnectionServer {
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
+  final Codec _codec;
 
   final _connections = <ServerTransportConnection>[];
 
   /// Create a server for the given [services].
   ConnectionServer(List<Service> services,
-      [List<Interceptor> interceptors = const <Interceptor>[]])
-      : _interceptors = interceptors {
+      [List<Interceptor> interceptors = const <Interceptor>[],
+      Codec codec = const Identity()])
+      : assert(codec != null),
+        _codec = codec,
+        _interceptors = interceptors {
     for (final service in services) {
       _services[service.$name] = service;
     }
@@ -121,7 +126,8 @@ class ConnectionServer {
 
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream) {
-    return ServerHandler_(lookupService, stream, _interceptors)..handle();
+    return ServerHandler_(lookupService, stream, _interceptors, _codec)
+      ..handle();
   }
 }
 
@@ -134,8 +140,10 @@ class Server extends ConnectionServer {
 
   /// Create a server for the given [services].
   Server(List<Service> services,
-      [List<Interceptor> interceptors = const <Interceptor>[]])
-      : super(services, interceptors);
+      [List<Interceptor> interceptors = const <Interceptor>[],
+      Codec codec = const Identity()])
+      : assert(codec != null),
+        super(services, interceptors, codec);
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
@@ -193,7 +201,8 @@ class Server extends ConnectionServer {
 
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream) {
-    return ServerHandler_(lookupService, stream, _interceptors)..handle();
+    return ServerHandler_(lookupService, stream, _interceptors, _codec)
+      ..handle();
   }
 
   @Deprecated(

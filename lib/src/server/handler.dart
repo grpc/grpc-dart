@@ -18,6 +18,7 @@ import 'dart:convert';
 
 import 'package:http2/transport.dart';
 
+import '../shared/codec.dart';
 import '../shared/message.dart';
 import '../shared/status.dart';
 import '../shared/streams.dart';
@@ -32,6 +33,7 @@ class ServerHandler_ extends ServiceCall {
   final ServerTransportStream _stream;
   final Service Function(String service) _serviceLookup;
   final List<Interceptor> _interceptors;
+  final Codec _codec;
 
   StreamSubscription<GrpcMessage> _incomingSubscription;
 
@@ -55,7 +57,8 @@ class ServerHandler_ extends ServiceCall {
   bool _isTimedOut = false;
   Timer _timeoutTimer;
 
-  ServerHandler_(this._serviceLookup, this._stream, this._interceptors);
+  ServerHandler_(
+      this._serviceLookup, this._stream, this._interceptors, this._codec);
 
   DateTime get deadline => _deadline;
 
@@ -73,8 +76,8 @@ class ServerHandler_ extends ServiceCall {
     _stream.onTerminated = (_) => cancel();
 
     _incomingSubscription = _stream.incomingMessages
-        .transform(GrpcHttpDecoder())
-        .transform(grpcDecompressor())
+        .transform(GrpcHttpDecoder(_codec))
+        .transform(grpcDecompressor(_codec))
         .listen(_onDataIdle,
             onError: _onError, onDone: _onDoneError, cancelOnError: true);
     _stream.outgoingMessages.done.then((_) {
@@ -251,7 +254,7 @@ class ServerHandler_ extends ServiceCall {
       if (!_headersSent) {
         sendHeaders();
       }
-      _stream.sendData(frame(bytes));
+      _stream.sendData(frame(bytes, _codec));
     } catch (error) {
       final grpcError = GrpcError.internal('Error sending response: $error');
       if (!_requests.isClosed) {
@@ -384,7 +387,10 @@ class ServerHandler_ extends ServiceCall {
 }
 
 class ServerHandler extends ServerHandler_ {
-  ServerHandler(Service Function(String service) serviceLookup, stream,
-      [List<Interceptor> interceptors = const <Interceptor>[]])
-      : super(serviceLookup, stream, interceptors);
+  ServerHandler(
+    Service Function(String service) serviceLookup,
+    stream, [
+    List<Interceptor> interceptors = const <Interceptor>[],
+    Codec codec = const Identity(),
+  ]) : super(serviceLookup, stream, interceptors, codec);
 }

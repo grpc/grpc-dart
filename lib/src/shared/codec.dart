@@ -22,7 +22,7 @@ class Identity implements Codec {
 
   @override
   List<int> decompress(List<int> inputStream) {
-  return inputStream;
+    return inputStream;
   }
 
   @override

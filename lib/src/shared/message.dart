@@ -55,7 +55,7 @@ class GrpcMessageSink extends Sink<GrpcMessage> {
   }
 }
 
-List<int> frame(List<int> payload, {Codec codec = const Identity()}) {
+List<int> frame(List<int> payload, [Codec codec = const Identity()]) {
   final compressedPayload = codec.compress(payload);
   final payloadLength = compressedPayload.length;
   final bytes = Uint8List(payloadLength + 5);
@@ -66,7 +66,8 @@ List<int> frame(List<int> payload, {Codec codec = const Identity()}) {
   return bytes;
 }
 
-StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({Codec codec = const Identity()}) =>
+StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor(
+        [Codec codec = const Identity()]) =>
     StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
         handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
       if (value is GrpcData) {

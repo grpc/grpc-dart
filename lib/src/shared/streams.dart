@@ -19,10 +19,15 @@ import 'dart:typed_data';
 
 import 'package:http2/transport.dart';
 
+import 'codec.dart';
 import 'message.dart';
 import 'status.dart';
 
 class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
+  GrpcHttpEncoder([this.codec = const Identity()]) : assert(codec != null);
+
+  final Codec codec;
+
   @override
   StreamMessage convert(GrpcMessage input) {
     if (input is GrpcMetadata) {
@@ -32,13 +37,17 @@ class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
       });
       return HeadersStreamMessage(headers);
     } else if (input is GrpcData) {
-      return DataStreamMessage(frame(input.data));
+      return DataStreamMessage(frame(input.data, codec));
     }
     throw GrpcError.internal('Unexpected message type');
   }
 }
 
 class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
+  GrpcHttpDecoder([this.codec = const Identity()]) : assert(codec != null);
+
+  final Codec codec;
+
   @override
   GrpcMessage convert(StreamMessage input) {
     final sink = GrpcMessageSink();
@@ -50,18 +59,19 @@ class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
 
   @override
   Sink<StreamMessage> startChunkedConversion(Sink<GrpcMessage> sink) {
-    return _GrpcMessageConversionSink(sink);
+    return _GrpcMessageConversionSink(sink, codec);
   }
 }
 
 class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
   final Sink<GrpcMessage> _out;
+  final Codec codec;
 
   final _dataHeader = Uint8List(5);
   Uint8List _data;
   int _dataOffset = 0;
 
-  _GrpcMessageConversionSink(this._out);
+  _GrpcMessageConversionSink(this._out, this.codec);
 
   void _addData(DataStreamMessage chunk) {
     final chunkData = chunk.bytes;
@@ -97,7 +107,7 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
           chunkReadOffset += toCopy;
         }
         if (_dataOffset == _data.lengthInBytes) {
-          _out.add(GrpcData(_data,
+          _out.add(GrpcData(codec.decompress(_data),
               isCompressed: _dataHeader.buffer.asByteData().getUint8(0) != 0));
           _data = null;
           _dataOffset = 0;
