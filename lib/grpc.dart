@@ -57,6 +57,7 @@ export 'src/server/server.dart'
         ConnectionServer,
         Server;
 export 'src/server/service.dart' show ServiceMethod, Service;
+export 'src/shared/codec.dart' show Codec, Identity, Gzip;
 export 'src/shared/message.dart'
     show GrpcMessage, GrpcMetadata, GrpcData, grpcDecompressor;
 
