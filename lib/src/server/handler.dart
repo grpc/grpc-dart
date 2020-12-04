@@ -23,7 +23,6 @@ import '../shared/message.dart';
 import '../shared/status.dart';
 import '../shared/streams.dart';
 import '../shared/timeout.dart';
-
 import 'call.dart';
 import 'interceptor.dart';
 import 'service.dart';
@@ -76,8 +75,8 @@ class ServerHandler_ extends ServiceCall {
     _stream.onTerminated = (_) => cancel();
 
     _incomingSubscription = _stream.incomingMessages
-        .transform(GrpcHttpDecoder(_codec))
-        .transform(grpcDecompressor(_codec))
+        .transform(GrpcHttpDecoder())
+        .transform(grpcDecompressor())
         .listen(_onDataIdle,
             onError: _onError, onDone: _onDoneError, cancelOnError: true);
     _stream.outgoingMessages.done.then((_) {
