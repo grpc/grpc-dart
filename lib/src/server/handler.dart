@@ -16,6 +16,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:grpc/src/shared/codec_registry.dart';
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
@@ -32,7 +33,7 @@ class ServerHandler_ extends ServiceCall {
   final ServerTransportStream _stream;
   final Service Function(String service) _serviceLookup;
   final List<Interceptor> _interceptors;
-  final Codec _codec;
+  final Set<String> _supportedCodecs;
 
   StreamSubscription<GrpcMessage> _incomingSubscription;
 
@@ -40,6 +41,7 @@ class ServerHandler_ extends ServiceCall {
   ServiceMethod _descriptor;
 
   Map<String, String> _clientMetadata;
+  Codec _callEncodingCodec = const Identity();
 
   StreamController _requests;
   bool _hasReceivedRequest = false;
@@ -57,7 +59,11 @@ class ServerHandler_ extends ServiceCall {
   Timer _timeoutTimer;
 
   ServerHandler_(
-      this._serviceLookup, this._stream, this._interceptors, this._codec);
+    this._serviceLookup,
+    this._stream,
+    this._interceptors,
+    this._supportedCodecs,
+  );
 
   DateTime get deadline => _deadline;
 
@@ -114,6 +120,15 @@ class ServerHandler_ extends ServiceCall {
     }
     final serviceName = pathSegments[1];
     final methodName = pathSegments[2];
+    final clientEncodings = _clientMetadata['grpc-accept-encoding'].split(',');
+    final clientEncoding = clientEncodings.firstWhere(
+        (element) => _supportedCodecs.contains(element),
+        orElse: () => 'identity');
+
+    if (clientEncoding != null) {
+      _callEncodingCodec =
+          CodecRegistry().lookupCodec(clientEncoding) ?? const Identity();
+    }
 
     _service = _serviceLookup(serviceName);
     _descriptor = _service?.$lookupMethod(methodName);
@@ -253,7 +268,7 @@ class ServerHandler_ extends ServiceCall {
       if (!_headersSent) {
         sendHeaders();
       }
-      _stream.sendData(frame(bytes, _codec));
+      _stream.sendData(frame(bytes, _callEncodingCodec));
     } catch (error) {
       final grpcError = GrpcError.internal('Error sending response: $error');
       if (!_requests.isClosed) {
@@ -288,7 +303,7 @@ class ServerHandler_ extends ServiceCall {
     final outgoingHeadersMap = <String, String>{
       ':status': '200',
       'content-type': 'application/grpc',
-      'grpc-encoding': _codec.messageEncoding(),
+      'grpc-encoding': _callEncodingCodec.messageEncoding(),
     };
 
     outgoingHeadersMap.addAll(_customHeaders);
@@ -391,6 +406,6 @@ class ServerHandler extends ServerHandler_ {
     Service Function(String service) serviceLookup,
     stream, [
     List<Interceptor> interceptors = const <Interceptor>[],
-    Codec codec = const Identity(),
-  ]) : super(serviceLookup, stream, interceptors, codec);
+    Set<String> supportedCodecs = const {'identity'},
+  ]) : super(serviceLookup, stream, interceptors, supportedCodecs);
 }

@@ -20,7 +20,6 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
-import '../shared/codec.dart';
 import '../shared/timeout.dart';
 import 'call.dart';
 import 'client_transport_connector.dart';
@@ -269,9 +268,15 @@ class Http2ClientConnection implements connection.ClientConnection {
     _timer = Timer(_currentReconnectDelay, _handleReconnect);
   }
 
-  static List<Header> createCallHeaders(bool useTls, String authority,
-      String path, Duration timeout, Map<String, String> metadata,
-      {String userAgent, Codec codec = const Identity()}) {
+  static List<Header> createCallHeaders(
+    bool useTls,
+    String authority,
+    String path,
+    Duration timeout,
+    Map<String, String> metadata, {
+    String userAgent,
+    String codec = 'identity',
+  }) {
     final headers = [
       _methodPost,
       useTls ? _schemeHttps : _schemeHttp,
@@ -284,7 +289,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     headers.addAll([
       _contentTypeGrpc,
       _teTrailers,
-      Header.ascii('grpc-accept-encoding', codec.messageEncoding()),
+      Header.ascii('grpc-accept-encoding', codec),
       Header.ascii('user-agent', userAgent ?? defaultUserAgent),
     ]);
     metadata?.forEach((key, value) {

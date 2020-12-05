@@ -15,7 +15,6 @@
 
 import 'dart:math';
 
-import '../shared/codec.dart';
 import 'transport/http2_credentials.dart';
 
 const defaultIdleTimeout = Duration(minutes: 5);
@@ -46,7 +45,7 @@ Duration defaultBackoffStrategy(Duration lastBackoff) {
 class ChannelOptions {
   final ChannelCredentials credentials;
   final Duration idleTimeout;
-  final Codec codec;
+  final String codec;
 
   /// The maximum time a single connection will be used for new requests.
   final Duration connectionTimeout;
@@ -59,6 +58,6 @@ class ChannelOptions {
     this.userAgent = defaultUserAgent,
     this.backoffStrategy = defaultBackoffStrategy,
     this.connectionTimeout = defaultConnectionTimeOut,
-    this.codec = const Identity(),
+    this.codec = 'identity',
   });
 }

@@ -19,9 +19,7 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
-import '../shared/codec.dart';
 import '../shared/security.dart';
-
 import 'handler.dart';
 import 'interceptor.dart';
 import 'service.dart';
@@ -85,15 +83,16 @@ class ServerTlsCredentials extends ServerCredentials {
 class ConnectionServer {
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
-  final Codec _codec;
+  final Set<String> _codec;
 
   final _connections = <ServerTransportConnection>[];
 
   /// Create a server for the given [services].
-  ConnectionServer(List<Service> services,
-      [List<Interceptor> interceptors = const <Interceptor>[],
-      Codec codec = const Identity()])
-      : assert(codec != null),
+  ConnectionServer(
+    List<Service> services, [
+    List<Interceptor> interceptors = const <Interceptor>[],
+    Set<String> codec = const {'identity'},
+  ])  : assert(codec != null),
         _codec = codec,
         _interceptors = interceptors {
     for (final service in services) {
@@ -139,10 +138,11 @@ class Server extends ConnectionServer {
   SecureServerSocket _secureServer;
 
   /// Create a server for the given [services].
-  Server(List<Service> services,
-      [List<Interceptor> interceptors = const <Interceptor>[],
-      Codec codec = const Identity()])
-      : assert(codec != null),
+  Server(
+    List<Service> services, [
+    List<Interceptor> interceptors = const <Interceptor>[],
+    Set<String> codec = const {'identity'},
+  ])  : assert(codec != null),
         super(services, interceptors, codec);
 
   /// The port that the server is listening on, or `null` if the server is not
