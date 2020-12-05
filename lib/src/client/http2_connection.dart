@@ -20,13 +20,12 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
+import '../shared/codec.dart';
 import '../shared/timeout.dart';
-
 import 'call.dart';
 import 'client_transport_connector.dart';
 import 'connection.dart' hide ClientConnection;
 import 'connection.dart' as connection;
-
 import 'options.dart';
 import 'transport/http2_credentials.dart';
 import 'transport/http2_transport.dart';
@@ -39,8 +38,6 @@ class Http2ClientConnection implements connection.ClientConnection {
   static final _contentTypeGrpc =
       Header.ascii('content-type', 'application/grpc');
   static final _teTrailers = Header.ascii('te', 'trailers');
-  static final _grpcAcceptEncoding =
-      Header.ascii('grpc-accept-encoding', 'identity');
 
   final ChannelOptions options;
 
@@ -157,7 +154,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       {CallOptions callOptions}) {
     final headers = createCallHeaders(credentials.isSecure,
         _transportConnector.authority, path, timeout, metadata,
-        userAgent: options.userAgent);
+        userAgent: options.userAgent, codec: options.codec);
     final stream = _transportConnection.makeRequest(headers);
     return Http2TransportStream(stream, onRequestFailure);
   }
@@ -274,7 +271,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   static List<Header> createCallHeaders(bool useTls, String authority,
       String path, Duration timeout, Map<String, String> metadata,
-      {String userAgent}) {
+      {String userAgent, Codec codec = const Identity()}) {
     final headers = [
       _methodPost,
       useTls ? _schemeHttps : _schemeHttp,
@@ -287,7 +284,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     headers.addAll([
       _contentTypeGrpc,
       _teTrailers,
-      _grpcAcceptEncoding,
+      Header.ascii('grpc-accept-encoding', codec.messageEncoding()),
       Header.ascii('user-agent', userAgent ?? defaultUserAgent),
     ]);
     metadata?.forEach((key, value) {

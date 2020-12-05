@@ -4,7 +4,7 @@ abstract class Codec {
   /// Returns the message encoding that this compressor uses.
   ///
   /// This can be values such as "gzip", "deflate", "snappy", etc.
-  String getMessageEncoding();
+  String messageEncoding();
 
   /// Wraps an existing output stream with a compressed output.
   List<int> compress(List<int> os);
@@ -26,7 +26,7 @@ class Identity implements Codec {
   }
 
   @override
-  String getMessageEncoding() {
+  String messageEncoding() {
     return "identity";
   }
 
@@ -46,7 +46,7 @@ class Gzip implements Codec {
   }
 
   @override
-  String getMessageEncoding() {
+  String messageEncoding() {
     return "gzip";
   }
 

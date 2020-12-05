@@ -15,7 +15,9 @@
 
 import 'dart:async';
 import 'dart:typed_data';
+
 import 'codec.dart';
+import 'codec_registry.dart';
 
 abstract class GrpcMessage {}
 
@@ -66,15 +68,19 @@ List<int> frame(List<int> payload, [Codec codec = const Identity()]) {
   return bytes;
 }
 
-StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor(
-        [Codec codec = const Identity()]) =>
-    StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
-        handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
-      if (value is GrpcData) {
-        if (value.isCompressed) {
-          sink.add(GrpcData(codec.decompress(value.data), isCompressed: false));
-          return;
-        }
+StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor() {
+  Codec codec = const Identity();
+  return StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
+      handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
+    if (value is GrpcData) {
+      if (value.isCompressed) {
+        sink.add(GrpcData(codec.decompress(value.data), isCompressed: false));
+        return;
       }
-      sink.add(value);
-    });
+    } else if (value is GrpcMetadata &&
+        value.metadata.containsKey('grpc-encoding')) {
+      codec = CodecRegistry().lookupCodec(value.metadata['grpc-encoding']);
+    }
+    sink.add(value);
+  });
+}

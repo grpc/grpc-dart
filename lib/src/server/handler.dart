@@ -287,7 +287,8 @@ class ServerHandler_ extends ServiceCall {
     // TODO(jakobr): Should come from package:http2?
     final outgoingHeadersMap = <String, String>{
       ':status': '200',
-      'content-type': 'application/grpc'
+      'content-type': 'application/grpc',
+      'grpc-encoding': _codec.messageEncoding(),
     };
 
     outgoingHeadersMap.addAll(_customHeaders);
