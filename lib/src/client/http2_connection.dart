@@ -153,7 +153,8 @@ class Http2ClientConnection implements connection.ClientConnection {
       {CallOptions callOptions}) {
     final headers = createCallHeaders(credentials.isSecure,
         _transportConnector.authority, path, timeout, metadata,
-        userAgent: options.userAgent, codec: options.codec);
+        userAgent: options.userAgent,
+        codec: callOptions.metadata['grpc-accept-encoding'] ?? options.codec);
     final stream = _transportConnection.makeRequest(headers);
     return Http2TransportStream(stream, onRequestFailure);
   }
