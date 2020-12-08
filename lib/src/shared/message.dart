@@ -57,8 +57,8 @@ class GrpcMessageSink extends Sink<GrpcMessage> {
   }
 }
 
-List<int> frame(List<int> payload, [Codec codec = const Identity()]) {
-  final compressedPayload = codec.compress(payload);
+List<int> frame(List<int> payload, [Codec codec]) {
+  final compressedPayload = codec == null ? payload : codec.compress(payload);
   final payloadLength = compressedPayload.length;
   final bytes = Uint8List(payloadLength + 5);
   final header = bytes.buffer.asByteData(0, 5);

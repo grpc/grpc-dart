@@ -91,7 +91,7 @@ class ConnectionServer {
   ConnectionServer(
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
-    Set<String> codec = const {'identity'},
+    Set<String> codec = const {},
   ])  : assert(codec != null),
         _codec = codec,
         _interceptors = interceptors {
@@ -141,7 +141,7 @@ class Server extends ConnectionServer {
   Server(
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
-    Set<String> codec = const {'identity'},
+    Set<String> codec = const {},
   ])  : assert(codec != null),
         super(services, interceptors, codec);
 
