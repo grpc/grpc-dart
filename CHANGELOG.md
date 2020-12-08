@@ -1,3 +1,9 @@
+## 2.9.0-dev
+* Added support for compression/decompression, which can be configured through 
+  `ChannelOptions` constructor's `codec` parameter or adding the 
+  `grpc-accept-encoding` to `metadata` parameter of `CallOptions` on the client 
+  side and `codec` parameter to `Server` on the server side.
+
 ## 2.8.0
 
 * Added support for client interceptors, which can be configured through
