@@ -15,11 +15,11 @@
 
 import 'dart:async';
 
+import 'package:grpc/grpc.dart';
 import 'package:http2/transport.dart';
 
 import '../../shared/message.dart';
 import '../../shared/streams.dart';
-
 import 'transport.dart';
 
 class Http2TransportStream extends GrpcTransportStream {
@@ -30,10 +30,11 @@ class Http2TransportStream extends GrpcTransportStream {
 
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
 
-  Http2TransportStream(this._transportStream, this._onError)
+  Http2TransportStream(
+      this._transportStream, this._onError, CodecRegistry codecRegistry)
       : incomingMessages = _transportStream.incomingMessages
             .transform(GrpcHttpDecoder())
-            .transform(grpcDecompressor()) {
+            .transform(grpcDecompressor(codecRegistry: codecRegistry)) {
     _outgoingMessages.stream
         .map(frame)
         .map<StreamMessage>((bytes) => DataStreamMessage(bytes))

@@ -68,7 +68,7 @@ class FakeChannelOptions implements ChannelOptions {
   Duration connectionTimeout = const Duration(seconds: 10);
   String userAgent = 'dart-grpc/1.0.0 test';
   BackoffStrategy backoffStrategy = testBackoff;
-  String codec = 'identity';
+  CodecRegistry codecRegistry = CodecRegistry.empty();
 }
 
 class FakeChannel extends ClientChannel {

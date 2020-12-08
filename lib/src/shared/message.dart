@@ -68,7 +68,9 @@ List<int> frame(List<int> payload, [Codec codec]) {
   return bytes;
 }
 
-StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor() {
+StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({
+  CodecRegistry codecRegistry,
+}) {
   Codec codec = const Identity();
   return StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
       handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
@@ -79,7 +81,8 @@ StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor() {
       }
     } else if (value is GrpcMetadata &&
         value.metadata.containsKey('grpc-encoding')) {
-      codec = CodecRegistry().lookupCodec(value.metadata['grpc-encoding']);
+      codec = codecRegistry?.lookupCodec(value.metadata['grpc-encoding']) ??
+          const Identity();
     }
     sink.add(value);
   });

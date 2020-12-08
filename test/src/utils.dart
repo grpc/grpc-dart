@@ -15,8 +15,8 @@
 
 import 'dart:convert';
 
-import 'package:grpc/src/shared/streams.dart';
 import 'package:grpc/src/shared/message.dart';
+import 'package:grpc/src/shared/streams.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 
@@ -44,7 +44,6 @@ void validateRequestHeaders(Map<String, String> headers,
   expect(headers['grpc-timeout'], timeout);
   expect(headers['content-type'], 'application/grpc');
   expect(headers['te'], 'trailers');
-  expect(headers['grpc-accept-encoding'], 'identity');
   expect(headers['user-agent'], startsWith('dart-grpc/'));
 
   customHeaders?.forEach((key, value) {

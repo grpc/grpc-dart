@@ -15,6 +15,8 @@
 
 import 'dart:math';
 
+import 'package:grpc/src/shared/codec_registry.dart';
+
 import 'transport/http2_credentials.dart';
 
 const defaultIdleTimeout = Duration(minutes: 5);
@@ -45,7 +47,7 @@ Duration defaultBackoffStrategy(Duration lastBackoff) {
 class ChannelOptions {
   final ChannelCredentials credentials;
   final Duration idleTimeout;
-  final String codec;
+  final CodecRegistry codecRegistry;
 
   /// The maximum time a single connection will be used for new requests.
   final Duration connectionTimeout;
@@ -58,6 +60,6 @@ class ChannelOptions {
     this.userAgent = defaultUserAgent,
     this.backoffStrategy = defaultBackoffStrategy,
     this.connectionTimeout = defaultConnectionTimeOut,
-    this.codec = 'identity',
+    this.codecRegistry,
   });
 }

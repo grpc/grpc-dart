@@ -1,27 +1,36 @@
 import 'codec.dart';
 
+/// Encloses classes related to the compression and decompression of messages.
 class CodecRegistry {
-  CodecRegistry._() {
-    final allCodecs = [const Identity(), const Gzip()];
-    allCodecs.forEach((codec) => register(codec));
+  CodecRegistry({List<Codec> codecs = const [const Identity()]})
+      : assert(codecs != null) {
+    codecs.forEach((codec) => register(codec));
   }
 
-  static final CodecRegistry _instance = CodecRegistry._();
-
-  factory CodecRegistry() {
-    return _instance;
+  factory CodecRegistry.empty() {
+    return CodecRegistry(codecs: []);
   }
 
-  final Map<String, Codec> codecs = {};
+  final Map<String, Codec> _codecs = {};
+  final List<String> _allSupportedCodecs = [];
 
   Codec lookupCodec(String codecName) {
-    return codecs[codecName];
+    return _codecs[codecName];
   }
 
+  String encodings() {
+    return _allSupportedCodecs.join(',');
+  }
+
+  /// Registers a compressor for both decompression and message encoding
+  /// negotiation.
   void register(Codec codec) {
     final encoding = codec.messageEncoding();
     assert(!encoding.contains(","),
         "Comma is currently not allowed in message encoding");
-    codecs[encoding] = codec;
+    if (!_codecs.containsKey(encoding)) {
+      _allSupportedCodecs.add(encoding);
+    }
+    _codecs[encoding] = codec;
   }
 }

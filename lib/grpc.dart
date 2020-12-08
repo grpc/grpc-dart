@@ -31,10 +31,8 @@ export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
 export 'src/client/connection.dart' show ConnectionState;
 export 'src/client/http2_channel.dart'
     show ClientChannel, ClientTransportConnectorChannel;
-
 export 'src/client/interceptor.dart'
     show ClientInterceptor, ClientUnaryInvoker, ClientStreamingInvoker;
-
 export 'src/client/method.dart' show ClientMethod;
 export 'src/client/options.dart'
     show
@@ -58,11 +56,10 @@ export 'src/server/server.dart'
         Server;
 export 'src/server/service.dart' show ServiceMethod, Service;
 export 'src/shared/codec.dart' show Codec, Identity, Gzip;
+export 'src/shared/codec_registry.dart';
 export 'src/shared/message.dart'
     show GrpcMessage, GrpcMetadata, GrpcData, grpcDecompressor;
-
 export 'src/shared/profiler.dart' show isTimelineLoggingEnabled;
-
 export 'src/shared/security.dart'
     show supportedAlpnProtocols, createSecurityContext;
 export 'src/shared/status.dart' show StatusCode, GrpcError;

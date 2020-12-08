@@ -16,6 +16,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:grpc/grpc.dart';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
@@ -83,7 +84,7 @@ class ServerTlsCredentials extends ServerCredentials {
 class ConnectionServer {
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
-  final Set<String> _codec;
+  final CodecRegistry _codecRegistry;
 
   final _connections = <ServerTransportConnection>[];
 
@@ -91,9 +92,8 @@ class ConnectionServer {
   ConnectionServer(
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
-    Set<String> codec = const {},
-  ])  : assert(codec != null),
-        _codec = codec,
+    CodecRegistry codecRegistry,
+  ])  : _codecRegistry = codecRegistry,
         _interceptors = interceptors {
     for (final service in services) {
       _services[service.$name] = service;
@@ -125,7 +125,7 @@ class ConnectionServer {
 
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream) {
-    return ServerHandler_(lookupService, stream, _interceptors, _codec)
+    return ServerHandler_(lookupService, stream, _interceptors, _codecRegistry)
       ..handle();
   }
 }
@@ -141,9 +141,8 @@ class Server extends ConnectionServer {
   Server(
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
-    Set<String> codec = const {},
-  ])  : assert(codec != null),
-        super(services, interceptors, codec);
+    CodecRegistry codecRegistry,
+  ]) : super(services, interceptors, codecRegistry);
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
@@ -201,7 +200,7 @@ class Server extends ConnectionServer {
 
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream) {
-    return ServerHandler_(lookupService, stream, _interceptors, _codec)
+    return ServerHandler_(lookupService, stream, _interceptors, _codecRegistry)
       ..handle();
   }
 

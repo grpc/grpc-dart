@@ -33,7 +33,7 @@ class ServerHandler_ extends ServiceCall {
   final ServerTransportStream _stream;
   final Service Function(String service) _serviceLookup;
   final List<Interceptor> _interceptors;
-  final Set<String> _supportedCodecs;
+  final CodecRegistry _codecRegistry;
 
   StreamSubscription<GrpcMessage> _incomingSubscription;
 
@@ -62,7 +62,7 @@ class ServerHandler_ extends ServiceCall {
     this._serviceLookup,
     this._stream,
     this._interceptors,
-    this._supportedCodecs,
+    this._codecRegistry,
   );
 
   DateTime get deadline => _deadline;
@@ -120,13 +120,16 @@ class ServerHandler_ extends ServiceCall {
     }
     final serviceName = pathSegments[1];
     final methodName = pathSegments[2];
-    final clientEncodings = _clientMetadata['grpc-accept-encoding'].split(',');
-    final clientEncoding = clientEncodings.firstWhere(
-        (element) => _supportedCodecs.contains(element),
-        orElse: () => '');
+    if (_codecRegistry != null) {
+      final clientEncodings =
+          _clientMetadata['grpc-accept-encoding']?.split(',') ?? [];
+      final clientEncoding = clientEncodings.firstWhere(
+          (element) => _codecRegistry.lookupCodec(element) != null,
+          orElse: () => '');
 
-    if (clientEncoding.isNotEmpty) {
-      _callEncodingCodec = CodecRegistry().lookupCodec(clientEncoding);
+      if (clientEncoding.isNotEmpty) {
+        _callEncodingCodec = _codecRegistry.lookupCodec(clientEncoding);
+      }
     }
 
     _service = _serviceLookup(serviceName);
@@ -409,6 +412,6 @@ class ServerHandler extends ServerHandler_ {
     Service Function(String service) serviceLookup,
     stream, [
     List<Interceptor> interceptors = const <Interceptor>[],
-    Set<String> supportedCodecs = const {'identity'},
-  ]) : super(serviceLookup, stream, interceptors, supportedCodecs);
+    CodecRegistry codecRegistry,
+  ]) : super(serviceLookup, stream, interceptors, codecRegistry);
 }
