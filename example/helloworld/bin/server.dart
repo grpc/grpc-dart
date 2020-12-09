@@ -29,7 +29,7 @@ Future<void> main(List<String> args) async {
   final server = Server(
     [GreeterService()],
     const <Interceptor>[],
-    CodecRegistry(codecs: const [const GzipCodec(), const IdentityCodec()]),
+    CodecRegistry(codecs: const [GzipCodec(), IdentityCodec()]),
   );
   await server.serve(port: 50051);
   print('Server listening on port ${server.port}...');

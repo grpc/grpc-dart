@@ -18,6 +18,7 @@ import 'dart:typed_data';
 
 import 'codec.dart';
 import 'codec_registry.dart';
+import 'status.dart';
 
 abstract class GrpcMessage {}
 
@@ -72,17 +73,23 @@ List<int> frame(List<int> rawPayload, [Codec codec]) {
 StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({
   CodecRegistry codecRegistry,
 }) {
-  Codec codec = const IdentityCodec();
+  Codec codec;
   return StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
       handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
+    print(value);
     if (value is GrpcData && value.isCompressed) {
+      if (codec == null || codecRegistry.lookup(codec.encodingName) == null) {
+        sink.addError(
+          GrpcError.unimplemented('Compression mechanism not supported'),
+        );
+        return;
+      }
       sink.add(GrpcData(codec.decompress(value.data), isCompressed: false));
       return;
     }
 
     if (value is GrpcMetadata && value.metadata.containsKey('grpc-encoding')) {
-      codec = codecRegistry?.lookup(value.metadata['grpc-encoding']) ??
-          const IdentityCodec();
+      codec = codecRegistry?.lookup(value.metadata['grpc-encoding']);
     }
     sink.add(value);
   });
