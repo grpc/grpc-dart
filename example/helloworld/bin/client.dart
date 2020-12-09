@@ -22,12 +22,11 @@ Future<void> main(List<String> args) async {
   final channel = ClientChannel(
     'localhost',
     port: 50051,
-    options: ChannelOptions(
-      credentials: ChannelCredentials.insecure(),
-      codecRegistry:
-          CodecRegistry(codecs: const [const Gzip(), const Identity()]),
-    ),
-  );
+      options: ChannelOptions(
+        credentials: ChannelCredentials.insecure(),
+        codecRegistry:
+        CodecRegistry(codecs: const [GzipCodec(), IdentityCodec()]),
+      ),
   final stub = GreeterClient(channel);
 
   final name = args.isNotEmpty ? args[0] : 'world';
@@ -35,7 +34,7 @@ Future<void> main(List<String> args) async {
   try {
     final response = await stub.sayHello(
       HelloRequest()..name = name,
-      options: CallOptions(compression: const Gzip()),
+      options: CallOptions(compression: const GzipCodec()),
     );
     print('Greeter client received: ${response.message}');
   } catch (e) {

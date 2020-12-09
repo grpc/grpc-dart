@@ -121,15 +121,11 @@ class ServerHandler_ extends ServiceCall {
     final serviceName = pathSegments[1];
     final methodName = pathSegments[2];
     if (_codecRegistry != null) {
-      final clientEncodings =
-          _clientMetadata['grpc-accept-encoding']?.split(',') ?? [];
-      final clientEncoding = clientEncodings.firstWhere(
-          (element) => _codecRegistry.lookupCodec(element) != null,
-          orElse: () => '');
-
-      if (clientEncoding.isNotEmpty) {
-        _callEncodingCodec = _codecRegistry.lookupCodec(clientEncoding);
-      }
+      final acceptedEncodings =
+          clientMetadata['grpc-accept-encoding']?.split(',') ?? [];
+      _callEncodingCodec = acceptedEncodings
+          .map(_codecRegistry.lookup)
+          .firstWhere((c) => c != null, orElse: () => null);
     }
 
     _service = _serviceLookup(serviceName);
@@ -305,12 +301,9 @@ class ServerHandler_ extends ServiceCall {
     final outgoingHeadersMap = <String, String>{
       ':status': '200',
       'content-type': 'application/grpc',
+      if (_callEncodingCodec != null)
+        'grpc-encoding': _callEncodingCodec.encodingName,
     };
-
-    if (_callEncodingCodec != null) {
-      outgoingHeadersMap['grpc-encoding'] =
-          _callEncodingCodec.messageEncoding();
-    }
 
     outgoingHeadersMap.addAll(_customHeaders);
     _customHeaders = null;

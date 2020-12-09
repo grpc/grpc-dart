@@ -1,7 +1,7 @@
 ## 2.9.0-dev
-* Added support for compression/decompression 
-  [#6](https://github.com/grpc/grpc-dart/issues/6), which can be configured 
-  through `ChannelOptions` constructor's `codecRegistry` parameter or adding the 
+
+* Added support for compression/decompression, which can be configured through 
+  `ChannelOptions` constructor's `codecRegistry` parameter or adding the 
   `grpc-accept-encoding` to `metadata` parameter of `CallOptions` on the client 
   side and `codecRegistry` parameter to `Server` on the server side.
   Outgoing rpc can be compressed using the `compression` parameter on the 

@@ -5,14 +5,11 @@ import 'package:test/test.dart';
 void main() {
   test('CodecRegistry register adds new encodings', () {
     final registry = CodecRegistry();
-    expect(registry.encodings(), 'identity');
-
-    registry.register(const Gzip());
-    expect(registry.encodings(), 'identity,gzip');
+    expect(registry.supportedEncodings, 'identity');
   });
 
   test('CodecRegistry lookup', () {
     final registry = CodecRegistry();
-    expect(registry.lookupCodec('identity'), const Identity());
+    expect(registry.lookup('identity'), const IdentityCodec());
   });
 }

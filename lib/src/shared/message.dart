@@ -72,7 +72,7 @@ List<int> frame(List<int> rawPayload, [Codec codec]) {
 StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({
   CodecRegistry codecRegistry,
 }) {
-  Codec codec = const Identity();
+  Codec codec = const IdentityCodec();
   return StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
       handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
     if (value is GrpcData && value.isCompressed) {
@@ -81,8 +81,8 @@ StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({
     }
 
     if (value is GrpcMetadata && value.metadata.containsKey('grpc-encoding')) {
-      codec = codecRegistry?.lookupCodec(value.metadata['grpc-encoding']) ??
-          const Identity();
+      codec = codecRegistry?.lookup(value.metadata['grpc-encoding']) ??
+          const IdentityCodec();
     }
     sink.add(value);
   });

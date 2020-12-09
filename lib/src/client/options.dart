@@ -15,8 +15,7 @@
 
 import 'dart:math';
 
-import 'package:grpc/src/shared/codec_registry.dart';
-
+import '../shared/codec_registry.dart';
 import 'transport/http2_credentials.dart';
 
 const defaultIdleTimeout = Duration(minutes: 5);

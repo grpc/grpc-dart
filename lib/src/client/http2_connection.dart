@@ -162,7 +162,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       compressionCodec,
       userAgent: options.userAgent,
       grpcAcceptEncodings: callOptions.metadata['grpc-accept-encoding'] ??
-          options.codecRegistry?.encodings(),
+          options.codecRegistry?.supportedEncodings,
     );
     final stream = _transportConnection.makeRequest(headers);
     return Http2TransportStream(
@@ -309,7 +309,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       if (grpcAcceptEncodings != null)
         Header.ascii('grpc-accept-encoding', grpcAcceptEncodings),
       if (compressionCodec != null)
-        Header.ascii('grpc-encoding', compressionCodec.messageEncoding())
+        Header.ascii('grpc-encoding', compressionCodec.encodingName)
     ]);
     metadata?.forEach((key, value) {
       headers.add(Header(ascii.encode(key), utf8.encode(value)));
