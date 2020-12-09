@@ -82,7 +82,7 @@ class ServerHandler_ extends ServiceCall {
 
     _incomingSubscription = _stream.incomingMessages
         .transform(GrpcHttpDecoder())
-        .transform(grpcDecompressor())
+        .transform(grpcDecompressor(codecRegistry: _codecRegistry))
         .listen(_onDataIdle,
             onError: _onError, onDone: _onDoneError, cancelOnError: true);
     _stream.outgoingMessages.done.then((_) {

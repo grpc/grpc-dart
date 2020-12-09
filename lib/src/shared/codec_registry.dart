@@ -11,6 +11,7 @@ class CodecRegistry {
     return CodecRegistry(codecs: []);
   }
 
+  /// Key refers to the `messageEncoding` string from the [Codec].
   final Map<String, Codec> _codecs = {};
   final List<String> _allSupportedCodecs = [];
 
@@ -22,7 +23,7 @@ class CodecRegistry {
     return _allSupportedCodecs.join(',');
   }
 
-  /// Registers a compressor for both decompression and message encoding
+  /// Registers a [Codec] for both decompression and message encoding
   /// negotiation.
   void register(Codec codec) {
     final encoding = codec.messageEncoding();

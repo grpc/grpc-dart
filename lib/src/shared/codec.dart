@@ -7,10 +7,10 @@ abstract class Codec {
   String messageEncoding();
 
   /// Wraps an existing output stream with a compressed output.
-  List<int> compress(List<int> os);
+  List<int> compress(List<int> outputStream);
 
   /// Wraps an existing output stream with a uncompressed input data.
-  List<int> decompress(List<int> os);
+  List<int> decompress(List<int> inputStream);
 }
 
 /// The "identity", or "none" codec.
@@ -21,11 +21,6 @@ class Identity implements Codec {
   const Identity();
 
   @override
-  List<int> decompress(List<int> inputStream) {
-    return inputStream;
-  }
-
-  @override
   String messageEncoding() {
     return "identity";
   }
@@ -34,16 +29,16 @@ class Identity implements Codec {
   List<int> compress(List<int> outputStream) {
     return outputStream;
   }
+
+  @override
+  List<int> decompress(List<int> inputStream) {
+    return inputStream;
+  }
 }
 
 /// A gzip compressor and decompressor.
 class Gzip implements Codec {
   const Gzip();
-
-  @override
-  List<int> decompress(List<int> inputStream) {
-    return GZipDecoder().decodeBytes(inputStream);
-  }
 
   @override
   String messageEncoding() {
@@ -53,5 +48,10 @@ class Gzip implements Codec {
   @override
   List<int> compress(List<int> outputStream) {
     return GZipEncoder().encode(outputStream);
+  }
+
+  @override
+  List<int> decompress(List<int> inputStream) {
+    return GZipDecoder().decodeBytes(inputStream);
   }
 }

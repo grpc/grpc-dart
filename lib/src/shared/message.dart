@@ -57,8 +57,9 @@ class GrpcMessageSink extends Sink<GrpcMessage> {
   }
 }
 
-List<int> frame(List<int> payload, [Codec codec]) {
-  final compressedPayload = codec == null ? payload : codec.compress(payload);
+List<int> frame(List<int> rawPayload, [Codec codec]) {
+  final compressedPayload =
+      codec == null ? rawPayload : codec.compress(rawPayload);
   final payloadLength = compressedPayload.length;
   final bytes = Uint8List(payloadLength + 5);
   final header = bytes.buffer.asByteData(0, 5);
@@ -74,13 +75,12 @@ StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({
   Codec codec = const Identity();
   return StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
       handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
-    if (value is GrpcData) {
-      if (value.isCompressed) {
-        sink.add(GrpcData(codec.decompress(value.data), isCompressed: false));
-        return;
-      }
-    } else if (value is GrpcMetadata &&
-        value.metadata.containsKey('grpc-encoding')) {
+    if (value is GrpcData && value.isCompressed) {
+      sink.add(GrpcData(codec.decompress(value.data), isCompressed: false));
+      return;
+    }
+
+    if (value is GrpcMetadata && value.metadata.containsKey('grpc-encoding')) {
       codec = codecRegistry?.lookupCodec(value.metadata['grpc-encoding']) ??
           const Identity();
     }
