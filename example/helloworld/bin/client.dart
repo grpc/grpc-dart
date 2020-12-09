@@ -22,11 +22,12 @@ Future<void> main(List<String> args) async {
   final channel = ClientChannel(
     'localhost',
     port: 50051,
-      options: ChannelOptions(
-        credentials: ChannelCredentials.insecure(),
-        codecRegistry:
-        CodecRegistry(codecs: const [GzipCodec(), IdentityCodec()]),
-      ),
+    options: ChannelOptions(
+      credentials: ChannelCredentials.insecure(),
+      codecRegistry:
+          CodecRegistry(codecs: const [GzipCodec(), IdentityCodec()]),
+    ),
+  );
   final stub = GreeterClient(channel);
 
   final name = args.isNotEmpty ? args[0] : 'world';

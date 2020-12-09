@@ -298,11 +298,8 @@ class Http2ClientConnection implements connection.ClientConnection {
       useTls ? _schemeHttps : _schemeHttp,
       Header(ascii.encode(':path'), utf8.encode(path)),
       Header(ascii.encode(':authority'), utf8.encode(authority)),
-    ];
-    if (timeout != null) {
-      headers.add(Header.ascii('grpc-timeout', toTimeoutString(timeout)));
-    }
-    headers.addAll([
+      if (timeout != null)
+        Header.ascii('grpc-timeout', toTimeoutString(timeout)),
       _contentTypeGrpc,
       _teTrailers,
       Header.ascii('user-agent', userAgent ?? defaultUserAgent),
@@ -310,7 +307,7 @@ class Http2ClientConnection implements connection.ClientConnection {
         Header.ascii('grpc-accept-encoding', grpcAcceptEncodings),
       if (compressionCodec != null)
         Header.ascii('grpc-encoding', compressionCodec.encodingName)
-    ]);
+    ];
     metadata?.forEach((key, value) {
       headers.add(Header(ascii.encode(key), utf8.encode(value)));
     });
