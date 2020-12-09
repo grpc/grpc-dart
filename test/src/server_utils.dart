@@ -15,12 +15,11 @@
 
 import 'dart:async';
 
+import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
-
-import 'package:grpc/grpc.dart';
 
 import 'utils.dart';
 
@@ -189,7 +188,7 @@ abstract class _Harness {
       Map<String, String> metadata,
       Duration timeout}) {
     final headers = Http2ClientConnection.createCallHeaders(
-        true, authority, path, timeout, metadata,
+        true, authority, path, timeout, metadata, null,
         userAgent: 'dart-grpc/1.0.0 test');
     toServer.add(HeadersStreamMessage(headers));
   }

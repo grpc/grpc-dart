@@ -20,6 +20,7 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
+import '../shared/codec.dart';
 import '../shared/timeout.dart';
 import 'call.dart';
 import 'client_transport_connector.dart';
@@ -151,16 +152,25 @@ class Http2ClientConnection implements connection.ClientConnection {
   GrpcTransportStream makeRequest(String path, Duration timeout,
       Map<String, String> metadata, ErrorHandler onRequestFailure,
       {CallOptions callOptions}) {
-    final headers = createCallHeaders(credentials.isSecure,
-        _transportConnector.authority, path, timeout, metadata,
-        userAgent: options.userAgent,
-        codec: callOptions.metadata['grpc-accept-encoding'] ??
-            options.codecRegistry?.encodings());
+    final compressionCodec = callOptions.compression;
+    final headers = createCallHeaders(
+      credentials.isSecure,
+      _transportConnector.authority,
+      path,
+      timeout,
+      metadata,
+      compressionCodec,
+      userAgent: options.userAgent,
+      grpcAcceptEncodings: callOptions.metadata['grpc-accept-encoding'] ??
+          options.codecRegistry?.encodings() ??
+          compressionCodec?.messageEncoding(),
+    );
     final stream = _transportConnection.makeRequest(headers);
     return Http2TransportStream(
       stream,
       onRequestFailure,
       options.codecRegistry,
+      compressionCodec,
     );
   }
 
@@ -279,9 +289,10 @@ class Http2ClientConnection implements connection.ClientConnection {
     String authority,
     String path,
     Duration timeout,
-    Map<String, String> metadata, {
+    Map<String, String> metadata,
+    Codec compressionCodec, {
     String userAgent,
-    String codec,
+    String grpcAcceptEncodings,
   }) {
     final headers = [
       _methodPost,
@@ -295,8 +306,11 @@ class Http2ClientConnection implements connection.ClientConnection {
     headers.addAll([
       _contentTypeGrpc,
       _teTrailers,
-      if (codec != null) Header.ascii('grpc-accept-encoding', codec),
       Header.ascii('user-agent', userAgent ?? defaultUserAgent),
+      if (grpcAcceptEncodings != null)
+        Header.ascii('grpc-accept-encoding', grpcAcceptEncodings),
+      if (compressionCodec != null)
+        Header.ascii('grpc-encoding', compressionCodec.messageEncoding())
     ]);
     metadata?.forEach((key, value) {
       headers.add(Header(ascii.encode(key), utf8.encode(value)));

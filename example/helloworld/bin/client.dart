@@ -35,7 +35,7 @@ Future<void> main(List<String> args) async {
   try {
     final response = await stub.sayHello(
       HelloRequest()..name = name,
-      options: CallOptions(metadata: {'grpc-accept-encoding': 'gzip'}),
+      options: CallOptions(compression: const Gzip()),
     );
     print('Greeter client received: ${response.message}');
   } catch (e) {
