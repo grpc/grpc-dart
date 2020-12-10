@@ -17,7 +17,7 @@ import 'codec.dart';
 
 /// Encloses classes related to the compression and decompression of messages.
 class CodecRegistry {
-  CodecRegistry({List<Codec> codecs = const [const IdentityCodec()]})
+  CodecRegistry({List<Codec> codecs = const [IdentityCodec()]})
       : assert(codecs != null),
         _codecs = Map.fromIterable(codecs, key: (c) => c.encodingName),
         _supportedEncodings = codecs.map((c) {

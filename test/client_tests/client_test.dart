@@ -63,7 +63,7 @@ void main() {
     );
   });
 
-  test('Unary calls attaches encoding headers', () async {
+  test('Unary call attaches encoding headers', () async {
     const requestValue = 17;
     const responseValue = 19;
 

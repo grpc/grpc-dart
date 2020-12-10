@@ -76,9 +76,8 @@ StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({
   Codec codec;
   return StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
       handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
-    print(value);
     if (value is GrpcData && value.isCompressed) {
-      if (codec == null || codecRegistry.lookup(codec.encodingName) == null) {
+      if (codec == null) {
         sink.addError(
           GrpcError.unimplemented('Compression mechanism not supported'),
         );
