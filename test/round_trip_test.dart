@@ -1,12 +1,14 @@
 @TestOn('vm')
 import 'dart:async';
 import 'dart:io';
+
 import 'package:grpc/grpc.dart';
 import 'package:grpc/service_api.dart' as api;
 import 'package:grpc/src/client/channel.dart' hide ClientChannel;
 import 'package:grpc/src/client/connection.dart';
 import 'package:grpc/src/client/http2_connection.dart';
 import 'package:test/test.dart';
+
 import 'common.dart';
 
 class TestClient extends Client {
@@ -71,6 +73,30 @@ main() async {
     expect(await testClient.stream(TestService.requestFiniteStream).toList(),
         [1, 2, 3]);
     server.shutdown();
+  });
+
+  testTcpAndUds('round trip with outgoing and incoming compression',
+      (address) async {
+    final Server server = Server(
+        [TestService()], const [], CodecRegistry(codecs: const [GzipCodec()]));
+    await server.serve(address: address, port: 0);
+
+    final channel = FixedConnectionClientChannel(Http2ClientConnection(
+      address,
+      server.port,
+      ChannelOptions(
+        credentials: ChannelCredentials.insecure(),
+        codecRegistry: CodecRegistry(codecs: const [GzipCodec()]),
+      ),
+    ));
+    final testClient = TestClient(channel);
+    expect(
+        await testClient
+            .stream(TestService.requestFiniteStream,
+                options: CallOptions(compression: const GzipCodec()))
+            .toList(),
+        [1, 2, 3]);
+    await server.shutdown();
   });
 
   testTcpAndUds('round trip secure connection', (address) async {

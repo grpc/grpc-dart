@@ -16,14 +16,13 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/channel.dart' as base;
 import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:http2/transport.dart';
-import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
-
-import 'package:grpc/grpc.dart';
+import 'package:test/test.dart';
 
 import 'utils.dart';
 
@@ -69,6 +68,7 @@ class FakeChannelOptions implements ChannelOptions {
   Duration connectionTimeout = const Duration(seconds: 10);
   String userAgent = 'dart-grpc/1.0.0 test';
   BackoffStrategy backoffStrategy = testBackoff;
+  CodecRegistry codecRegistry = CodecRegistry.empty();
 }
 
 class FakeChannel extends ClientChannel {

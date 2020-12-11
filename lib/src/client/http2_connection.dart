@@ -20,13 +20,12 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
+import '../shared/codec.dart';
 import '../shared/timeout.dart';
-
 import 'call.dart';
 import 'client_transport_connector.dart';
 import 'connection.dart' hide ClientConnection;
 import 'connection.dart' as connection;
-
 import 'options.dart';
 import 'transport/http2_credentials.dart';
 import 'transport/http2_transport.dart';
@@ -39,8 +38,6 @@ class Http2ClientConnection implements connection.ClientConnection {
   static final _contentTypeGrpc =
       Header.ascii('content-type', 'application/grpc');
   static final _teTrailers = Header.ascii('te', 'trailers');
-  static final _grpcAcceptEncoding =
-      Header.ascii('grpc-accept-encoding', 'identity');
 
   final ChannelOptions options;
 
@@ -155,11 +152,25 @@ class Http2ClientConnection implements connection.ClientConnection {
   GrpcTransportStream makeRequest(String path, Duration timeout,
       Map<String, String> metadata, ErrorHandler onRequestFailure,
       {CallOptions callOptions}) {
-    final headers = createCallHeaders(credentials.isSecure,
-        _transportConnector.authority, path, timeout, metadata,
-        userAgent: options.userAgent);
+    final compressionCodec = callOptions.compression;
+    final headers = createCallHeaders(
+      credentials.isSecure,
+      _transportConnector.authority,
+      path,
+      timeout,
+      metadata,
+      compressionCodec,
+      userAgent: options.userAgent,
+      grpcAcceptEncodings: callOptions.metadata['grpc-accept-encoding'] ??
+          options.codecRegistry?.supportedEncodings,
+    );
     final stream = _transportConnection.makeRequest(headers);
-    return Http2TransportStream(stream, onRequestFailure);
+    return Http2TransportStream(
+      stream,
+      onRequestFailure,
+      options.codecRegistry,
+      compressionCodec,
+    );
   }
 
   void _startCall(ClientCall call) {
@@ -272,24 +283,31 @@ class Http2ClientConnection implements connection.ClientConnection {
     _timer = Timer(_currentReconnectDelay, _handleReconnect);
   }
 
-  static List<Header> createCallHeaders(bool useTls, String authority,
-      String path, Duration timeout, Map<String, String> metadata,
-      {String userAgent}) {
+  static List<Header> createCallHeaders(
+    bool useTls,
+    String authority,
+    String path,
+    Duration timeout,
+    Map<String, String> metadata,
+    Codec compressionCodec, {
+    String userAgent,
+    String grpcAcceptEncodings,
+  }) {
     final headers = [
       _methodPost,
       useTls ? _schemeHttps : _schemeHttp,
       Header(ascii.encode(':path'), utf8.encode(path)),
       Header(ascii.encode(':authority'), utf8.encode(authority)),
-    ];
-    if (timeout != null) {
-      headers.add(Header.ascii('grpc-timeout', toTimeoutString(timeout)));
-    }
-    headers.addAll([
+      if (timeout != null)
+        Header.ascii('grpc-timeout', toTimeoutString(timeout)),
       _contentTypeGrpc,
       _teTrailers,
-      _grpcAcceptEncoding,
       Header.ascii('user-agent', userAgent ?? defaultUserAgent),
-    ]);
+      if (grpcAcceptEncodings != null)
+        Header.ascii('grpc-accept-encoding', grpcAcceptEncodings),
+      if (compressionCodec != null)
+        Header.ascii('grpc-encoding', compressionCodec.encodingName)
+    ];
     metadata?.forEach((key, value) {
       headers.add(Header(ascii.encode(key), utf8.encode(value)));
     });

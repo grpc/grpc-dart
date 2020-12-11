@@ -16,11 +16,11 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:grpc/grpc.dart';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
 import '../shared/security.dart';
-
 import 'handler.dart';
 import 'interceptor.dart';
 import 'service.dart';
@@ -84,13 +84,17 @@ class ServerTlsCredentials extends ServerCredentials {
 class ConnectionServer {
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
+  final CodecRegistry _codecRegistry;
 
   final _connections = <ServerTransportConnection>[];
 
   /// Create a server for the given [services].
-  ConnectionServer(List<Service> services,
-      [List<Interceptor> interceptors = const <Interceptor>[]])
-      : _interceptors = interceptors {
+  ConnectionServer(
+    List<Service> services, [
+    List<Interceptor> interceptors = const <Interceptor>[],
+    CodecRegistry codecRegistry,
+  ])  : _codecRegistry = codecRegistry,
+        _interceptors = interceptors {
     for (final service in services) {
       _services[service.$name] = service;
     }
@@ -121,7 +125,8 @@ class ConnectionServer {
 
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream) {
-    return ServerHandler_(lookupService, stream, _interceptors)..handle();
+    return ServerHandler_(lookupService, stream, _interceptors, _codecRegistry)
+      ..handle();
   }
 }
 
@@ -133,9 +138,11 @@ class Server extends ConnectionServer {
   SecureServerSocket _secureServer;
 
   /// Create a server for the given [services].
-  Server(List<Service> services,
-      [List<Interceptor> interceptors = const <Interceptor>[]])
-      : super(services, interceptors);
+  Server(
+    List<Service> services, [
+    List<Interceptor> interceptors = const <Interceptor>[],
+    CodecRegistry codecRegistry,
+  ]) : super(services, interceptors, codecRegistry);
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
@@ -193,7 +200,8 @@ class Server extends ConnectionServer {
 
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream) {
-    return ServerHandler_(lookupService, stream, _interceptors)..handle();
+    return ServerHandler_(lookupService, stream, _interceptors, _codecRegistry)
+      ..handle();
   }
 
   @Deprecated(

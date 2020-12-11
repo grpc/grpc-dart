@@ -1,7 +1,7 @@
 name: grpc
 description: Dart implementation of gRPC, a high performance, open-source universal RPC framework.
 
-version: 2.8.0
+version: 2.9.0-dev
 
 homepage: https://github.com/dart-lang/grpc-dart
 
@@ -9,6 +9,7 @@ environment:
   sdk: '>=2.8.0 <3.0.0'
 
 dependencies:
+  archive: ^2.0.13
   async: ^2.2.0
   crypto: ^2.1.4
   fixnum: ^0.10.11

@@ -1,3 +1,12 @@
+## 2.9.0-dev
+
+* Added support for compression/decompression, which can be configured through 
+  `ChannelOptions` constructor's `codecRegistry` parameter or adding the 
+  `grpc-accept-encoding` to `metadata` parameter of `CallOptions` on the client 
+  side and `codecRegistry` parameter to `Server` on the server side.
+  Outgoing rpc can be compressed using the `compression` parameter on the 
+  `CallOptions`.
+
 ## 2.8.0
 
 * Added support for client interceptors, which can be configured through

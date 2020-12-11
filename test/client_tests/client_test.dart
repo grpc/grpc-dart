@@ -63,6 +63,30 @@ void main() {
     );
   });
 
+  test('Unary call attaches encoding headers', () async {
+    const requestValue = 17;
+    const responseValue = 19;
+
+    void handleRequest(StreamMessage message) {
+      final data = validateDataMessage(message);
+      expect(mockDecode(data.data), requestValue);
+
+      harness
+        ..sendResponseHeader()
+        ..sendResponseValue(responseValue)
+        ..sendResponseTrailer();
+    }
+
+    await harness.runTest(
+      clientCall: harness.client.unary(requestValue,
+          options: CallOptions(metadata: {'grpc-accept-encoding': 'gzip'})),
+      expectedResult: responseValue,
+      expectedCustomHeaders: {'grpc-accept-encoding': 'gzip'},
+      expectedPath: '/Test/Unary',
+      serverHandlers: [handleRequest],
+    );
+  });
+
   test('Client-streaming calls work on the client', () async {
     const requests = [17, 3];
     const response = 12;

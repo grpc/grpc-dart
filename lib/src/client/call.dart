@@ -17,6 +17,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:grpc/grpc.dart';
 import 'package:grpc/src/generated/google/rpc/status.pb.dart';
 import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
@@ -34,6 +35,7 @@ const _reservedHeaders = [
   'te',
   'grpc-timeout',
   'grpc-accept-encoding',
+  'grpc-encoding',
   'user-agent',
 ];
 
@@ -55,8 +57,14 @@ class CallOptions {
   final Map<String, String> metadata;
   final Duration timeout;
   final List<MetadataProvider> metadataProviders;
+  final Codec compression;
 
-  CallOptions._(this.metadata, this.timeout, this.metadataProviders);
+  CallOptions._(
+    this.metadata,
+    this.timeout,
+    this.metadataProviders,
+    this.compression,
+  );
 
   /// Creates a [CallOptions] object.
   ///
@@ -64,12 +72,18 @@ class CallOptions {
   /// configure per-RPC metadata [providers]. The metadata [providers] are
   /// invoked in order for every RPC, and can modify the outgoing metadata
   /// (including metadata provided by previous providers).
-  factory CallOptions(
-      {Map<String, String> metadata,
-      Duration timeout,
-      List<MetadataProvider> providers}) {
-    return CallOptions._(Map.unmodifiable(metadata ?? {}), timeout,
-        List.unmodifiable(providers ?? []));
+  factory CallOptions({
+    Map<String, String> metadata,
+    Duration timeout,
+    List<MetadataProvider> providers,
+    Codec compression,
+  }) {
+    return CallOptions._(
+      Map.unmodifiable(metadata ?? {}),
+      timeout,
+      List.unmodifiable(providers ?? []),
+      compression,
+    );
   }
 
   factory CallOptions.from(Iterable<CallOptions> options) =>
@@ -81,8 +95,13 @@ class CallOptions {
     final mergedTimeout = other.timeout ?? timeout;
     final mergedProviders = List.from(metadataProviders)
       ..addAll(other.metadataProviders);
-    return CallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
-        List.unmodifiable(mergedProviders));
+    final mergedCompression = other.compression ?? compression;
+    return CallOptions._(
+      Map.unmodifiable(mergedMetadata),
+      mergedTimeout,
+      List.unmodifiable(mergedProviders),
+      mergedCompression,
+    );
   }
 }
 
@@ -109,7 +128,7 @@ class WebCallOptions extends CallOptions {
   WebCallOptions._(Map<String, String> metadata, Duration timeout,
       List<MetadataProvider> metadataProviders,
       {this.bypassCorsPreflight, this.withCredentials})
-      : super._(metadata, timeout, metadataProviders);
+      : super._(metadata, timeout, metadataProviders, null);
 
   /// Creates a [WebCallOptions] object.
   ///
@@ -246,7 +265,12 @@ class ClientCall<Q, R> implements Response {
   void _sendRequest(ClientConnection connection, Map<String, String> metadata) {
     try {
       _stream = connection.makeRequest(
-          _method.path, options.timeout, metadata, _onRequestError);
+        _method.path,
+        options.timeout,
+        metadata,
+        _onRequestError,
+        callOptions: options,
+      );
     } catch (e) {
       _terminateWithError(GrpcError.unavailable('Error making call: $e'));
       return;
