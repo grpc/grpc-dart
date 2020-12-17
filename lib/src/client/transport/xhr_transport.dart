@@ -160,7 +160,7 @@ class XhrTransportStream implements GrpcTransportStream {
 class XhrClientConnection extends ClientConnection {
   final Uri uri;
 
-  final Set<XhrTransportStream> _requests = Set<XhrTransportStream>();
+  final _requests = <XhrTransportStream>{};
 
   XhrClientConnection(this.uri);
 
