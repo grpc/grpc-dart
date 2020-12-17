@@ -23,7 +23,7 @@ class FakeInterceptor implements ClientInterceptor {
   int _unary = 0;
   int _streaming = 0;
 
-  static final List<InterceptorInvocation> _invocations = new List();
+  static final _invocations = <InterceptorInvocation>[];
 
   FakeInterceptor(this._id);
 
