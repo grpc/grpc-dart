@@ -44,6 +44,7 @@ class XhrTransportStream implements GrpcTransportStream {
   final StreamController<ByteBuffer> _incomingProcessor = StreamController();
   final StreamController<GrpcMessage> _incomingMessages = StreamController();
   final StreamController<List<int>> _outgoingMessages = StreamController();
+  bool _terminated = false;
 
   @override
   Stream<GrpcMessage> get incomingMessages => _incomingMessages.stream;
@@ -59,7 +60,7 @@ class XhrTransportStream implements GrpcTransportStream {
         .listen((data) => _request.send(data), cancelOnError: true);
 
     _request.onReadyStateChange.listen((data) {
-      if (_incomingMessages.isClosed) {
+      if (_incomingMessages.isClosed || _terminated) {
         return;
       }
       switch (_request.readyState) {
@@ -150,6 +151,7 @@ class XhrTransportStream implements GrpcTransportStream {
 
   @override
   Future<void> terminate() async {
+    _terminated = true;
     _close();
     _request.abort();
   }
