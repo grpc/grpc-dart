@@ -94,6 +94,28 @@ void main() {
     terminated = true;
     await channel.terminate();
   });
+
+  // Verify that stream cancellation does not cause an exception
+  test("stream cancellation works", () async {
+    final channel = GrpcWebClientChannel.xhr(server.uri);
+    final service = EchoServiceClient(channel);
+
+    const testMessage = 'hello from gRPC-web';
+
+    final stream = service
+        .serverStreamingEcho(ServerStreamingEchoRequest()
+          ..message = testMessage
+          ..messageCount = 20
+          ..messageInterval = 100)
+        .listen((response) {
+      expect(response.message, equals(testMessage));
+    });
+
+    await Future.delayed(Duration(milliseconds: 500));
+    await stream.cancel();
+
+    await channel.terminate();
+  });
 }
 
 class GrpcWebServer {

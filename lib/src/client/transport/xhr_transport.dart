@@ -59,7 +59,7 @@ class XhrTransportStream implements GrpcTransportStream {
         .listen((data) => _request.send(data), cancelOnError: true);
 
     _request.onReadyStateChange.listen((data) {
-      if (_incomingMessages.isClosed) {
+      if (_incomingProcessor.isClosed) {
         return;
       }
       switch (_request.readyState) {
@@ -80,7 +80,7 @@ class XhrTransportStream implements GrpcTransportStream {
     });
 
     _request.onError.listen((ProgressEvent event) {
-      if (_incomingMessages.isClosed) {
+      if (_incomingProcessor.isClosed) {
         return;
       }
       _onError(GrpcError.unavailable('XhrConnection connection-error'),
@@ -89,7 +89,7 @@ class XhrTransportStream implements GrpcTransportStream {
     });
 
     _request.onProgress.listen((_) {
-      if (_incomingMessages.isClosed) {
+      if (_incomingProcessor.isClosed) {
         return;
       }
       // Use response over responseText as most browsers don't support
