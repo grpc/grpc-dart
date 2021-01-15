@@ -21,11 +21,13 @@ import 'dart:html';
 import 'package:grpc/src/client/call.dart';
 import 'package:grpc/src/client/transport/xhr_transport.dart';
 import 'package:grpc/src/shared/message.dart';
+import 'package:grpc/src/shared/status.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:test/test.dart';
 
 class MockHttpRequest extends Mock implements HttpRequest {
+  MockHttpRequest({int code}) : status = code ?? 200;
   // ignore: close_sinks
   StreamController<Event> readyStateChangeController =
       StreamController<Event>();
@@ -43,17 +45,20 @@ class MockHttpRequest extends Mock implements HttpRequest {
   Stream<ProgressEvent> get onError => StreamController<ProgressEvent>().stream;
 
   @override
-  int status = 200;
+  final int status;
 }
 
 class MockXhrClientConnection extends XhrClientConnection {
-  MockXhrClientConnection() : super(Uri.parse('test:8080'));
+  MockXhrClientConnection({int code})
+      : _statusCode = code ?? 200,
+        super(Uri.parse('test:8080'));
 
   MockHttpRequest latestRequest;
+  final int _statusCode;
 
   @override
   createHttpRequest() {
-    final request = MockHttpRequest();
+    final request = MockHttpRequest(code: _statusCode);
     latestRequest = request;
     return request;
   }
@@ -304,6 +309,38 @@ void main() {
     when(connection.latestRequest.response).thenReturn(encodedString);
     connection.latestRequest.readyStateChangeController.add(null);
     connection.latestRequest.progressController.add(null);
+  });
+
+  test('GrpcError with error details in response', () async {
+    final metadata = <String, String>{
+      'parameter_1': 'value_1',
+      'parameter_2': 'value_2'
+    };
+
+    final connection = MockXhrClientConnection(code: 400);
+    final errorStream = StreamController<GrpcError>();
+    connection.makeRequest('test_path', Duration(seconds: 10), metadata,
+        (e, _) => errorStream.add(e));
+    const errorDetails = "error details";
+    int count = 0;
+
+    errorStream.stream.listen((error) {
+      expect(
+          error,
+          TypeMatcher<GrpcError>()
+              .having((e) => e.rawResponse, 'rawResponse', errorDetails));
+      count++;
+      if (count == 2) {
+        errorStream.close();
+      }
+    });
+
+    when(connection.latestRequest.getResponseHeader('Content-Type'))
+        .thenReturn('application/grpc+proto');
+    when(connection.latestRequest.responseHeaders).thenReturn(metadata);
+    when(connection.latestRequest.readyState).thenReturn(HttpRequest.DONE);
+    when(connection.latestRequest.responseText).thenReturn(errorDetails);
+    connection.latestRequest.readyStateChangeController.add(null);
   });
 
   test('Stream recieves multiple messages', () async {
