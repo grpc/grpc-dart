@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: echo.proto
 //
-// @dart = 2.3
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -27,7 +27,15 @@ class EchoRequest extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   EchoRequest._() : super();
-  factory EchoRequest() => create();
+  factory EchoRequest({
+    $core.String? message,
+  }) {
+    final _result = create();
+    if (message != null) {
+      _result.message = message;
+    }
+    return _result;
+  }
   factory EchoRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -42,8 +50,8 @@ class EchoRequest extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   EchoRequest copyWith(void Function(EchoRequest) updates) =>
-      super.copyWith((message) =>
-          updates(message as EchoRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as EchoRequest))
+          as EchoRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static EchoRequest create() => EchoRequest._();
@@ -52,7 +60,7 @@ class EchoRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static EchoRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<EchoRequest>(create);
-  static EchoRequest _defaultInstance;
+  static EchoRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get message => $_getSZ(0);
@@ -85,7 +93,15 @@ class EchoResponse extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   EchoResponse._() : super();
-  factory EchoResponse() => create();
+  factory EchoResponse({
+    $core.String? message,
+  }) {
+    final _result = create();
+    if (message != null) {
+      _result.message = message;
+    }
+    return _result;
+  }
   factory EchoResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -100,8 +116,8 @@ class EchoResponse extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   EchoResponse copyWith(void Function(EchoResponse) updates) =>
-      super.copyWith((message) =>
-          updates(message as EchoResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as EchoResponse))
+          as EchoResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static EchoResponse create() => EchoResponse._();
@@ -111,7 +127,7 @@ class EchoResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static EchoResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<EchoResponse>(create);
-  static EchoResponse _defaultInstance;
+  static EchoResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get message => $_getSZ(0);
@@ -156,7 +172,23 @@ class ServerStreamingEchoRequest extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   ServerStreamingEchoRequest._() : super();
-  factory ServerStreamingEchoRequest() => create();
+  factory ServerStreamingEchoRequest({
+    $core.String? message,
+    $core.int? messageCount,
+    $core.int? messageInterval,
+  }) {
+    final _result = create();
+    if (message != null) {
+      _result.message = message;
+    }
+    if (messageCount != null) {
+      _result.messageCount = messageCount;
+    }
+    if (messageInterval != null) {
+      _result.messageInterval = messageInterval;
+    }
+    return _result;
+  }
   factory ServerStreamingEchoRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -173,8 +205,9 @@ class ServerStreamingEchoRequest extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   ServerStreamingEchoRequest copyWith(
           void Function(ServerStreamingEchoRequest) updates) =>
-      super.copyWith((message) => updates(message
-          as ServerStreamingEchoRequest)); // ignore: deprecated_member_use
+      super.copyWith(
+              (message) => updates(message as ServerStreamingEchoRequest))
+          as ServerStreamingEchoRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ServerStreamingEchoRequest create() => ServerStreamingEchoRequest._();
@@ -184,7 +217,7 @@ class ServerStreamingEchoRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static ServerStreamingEchoRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ServerStreamingEchoRequest>(create);
-  static ServerStreamingEchoRequest _defaultInstance;
+  static ServerStreamingEchoRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get message => $_getSZ(0);
@@ -241,7 +274,15 @@ class ServerStreamingEchoResponse extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   ServerStreamingEchoResponse._() : super();
-  factory ServerStreamingEchoResponse() => create();
+  factory ServerStreamingEchoResponse({
+    $core.String? message,
+  }) {
+    final _result = create();
+    if (message != null) {
+      _result.message = message;
+    }
+    return _result;
+  }
   factory ServerStreamingEchoResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -258,8 +299,9 @@ class ServerStreamingEchoResponse extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   ServerStreamingEchoResponse copyWith(
           void Function(ServerStreamingEchoResponse) updates) =>
-      super.copyWith((message) => updates(message
-          as ServerStreamingEchoResponse)); // ignore: deprecated_member_use
+      super.copyWith(
+              (message) => updates(message as ServerStreamingEchoResponse))
+          as ServerStreamingEchoResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ServerStreamingEchoResponse create() =>
@@ -270,7 +312,7 @@ class ServerStreamingEchoResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static ServerStreamingEchoResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ServerStreamingEchoResponse>(create);
-  static ServerStreamingEchoResponse _defaultInstance;
+  static ServerStreamingEchoResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get message => $_getSZ(0);

@@ -27,12 +27,12 @@ class TestService extends Service {
   @override
   String get $name => 'Test';
 
-  Future<int> Function(ServiceCall call, Future<int> request) unaryHandler;
-  Future<int> Function(ServiceCall call, Stream<int> request)
+  Future<int> Function(ServiceCall call, Future<int> request)? unaryHandler;
+  Future<int> Function(ServiceCall call, Stream<int> request)?
       clientStreamingHandler;
-  Stream<int> Function(ServiceCall call, Future<int> request)
+  Stream<int> Function(ServiceCall call, Future<int> request)?
       serverStreamingHandler;
-  Stream<int> Function(ServiceCall call, Stream<int> request)
+  Stream<int> Function(ServiceCall call, Stream<int> request)?
       bidirectionalHandler;
 
   TestService() {
@@ -53,40 +53,40 @@ class TestService extends Service {
     if (unaryHandler == null) {
       fail('Should not invoke Unary');
     }
-    return unaryHandler(call, request);
+    return unaryHandler!(call, request);
   }
 
   Future<int> _clientStreaming(ServiceCall call, Stream<int> request) {
     if (clientStreamingHandler == null) {
       fail('Should not invoke ClientStreaming');
     }
-    return clientStreamingHandler(call, request);
+    return clientStreamingHandler!(call, request);
   }
 
   Stream<int> _serverStreaming(ServiceCall call, Future<int> request) {
     if (serverStreamingHandler == null) {
       fail('Should not invoke ServerStreaming');
     }
-    return serverStreamingHandler(call, request);
+    return serverStreamingHandler!(call, request);
   }
 
   Stream<int> _bidirectional(ServiceCall call, Stream<int> request) {
     if (bidirectionalHandler == null) {
       fail('Should not invoke Bidirectional');
     }
-    return bidirectionalHandler(call, request);
+    return bidirectionalHandler!(call, request);
   }
 }
 
 class TestInterceptor {
-  Interceptor handler;
+  Interceptor? handler;
 
-  FutureOr<GrpcError> call(ServiceCall call, ServiceMethod method) {
+  FutureOr<GrpcError?> call(ServiceCall call, ServiceMethod method) {
     if (handler == null) {
       return null;
     }
 
-    return handler(call, method);
+    return handler!(call, method);
   }
 }
 
@@ -112,7 +112,8 @@ class TestServerStream extends ServerTransportStream {
   bool get canPush => true;
 
   @override
-  ServerTransportStream push(List<Header> requestHeaders) => null;
+  ServerTransportStream push(List<Header> requestHeaders) =>
+      throw 'unimplemented';
 }
 
 class ServerHarness extends _Harness {
@@ -144,7 +145,7 @@ abstract class _Harness {
   final fromServer = StreamController<StreamMessage>();
   final service = TestService();
   final interceptor = TestInterceptor();
-  ConnectionServer _server;
+  ConnectionServer? _server;
 
   ConnectionServer createServer();
 
@@ -168,7 +169,7 @@ abstract class _Harness {
 
     fromServer.stream.listen(
         expectAsync1(handleMessages, count: handlers.length),
-        onError: expectAsync1((_) {}, count: 0),
+        onError: expectAsync1((dynamic _) {}, count: 0),
         onDone: expectAsync0(() {}, count: 1));
   }
 
@@ -185,8 +186,8 @@ abstract class _Harness {
 
   void sendRequestHeader(String path,
       {String authority = 'test',
-      Map<String, String> metadata,
-      Duration timeout}) {
+      Map<String, String>? metadata,
+      Duration? timeout}) {
     final headers = Http2ClientConnection.createCallHeaders(
         true, authority, path, timeout, metadata, null,
         userAgent: 'dart-grpc/1.0.0 test');

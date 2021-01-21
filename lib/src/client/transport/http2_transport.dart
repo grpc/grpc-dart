@@ -15,9 +15,10 @@
 
 import 'dart:async';
 
-import 'package:grpc/grpc.dart';
 import 'package:http2/transport.dart';
 
+import '../../shared/codec.dart';
+import '../../shared/codec_registry.dart';
 import '../../shared/message.dart';
 import '../../shared/streams.dart';
 import 'transport.dart';
@@ -33,8 +34,8 @@ class Http2TransportStream extends GrpcTransportStream {
   Http2TransportStream(
     this._transportStream,
     this._onError,
-    CodecRegistry codecRegistry,
-    Codec compression,
+    CodecRegistry? codecRegistry,
+    Codec? compression,
   ) : incomingMessages = _transportStream.incomingMessages
             .transform(GrpcHttpDecoder())
             .transform(grpcDecompressor(codecRegistry: codecRegistry)) {

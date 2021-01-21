@@ -33,7 +33,7 @@ class TestClient extends Client {
       path, (int value) => [value], (List<int> value) => value[0]);
 
   TestClient(api.ClientChannel channel) : super(channel);
-  ResponseStream<int> stream(int request, {CallOptions options}) {
+  ResponseStream<int> stream(int request, {CallOptions? options}) {
     return $createStreamingCall(_$stream, Stream.fromIterable([request]),
         options: options);
   }
@@ -69,12 +69,12 @@ class FakeTimelineTask extends Fake implements TimelineTask {
   static final List<Map> events = [];
   static int _idCount = 0;
 
-  final String filterKey;
-  final TimelineTask parent;
+  final String? filterKey;
+  final TimelineTask? parent;
   final int id = _idCount++;
   int _startFinishCount = 0;
 
-  factory FakeTimelineTask({TimelineTask parent, String filterKey}) {
+  factory FakeTimelineTask({TimelineTask? parent, String? filterKey}) {
     final task = FakeTimelineTask._(parent: parent, filterKey: filterKey);
     tasks.add(task);
     return task;
@@ -84,7 +84,7 @@ class FakeTimelineTask extends Fake implements TimelineTask {
 
   bool get isComplete => _startFinishCount == 0;
 
-  void start(String name, {Map arguments}) {
+  void start(String name, {Map? arguments}) {
     events.add({
       'id': id,
       'ph': 'b',
@@ -98,7 +98,7 @@ class FakeTimelineTask extends Fake implements TimelineTask {
     ++_startFinishCount;
   }
 
-  void instant(String name, {Map arguments}) {
+  void instant(String name, {Map? arguments}) {
     events.add({
       'id': id,
       'ph': 'i',
@@ -110,7 +110,7 @@ class FakeTimelineTask extends Fake implements TimelineTask {
     });
   }
 
-  void finish({Map arguments}) {
+  void finish({Map? arguments}) {
     events.add({
       'id': id,
       'ph': 'e',
@@ -124,7 +124,8 @@ class FakeTimelineTask extends Fake implements TimelineTask {
   }
 }
 
-TimelineTask fakeTimelineTaskFactory({String filterKey, TimelineTask parent}) =>
+TimelineTask fakeTimelineTaskFactory(
+        {String? filterKey, TimelineTask? parent}) =>
     FakeTimelineTask(filterKey: filterKey, parent: parent);
 
 testee() async {
@@ -134,7 +135,7 @@ testee() async {
   timelineTaskFactory = fakeTimelineTaskFactory;
   final channel = FixedConnectionClientChannel(Http2ClientConnection(
     'localhost',
-    server.port,
+    server.port!,
     ChannelOptions(credentials: ChannelCredentials.insecure()),
   ));
   final testClient = TestClient(channel);

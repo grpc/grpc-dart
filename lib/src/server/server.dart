@@ -16,10 +16,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:grpc/grpc.dart';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
+import '../shared/codec_registry.dart';
 import '../shared/security.dart';
 import 'handler.dart';
 import 'interceptor.dart';
@@ -33,7 +33,7 @@ abstract class ServerCredentials {
 
   /// Creates [SecurityContext] from these credentials if possible.
   /// Otherwise returns [null].
-  SecurityContext get securityContext;
+  SecurityContext? get securityContext;
 }
 
 /// Set of credentials that only allows local TCP connections.
@@ -42,14 +42,14 @@ class ServerLocalCredentials extends ServerCredentials {
   bool validateClient(Socket socket) => socket.remoteAddress.isLoopback;
 
   @override
-  SecurityContext get securityContext => null;
+  SecurityContext? get securityContext => null;
 }
 
 class ServerTlsCredentials extends ServerCredentials {
-  final List<int> certificate;
-  final String certificatePassword;
-  final List<int> privateKey;
-  final String privateKeyPassword;
+  final List<int>? certificate;
+  final String? certificatePassword;
+  final List<int>? privateKey;
+  final String? privateKeyPassword;
 
   /// TLS credentials for a [Server].
   ///
@@ -64,10 +64,10 @@ class ServerTlsCredentials extends ServerCredentials {
   SecurityContext get securityContext {
     final context = createSecurityContext(true);
     if (privateKey != null) {
-      context.usePrivateKeyBytes(privateKey, password: privateKeyPassword);
+      context.usePrivateKeyBytes(privateKey!, password: privateKeyPassword);
     }
     if (certificate != null) {
-      context.useCertificateChainBytes(certificate,
+      context.useCertificateChainBytes(certificate!,
           password: certificatePassword);
     }
     return context;
@@ -84,7 +84,7 @@ class ServerTlsCredentials extends ServerCredentials {
 class ConnectionServer {
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
-  final CodecRegistry _codecRegistry;
+  final CodecRegistry? _codecRegistry;
 
   final _connections = <ServerTransportConnection>[];
 
@@ -92,7 +92,7 @@ class ConnectionServer {
   ConnectionServer(
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
-    CodecRegistry codecRegistry,
+    CodecRegistry? codecRegistry,
   ])  : _codecRegistry = codecRegistry,
         _interceptors = interceptors {
     for (final service in services) {
@@ -100,11 +100,11 @@ class ConnectionServer {
     }
   }
 
-  Service lookupService(String service) => _services[service];
+  Service? lookupService(String service) => _services[service];
 
   Future<void> serveConnection(ServerTransportConnection connection) async {
     _connections.add(connection);
-    ServerHandler_ handler;
+    ServerHandler_? handler;
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
     connection.incomingStreams.listen((stream) {
@@ -134,39 +134,39 @@ class ConnectionServer {
 ///
 /// Listens for incoming RPCs, dispatching them to the right [Service] handler.
 class Server extends ConnectionServer {
-  ServerSocket _insecureServer;
-  SecureServerSocket _secureServer;
+  ServerSocket? _insecureServer;
+  SecureServerSocket? _secureServer;
 
   /// Create a server for the given [services].
   Server(
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
-    CodecRegistry codecRegistry,
+    CodecRegistry? codecRegistry,
   ]) : super(services, interceptors, codecRegistry);
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
-  int get port {
-    if (_secureServer != null) return _secureServer.port;
-    if (_insecureServer != null) return _insecureServer.port;
+  int? get port {
+    if (_secureServer != null) return _secureServer!.port;
+    if (_insecureServer != null) return _insecureServer!.port;
     return null;
   }
 
-  Service lookupService(String service) => _services[service];
+  Service? lookupService(String service) => _services[service];
 
   /// Starts the [Server] with the given options.
   /// [address] can be either a [String] or an [InternetAddress], in the latter
   /// case it can be a Unix Domain Socket address.
   Future<void> serve(
       {dynamic address,
-      int port,
-      ServerCredentials security,
-      ServerSettings http2ServerSettings,
+      int? port,
+      ServerCredentials? security,
+      ServerSettings? http2ServerSettings,
       int backlog: 0,
       bool v6Only: false,
       bool shared: false}) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
-    Stream<Socket> server;
+    Stream<Socket>? server;
     final securityContext = security?.securityContext;
     if (securityContext != null) {
       _secureServer = await SecureServerSocket.bind(
@@ -183,7 +183,7 @@ class Server extends ConnectionServer {
       );
       server = _insecureServer;
     }
-    server.listen((socket) {
+    server!.listen((socket) {
       // Don't wait for io buffers to fill up before sending requests.
       if (socket.address.type != InternetAddressType.unix) {
         socket.setOption(SocketOption.tcpNoDelay, true);
@@ -213,10 +213,10 @@ class Server extends ConnectionServer {
   Future<void> shutdown() async {
     final done = _connections.map((connection) => connection.finish()).toList();
     if (_insecureServer != null) {
-      done.add(_insecureServer.close());
+      done.add(_insecureServer!.close());
     }
     if (_secureServer != null) {
-      done.add(_secureServer.close());
+      done.add(_secureServer!.close());
     }
     await Future.wait(done);
     _insecureServer = null;

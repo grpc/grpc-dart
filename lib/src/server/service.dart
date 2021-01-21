@@ -56,35 +56,38 @@ class ServiceMethod<Q, R> {
         return handler(call, _toSingleFuture(requests));
       }
     } else {
-      Future<R> response;
-      if (streamingRequest) {
-        response = handler(call, requests);
-      } else {
-        response = handler(call, _toSingleFuture(requests));
-      }
+      final response = streamingRequest
+          ? handler(call, requests)
+          : handler(call, _toSingleFuture(requests));
       return response.asStream();
     }
   }
 
   Future<Q> _toSingleFuture(Stream<Q> stream) {
-    Q _ensureOnlyOneRequest(Q previous, Q element) {
+    Q _ensureOnlyOneRequest(Q? previous, Q element) {
       if (previous != null) {
         throw GrpcError.unimplemented('More than one request received');
       }
       return element;
     }
 
-    Q _ensureOneRequest(Q value) {
+    Q _ensureOneRequest(Q? value) {
       if (value == null) throw GrpcError.unimplemented('No requests received');
       return value;
     }
 
     final future =
-        stream.fold(null, _ensureOnlyOneRequest).then(_ensureOneRequest);
+        stream.fold<Q?>(null, _ensureOnlyOneRequest).then(_ensureOneRequest);
     // Make sure errors on the future aren't unhandled, but return the original
     // future so the request handler can also get the error.
-    future.catchError((_) {});
+    _awaitAndCatch(future);
     return future;
+  }
+
+  void _awaitAndCatch<Q>(Future<Q> f) async {
+    try {
+      await f;
+    } catch (_) {}
   }
 }
 
@@ -104,5 +107,5 @@ abstract class Service {
   /// metadata from the client.
   void $onMetadata(ServiceCall context) {}
 
-  ServiceMethod $lookupMethod(String name) => _$methods[name];
+  ServiceMethod? $lookupMethod(String name) => _$methods[name];
 }

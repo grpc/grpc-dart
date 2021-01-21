@@ -11,12 +11,12 @@ on:
 
 jobs:
   # Check code formating and static analysis on a single OS (linux)
-  # against Dart stable and dev.
+  # against Dart dev.
   analyze:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: [stable, dev]
+        sdk: [dev]
     steps:
       - uses: actions/checkout@v2
       - uses: cedx/setup-dart@v2
@@ -43,7 +43,7 @@ jobs:
 
   # Run tests on a matrix consisting of three dimensions:
   # 1. OS: mac, windows, linux
-  # 2. release channel: stable, dev
+  # 2. release channel: dev
   # 3. TODO: Dart execution mode: native, web
   test:
     needs: analyze
@@ -51,7 +51,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        sdk: [stable, dev]
+        sdk: [dev]
         platform: [vm, chrome]
         exclude:
           # We only run Chrome tests on Linux. No need to run them

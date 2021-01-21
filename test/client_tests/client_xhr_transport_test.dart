@@ -18,16 +18,22 @@ import 'dart:async';
 
 import 'dart:html';
 
+import 'package:async/async.dart';
 import 'package:grpc/src/client/call.dart';
 import 'package:grpc/src/client/transport/xhr_transport.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:grpc/src/shared/status.dart';
 import 'package:mockito/mockito.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 import 'package:test/test.dart';
 
+final readyStateChangeEvent =
+    Event('readystatechange', canBubble: false, cancelable: false);
+final progressEvent = ProgressEvent('onloadstart');
+
 class MockHttpRequest extends Mock implements HttpRequest {
-  MockHttpRequest({int code}) : status = code ?? 200;
+  MockHttpRequest({int? code}) : status = code ?? 200;
   // ignore: close_sinks
   StreamController<Event> readyStateChangeController =
       StreamController<Event>();
@@ -46,14 +52,20 @@ class MockHttpRequest extends Mock implements HttpRequest {
 
   @override
   final int status;
+
+  int get readyState => super.noSuchMethod(Invocation.getter(#readyState), -1);
+
+  @override
+  Map<String, String> get responseHeaders => super
+      .noSuchMethod(Invocation.getter(#responseHeaders), <String, String>{});
 }
 
 class MockXhrClientConnection extends XhrClientConnection {
-  MockXhrClientConnection({int code})
+  MockXhrClientConnection({int? code})
       : _statusCode = code ?? 200,
         super(Uri.parse('test:8080'));
 
-  MockHttpRequest latestRequest;
+  late MockHttpRequest latestRequest;
   final int _statusCode;
 
   @override
@@ -199,28 +211,40 @@ void main() {
   });
 
   test('Stream handles headers properly', () async {
-    final metadata = <String, String>{
+    final responseHeaders = {
       'parameter_1': 'value_1',
       'parameter_2': 'value_2'
     };
 
     final transport = MockXhrClientConnection();
 
-    final stream = transport.makeRequest('test_path', Duration(seconds: 10),
-        metadata, (error, _) => fail(error.toString()));
+    final stream = transport.makeRequest('test_path', Duration(seconds: 10), {},
+        (error, _) => fail(error.toString()));
 
-    stream.incomingMessages.listen((message) {
-      expect(message, TypeMatcher<GrpcMetadata>());
-      if (message is GrpcMetadata) {
-        message.metadata.forEach((key, value) {
-          expect(value, metadata[key]);
-        });
-      }
-    });
+    when(transport.latestRequest.responseHeaders).thenReturn(responseHeaders);
+    when(transport.latestRequest.getResponseHeader('Content-Type'))
+        .thenReturn('application/grpc+proto');
+    when(transport.latestRequest.response)
+        .thenReturn(String.fromCharCodes(frame(<int>[])));
+
+    // Set expectation for request readyState and generate two readyStateChange
+    // events, so that incomingMessages stream completes.
+    final readyStates = [HttpRequest.HEADERS_RECEIVED, HttpRequest.DONE];
+    when(transport.latestRequest.readyState)
+        .thenAnswer((_) => readyStates.removeAt(0));
+    transport.latestRequest.readyStateChangeController
+        .add(readyStateChangeEvent);
+    transport.latestRequest.readyStateChangeController
+        .add(readyStateChangeEvent);
+
+    // Should be only one metadata message with headers.
+    final message = await stream.incomingMessages.single as GrpcMetadata;
+    expect(message.metadata, responseHeaders);
   });
 
   test('Stream handles trailers properly', () async {
-    final trailers = <String, String>{
+    final requestHeaders = {'parameter_1': 'value_1'};
+    final responseTrailers = <String, String>{
       'trailer_1': 'value_1',
       'trailer_2': 'value_2'
     };
@@ -228,31 +252,37 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        {}, (error, _) => fail(error.toString()));
+        requestHeaders, (error, _) => fail(error.toString()));
 
-    final encodedTrailers = frame(trailers.entries
+    final encodedTrailers = frame(responseTrailers.entries
         .map((e) => '${e.key}:${e.value}')
         .join('\r\n')
         .codeUnits);
     encodedTrailers[0] = 0x80; // Mark this frame as trailers.
     final encodedString = String.fromCharCodes(encodedTrailers);
 
-    stream.incomingMessages.listen((message) {
-      expect(message, TypeMatcher<GrpcMetadata>());
-      if (message is GrpcMetadata) {
-        message.metadata.forEach((key, value) {
-          expect(value, trailers[key]);
-        });
-      }
-    });
     when(connection.latestRequest.getResponseHeader('Content-Type'))
         .thenReturn('application/grpc+proto');
     when(connection.latestRequest.responseHeaders).thenReturn({});
-    when(connection.latestRequest.readyState)
-        .thenReturn(HttpRequest.HEADERS_RECEIVED);
     when(connection.latestRequest.response).thenReturn(encodedString);
-    connection.latestRequest.readyStateChangeController.add(null);
-    connection.latestRequest.progressController.add(null);
+
+    // Set expectation for request readyState and generate events so that
+    // incomingMessages stream completes.
+    final readyStates = [HttpRequest.HEADERS_RECEIVED, HttpRequest.DONE];
+    when(connection.latestRequest.readyState)
+        .thenAnswer((_) => readyStates.removeAt(0));
+    connection.latestRequest.readyStateChangeController
+        .add(readyStateChangeEvent);
+    connection.latestRequest.progressController.add(progressEvent);
+    connection.latestRequest.readyStateChangeController
+        .add(readyStateChangeEvent);
+
+    // Should be two metadata messages: headers and trailers.
+    final messages =
+        await stream.incomingMessages.whereType<GrpcMetadata>().toList();
+    expect(messages.length, 2);
+    expect(messages.first.metadata, isEmpty);
+    expect(messages.last.metadata, responseTrailers);
   });
 
   test('Stream handles empty trailers properly', () async {
@@ -265,24 +295,32 @@ void main() {
     encoded[0] = 0x80; // Mark this frame as trailers.
     final encodedString = String.fromCharCodes(encoded);
 
-    stream.incomingMessages.listen((message) {
-      expect(message, TypeMatcher<GrpcMetadata>());
-      if (message is GrpcMetadata) {
-        message.metadata.isEmpty;
-      }
-    });
     when(connection.latestRequest.getResponseHeader('Content-Type'))
         .thenReturn('application/grpc+proto');
     when(connection.latestRequest.responseHeaders).thenReturn({});
-    when(connection.latestRequest.readyState)
-        .thenReturn(HttpRequest.HEADERS_RECEIVED);
     when(connection.latestRequest.response).thenReturn(encodedString);
-    connection.latestRequest.readyStateChangeController.add(null);
-    connection.latestRequest.progressController.add(null);
+
+    // Set expectation for request readyState and generate events so that
+    // incomingMessages stream completes.
+    final readyStates = [HttpRequest.HEADERS_RECEIVED, HttpRequest.DONE];
+    when(connection.latestRequest.readyState)
+        .thenAnswer((_) => readyStates.removeAt(0));
+    connection.latestRequest.readyStateChangeController
+        .add(readyStateChangeEvent);
+    connection.latestRequest.progressController.add(progressEvent);
+    connection.latestRequest.readyStateChangeController
+        .add(readyStateChangeEvent);
+
+    // Should be two metadata messages: headers and trailers.
+    final messages =
+        await stream.incomingMessages.whereType<GrpcMetadata>().toList();
+    expect(messages.length, 2);
+    expect(messages.first.metadata, isEmpty);
+    expect(messages.last.metadata, isEmpty);
   });
 
   test('Stream deserializes data properly', () async {
-    final metadata = <String, String>{
+    final requestHeaders = <String, String>{
       'parameter_1': 'value_1',
       'parameter_2': 'value_2'
     };
@@ -290,57 +328,50 @@ void main() {
     final connection = MockXhrClientConnection();
 
     final stream = connection.makeRequest('test_path', Duration(seconds: 10),
-        metadata, (error, _) => fail(error.toString()));
+        requestHeaders, (error, _) => fail(error.toString()));
     final data = List<int>.filled(10, 224);
-    final encoded = frame(data);
-    final encodedString = String.fromCharCodes(encoded);
-
-    stream.incomingMessages.listen(expectAsync1((message) {
-      if (message is GrpcData) {
-        expect(message.data, equals(data));
-      }
-    }, count: 2));
-
     when(connection.latestRequest.getResponseHeader('Content-Type'))
         .thenReturn('application/grpc+proto');
-    when(connection.latestRequest.responseHeaders).thenReturn(metadata);
+    when(connection.latestRequest.responseHeaders).thenReturn({});
+    when(connection.latestRequest.response)
+        .thenReturn(String.fromCharCodes(frame(data)));
+
+    // Set expectation for request readyState and generate events, so that
+    // incomingMessages stream completes.
+    final readyStates = [HttpRequest.HEADERS_RECEIVED, HttpRequest.DONE];
     when(connection.latestRequest.readyState)
-        .thenReturn(HttpRequest.HEADERS_RECEIVED);
-    when(connection.latestRequest.response).thenReturn(encodedString);
-    connection.latestRequest.readyStateChangeController.add(null);
-    connection.latestRequest.progressController.add(null);
+        .thenAnswer((_) => readyStates.removeAt(0));
+    connection.latestRequest.readyStateChangeController
+        .add(readyStateChangeEvent);
+    connection.latestRequest.progressController.add(progressEvent);
+    connection.latestRequest.readyStateChangeController
+        .add(readyStateChangeEvent);
+
+    // Expect a single data message.
+    final message = await stream.incomingMessages.whereType<GrpcData>().single;
+    expect(message.data, data);
   });
 
   test('GrpcError with error details in response', () async {
-    final metadata = <String, String>{
-      'parameter_1': 'value_1',
-      'parameter_2': 'value_2'
-    };
-
     final connection = MockXhrClientConnection(code: 400);
-    final errorStream = StreamController<GrpcError>();
-    connection.makeRequest('test_path', Duration(seconds: 10), metadata,
-        (e, _) => errorStream.add(e));
-    const errorDetails = "error details";
-    int count = 0;
-
-    errorStream.stream.listen((error) {
-      expect(
-          error,
-          TypeMatcher<GrpcError>()
-              .having((e) => e.rawResponse, 'rawResponse', errorDetails));
-      count++;
-      if (count == 2) {
-        errorStream.close();
-      }
+    final errors = <GrpcError>[];
+    // The incoming messages stream never completes when there's an error, so
+    // using completer.
+    final errorReceived = Completer<void>();
+    connection.makeRequest('test_path', Duration(seconds: 10), {}, (e, _) {
+      errorReceived.complete();
+      errors.add(e);
     });
-
+    const errorDetails = "error details";
     when(connection.latestRequest.getResponseHeader('Content-Type'))
         .thenReturn('application/grpc+proto');
-    when(connection.latestRequest.responseHeaders).thenReturn(metadata);
+    when(connection.latestRequest.responseHeaders).thenReturn({});
     when(connection.latestRequest.readyState).thenReturn(HttpRequest.DONE);
     when(connection.latestRequest.responseText).thenReturn(errorDetails);
-    connection.latestRequest.readyStateChangeController.add(null);
+    connection.latestRequest.readyStateChangeController
+        .add(readyStateChangeEvent);
+    await errorReceived;
+    expect(errors.single.rawResponse, errorDetails);
   });
 
   test('Stream recieves multiple messages', () async {
@@ -358,40 +389,44 @@ void main() {
       List<int>.filled(10, 224),
       List<int>.filled(5, 124)
     ];
-    final encoded = data.map((d) => frame(d));
-    final encodedStrings = encoded.map((e) => String.fromCharCodes(e)).toList();
-
-    final expectedMessages = <GrpcMessage>[
-      GrpcMetadata(metadata),
-      GrpcData(data[0]),
-      GrpcData(data[1])
-    ];
-    int i = 0;
-    stream.incomingMessages.listen(expectAsync1((message) {
-      final expectedMessage = expectedMessages[i];
-      i++;
-      expect(message.runtimeType, expectedMessage.runtimeType);
-      if (message is GrpcMetadata) {
-        expect(message.metadata, (expectedMessage as GrpcMetadata).metadata);
-      } else if (message is GrpcData) {
-        expect(message.data, (expectedMessage as GrpcData).data);
-      }
-    }, count: expectedMessages.length));
+    final encodedStrings =
+        data.map((d) => String.fromCharCodes(frame(d))).toList();
 
     when(connection.latestRequest.getResponseHeader('Content-Type'))
         .thenReturn('application/grpc+proto');
     when(connection.latestRequest.responseHeaders).thenReturn(metadata);
     when(connection.latestRequest.readyState)
         .thenReturn(HttpRequest.HEADERS_RECEIVED);
-    // At first - expected response is the first message
-    when(connection.latestRequest.response)
-        .thenAnswer((_) => encodedStrings[0]);
-    connection.latestRequest.readyStateChangeController.add(null);
-    connection.latestRequest.progressController.add(null);
 
-    // After the first call, expected response should now be both responses together
-    when(connection.latestRequest.response)
-        .thenAnswer((_) => encodedStrings[0] + encodedStrings[1]);
-    connection.latestRequest.progressController.add(null);
+    // At first invocation the response should be the the first message, after
+    // that first + last messages.
+    var first = true;
+    when(connection.latestRequest.response).thenAnswer((_) {
+      if (first) {
+        first = false;
+        return encodedStrings[0];
+      }
+      return encodedStrings[0] + encodedStrings[1];
+    });
+
+    final readyStates = [HttpRequest.HEADERS_RECEIVED, HttpRequest.DONE];
+    when(connection.latestRequest.readyState)
+        .thenAnswer((_) => readyStates.removeAt(0));
+
+    final queue = StreamQueue(stream.incomingMessages);
+    // Headers.
+    connection.latestRequest.readyStateChangeController
+        .add(readyStateChangeEvent);
+    expect(((await queue.next) as GrpcMetadata).metadata, metadata);
+    // Data 1.
+    connection.latestRequest.progressController.add(progressEvent);
+    expect(((await queue.next) as GrpcData).data, data[0]);
+    // Data 2.
+    connection.latestRequest.progressController.add(progressEvent);
+    expect(((await queue.next) as GrpcData).data, data[1]);
+    // Done.
+    connection.latestRequest.readyStateChangeController
+        .add(readyStateChangeEvent);
+    expect(await queue.hasNext, isFalse);
   });
 }

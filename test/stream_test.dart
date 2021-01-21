@@ -22,8 +22,8 @@ import 'package:grpc/grpc.dart';
 
 void main() {
   group('GrpcHttpDecoder', () {
-    StreamController<StreamMessage> input;
-    Stream<GrpcMessage> output;
+    late StreamController<StreamMessage> input;
+    late Stream<GrpcMessage> output;
 
     setUp(() {
       input = StreamController();
@@ -51,11 +51,12 @@ void main() {
       }
 
       expect(converted[0], TypeMatcher<GrpcMetadata>());
-      verify(converted[1], [48, 49, 50, 51, 52, 53, 54, 55, 56, 57]);
-      verify(converted[2], [97, 98, 99, 100]);
-      verify(converted[3], [65]);
-      verify(converted[4], [48, 49, 50, 51]);
-      verify(converted[5], List.filled(256, 90));
+      verify(
+          converted[1] as GrpcData, [48, 49, 50, 51, 52, 53, 54, 55, 56, 57]);
+      verify(converted[2] as GrpcData, [97, 98, 99, 100]);
+      verify(converted[3] as GrpcData, [65]);
+      verify(converted[4] as GrpcData, [48, 49, 50, 51]);
+      verify(converted[5] as GrpcData, List.filled(256, 90));
     });
 
     test('throws error if input is closed while receiving data header',

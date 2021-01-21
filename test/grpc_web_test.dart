@@ -11,7 +11,7 @@ import 'package:grpc/grpc_web.dart';
 import 'src/generated/echo.pbgrpc.dart';
 
 void main() {
-  GrpcWebServer server;
+  late GrpcWebServer server;
 
   setUpAll(() async {
     server = await GrpcWebServer.start();

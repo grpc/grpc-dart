@@ -20,25 +20,26 @@ import 'package:googleapis_auth/auth.dart' as auth;
 import 'package:http/http.dart' as http;
 
 import '../client/call.dart';
-import '../shared/status.dart';
 import 'rsa.dart';
 
 const _tokenExpirationThreshold = Duration(seconds: 30);
 
 abstract class BaseAuthenticator {
-  auth.AccessToken _accessToken;
-  String _lastUri;
+  auth.AccessToken? _accessToken;
+  late String _lastUri;
+  var _lastUriSet = false;
 
   Future<void> authenticate(Map<String, String> metadata, String uri) async {
-    if (uri == null) {
-      throw GrpcError.unauthenticated('Credentials require secure transport.');
-    }
-    if (_accessToken == null || _accessToken.hasExpired || uri != _lastUri) {
+    if (_accessToken == null ||
+        _accessToken!.hasExpired ||
+        !_lastUriSet ||
+        uri != _lastUri) {
       await obtainAccessCredentials(uri);
       _lastUri = uri;
+      _lastUriSet = true;
     }
 
-    final auth = '${_accessToken.type} ${_accessToken.data}';
+    final auth = '${_accessToken!.type} ${_accessToken!.data}';
     metadata['authorization'] = auth;
 
     if (_tokenExpiresSoon) {
@@ -47,7 +48,7 @@ abstract class BaseAuthenticator {
     }
   }
 
-  bool get _tokenExpiresSoon => _accessToken.expiry
+  bool get _tokenExpiresSoon => _accessToken!.expiry
       .subtract(_tokenExpirationThreshold)
       .isBefore(DateTime.now().toUtc());
 
@@ -57,7 +58,7 @@ abstract class BaseAuthenticator {
 }
 
 abstract class HttpBasedAuthenticator extends BaseAuthenticator {
-  Future<void> _call;
+  Future<void>? _call;
 
   Future<void> obtainAccessCredentials(String uri) {
     if (_call == null) {
@@ -68,7 +69,7 @@ abstract class HttpBasedAuthenticator extends BaseAuthenticator {
         authClient.close();
       });
     }
-    return _call;
+    return _call!;
   }
 
   Future<auth.AccessCredentials> obtainCredentialsWithClient(
@@ -77,18 +78,21 @@ abstract class HttpBasedAuthenticator extends BaseAuthenticator {
 
 class JwtServiceAccountAuthenticator extends BaseAuthenticator {
   auth.ServiceAccountCredentials _serviceAccountCredentials;
-  String _projectId;
-  String _keyId;
+  String? _projectId;
+  String? _keyId;
 
-  JwtServiceAccountAuthenticator(String serviceAccountJson) {
-    final serviceAccount = jsonDecode(serviceAccountJson);
-    _serviceAccountCredentials =
-        auth.ServiceAccountCredentials.fromJson(serviceAccount);
-    _projectId = serviceAccount['project_id'];
-    _keyId = serviceAccount['private_key_id'];
-  }
+  JwtServiceAccountAuthenticator.fromJson(
+      Map<String, dynamic> serviceAccountJson)
+      : _serviceAccountCredentials =
+            auth.ServiceAccountCredentials.fromJson(serviceAccountJson),
+        _projectId = serviceAccountJson['project_id'],
+        _keyId = serviceAccountJson['private_key_id'];
 
-  String get projectId => _projectId;
+  factory JwtServiceAccountAuthenticator(String serviceAccountJsonString) =>
+      JwtServiceAccountAuthenticator.fromJson(
+          jsonDecode(serviceAccountJsonString));
+
+  String? get projectId => _projectId;
 
   Future<void> obtainAccessCredentials(String uri) async {
     _accessToken = _jwtTokenFor(_serviceAccountCredentials, _keyId, uri);
@@ -97,8 +101,8 @@ class JwtServiceAccountAuthenticator extends BaseAuthenticator {
 
 // TODO(jakobr): Expose in googleapis_auth.
 auth.AccessToken _jwtTokenFor(
-    auth.ServiceAccountCredentials credentials, String keyId, String uri,
-    {String user, List<String> scopes}) {
+    auth.ServiceAccountCredentials credentials, String? keyId, String uri,
+    {String? user, List<String>? scopes}) {
   // Subtracting 20 seconds from current timestamp to allow for clock skew among
   // servers.
   final timestamp =

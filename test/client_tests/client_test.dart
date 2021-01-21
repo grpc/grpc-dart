@@ -31,7 +31,7 @@ import '../src/utils.dart';
 void main() {
   const dummyValue = 0;
 
-  ClientHarness harness;
+  late ClientHarness harness;
 
   setUp(() {
     harness = ClientHarness()..setUp();
@@ -399,8 +399,8 @@ void main() {
 
   test('Connection errors are reported', () async {
     final connectionStates = <ConnectionState>[];
-    harness.connection.connectionError = 'Connection error';
-    harness.connection.onStateChanged = (connection) {
+    harness.connection!.connectionError = 'Connection error';
+    harness.connection!.onStateChanged = (connection) {
       final state = connection.state;
       connectionStates.add(state);
     };
@@ -418,7 +418,7 @@ void main() {
   test('Connections time out if idle', () async {
     final done = Completer();
     final connectionStates = <ConnectionState>[];
-    harness.connection.onStateChanged = (connection) {
+    harness.connection!.onStateChanged = (connection) {
       final state = connection.state;
       connectionStates.add(state);
       if (state == ConnectionState.idle) done.complete();
@@ -464,7 +464,7 @@ void main() {
         credentials: ChannelCredentials.insecure(authority: 'myauthority.com'));
     expect(Http2ClientConnection('localhost', 8080, channelOptions).authority,
         'myauthority.com');
-    expect(Http2ClientConnection('localhost', null, channelOptions).authority,
+    expect(Http2ClientConnection('localhost', 443, channelOptions).authority,
         'myauthority.com');
   });
 
@@ -481,12 +481,6 @@ void main() {
       'decodeStatusDetails should decode details into an empty list for an invalid base64 string',
       () {
     final decodedDetails = decodeStatusDetails('xxxxxxxxxxxxxxxxxxxxxx');
-    expect(decodedDetails, isA<List<GeneratedMessage>>());
-    expect(decodedDetails.length, 0);
-  });
-
-  test('decodeStatusDetails should handle a null input', () {
-    final decodedDetails = decodeStatusDetails(null);
     expect(decodedDetails, isA<List<GeneratedMessage>>());
     expect(decodedDetails.length, 0);
   });

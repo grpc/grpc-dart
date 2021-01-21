@@ -44,8 +44,8 @@ abstract class ClientChannel {
 /// Auxiliary base class implementing much of ClientChannel.
 abstract class ClientChannelBase implements ClientChannel {
   // TODO(jakobr): Multiple connections, load balancing.
-  ClientConnection _connection;
-
+  late ClientConnection _connection;
+  var _connected = false;
   bool _isShutdown = false;
 
   ClientChannelBase();
@@ -54,13 +54,17 @@ abstract class ClientChannelBase implements ClientChannel {
   Future<void> shutdown() async {
     if (_isShutdown) return;
     _isShutdown = true;
-    if (_connection != null) await _connection.shutdown();
+    if (_connected) {
+      await _connection.shutdown();
+    }
   }
 
   @override
   Future<void> terminate() async {
     _isShutdown = true;
-    if (_connection != null) await _connection.terminate();
+    if (_connected) {
+      await _connection.terminate();
+    }
   }
 
   ClientConnection createConnection();
@@ -70,7 +74,11 @@ abstract class ClientChannelBase implements ClientChannel {
   /// The connection may be shared between multiple RPCs.
   Future<ClientConnection> getConnection() async {
     if (_isShutdown) throw GrpcError.unavailable('Channel shutting down.');
-    return _connection ??= createConnection();
+    if (!_connected) {
+      _connection = createConnection();
+      _connected = true;
+    }
+    return _connection;
   }
 
   @override

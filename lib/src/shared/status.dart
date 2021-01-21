@@ -125,9 +125,9 @@ class StatusCode {
 class GrpcError implements Exception {
   final int code;
   final String codeName;
-  final String message;
-  final List<GeneratedMessage> details;
-  final Object rawResponse;
+  final String? message;
+  final Object? rawResponse;
+  final List<GeneratedMessage>? details;
 
   /// Custom error code.
   GrpcError.custom(this.code, [this.message, this.details, this.rawResponse])

@@ -16,7 +16,7 @@ class TestClient extends Client {
       (int value) => [value], (List<int> value) => value[0]);
 
   TestClient(api.ClientChannel channel) : super(channel);
-  ResponseStream<int> stream(int request, {CallOptions options}) {
+  ResponseStream<int> stream(int request, {CallOptions? options}) {
     return $createStreamingCall(_$stream, Stream.value(request),
         options: options);
   }
@@ -66,7 +66,7 @@ main() async {
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
       address,
-      server.port,
+      server.port!,
       ChannelOptions(credentials: ChannelCredentials.insecure()),
     ));
     final testClient = TestClient(channel);
@@ -83,7 +83,7 @@ main() async {
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
       address,
-      server.port,
+      server.port!,
       ChannelOptions(
         credentials: ChannelCredentials.insecure(),
         codecRegistry: CodecRegistry(codecs: const [GzipCodec()]),
@@ -111,7 +111,7 @@ main() async {
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
       address,
-      server.port,
+      server.port!,
       ChannelOptions(
           credentials: ChannelCredentials.secure(
               certificates: File('test/data/localhost.crt').readAsBytesSync(),
@@ -129,7 +129,7 @@ main() async {
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
       'localhost',
-      server.port,
+      server.port!,
       ChannelOptions(credentials: ChannelCredentials.insecure()),
     ));
     final testClient = TestClient(channel);
@@ -145,7 +145,7 @@ main() async {
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
       'localhost',
-      server.port,
+      server.port!,
       ChannelOptions(credentials: ChannelCredentials.insecure()),
     ));
     final testClient = TestClient(channel);

@@ -26,7 +26,7 @@ import '../src/utils.dart';
 void main() {
   const dummyValue = 0;
 
-  ClientTransportConnectorHarness harness;
+  late ClientTransportConnectorHarness harness;
 
   setUp(() {
     harness = ClientTransportConnectorHarness()..setUp();
@@ -349,8 +349,8 @@ void main() {
 
   test('Connection errors are reported', () async {
     final connectionStates = <ConnectionState>[];
-    harness.connection.connectionError = 'Connection error';
-    harness.connection.onStateChanged = (connection) {
+    harness.connection!.connectionError = 'Connection error';
+    harness.connection!.onStateChanged = (connection) {
       final state = connection.state;
       connectionStates.add(state);
     };
@@ -368,7 +368,7 @@ void main() {
   test('Connections time out if idle', () async {
     final done = Completer();
     final connectionStates = <ConnectionState>[];
-    harness.connection.onStateChanged = (connection) {
+    harness.connection!.onStateChanged = (connection) {
       final state = connection.state;
       connectionStates.add(state);
       if (state == ConnectionState.idle) done.complete();
@@ -414,7 +414,7 @@ void main() {
         credentials: ChannelCredentials.insecure(authority: 'myauthority.com'));
     expect(Http2ClientConnection('localhost', 8080, channelOptions).authority,
         'myauthority.com');
-    expect(Http2ClientConnection('localhost', null, channelOptions).authority,
+    expect(Http2ClientConnection('localhost', 443, channelOptions).authority,
         'myauthority.com');
   });
 }

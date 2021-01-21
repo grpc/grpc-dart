@@ -33,32 +33,36 @@ class GrpcMetadata extends GrpcMessage {
 class GrpcData extends GrpcMessage {
   final List<int> data;
   final bool isCompressed;
-  GrpcData(this.data, {this.isCompressed}) : assert(data != null);
+  GrpcData(this.data, {required this.isCompressed}) {
+    ArgumentError.checkNotNull(data);
+  }
 
   @override
   String toString() => 'gRPC Data (${data.length} bytes)';
 }
 
 class GrpcMessageSink extends Sink<GrpcMessage> {
-  GrpcMessage message;
+  late final GrpcMessage message;
+  bool _messageReceived = false;
 
   @override
   void add(GrpcMessage data) {
-    if (message != null) {
+    if (_messageReceived) {
       throw StateError('Too many messages received!');
     }
     message = data;
+    _messageReceived = true;
   }
 
   @override
   void close() {
-    if (message == null) {
+    if (!_messageReceived) {
       throw StateError('No messages received!');
     }
   }
 }
 
-List<int> frame(List<int> rawPayload, [Codec codec]) {
+List<int> frame(List<int> rawPayload, [Codec? codec]) {
   final compressedPayload =
       codec == null ? rawPayload : codec.compress(rawPayload);
   final payloadLength = compressedPayload.length;
@@ -71,9 +75,9 @@ List<int> frame(List<int> rawPayload, [Codec codec]) {
 }
 
 StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({
-  CodecRegistry codecRegistry,
+  CodecRegistry? codecRegistry,
 }) {
-  Codec codec;
+  Codec? codec;
   return StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
       handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
     if (value is GrpcData && value.isCompressed) {
@@ -83,12 +87,12 @@ StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({
         );
         return;
       }
-      sink.add(GrpcData(codec.decompress(value.data), isCompressed: false));
+      sink.add(GrpcData(codec!.decompress(value.data), isCompressed: false));
       return;
     }
 
     if (value is GrpcMetadata && value.metadata.containsKey('grpc-encoding')) {
-      codec = codecRegistry?.lookup(value.metadata['grpc-encoding']);
+      codec = codecRegistry?.lookup(value.metadata['grpc-encoding']!);
     }
     sink.add(value);
   });

@@ -3,10 +3,10 @@ import 'common.dart';
 import 'method.dart';
 
 typedef ClientUnaryInvoker<Q, R> = ResponseFuture<R> Function(
-    ClientMethod method, Q request, CallOptions options);
+    ClientMethod<Q, R> method, Q request, CallOptions options);
 
 typedef ClientStreamingInvoker<Q, R> = ResponseStream<R> Function(
-    ClientMethod method, Stream<Q> requests, CallOptions options);
+    ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options);
 
 /// ClientInterceptors intercepts client calls before they are executed.
 ///

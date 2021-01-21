@@ -29,17 +29,24 @@ class QueryParameter implements Comparable<QueryParameter> {
   String get value => values.first;
 
   /// Creates an instance by wrapping the single value in a [List].
-  QueryParameter(this.key, String value)
-      : assert(key != null && key.trim().isNotEmpty),
-        values = [value];
+  QueryParameter(this.key, String value) : values = [value] {
+    ArgumentError.checkNotNull(key);
+    if (key.trim().isEmpty) {
+      throw ArgumentError(key);
+    }
+  }
 
   /// Creates an instance from a [List] of values.
   ///
   /// This is not the default constructor since the single-value case is the
   /// most common.
   QueryParameter.multi(this.key, List<String> values)
-      : assert(key != null && key.trim().isNotEmpty),
-        values = values..sort();
+      : values = values..sort() {
+    ArgumentError.checkNotNull(key);
+    if (key.trim().isEmpty) {
+      throw ArgumentError(key);
+    }
+  }
 
   /// Returns the escaped value of the param as will appear in a URL.
   @override
