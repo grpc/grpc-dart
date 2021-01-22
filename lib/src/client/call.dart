@@ -17,11 +17,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:grpc/grpc.dart';
 import 'package:grpc/src/generated/google/rpc/status.pb.dart';
 import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
 
+import '../shared/codec.dart';
 import '../shared/message.dart';
 import '../shared/profiler.dart';
 import '../shared/status.dart';
