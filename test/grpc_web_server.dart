@@ -41,8 +41,9 @@ static_resources:
       socket_address: { address: 0.0.0.0, port_value: 0 }
     filter_chains:
     - filters:
-      - name: envoy.http_connection_manager
-        config:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
           route_config:
@@ -70,8 +71,15 @@ static_resources:
     type: static
     http2_protocol_options: {}
     lb_policy: round_robin
-    hosts:
-    - socket_address: { address: 127.0.0.1, port_value: %TARGET_PORT% }
+    load_assignment:
+      cluster_name: cluster_0
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: 127.0.0.1
+                    port_value: %TARGET_PORT%
 ''';
 
 hybridMain(StreamChannel channel) async {
