@@ -43,7 +43,7 @@ static_resources:
     - filters:
       - name: envoy.filters.network.http_connection_manager
         typed_config:
-          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          "@type":  type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
           route_config:
@@ -53,7 +53,10 @@ static_resources:
               domains: ["*"]
               routes:
               - match: { prefix: "/" }
-                route: { cluster: echo_service }
+                route:
+                  cluster: echo_service
+                  max_stream_duration:
+                    grpc_timeout_header_max: 0s
               cors:
                 allow_origin_string_match:
                 - prefix: "*"
