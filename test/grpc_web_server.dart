@@ -11,7 +11,7 @@ import 'src/generated/echo.pbgrpc.dart';
 
 /// Controls verbosity of output during the test. Flip to [true] for easier
 /// debugging.
-const verbose = true;
+const verbose = false;
 
 class EchoService extends EchoServiceBase {
   @override
