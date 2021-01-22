@@ -41,8 +41,9 @@ static_resources:
       socket_address: { address: 0.0.0.0, port_value: 0 }
     filter_chains:
     - filters:
-      - name: envoy.http_connection_manager
-        config:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type":  type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
           route_config:
@@ -52,7 +53,10 @@ static_resources:
               domains: ["*"]
               routes:
               - match: { prefix: "/" }
-                route: { cluster: echo_service }
+                route:
+                  cluster: echo_service
+                  max_stream_duration:
+                    grpc_timeout_header_max: 0s
               cors:
                 allow_origin_string_match:
                 - prefix: "*"
@@ -70,11 +74,30 @@ static_resources:
     type: static
     http2_protocol_options: {}
     lb_policy: round_robin
-    hosts:
-    - socket_address: { address: 127.0.0.1, port_value: %TARGET_PORT% }
+    load_assignment:
+      cluster_name: cluster_0
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: 127.0.0.1
+                    port_value: %TARGET_PORT%
 ''';
 
 hybridMain(StreamChannel channel) async {
+  // Envoy output will be collected and dumped to stdout if envoy exits
+  // with an error. Otherwise if verbose is specified it will be dumped
+  // to stdout unconditionally.
+  final output = <String>[];
+  void _info(String line) {
+    if (!verbose) {
+      output.add(line);
+    } else {
+      print(line);
+    }
+  }
+
   // Spawn a gRPC server.
   final server = Server([EchoService()]);
   await server.serve(port: 0);
@@ -127,6 +150,9 @@ if you are running tests locally.
   proxy.exitCode.then((value) {
     _info('proxy quit with ${value}');
     if (value != 0) {
+      if (!verbose) {
+        stdout.writeAll(output, '\n');
+      }
       channel.sink.addError('proxy exited with ${value}');
     }
   });
@@ -138,10 +164,4 @@ if you are running tests locally.
     tempDir.deleteSync(recursive: true);
   }
   channel.sink.add('EXITED');
-}
-
-void _info(String line) {
-  if (verbose) {
-    print(line);
-  }
 }
