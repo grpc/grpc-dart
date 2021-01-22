@@ -86,6 +86,18 @@ static_resources:
 ''';
 
 hybridMain(StreamChannel channel) async {
+  // Envoy output will be collected and dumped to stdout if envoy exits
+  // with an error. Otherwise if verbose is specified it will be dumped
+  // to stdout unconditionally.
+  final output = <String>[];
+  void _info(String line) {
+    if (!verbose) {
+      output.add(line);
+    } else {
+      print(line);
+    }
+  }
+
   // Spawn a gRPC server.
   final server = Server([EchoService()]);
   await server.serve(port: 0);
@@ -138,6 +150,9 @@ if you are running tests locally.
   proxy.exitCode.then((value) {
     _info('proxy quit with ${value}');
     if (value != 0) {
+      if (!verbose) {
+        stdout.writeAll(output, '\n');
+      }
       channel.sink.addError('proxy exited with ${value}');
     }
   });
@@ -149,10 +164,4 @@ if you are running tests locally.
     tempDir.deleteSync(recursive: true);
   }
   channel.sink.add('EXITED');
-}
-
-void _info(String line) {
-  if (verbose) {
-    print(line);
-  }
 }
