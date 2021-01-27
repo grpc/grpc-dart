@@ -152,7 +152,7 @@ class Http2ClientConnection implements connection.ClientConnection {
   GrpcTransportStream makeRequest(String path, Duration timeout,
       Map<String, String> metadata, ErrorHandler onRequestFailure,
       {CallOptions callOptions}) {
-    final compressionCodec = callOptions.compression;
+    final compressionCodec = callOptions?.compression;
     final headers = createCallHeaders(
       credentials.isSecure,
       _transportConnector.authority,
@@ -161,7 +161,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       metadata,
       compressionCodec,
       userAgent: options.userAgent,
-      grpcAcceptEncodings: callOptions.metadata['grpc-accept-encoding'] ??
+      grpcAcceptEncodings: callOptions?.metadata['grpc-accept-encoding'] ??
           options.codecRegistry?.supportedEncodings,
     );
     final stream = _transportConnection.makeRequest(headers);
