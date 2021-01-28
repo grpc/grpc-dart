@@ -1,11 +1,18 @@
-## 2.9.0-dev
+## 2.9.0
 
-* Added support for compression/decompression, which can be configured through 
-  `ChannelOptions` constructor's `codecRegistry` parameter or adding the 
-  `grpc-accept-encoding` to `metadata` parameter of `CallOptions` on the client 
+* Added support for compression/decompression, which can be configured through
+  `ChannelOptions` constructor's `codecRegistry` parameter or adding the
+  `grpc-accept-encoding` to `metadata` parameter of `CallOptions` on the client
   side and `codecRegistry` parameter to `Server` on the server side.
-  Outgoing rpc can be compressed using the `compression` parameter on the 
+  Outgoing rpc can be compressed using the `compression` parameter on the
   `CallOptions`.
+* Fix issue [#206](https://github.com/grpc/grpc-dart/issues/206). Prevent an
+  exception to be thrown when a web connection stream is closed.
+* Add XHR raw response to the GrpcError for a better debugging
+  ([PR #423](https://github.com/grpc/grpc-dart/pulls/423)).
+
+Note: this is the last release supporting SDK < 2.12. Next release will
+be nullsafe and thus require SDK >= 2.12.
 
 ## 2.8.0
 
