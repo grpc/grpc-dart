@@ -67,14 +67,8 @@ class XhrTransportStream implements GrpcTransportStream {
           _onHeadersReceived();
           break;
         case HttpRequest.DONE:
-          if (_request.status != 200) {
-            _onError(
-                GrpcError.unavailable(
-                    'XhrConnection status ${_request.status}'),
-                StackTrace.current);
-          } else {
-            _close();
-          }
+          _onRequestDone();
+          _close();
           break;
       }
     });
@@ -113,36 +107,45 @@ class XhrTransportStream implements GrpcTransportStream {
     return _validContentTypePrefix.any(contentType.startsWith);
   }
 
-  _onHeadersReceived() {
-    final contentType = _request.getResponseHeader(_contentTypeKey);
-    if (_request.status != 200) {
-      _onError(GrpcError.unavailable('XhrConnection status ${_request.status}'),
-          StackTrace.current);
-      return;
-    }
-    if (contentType == null) {
-      _onError(GrpcError.unavailable('XhrConnection missing Content-Type'),
-          StackTrace.current);
-      return;
-    }
-    if (!_checkContentType(contentType)) {
-      _onError(
-          GrpcError.unavailable('XhrConnection bad Content-Type $contentType'),
-          StackTrace.current);
-      return;
-    }
-    if (_request.response == null) {
-      _onError(GrpcError.unavailable('XhrConnection request null response'),
-          StackTrace.current);
-      return;
-    }
-
+  void _onHeadersReceived() {
     // Force a metadata message with headers.
     final headers = GrpcMetadata(_request.responseHeaders);
     _incomingMessages.add(headers);
   }
 
-  _close() {
+  void _onRequestDone() {
+    final contentType = _request.getResponseHeader(_contentTypeKey);
+    if (_request.status != 200) {
+      _onError(
+          GrpcError.unavailable('XhrConnection status ${_request.status}', null,
+              _request.responseText),
+          StackTrace.current);
+      return;
+    }
+    if (contentType == null) {
+      _onError(
+          GrpcError.unavailable('XhrConnection missing Content-Type', null,
+              _request.responseText),
+          StackTrace.current);
+      return;
+    }
+    if (!_checkContentType(contentType)) {
+      _onError(
+          GrpcError.unavailable('XhrConnection bad Content-Type $contentType',
+              null, _request.responseText),
+          StackTrace.current);
+      return;
+    }
+    if (_request.response == null) {
+      _onError(
+          GrpcError.unavailable('XhrConnection request null response', null,
+              _request.responseText),
+          StackTrace.current);
+      return;
+    }
+  }
+
+  void _close() {
     _incomingProcessor.close();
     _outgoingMessages.close();
     _onDone(this);
