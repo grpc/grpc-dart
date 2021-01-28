@@ -162,8 +162,8 @@ class Http2ClientConnection implements connection.ClientConnection {
       compressionCodec,
       userAgent: options.userAgent,
       grpcAcceptEncodings:
-      (callOptions?.metadata ?? const {})['grpc-accept-encoding'] ??
-          options.codecRegistry?.supportedEncodings,
+          (callOptions?.metadata ?? const {})['grpc-accept-encoding'] ??
+              options.codecRegistry?.supportedEncodings,
     );
     final stream = _transportConnection.makeRequest(headers);
     return Http2TransportStream(
