@@ -1,28 +1,42 @@
 name: grpc
 description: Dart implementation of gRPC, a high performance, open-source universal RPC framework.
 
-version: 2.9.0
+version: 3.0.0-nullsafety.0
 
 homepage: https://github.com/dart-lang/grpc-dart
 
 environment:
-  sdk: '>=2.8.0 <3.0.0'
+  sdk: '>=2.12.0-0 <3.0.0'
 
 dependencies:
-  archive: ^2.0.13
+  archive: ^3.0.0-nullsafety
   async: ^2.2.0
-  crypto: ^2.1.4
-  fixnum: ^0.10.11
+  crypto: ^3.0.0-nullsafety
+  fixnum: ^1.0.0-nullsafety
   googleapis_auth: ^0.2.7
   meta: ^1.1.6
   http: ^0.12.0
-  http2: ^1.0.0
-  protobuf: ^1.0.1
+  http2: ^2.0.0-nullsafety
+  protobuf: ^2.0.0-nullsafety.1
 
 dev_dependencies:
-  build_runner: ^1.5.2
-  build_test: ^0.10.8
-  build_web_compilers: ^2.1.1
-  mockito: ^4.1.0
-  test: ^1.6.4
+  build_runner: ^1.11.0
+  build_test: ^1.3.4
+  mockito: ^5.0.0-nullsafety.5
+  test: ^1.16.0-nullsafety.16
   stream_channel: ^2.0.0
+  stream_transform: ^2.0.0-nullsafety
+
+dependency_overrides:
+  http:
+    git:
+      url: https://github.com/dart-lang/http.git
+      ref: 3845753a54624b070828cb3eff7a6c2a4e046cfb
+  googleapis_auth:
+    git:
+      url: https://github.com/dart-lang/googleapis_auth.git
+      ref: 30c084b7650fbd3e52525a127e0e65fc528e85a8
+  shelf:
+    git:
+      url: https://github.com/dart-lang/shelf.git
+      ref: 2102572a6c27b1321823bb3e3723ddb5448e04ae

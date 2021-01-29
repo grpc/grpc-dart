@@ -51,7 +51,8 @@ class XhrTransportStream implements GrpcTransportStream {
   @override
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
 
-  XhrTransportStream(this._request, {onError, onDone})
+  XhrTransportStream(this._request,
+      {required ErrorHandler onError, required onDone})
       : _onError = onError,
         _onDone = onDone {
     _outgoingMessages.stream
@@ -170,7 +171,7 @@ class XhrClientConnection extends ClientConnection {
 
   void _initializeRequest(HttpRequest request, Map<String, String> metadata) {
     for (final header in metadata.keys) {
-      request.setRequestHeader(header, metadata[header]);
+      request.setRequestHeader(header, metadata[header]!);
     }
     // Overriding the mimetype allows us to stream and parse the data
     request.overrideMimeType('text/plain; charset=x-user-defined');
@@ -181,9 +182,9 @@ class XhrClientConnection extends ClientConnection {
   HttpRequest createHttpRequest() => HttpRequest();
 
   @override
-  GrpcTransportStream makeRequest(String path, Duration timeout,
+  GrpcTransportStream makeRequest(String path, Duration? timeout,
       Map<String, String> metadata, ErrorHandler onError,
-      {CallOptions callOptions}) {
+      {CallOptions? callOptions}) {
     // gRPC-web headers.
     if (_getContentTypeHeader(metadata) == null) {
       metadata['Content-Type'] = 'application/grpc-web+proto';
@@ -231,7 +232,7 @@ class XhrClientConnection extends ClientConnection {
   Future<void> shutdown() async {}
 }
 
-MapEntry<String, String> _getContentTypeHeader(Map<String, String> metadata) {
+MapEntry<String, String>? _getContentTypeHeader(Map<String, String> metadata) {
   for (var entry in metadata.entries) {
     if (entry.key.toLowerCase() == _contentTypeKey.toLowerCase()) {
       return entry;

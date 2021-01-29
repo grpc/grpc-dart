@@ -16,12 +16,12 @@
 import 'dart:developer';
 
 typedef TimelineTask TimelineTaskFactory(
-    {String filterKey, TimelineTask parent});
+    {String? filterKey, TimelineTask? parent});
 
 TimelineTaskFactory timelineTaskFactory = _defaultTimelineTaskFactory;
 
 TimelineTask _defaultTimelineTaskFactory(
-        {String filterKey, TimelineTask parent}) =>
+        {String? filterKey, TimelineTask? parent}) =>
     TimelineTask(filterKey: filterKey, parent: parent);
 
 const String clientTimelineFilterKey = 'grpc/client';

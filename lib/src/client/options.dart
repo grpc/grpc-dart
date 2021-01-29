@@ -26,7 +26,7 @@ const defaultIdleTimeout = Duration(minutes: 5);
 const defaultConnectionTimeOut = Duration(minutes: 50);
 const defaultUserAgent = 'dart-grpc/2.0.0';
 
-typedef Duration BackoffStrategy(Duration lastBackoff);
+typedef Duration BackoffStrategy(Duration? lastBackoff);
 
 // Backoff algorithm from https://github.com/grpc/grpc/blob/master/doc/connection-backoff.md
 const _initialBackoff = Duration(seconds: 1);
@@ -35,7 +35,7 @@ const _multiplier = 1.6;
 const _jitter = 0.2;
 final _random = Random();
 
-Duration defaultBackoffStrategy(Duration lastBackoff) {
+Duration defaultBackoffStrategy(Duration? lastBackoff) {
   if (lastBackoff == null) return _initialBackoff;
   final jitter = _random.nextDouble() * 2 * _jitter - _jitter;
   final nextBackoff = lastBackoff * (_multiplier + jitter);
@@ -45,8 +45,8 @@ Duration defaultBackoffStrategy(Duration lastBackoff) {
 /// Options controlling how connections are made on a [ClientChannel].
 class ChannelOptions {
   final ChannelCredentials credentials;
-  final Duration idleTimeout;
-  final CodecRegistry codecRegistry;
+  final Duration? idleTimeout;
+  final CodecRegistry? codecRegistry;
 
   /// The maximum time a single connection will be used for new requests.
   final Duration connectionTimeout;

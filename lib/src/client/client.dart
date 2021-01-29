@@ -27,7 +27,7 @@ class Client {
 
   /// Interceptors will be applied in direct order before making a request.
   Client(this._channel,
-      {CallOptions options, Iterable<ClientInterceptor> interceptors})
+      {CallOptions? options, Iterable<ClientInterceptor>? interceptors})
       : _options = options ?? CallOptions(),
         _interceptors = List.unmodifiable(interceptors ?? Iterable.empty());
 
@@ -39,12 +39,12 @@ regenerate these stubs using  protobuf compiler plugin version 19.2.0 or newer.
 ''')
   ClientCall<Q, R> $createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests,
-      {CallOptions options}) {
+      {CallOptions? options}) {
     return _channel.createCall(method, requests, _options.mergedWith(options));
   }
 
   ResponseFuture<R> $createUnaryCall<Q, R>(ClientMethod<Q, R> method, Q request,
-      {CallOptions options}) {
+      {CallOptions? options}) {
     ClientUnaryInvoker<Q, R> invoker = (method, request, options) =>
         ResponseFuture<R>(
             _channel.createCall<Q, R>(method, Stream.value(request), options));
@@ -60,7 +60,7 @@ regenerate these stubs using  protobuf compiler plugin version 19.2.0 or newer.
 
   ResponseStream<R> $createStreamingCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests,
-      {CallOptions options}) {
+      {CallOptions? options}) {
     ClientStreamingInvoker<Q, R> invoker = (method, request, options) =>
         ResponseStream<R>(_channel.createCall<Q, R>(method, requests, options));
 

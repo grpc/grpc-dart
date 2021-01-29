@@ -31,10 +31,10 @@ Map<String, String> headersToMap(List<Header> headers) =>
         key: (h) => ascii.decode(h.name), value: (h) => ascii.decode(h.value));
 
 void validateRequestHeaders(Map<String, String> headers,
-    {String path,
+    {String? path,
     String authority = 'test',
-    String timeout,
-    Map<String, String> customHeaders}) {
+    String? timeout,
+    Map<String, String>? customHeaders}) {
   expect(headers[':method'], 'POST');
   expect(headers[':scheme'], 'https');
   if (path != null) {
@@ -54,7 +54,7 @@ void validateRequestHeaders(Map<String, String> headers,
 void validateResponseHeaders(Map<String, String> headers,
     {int status = 200,
     bool allowTrailers = false,
-    Map<String, String> customHeaders}) {
+    Map<String, String>? customHeaders}) {
   expect(headers[':status'], '200');
   expect(headers['content-type'], startsWith('application/grpc'));
   if (!allowTrailers) {
@@ -67,7 +67,7 @@ void validateResponseHeaders(Map<String, String> headers,
 }
 
 void validateResponseTrailers(Map<String, String> trailers,
-    {int status = 0, String message, Map<String, String> customTrailers}) {
+    {int status = 0, String? message, Map<String, String>? customTrailers}) {
   expect(trailers['grpc-status'], '$status');
   if (message != null) {
     expect(trailers['grpc-message'], message);
@@ -84,7 +84,7 @@ GrpcMetadata validateMetadataMessage(StreamMessage message,
 
   final decoded = GrpcHttpDecoder().convert(message);
   expect(decoded, TypeMatcher<GrpcMetadata>());
-  return decoded;
+  return decoded as GrpcMetadata;
 }
 
 GrpcData validateDataMessage(StreamMessage message, {bool endStream = false}) {
@@ -93,7 +93,7 @@ GrpcData validateDataMessage(StreamMessage message, {bool endStream = false}) {
 
   final decoded = GrpcHttpDecoder().convert(message);
   expect(decoded, TypeMatcher<GrpcData>());
-  return decoded;
+  return decoded as GrpcData;
 }
 
 void Function(StreamMessage message) headerValidator() {

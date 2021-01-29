@@ -28,7 +28,6 @@ void main() {
 
   group('Unit:', () {
     test('Timeouts are converted correctly to header string', () {
-      expect(toTimeoutString(null), isNull);
       expect(toTimeoutString(Duration(microseconds: -1)), '1n');
       expect(toTimeoutString(Duration(microseconds: 0)), '0u');
       expect(toTimeoutString(Duration(microseconds: 107)), '107u');
@@ -61,7 +60,7 @@ void main() {
   });
 
   group('Client:', () {
-    ClientHarness harness;
+    late ClientHarness harness;
 
     setUp(() {
       harness = ClientHarness()..setUp();
@@ -101,7 +100,7 @@ void main() {
   });
 
   group('Server:', () {
-    ServerHarness harness;
+    late ServerHarness harness;
 
     setUp(() {
       harness = ServerHarness()..setUp();
@@ -112,6 +111,7 @@ void main() {
     });
 
     test('Calls time out if deadline is exceeded', () async {
+      final handlerFinished = Completer<void>();
       Future<int> methodHandler(ServiceCall call, Future<int> request) async {
         try {
           expect(call.isTimedOut, isFalse);
@@ -126,6 +126,8 @@ void main() {
           fail('Did not throw');
         } catch (error, stack) {
           registerException(error, stack);
+        } finally {
+          handlerFinished.complete();
         }
         return dummyValue;
       }
@@ -134,7 +136,7 @@ void main() {
         ..service.unaryHandler = methodHandler
         ..expectErrorResponse(StatusCode.deadlineExceeded, 'Deadline exceeded')
         ..sendRequestHeader('/Test/Unary', timeout: Duration(microseconds: 1));
-      await harness.fromServer.done;
+      await Future.wait([handlerFinished.future, harness.fromServer.done]);
     });
   }, testOn: 'vm');
 }

@@ -14,7 +14,7 @@ class TestClient extends grpc.Client {
 
   TestClient(grpc.ClientChannel channel) : super(channel);
   grpc.ResponseStream<int> infiniteStream(int request,
-      {grpc.CallOptions options}) {
+      {grpc.CallOptions? options}) {
     return $createStreamingCall(_$infiniteStream, Stream.value(request),
         options: options);
   }
@@ -24,12 +24,13 @@ class TestService extends grpc.Service {
   String get $name => 'test.TestService';
   final void Function() finallyCallback;
 
-  TestService({this.finallyCallback}) {
+  TestService({required this.finallyCallback}) {
     $addMethod(grpc.ServiceMethod<int, int>('infiniteStream', infiniteStream,
         false, true, (List<int> value) => value[0], (int value) => [value]));
   }
 
-  Stream<int> infiniteStream(grpc.ServiceCall call, Future request) async* {
+  Stream<int> infiniteStream(
+      grpc.ServiceCall call, Future<int> request) async* {
     int count = await request;
     try {
       while (true) {
@@ -50,7 +51,8 @@ class ClientData {
   final InternetAddress address;
   final int port;
   final SendPort sendPort;
-  ClientData({this.address, this.port, this.sendPort});
+  ClientData(
+      {required this.address, required this.port, required this.sendPort});
 }
 
 void client(clientData) async {
@@ -73,7 +75,7 @@ main() async {
       "the client interrupting the connection does not crash the server",
       (address) async {
     // interrrupt the connect of client, the server does not crash.
-    grpc.Server server;
+    late grpc.Server server;
     server = grpc.Server([
       TestService(
           finallyCallback: expectAsync0(() {
@@ -86,7 +88,7 @@ main() async {
         client,
         ClientData(
             address: address,
-            port: server.port,
+            port: server.port!,
             sendPort: receivePort.sendPort));
     receivePort.listen(expectAsync1((e) {
       expect(e, isA<grpc.GrpcError>());

@@ -19,19 +19,19 @@
 /// ability to set custom metadata on the header/trailer sent to the client.
 abstract class ServiceCall {
   /// Custom metadata from the client.
-  Map<String, String> get clientMetadata;
+  Map<String, String>? get clientMetadata;
 
   /// Custom metadata to be sent to the client. Will be [null] once the headers
   /// have been sent, either when [sendHeaders] is called, or when the first
   /// response message is sent.
-  Map<String, String> get headers;
+  Map<String, String>? get headers;
 
   /// Custom metadata to be sent to the client after all response messages.
-  Map<String, String> get trailers;
+  Map<String, String>? get trailers;
 
   /// Deadline for this call. If the call is still active after this time, then
   /// the client or server may cancel it.
-  DateTime get deadline;
+  DateTime? get deadline;
 
   /// Returns [true] if the [deadline] has been exceeded.
   bool get isTimedOut;
@@ -50,5 +50,5 @@ abstract class ServiceCall {
   ///
   /// The call will be closed after calling this method, and no further
   /// responses can be sent.
-  void sendTrailers({int status, String message});
+  void sendTrailers({int? status, String? message});
 }

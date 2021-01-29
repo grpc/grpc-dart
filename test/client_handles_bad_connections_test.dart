@@ -16,7 +16,7 @@ class TestClient extends grpc.Client {
       (List<int> value) => value[0]);
 
   TestClient(ClientChannel channel) : super(channel);
-  grpc.ResponseStream<int> stream(int request, {grpc.CallOptions options}) {
+  grpc.ResponseStream<int> stream(int request, {grpc.CallOptions? options}) {
     return $createStreamingCall(_$stream, Stream.value(request),
         options: options);
   }
@@ -56,7 +56,7 @@ main() async {
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
       address,
-      server.port,
+      server.port!,
       grpc.ChannelOptions(
         idleTimeout: Duration(minutes: 1),
         // Short delay to test that it will time out.
@@ -84,7 +84,7 @@ main() async {
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
         address,
-        server.port,
+        server.port!,
         grpc.ChannelOptions(credentials: grpc.ChannelCredentials.insecure())));
     final states = <grpc.ConnectionState>[];
     channel.clientConnection.onStateChanged =

@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety.0
+
+* Migrate library and tests to null safety.
+
 ## 2.9.0
 
 * Added support for compression/decompression, which can be configured through

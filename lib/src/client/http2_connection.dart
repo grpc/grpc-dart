@@ -44,19 +44,19 @@ class Http2ClientConnection implements connection.ClientConnection {
   connection.ConnectionState _state = ConnectionState.idle;
 
   @visibleForTesting
-  void Function(Http2ClientConnection connection) onStateChanged;
+  void Function(Http2ClientConnection connection)? onStateChanged;
   final _pendingCalls = <ClientCall>[];
 
   final ClientTransportConnector _transportConnector;
-  ClientTransportConnection _transportConnection;
+  ClientTransportConnection? _transportConnection;
 
   /// Used for idle and reconnect timeout, depending on [_state].
-  Timer _timer;
+  Timer? _timer;
 
   /// Used for making sure a single connection is not kept alive too long.
   final Stopwatch _connectionLifeTimer = Stopwatch();
 
-  Duration _currentReconnectDelay;
+  Duration? _currentReconnectDelay;
 
   Http2ClientConnection(Object host, int port, this.options)
       : _transportConnector = _SocketTransportConnector(host, port, options);
@@ -96,7 +96,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       return;
     }
     _setState(ConnectionState.connecting);
-    connectTransport().then((transport) async {
+    connectTransport().then<void>((transport) async {
       _currentReconnectDelay = null;
       _transportConnection = transport;
       _connectionLifeTimer
@@ -119,11 +119,11 @@ class Http2ClientConnection implements connection.ClientConnection {
   ///
   /// Assumes [_transportConnection] is not `null`.
   void _refreshConnectionIfUnhealthy() {
-    final bool isHealthy = _transportConnection.isOpen;
+    final bool isHealthy = _transportConnection!.isOpen;
     final bool shouldRefresh =
         _connectionLifeTimer.elapsed > options.connectionTimeout;
     if (shouldRefresh) {
-      _transportConnection.finish();
+      _transportConnection!.finish();
     }
     if (!isHealthy || shouldRefresh) {
       _abandonConnection();
@@ -149,9 +149,9 @@ class Http2ClientConnection implements connection.ClientConnection {
     }
   }
 
-  GrpcTransportStream makeRequest(String path, Duration timeout,
+  GrpcTransportStream makeRequest(String path, Duration? timeout,
       Map<String, String> metadata, ErrorHandler onRequestFailure,
-      {CallOptions callOptions}) {
+      {CallOptions? callOptions}) {
     final compressionCodec = callOptions?.compression;
     final headers = createCallHeaders(
       credentials.isSecure,
@@ -165,7 +165,7 @@ class Http2ClientConnection implements connection.ClientConnection {
           (callOptions?.metadata ?? const {})['grpc-accept-encoding'] ??
               options.codecRegistry?.supportedEncodings,
     );
-    final stream = _transportConnection.makeRequest(headers);
+    final stream = _transportConnection!.makeRequest(headers);
     return Http2TransportStream(
       stream,
       onRequestFailure,
@@ -208,9 +208,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   void _setState(ConnectionState state) {
     _state = state;
-    if (onStateChanged != null) {
-      onStateChanged(this);
-    }
+    onStateChanged?.call(this);
   }
 
   void _handleIdleTimeout() {
@@ -218,7 +216,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     _cancelTimer();
     _transportConnection
         ?.finish()
-        ?.catchError((_) => {}); // TODO(jakobr): Log error.
+        .catchError((_) {}); // TODO(jakobr): Log error.
     _transportConnection = null;
     _setState(ConnectionState.idle);
   }
@@ -233,7 +231,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       _cancelTimer();
     } else {
       if (options.idleTimeout != null) {
-        _timer ??= Timer(options.idleTimeout, _handleIdleTimeout);
+        _timer ??= Timer(options.idleTimeout!, _handleIdleTimeout);
       }
     }
   }
@@ -281,18 +279,18 @@ class Http2ClientConnection implements connection.ClientConnection {
     // We have pending RPCs. Reconnect after backoff delay.
     _setState(ConnectionState.transientFailure);
     _currentReconnectDelay = options.backoffStrategy(_currentReconnectDelay);
-    _timer = Timer(_currentReconnectDelay, _handleReconnect);
+    _timer = Timer(_currentReconnectDelay!, _handleReconnect);
   }
 
   static List<Header> createCallHeaders(
     bool useTls,
     String authority,
     String path,
-    Duration timeout,
-    Map<String, String> metadata,
-    Codec compressionCodec, {
-    String userAgent,
-    String grpcAcceptEncodings,
+    Duration? timeout,
+    Map<String, String>? metadata,
+    Codec? compressionCodec, {
+    String? userAgent,
+    String? grpcAcceptEncodings,
   }) {
     final headers = [
       _methodPost,
@@ -317,12 +315,14 @@ class Http2ClientConnection implements connection.ClientConnection {
 }
 
 class _SocketTransportConnector implements ClientTransportConnector {
+  /// Either [InternetAddress] or [String].
   final Object _host;
   final int _port;
   final ChannelOptions _options;
-  Socket _socket;
+  late Socket _socket; // ignore: close_sinks
 
-  _SocketTransportConnector(this._host, this._port, this._options);
+  _SocketTransportConnector(this._host, this._port, this._options)
+      : assert(_host is InternetAddress || _host is String);
 
   @override
   Future<ClientTransportConnection> connect() async {
@@ -349,19 +349,22 @@ class _SocketTransportConnector implements ClientTransportConnector {
   }
 
   @override
-  String get authority =>
-      _options.credentials.authority ??
-      (_port == 443 ? _host : "$_host:$_port");
+  String get authority {
+    final host =
+        _host is String ? _host as String : (_host as InternetAddress).host;
+    return _options.credentials.authority ??
+        (_port == 443 ? host : "$host:$_port");
+  }
 
   @override
   Future get done {
-    assert(_socket != null);
+    ArgumentError.checkNotNull(_socket);
     return _socket.done;
   }
 
   @override
   void shutdown() {
-    assert(_socket != null);
+    ArgumentError.checkNotNull(_socket);
     _socket.destroy();
   }
 

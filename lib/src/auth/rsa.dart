@@ -99,7 +99,7 @@ class ASN1Parser {
   static const SEQUENCE_TAG = 0x30;
 
   static ASN1Object parse(Uint8List bytes) {
-    invalidFormat(String msg) {
+    Never invalidFormat(String msg) {
       throw new ArgumentError("Invalid DER encoding: $msg");
     }
 
@@ -185,8 +185,6 @@ class ASN1Parser {
           invalidFormat(
               'Unexpected tag $tag at offset ${offset - 1} (end: $end).');
       }
-      // Unreachable.
-      return null;
     }
 
     final obj = decodeObject();

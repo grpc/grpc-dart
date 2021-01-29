@@ -58,7 +58,7 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
   final Sink<GrpcMessage> _out;
 
   final _dataHeader = Uint8List(5);
-  Uint8List _data;
+  Uint8List? _data;
   int _dataOffset = 0;
 
   _GrpcMessageConversionSink(this._out);
@@ -87,17 +87,17 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
       }
       if (_data != null) {
         // Reading data.
-        final dataRemaining = _data.lengthInBytes - _dataOffset;
+        final dataRemaining = _data!.lengthInBytes - _dataOffset;
         if (dataRemaining > 0) {
           final chunkRemaining = chunkLength - chunkReadOffset;
           final toCopy = min(dataRemaining, chunkRemaining);
-          _data.setRange(
+          _data!.setRange(
               _dataOffset, _dataOffset + toCopy, chunkData, chunkReadOffset);
           _dataOffset += toCopy;
           chunkReadOffset += toCopy;
         }
-        if (_dataOffset == _data.lengthInBytes) {
-          _out.add(GrpcData(_data,
+        if (_dataOffset == _data!.lengthInBytes) {
+          _out.add(GrpcData(_data!,
               isCompressed: _dataHeader.buffer.asByteData().getUint8(0) != 0));
           _data = null;
           _dataOffset = 0;

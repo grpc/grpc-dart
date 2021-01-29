@@ -36,7 +36,7 @@ class IdentityCodec implements Codec {
   const IdentityCodec();
 
   @override
-  String get encodingName => "identity";
+  final encodingName = 'identity';
 
   @override
   List<int> compress(List<int> data) {
@@ -54,11 +54,11 @@ class GzipCodec implements Codec {
   const GzipCodec();
 
   @override
-  String get encodingName => "gzip";
+  final encodingName = "gzip";
 
   @override
   List<int> compress(List<int> data) {
-    return GZipEncoder().encode(data);
+    return GZipEncoder().encode(data)!;
   }
 
   @override

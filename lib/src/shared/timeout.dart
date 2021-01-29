@@ -17,7 +17,6 @@
 // Mostly inspired by grpc-java implementation.
 // TODO(jakobr): Modify to match grpc/core implementation instead.
 String toTimeoutString(Duration duration) {
-  if (duration == null) return null;
   const cutoff = 100000;
   final timeout = duration.inMicroseconds;
   if (timeout < 0) {
@@ -38,7 +37,7 @@ String toTimeoutString(Duration duration) {
 
 /// Convert [timeout] from grpc-timeout header string format to [Duration].
 /// Returns [null] if [timeout] is not correctly formatted.
-Duration fromTimeoutString(String timeout) {
+Duration? fromTimeoutString(String? timeout) {
   if (timeout == null) return null;
   if (timeout.length < 2) return null;
   final value = int.tryParse(timeout.substring(0, timeout.length - 1));

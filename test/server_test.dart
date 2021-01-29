@@ -25,7 +25,7 @@ import 'src/server_utils.dart';
 void main() {
   const dummyValue = 17;
 
-  ServerHarness harness;
+  late ServerHarness harness;
 
   setUp(() {
     harness = ServerHarness()..setUp();
@@ -271,7 +271,7 @@ void main() {
     harness
       ..service.unaryHandler = methodHandler
       ..fromServer.stream.listen(expectAsync1((_) {}, count: 0),
-          onError: expectAsync1((error) {
+          onError: expectAsync1((dynamic error) {
             expect(error, 'TERMINATED');
           }, count: 1),
           onDone: expectAsync0(() {}, count: 1))

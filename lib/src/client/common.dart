@@ -46,21 +46,21 @@ class ResponseFuture<R> extends DelegatingFuture<R>
     with _ResponseMixin<dynamic, R> {
   final ClientCall<dynamic, R> _call;
 
-  static R _ensureOnlyOneResponse<R>(R previous, R element) {
+  static R _ensureOnlyOneResponse<R>(R? previous, R element) {
     if (previous != null) {
       throw GrpcError.unimplemented('More than one response received');
     }
     return element;
   }
 
-  static R _ensureOneResponse<R>(R value) {
+  static R _ensureOneResponse<R>(R? value) {
     if (value == null) throw GrpcError.unimplemented('No responses received');
     return value;
   }
 
   ResponseFuture(this._call)
       : super(_call.response
-            .fold(null, _ensureOnlyOneResponse)
+            .fold<R?>(null, _ensureOnlyOneResponse)
             .then(_ensureOneResponse));
 }
 

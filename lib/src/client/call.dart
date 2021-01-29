@@ -38,6 +38,7 @@ const _reservedHeaders = [
   'grpc-encoding',
   'user-agent',
 ];
+const _statusDetailsHeader = 'grpc-status-details-bin';
 
 /// Provides per-RPC metadata.
 ///
@@ -55,9 +56,9 @@ typedef FutureOr<void> MetadataProvider(
 /// Runtime options for an RPC.
 class CallOptions {
   final Map<String, String> metadata;
-  final Duration timeout;
+  final Duration? timeout;
   final List<MetadataProvider> metadataProviders;
-  final Codec compression;
+  final Codec? compression;
 
   CallOptions._(
     this.metadata,
@@ -73,10 +74,10 @@ class CallOptions {
   /// invoked in order for every RPC, and can modify the outgoing metadata
   /// (including metadata provided by previous providers).
   factory CallOptions({
-    Map<String, String> metadata,
-    Duration timeout,
-    List<MetadataProvider> providers,
-    Codec compression,
+    Map<String, String>? metadata,
+    Duration? timeout,
+    List<MetadataProvider>? providers,
+    Codec? compression,
   }) {
     return CallOptions._(
       Map.unmodifiable(metadata ?? {}),
@@ -89,7 +90,7 @@ class CallOptions {
   factory CallOptions.from(Iterable<CallOptions> options) =>
       options.fold(CallOptions(), (p, o) => p.mergedWith(o));
 
-  CallOptions mergedWith(CallOptions other) {
+  CallOptions mergedWith(CallOptions? other) {
     if (other == null) return this;
     final mergedMetadata = Map.from(metadata)..addAll(other.metadata);
     final mergedTimeout = other.timeout ?? timeout;
@@ -116,16 +117,16 @@ class WebCallOptions extends CallOptions {
   /// For this to work correctly, a proxy server must be set up that
   /// understands the query parameter and can unpack/send the original
   /// list of headers to the server endpoint.
-  final bool bypassCorsPreflight;
+  final bool? bypassCorsPreflight;
 
   /// Whether to send credentials along with the XHR.
   ///
   /// This may be required for proxying or wherever the server
   /// needs to otherwise inspect client cookies for that domain.
-  final bool withCredentials;
+  final bool? withCredentials;
   // TODO(mightyvoice): add a list of extra QueryParameter for gRPC.
 
-  WebCallOptions._(Map<String, String> metadata, Duration timeout,
+  WebCallOptions._(Map<String, String> metadata, Duration? timeout,
       List<MetadataProvider> metadataProviders,
       {this.bypassCorsPreflight, this.withCredentials})
       : super._(metadata, timeout, metadataProviders, null);
@@ -136,11 +137,11 @@ class WebCallOptions extends CallOptions {
   /// metadata [providers] of [CallOptions], [bypassCorsPreflight] and
   /// [withCredentials] for CORS request.
   factory WebCallOptions(
-      {Map<String, String> metadata,
-      Duration timeout,
-      List<MetadataProvider> providers,
-      bool bypassCorsPreflight,
-      bool withCredentials}) {
+      {Map<String, String>? metadata,
+      Duration? timeout,
+      List<MetadataProvider>? providers,
+      bool? bypassCorsPreflight,
+      bool? withCredentials}) {
     return WebCallOptions._(Map.unmodifiable(metadata ?? {}), timeout,
         List.unmodifiable(providers ?? []),
         bypassCorsPreflight: bypassCorsPreflight ?? false,
@@ -148,7 +149,7 @@ class WebCallOptions extends CallOptions {
   }
 
   @override
-  CallOptions mergedWith(CallOptions other) {
+  CallOptions mergedWith(CallOptions? other) {
     if (other == null) return this;
 
     final mergedMetadata = Map.from(metadata)..addAll(other.metadata);
@@ -163,11 +164,9 @@ class WebCallOptions extends CallOptions {
           withCredentials: withCredentials);
     }
 
-    final otherOptions = other as WebCallOptions;
     final mergedBypassCorsPreflight =
-        otherOptions.bypassCorsPreflight ?? bypassCorsPreflight;
-    final mergedWithCredentials =
-        otherOptions.withCredentials ?? withCredentials;
+        other.bypassCorsPreflight ?? bypassCorsPreflight;
+    final mergedWithCredentials = other.withCredentials ?? withCredentials;
     return WebCallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
         List.unmodifiable(mergedProviders),
         bypassCorsPreflight: mergedBypassCorsPreflight,
@@ -185,28 +184,28 @@ class ClientCall<Q, R> implements Response {
   final _trailers = Completer<Map<String, String>>();
   bool _hasReceivedResponses = false;
 
-  Map<String, String> _headerMetadata;
+  late Map<String, String> _headerMetadata;
 
-  GrpcTransportStream _stream;
-  StreamController<R> _responses;
-  StreamSubscription<List<int>> _requestSubscription;
-  StreamSubscription<GrpcMessage> _responseSubscription;
+  GrpcTransportStream? _stream;
+  final _responses = StreamController<R>();
+  StreamSubscription<List<int>>? _requestSubscription;
+  StreamSubscription<GrpcMessage>? _responseSubscription;
 
   bool isCancelled = false;
-  Timer _timeoutTimer;
+  Timer? _timeoutTimer;
 
-  final TimelineTask _requestTimeline;
-  TimelineTask _responseTimeline;
+  final TimelineTask? _requestTimeline;
+  TimelineTask? _responseTimeline;
 
   ClientCall(this._method, this._requests, this.options,
       [this._requestTimeline]) {
     _requestTimeline?.start('gRPC Request: ${_method.path}', arguments: {
       'method': _method.path,
-      'timeout': options?.timeout?.toString(),
+      'timeout': options.timeout?.toString(),
     });
-    _responses = StreamController(onListen: _onResponseListen);
+    _responses.onListen = _onResponseListen;
     if (options.timeout != null) {
-      _timeoutTimer = Timer(options.timeout, _onTimedOut);
+      _timeoutTimer = Timer(options.timeout!, _onTimedOut);
     }
   }
 
@@ -251,7 +250,7 @@ class ClientCall<Q, R> implements Response {
       final metadata = Map<String, String>.from(options.metadata);
       Future.forEach(
               options.metadataProviders,
-              (provider) => provider(metadata,
+              (MetadataProvider provider) => provider(metadata,
                   '${connection.scheme}://${connection.authority}${audiencePath(_method)}'))
           .then((_) => _sendRequest(connection, _sanitizeMetadata(metadata)))
           .catchError(_onMetadataProviderError);
@@ -263,8 +262,9 @@ class ClientCall<Q, R> implements Response {
   }
 
   void _sendRequest(ClientConnection connection, Map<String, String> metadata) {
+    late final GrpcTransportStream stream;
     try {
-      _stream = connection.makeRequest(
+      stream = connection.makeRequest(
         _method.path,
         options.timeout,
         metadata,
@@ -287,16 +287,17 @@ class ClientCall<Q, R> implements Response {
           return _method.requestSerializer(data);
         })
         .handleError(_onRequestError)
-        .listen(_stream.outgoingMessages.add,
-            onError: _stream.outgoingMessages.addError,
-            onDone: _stream.outgoingMessages.close,
+        .listen(stream.outgoingMessages.add,
+            onError: stream.outgoingMessages.addError,
+            onDone: stream.outgoingMessages.close,
             cancelOnError: true);
+    _stream = stream;
     // The response stream might have been listened to before _stream was ready,
     // so try setting up the subscription here as well.
     _onResponseListen();
   }
 
-  void _finishTimelineWithError(GrpcError error, TimelineTask timeline) {
+  void _finishTimelineWithError(GrpcError error, TimelineTask? timeline) {
     timeline?.finish(arguments: {
       'error': error.toString(),
     });
@@ -315,28 +316,31 @@ class ClientCall<Q, R> implements Response {
     if (_stream != null &&
         _responses.hasListener &&
         _responseSubscription == null) {
-      _responseSubscription = _stream.incomingMessages.listen(_onResponseData,
+      // ignore: cancel_subscriptions
+      final subscription = _stream!.incomingMessages.listen(_onResponseData,
           onError: _onResponseError,
           onDone: _onResponseDone,
           cancelOnError: true);
       if (_responses.isPaused) {
-        _responseSubscription.pause();
+        subscription.pause();
       }
-      _responses.onPause = _responseSubscription.pause;
-      _responses.onResume = _responseSubscription.resume;
+      _responses.onPause = subscription.pause;
+      _responses.onResume = subscription.resume;
       _responses.onCancel = cancel;
+
+      _responseSubscription = subscription;
     }
   }
 
   /// Emit an error response to the user, and tear down this call.
-  void _responseError(GrpcError error, [StackTrace stackTrace]) {
+  void _responseError(GrpcError error, [StackTrace? stackTrace]) {
     _finishTimelineWithError(error, _responseTimeline);
     _responses.addError(error, stackTrace);
     _timeoutTimer?.cancel();
     _requestSubscription?.cancel();
-    _responseSubscription.cancel();
+    _responseSubscription!.cancel();
     _responses.close();
-    _stream.terminate();
+    _stream!.terminate();
   }
 
   /// If there's an error status then process it as a response error
@@ -345,15 +349,17 @@ class ClientCall<Q, R> implements Response {
     final statusCode = int.parse(status ?? '0');
 
     if (statusCode != 0) {
-      final message = metadata['grpc-message'] == null
-          ? null
-          : Uri.decodeFull(metadata['grpc-message']);
+      final messageMetadata = metadata['grpc-message'];
+      final message =
+          messageMetadata == null ? null : Uri.decodeFull(messageMetadata);
 
+      final statusDetails = metadata[_statusDetailsHeader];
       _responseError(GrpcError.custom(
-        statusCode,
-        message,
-        decodeStatusDetails(metadata['grpc-status-details-bin']),
-      ));
+          statusCode,
+          message,
+          statusDetails == null
+              ? const <GeneratedMessage>[]
+              : decodeStatusDetails(statusDetails)));
     }
   }
 
@@ -444,7 +450,7 @@ class ClientCall<Q, R> implements Response {
     _responseTimeline?.finish();
     _timeoutTimer?.cancel();
     _responses.close();
-    _responseSubscription.cancel();
+    _responseSubscription!.cancel();
   }
 
   /// Error handler for the requests stream. Something went wrong while trying
@@ -461,7 +467,7 @@ class ClientCall<Q, R> implements Response {
     _responses.close();
     _requestSubscription?.cancel();
     _responseSubscription?.cancel();
-    _stream.terminate();
+    _stream!.terminate();
   }
 
   Stream<R> get response => _responses.stream;
@@ -492,10 +498,10 @@ class ClientCall<Q, R> implements Response {
     _stream?.terminate();
     final futures = <Future>[];
     if (_requestSubscription != null) {
-      futures.add(_requestSubscription.cancel());
+      futures.add(_requestSubscription!.cancel());
     }
     if (_responseSubscription != null) {
-      futures.add(_responseSubscription.cancel());
+      futures.add(_responseSubscription!.cancel());
     }
     await Future.wait(futures);
   }
