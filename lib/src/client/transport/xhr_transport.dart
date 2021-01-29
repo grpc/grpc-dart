@@ -116,29 +116,29 @@ class XhrTransportStream implements GrpcTransportStream {
     final contentType = _request.getResponseHeader(_contentTypeKey);
     if (_request.status != 200) {
       _onError(
-          GrpcError.unavailable(
-              'XhrConnection status ${_request.status}', null, _request.responseText),
+          GrpcError.unavailable('XhrConnection status ${_request.status}', null,
+              _request.responseText),
           StackTrace.current);
       return;
     }
     if (contentType == null) {
       _onError(
-          GrpcError.unavailable(
-              'XhrConnection missing Content-Type', null, _request.responseText),
+          GrpcError.unavailable('XhrConnection missing Content-Type', null,
+              _request.responseText),
           StackTrace.current);
       return;
     }
     if (!_checkContentType(contentType)) {
       _onError(
-          GrpcError.unavailable('XhrConnection bad Content-Type $contentType', null, 
-              _request.responseText),
+          GrpcError.unavailable('XhrConnection bad Content-Type $contentType',
+              null, _request.responseText),
           StackTrace.current);
       return;
     }
     if (_request.response == null) {
       _onError(
-          GrpcError.unavailable(
-              'XhrConnection request null response', null, _request.responseText),
+          GrpcError.unavailable('XhrConnection request null response', null,
+              _request.responseText),
           StackTrace.current);
       return;
     }
