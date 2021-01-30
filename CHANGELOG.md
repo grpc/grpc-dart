@@ -44,7 +44,7 @@ be nullsafe and thus require SDK >= 2.12.
 
 ## 2.6.0
 
-* Create gRPC servers and clients with [Server|Client]TransportConnnection.
+* Create gRPC servers and clients with [Server|Client]TransportConnection.
   This allows callers to provide their own transport configuration, such
   as their own implementation of streams and sinks instead of sockets.
 
@@ -196,7 +196,7 @@ channel is not yet open.
 
 ## 0.6.0
 
-* Dart SDK upper constraint raised to declare compatability with Dart 2.0 stable.
+* Dart SDK upper constraint raised to declare compatibility with Dart 2.0 stable.
 
 ## 0.5.0
 

@@ -3,7 +3,7 @@ The grpc-web example shows how to use the Dart gRPC library with a gRPC-Web capa
 
 This is meant to be used with the echo example provided by the grpc-web repository. The definition of the service is given in echo.proto. 
 
-# Prerequistes
+# Prerequisites
 You will need a clone of the [grpc-web](https://github.com/grpc/grpc-web) repository to run the example server.
 
 You will also need the dart 'webdev' tool, which you can get by running:
@@ -32,7 +32,7 @@ Compile and run the website with:
 $ webdev serve web:9000
 ```
 
-Note that the alternate port (9000) is necessary because the grpc-web server runs the grpc server on port 8080 by default (the save as webdev).
+Note that the alternate port (9000) is necessary because the grpc-web server runs the grpc server on port 8080 by default (the same as webdev).
 
 You can then navigate to http://localhost:9000/ to try out the example.
 
