@@ -1,6 +1,6 @@
 name: metadata
 description: Dart gRPC sample client and server.
-homepage: https://github.com/dart-lang/grpc-dart
+publish_to: none
 
 environment:
   sdk: '>=2.2.0 <3.0.0'

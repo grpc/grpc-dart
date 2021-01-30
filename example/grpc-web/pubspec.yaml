@@ -1,6 +1,6 @@
 name: grpc_web
 description: Dart gRPC-Web sample client
-homepage: https://github.com/dart-lang/grpc-dart
+publish_to: none
 
 environment:
   sdk: '>=2.0.0 <3.0.0'
