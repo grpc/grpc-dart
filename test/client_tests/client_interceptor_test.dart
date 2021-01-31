@@ -13,6 +13,7 @@ class InterceptorInvocation {
 
   InterceptorInvocation(this.id, this.unary, this.streaming);
 
+  @override
   String toString() {
     return '{id: ${id}, unary: ${unary}, streaming: ${streaming}}';
   }
@@ -48,7 +49,7 @@ class FakeInterceptor implements ClientInterceptor {
 
   CallOptions _inject(CallOptions options) {
     return options.mergedWith(CallOptions(metadata: {
-      "x-interceptor": _invocations.map((i) => i.toString()).join(', '),
+      'x-interceptor': _invocations.map((i) => i.toString()).join(', '),
     }));
   }
 
@@ -57,7 +58,7 @@ class FakeInterceptor implements ClientInterceptor {
   }
 }
 
-main() {
+void main() {
   test('single unary interceptor', () async {
     final harness = ClientHarness()
       ..interceptors = [FakeInterceptor(1)]
@@ -81,7 +82,7 @@ main() {
       expectedResult: responseValue,
       expectedPath: '/Test/Unary',
       expectedCustomHeaders: {
-        "x-interceptor": "{id: 1, unary: 1, streaming: 0}"
+        'x-interceptor': '{id: 1, unary: 1, streaming: 0}'
       },
       serverHandlers: [handleRequest],
     );
@@ -113,8 +114,8 @@ main() {
       expectedResult: responseValue,
       expectedPath: '/Test/Unary',
       expectedCustomHeaders: {
-        "x-interceptor":
-            "{id: 1, unary: 1, streaming: 0}, {id: 2, unary: 1, streaming: 0}"
+        'x-interceptor':
+            '{id: 1, unary: 1, streaming: 0}, {id: 2, unary: 1, streaming: 0}'
       },
       serverHandlers: [handleRequest],
     );
@@ -154,7 +155,7 @@ main() {
       expectedResult: responses,
       expectedPath: '/Test/Bidirectional',
       expectedCustomHeaders: {
-        "x-interceptor": "{id: 1, unary: 0, streaming: 1}"
+        'x-interceptor': '{id: 1, unary: 0, streaming: 1}'
       },
       serverHandlers: [handleRequest, handleRequest, handleRequest],
       doneHandler: handleDone,
@@ -195,8 +196,8 @@ main() {
       expectedResult: responses,
       expectedPath: '/Test/Bidirectional',
       expectedCustomHeaders: {
-        "x-interceptor":
-            "{id: 1, unary: 0, streaming: 1}, {id: 2, unary: 0, streaming: 1}"
+        'x-interceptor':
+            '{id: 1, unary: 0, streaming: 1}, {id: 2, unary: 0, streaming: 1}'
       },
       serverHandlers: [handleRequest, handleRequest, handleRequest],
       doneHandler: handleDone,

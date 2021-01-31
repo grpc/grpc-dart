@@ -27,8 +27,7 @@ List<int> mockEncode(int value) => List.filled(value, 0);
 int mockDecode(List<int> value) => value.length;
 
 Map<String, String> headersToMap(List<Header> headers) =>
-    Map.fromIterable(headers,
-        key: (h) => ascii.decode(h.name), value: (h) => ascii.decode(h.value));
+    {for (var h in headers) ascii.decode(h.name): ascii.decode(h.value)};
 
 void validateRequestHeaders(Map<String, String> headers,
     {String? path,

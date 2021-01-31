@@ -17,12 +17,13 @@ import 'dart:async';
 
 import '../../shared/message.dart';
 
-typedef void SocketClosedHandler();
-typedef void ActiveStateHandler(bool isActive);
-typedef void ErrorHandler(error, StackTrace stackTrace);
+typedef SocketClosedHandler = void Function();
+typedef ActiveStateHandler = void Function(bool isActive);
+typedef ErrorHandler = void Function(Object, StackTrace);
 
 abstract class GrpcTransportStream {
   Stream<GrpcMessage> get incomingMessages;
+
   StreamSink<List<int>> get outgoingMessages;
 
   Future<void> terminate();

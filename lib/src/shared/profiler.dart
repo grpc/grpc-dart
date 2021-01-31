@@ -15,7 +15,7 @@
 
 import 'dart:developer';
 
-typedef TimelineTask TimelineTaskFactory(
+typedef TimelineTaskFactory = TimelineTask Function(
     {String? filterKey, TimelineTask? parent});
 
 TimelineTaskFactory timelineTaskFactory = _defaultTimelineTaskFactory;

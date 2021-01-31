@@ -113,7 +113,7 @@ class Client {
   /// after receiving more than 5 responses.
   Future<void> runFibonacciCancel() async {
     final call = stub.fibonacci(Empty());
-    int count = 0;
+    var count = 0;
     try {
       await for (var number in call) {
         count++;
@@ -135,7 +135,7 @@ class Client {
   Future<void> runFibonacciTimeout() async {
     final call = stub.fibonacci(Empty(),
         options: CallOptions(timeout: Duration(seconds: 2)));
-    int count = 0;
+    var count = 0;
     try {
       await for (var number in call) {
         count++;

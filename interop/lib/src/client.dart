@@ -51,7 +51,7 @@ class Tester {
     return File(serviceAccountKeyFile).readAsStringSync();
   }
 
-  void set serverPort(String value) {
+  set serverPort(String value) {
     if (value == null) {
       _serverPort = null;
       return;
@@ -63,11 +63,11 @@ class Tester {
     }
   }
 
-  void set useTls(String value) {
+  set useTls(String value) {
     _useTls = value != 'false';
   }
 
-  void set useTestCA(String value) {
+  set useTestCA(String value) {
     _useTestCA = value == 'true';
   }
 
@@ -613,7 +613,7 @@ class Tester {
     final call = client.fullDuplexCall(requests.stream);
     requests.close();
     final responses = await call.toList();
-    if (responses.length != 0) {
+    if (responses.isNotEmpty) {
       throw 'Received too many responses. ${responses.length} != 0';
     }
   }

@@ -166,7 +166,9 @@ class XhrClientConnection extends ClientConnection {
 
   XhrClientConnection(this.uri);
 
+  @override
   String get authority => uri.authority;
+  @override
   String get scheme => uri.scheme;
 
   void _initializeRequest(HttpRequest request, Map<String, String> metadata) {
@@ -198,7 +200,7 @@ class XhrClientConnection extends ClientConnection {
       requestUri = cors.moveHttpHeadersToQueryParam(metadata, requestUri);
     }
 
-    final HttpRequest request = createHttpRequest();
+    final request = createHttpRequest();
     request.open('POST', requestUri.toString());
     if (callOptions is WebCallOptions && callOptions.withCredentials == true) {
       request.withCredentials = true;
@@ -206,7 +208,7 @@ class XhrClientConnection extends ClientConnection {
     // Must set headers after calling open().
     _initializeRequest(request, metadata);
 
-    final XhrTransportStream transportStream =
+    final transportStream =
         XhrTransportStream(request, onError: onError, onDone: _removeStream);
     _requests.add(transportStream);
     return transportStream;

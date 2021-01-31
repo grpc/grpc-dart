@@ -60,6 +60,7 @@ abstract class BaseAuthenticator {
 abstract class HttpBasedAuthenticator extends BaseAuthenticator {
   Future<void>? _call;
 
+  @override
   Future<void> obtainAccessCredentials(String uri) {
     if (_call == null) {
       final authClient = http.Client();
@@ -94,6 +95,7 @@ class JwtServiceAccountAuthenticator extends BaseAuthenticator {
 
   String? get projectId => _projectId;
 
+  @override
   Future<void> obtainAccessCredentials(String uri) async {
     _accessToken = _jwtTokenFor(_serviceAccountCredentials, _keyId, uri);
   }
