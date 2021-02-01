@@ -26,7 +26,3 @@ dev_dependencies:
   test: ^1.16.0-nullsafety.16
   stream_channel: ^2.1.0-nullsafety.3
   stream_transform: ^2.0.0-nullsafety
-
-dependency_overrides:
-  # need versions of build_runner and build_daemon that support this version!
-  shelf: ^1.0.0-nullsafety.0
