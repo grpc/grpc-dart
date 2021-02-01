@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/api/label.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -42,7 +42,23 @@ class LabelDescriptor extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   LabelDescriptor._() : super();
-  factory LabelDescriptor() => create();
+  factory LabelDescriptor({
+    $core.String key,
+    LabelDescriptor_ValueType valueType,
+    $core.String description,
+  }) {
+    final _result = create();
+    if (key != null) {
+      _result.key = key;
+    }
+    if (valueType != null) {
+      _result.valueType = valueType;
+    }
+    if (description != null) {
+      _result.description = description;
+    }
+    return _result;
+  }
   factory LabelDescriptor.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);

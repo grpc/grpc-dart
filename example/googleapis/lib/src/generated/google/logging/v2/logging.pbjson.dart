@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/logging/v2/logging.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 const DeleteLogRequest$json = const {
@@ -259,6 +259,14 @@ const ListLogsRequest$json = const {
       '8': const {},
       '10': 'pageToken'
     },
+    const {
+      '1': 'resource_names',
+      '3': 8,
+      '4': 3,
+      '5': 9,
+      '8': const {},
+      '10': 'resourceNames'
+    },
   ],
 };
 
@@ -273,5 +281,90 @@ const ListLogsResponse$json = const {
       '5': 9,
       '10': 'nextPageToken'
     },
+  ],
+};
+
+const TailLogEntriesRequest$json = const {
+  '1': 'TailLogEntriesRequest',
+  '2': const [
+    const {
+      '1': 'resource_names',
+      '3': 1,
+      '4': 3,
+      '5': 9,
+      '8': const {},
+      '10': 'resourceNames'
+    },
+    const {
+      '1': 'filter',
+      '3': 2,
+      '4': 1,
+      '5': 9,
+      '8': const {},
+      '10': 'filter'
+    },
+    const {
+      '1': 'buffer_window',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Duration',
+      '8': const {},
+      '10': 'bufferWindow'
+    },
+  ],
+};
+
+const TailLogEntriesResponse$json = const {
+  '1': 'TailLogEntriesResponse',
+  '2': const [
+    const {
+      '1': 'entries',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.google.logging.v2.LogEntry',
+      '10': 'entries'
+    },
+    const {
+      '1': 'suppression_info',
+      '3': 2,
+      '4': 3,
+      '5': 11,
+      '6': '.google.logging.v2.TailLogEntriesResponse.SuppressionInfo',
+      '10': 'suppressionInfo'
+    },
+  ],
+  '3': const [TailLogEntriesResponse_SuppressionInfo$json],
+};
+
+const TailLogEntriesResponse_SuppressionInfo$json = const {
+  '1': 'SuppressionInfo',
+  '2': const [
+    const {
+      '1': 'reason',
+      '3': 1,
+      '4': 1,
+      '5': 14,
+      '6': '.google.logging.v2.TailLogEntriesResponse.SuppressionInfo.Reason',
+      '10': 'reason'
+    },
+    const {
+      '1': 'suppressed_count',
+      '3': 2,
+      '4': 1,
+      '5': 5,
+      '10': 'suppressedCount'
+    },
+  ],
+  '4': const [TailLogEntriesResponse_SuppressionInfo_Reason$json],
+};
+
+const TailLogEntriesResponse_SuppressionInfo_Reason$json = const {
+  '1': 'Reason',
+  '2': const [
+    const {'1': 'REASON_UNSPECIFIED', '2': 0},
+    const {'1': 'RATE_LIMIT', '2': 1},
+    const {'1': 'NOT_CONSUMED', '2': 2},
   ],
 };

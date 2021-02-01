@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: echo.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -27,7 +27,15 @@ class EchoRequest extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   EchoRequest._() : super();
-  factory EchoRequest() => create();
+  factory EchoRequest({
+    $core.String message,
+  }) {
+    final _result = create();
+    if (message != null) {
+      _result.message = message;
+    }
+    return _result;
+  }
   factory EchoRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -85,7 +93,15 @@ class EchoResponse extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   EchoResponse._() : super();
-  factory EchoResponse() => create();
+  factory EchoResponse({
+    $core.String message,
+  }) {
+    final _result = create();
+    if (message != null) {
+      _result.message = message;
+    }
+    return _result;
+  }
   factory EchoResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -156,7 +172,23 @@ class ServerStreamingEchoRequest extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   ServerStreamingEchoRequest._() : super();
-  factory ServerStreamingEchoRequest() => create();
+  factory ServerStreamingEchoRequest({
+    $core.String message,
+    $core.int messageCount,
+    $core.int messageInterval,
+  }) {
+    final _result = create();
+    if (message != null) {
+      _result.message = message;
+    }
+    if (messageCount != null) {
+      _result.messageCount = messageCount;
+    }
+    if (messageInterval != null) {
+      _result.messageInterval = messageInterval;
+    }
+    return _result;
+  }
   factory ServerStreamingEchoRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -241,7 +273,15 @@ class ServerStreamingEchoResponse extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   ServerStreamingEchoResponse._() : super();
-  factory ServerStreamingEchoResponse() => create();
+  factory ServerStreamingEchoResponse({
+    $core.String message,
+  }) {
+    final _result = create();
+    if (message != null) {
+      _result.message = message;
+    }
+    return _result;
+  }
   factory ServerStreamingEchoResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
