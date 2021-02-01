@@ -23,6 +23,7 @@ class TestClient extends Client {
 }
 
 class TestService extends Service {
+  @override
   String get $name => 'test.TestService';
 
   TestService() {
@@ -43,6 +44,7 @@ class TestService extends Service {
 }
 
 class TestServiceWithOnMetadataException extends TestService {
+  @override
   void $onMetadata(ServiceCall context) {
     throw Exception('business exception');
   }
@@ -58,10 +60,10 @@ class FixedConnectionClientChannel extends ClientChannelBase {
   ClientConnection createConnection() => clientConnection;
 }
 
-main() async {
+Future<void> main() async {
   testTcpAndUds('round trip insecure connection', (address) async {
     // round trip test of insecure connection.
-    final Server server = Server([TestService()]);
+    final server = Server([TestService()]);
     await server.serve(address: address, port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
@@ -77,7 +79,7 @@ main() async {
 
   testTcpAndUds('round trip with outgoing and incoming compression',
       (address) async {
-    final Server server = Server(
+    final server = Server(
         [TestService()], const [], CodecRegistry(codecs: const [GzipCodec()]));
     await server.serve(address: address, port: 0);
 
@@ -101,7 +103,7 @@ main() async {
 
   testTcpAndUds('round trip secure connection', (address) async {
     // round trip test of secure connection.
-    final Server server = Server([TestService()]);
+    final server = Server([TestService()]);
     await server.serve(
         address: address,
         port: 0,
@@ -124,7 +126,7 @@ main() async {
   });
 
   test('exception in onMetadataException', () async {
-    final Server server = Server([TestServiceWithOnMetadataException()]);
+    final server = Server([TestServiceWithOnMetadataException()]);
     await server.serve(address: 'localhost', port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
@@ -140,7 +142,7 @@ main() async {
   });
 
   test('cancellation of streaming subscription propagates properly', () async {
-    final Server server = Server([TestService()]);
+    final server = Server([TestService()]);
     await server.serve(address: 'localhost', port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(

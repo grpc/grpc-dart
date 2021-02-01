@@ -40,7 +40,7 @@ class MetadataService extends MetadataServiceBase {
 
   @override
   Stream<Number> addOne(grpc.ServiceCall call, Stream<Number> request) async* {
-    int lastNumber = -1;
+    var lastNumber = -1;
     try {
       await for (var number in request) {
         lastNumber = number.value;
@@ -56,9 +56,10 @@ class MetadataService extends MetadataServiceBase {
   }
 
   /// Streams a Fibonacci number every 500ms until the call is canceled.
+  @override
   Stream<Number> fibonacci(grpc.ServiceCall call, Empty request) async* {
-    int previous = 0;
-    int current = 1;
+    var previous = 0;
+    var current = 1;
     try {
       while (true) {
         await Future.delayed(Duration(milliseconds: 500));

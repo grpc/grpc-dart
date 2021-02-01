@@ -73,7 +73,7 @@ void main() {
     test('Calls time out if deadline is exceeded', () async {
       void handleRequest(StreamMessage message) {
         validateDataMessage(message);
-        final Future delay = Future.delayed(Duration(milliseconds: 2));
+        final delay = Future.delayed(Duration(milliseconds: 2));
         expect(delay, completes);
         delay.then((_) {
           try {

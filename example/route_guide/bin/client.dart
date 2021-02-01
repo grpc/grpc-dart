@@ -15,6 +15,6 @@
 
 import 'package:route_guide/src/client.dart';
 
-main(List<String> args) async {
+Future<void> main(List<String> args) async {
   await Client().main(args);
 }

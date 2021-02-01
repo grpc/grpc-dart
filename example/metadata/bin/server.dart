@@ -15,6 +15,6 @@
 
 import 'package:metadata/src/server.dart';
 
-main(List<String> args) {
+void main(List<String> args) {
   Server().main(args);
 }

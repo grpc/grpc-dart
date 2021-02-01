@@ -21,6 +21,7 @@ class TestClient extends grpc.Client {
 }
 
 class TestService extends grpc.Service {
+  @override
   String get $name => 'test.TestService';
   final void Function() finallyCallback;
 
@@ -31,7 +32,7 @@ class TestService extends grpc.Service {
 
   Stream<int> infiniteStream(
       grpc.ServiceCall call, Future<int> request) async* {
-    int count = await request;
+    var count = await request;
     try {
       while (true) {
         count++;
@@ -70,9 +71,9 @@ void client(clientData) async {
   });
 }
 
-main() async {
+Future<void> main() async {
   testTcpAndUds(
-      "the client interrupting the connection does not crash the server",
+      'the client interrupting the connection does not crash the server',
       (address) async {
     // interrrupt the connect of client, the server does not crash.
     late grpc.Server server;

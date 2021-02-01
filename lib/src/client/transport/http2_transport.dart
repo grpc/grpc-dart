@@ -25,10 +25,12 @@ import 'transport.dart';
 
 class Http2TransportStream extends GrpcTransportStream {
   final TransportStream _transportStream;
+  @override
   final Stream<GrpcMessage> incomingMessages;
   final StreamController<List<int>> _outgoingMessages = StreamController();
   final ErrorHandler _onError;
 
+  @override
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
 
   Http2TransportStream(

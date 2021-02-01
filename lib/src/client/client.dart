@@ -45,9 +45,8 @@ regenerate these stubs using  protobuf compiler plugin version 19.2.0 or newer.
 
   ResponseFuture<R> $createUnaryCall<Q, R>(ClientMethod<Q, R> method, Q request,
       {CallOptions? options}) {
-    ClientUnaryInvoker<Q, R> invoker = (method, request, options) =>
-        ResponseFuture<R>(
-            _channel.createCall<Q, R>(method, Stream.value(request), options));
+    var invoker = (method, request, options) => ResponseFuture<R>(
+        _channel.createCall<Q, R>(method, Stream.value(request), options));
 
     for (final interceptor in _interceptors.reversed) {
       final delegate = invoker;
@@ -61,7 +60,7 @@ regenerate these stubs using  protobuf compiler plugin version 19.2.0 or newer.
   ResponseStream<R> $createStreamingCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests,
       {CallOptions? options}) {
-    ClientStreamingInvoker<Q, R> invoker = (method, request, options) =>
+    var invoker = (method, request, options) =>
         ResponseStream<R>(_channel.createCall<Q, R>(method, requests, options));
 
     for (final interceptor in _interceptors.reversed) {

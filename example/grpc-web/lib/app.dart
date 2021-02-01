@@ -33,11 +33,11 @@ class EchoApp {
   }
 
   void _addLeftMessage(String message) {
-    _addMessage(message, "label-primary pull-left");
+    _addMessage(message, 'label-primary pull-left');
   }
 
   void _addRightMessage(String message) {
-    _addMessage(message, "label-default pull-right");
+    _addMessage(message, 'label-default pull-right');
   }
 
   void _addMessage(String message, String cssClass) {

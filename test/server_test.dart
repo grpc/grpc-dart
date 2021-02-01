@@ -169,7 +169,7 @@ void main() {
 
   test('Server returns encoded error for unary call', () async {
     Future<int> methodHandler(ServiceCall call, Future<int> request) async {
-      throw GrpcError.unknown("エラー");
+      throw GrpcError.unknown('エラー');
     }
 
     harness
@@ -303,7 +303,7 @@ void main() {
       }
 
       final Interceptor interceptor = (call, method) {
-        if (method.name == "Unary") {
+        if (method.name == 'Unary') {
           return null;
         }
         return GrpcError.unauthenticated('Request is unauthenticated');
@@ -325,7 +325,7 @@ void main() {
 
     group('returns error if interceptor blocks request', () {
       final Interceptor interceptor = (call, method) {
-        if (method.name == "Unary") {
+        if (method.name == 'Unary') {
           return GrpcError.unauthenticated('Request is unauthenticated');
         }
         return null;
