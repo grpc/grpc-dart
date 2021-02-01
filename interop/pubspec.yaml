@@ -1,6 +1,6 @@
 name: interop
 description: Dart gRPC interoperability test suite.
-homepage: https://github.com/dart-lang/grpc-dart
+publish_to: none
 
 environment:
   sdk: '>=2.8.0 <3.0.0'
