@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/logging/v2/log_entry.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -62,7 +62,75 @@ class LogEntry extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   LogEntry._() : super();
-  factory LogEntry() => create();
+  factory LogEntry({
+    $0.Any protoPayload,
+    $core.String textPayload,
+    $core.String insertId,
+    $1.Struct jsonPayload,
+    $2.HttpRequest httpRequest,
+    $3.MonitoredResource resource,
+    $4.Timestamp timestamp,
+    $5.LogSeverity severity,
+    $core.Map<$core.String, $core.String> labels,
+    $core.String logName,
+    LogEntryOperation operation,
+    $core.String trace,
+    LogEntrySourceLocation sourceLocation,
+    $4.Timestamp receiveTimestamp,
+    $core.String spanId,
+    $core.bool traceSampled,
+  }) {
+    final _result = create();
+    if (protoPayload != null) {
+      _result.protoPayload = protoPayload;
+    }
+    if (textPayload != null) {
+      _result.textPayload = textPayload;
+    }
+    if (insertId != null) {
+      _result.insertId = insertId;
+    }
+    if (jsonPayload != null) {
+      _result.jsonPayload = jsonPayload;
+    }
+    if (httpRequest != null) {
+      _result.httpRequest = httpRequest;
+    }
+    if (resource != null) {
+      _result.resource = resource;
+    }
+    if (timestamp != null) {
+      _result.timestamp = timestamp;
+    }
+    if (severity != null) {
+      _result.severity = severity;
+    }
+    if (labels != null) {
+      _result.labels.addAll(labels);
+    }
+    if (logName != null) {
+      _result.logName = logName;
+    }
+    if (operation != null) {
+      _result.operation = operation;
+    }
+    if (trace != null) {
+      _result.trace = trace;
+    }
+    if (sourceLocation != null) {
+      _result.sourceLocation = sourceLocation;
+    }
+    if (receiveTimestamp != null) {
+      _result.receiveTimestamp = receiveTimestamp;
+    }
+    if (spanId != null) {
+      _result.spanId = spanId;
+    }
+    if (traceSampled != null) {
+      _result.traceSampled = traceSampled;
+    }
+    return _result;
+  }
   factory LogEntry.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -322,7 +390,27 @@ class LogEntryOperation extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   LogEntryOperation._() : super();
-  factory LogEntryOperation() => create();
+  factory LogEntryOperation({
+    $core.String id,
+    $core.String producer,
+    $core.bool first,
+    $core.bool last,
+  }) {
+    final _result = create();
+    if (id != null) {
+      _result.id = id;
+    }
+    if (producer != null) {
+      _result.producer = producer;
+    }
+    if (first != null) {
+      _result.first = first;
+    }
+    if (last != null) {
+      _result.last = last;
+    }
+    return _result;
+  }
   factory LogEntryOperation.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -427,7 +515,23 @@ class LogEntrySourceLocation extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   LogEntrySourceLocation._() : super();
-  factory LogEntrySourceLocation() => create();
+  factory LogEntrySourceLocation({
+    $core.String file,
+    $fixnum.Int64 line,
+    $core.String function,
+  }) {
+    final _result = create();
+    if (file != null) {
+      _result.file = file;
+    }
+    if (line != null) {
+      _result.line = line;
+    }
+    if (function != null) {
+      _result.function = function;
+    }
+    return _result;
+  }
   factory LogEntrySourceLocation.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);

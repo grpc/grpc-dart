@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/rpc/status.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -40,7 +40,23 @@ class Status extends $pb.GeneratedMessage {
         ..hasRequiredFields = false;
 
   Status._() : super();
-  factory Status() => create();
+  factory Status({
+    $core.int code,
+    $core.String message,
+    $core.Iterable<$0.Any> details,
+  }) {
+    final _result = create();
+    if (code != null) {
+      _result.code = code;
+    }
+    if (message != null) {
+      _result.message = message;
+    }
+    if (details != null) {
+      _result.details.addAll(details);
+    }
+    return _result;
+  }
   factory Status.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);

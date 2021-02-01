@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/logging/v2/logging.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:async' as $async;
@@ -45,6 +45,12 @@ class LoggingServiceV2Client extends $grpc.Client {
           ($2.ListLogsRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) =>
               $2.ListLogsResponse.fromBuffer(value));
+  static final _$tailLogEntries =
+      $grpc.ClientMethod<$2.TailLogEntriesRequest, $2.TailLogEntriesResponse>(
+          '/google.logging.v2.LoggingServiceV2/TailLogEntries',
+          ($2.TailLogEntriesRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $2.TailLogEntriesResponse.fromBuffer(value));
 
   LoggingServiceV2Client($grpc.ClientChannel channel,
       {$grpc.CallOptions options,
@@ -79,6 +85,12 @@ class LoggingServiceV2Client extends $grpc.Client {
   $grpc.ResponseFuture<$2.ListLogsResponse> listLogs($2.ListLogsRequest request,
       {$grpc.CallOptions options}) {
     return $createUnaryCall(_$listLogs, request, options: options);
+  }
+
+  $grpc.ResponseStream<$2.TailLogEntriesResponse> tailLogEntries(
+      $async.Stream<$2.TailLogEntriesRequest> request,
+      {$grpc.CallOptions options}) {
+    return $createStreamingCall(_$tailLogEntries, request, options: options);
   }
 }
 
@@ -128,6 +140,15 @@ abstract class LoggingServiceV2ServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $2.ListLogsRequest.fromBuffer(value),
         ($2.ListLogsResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$2.TailLogEntriesRequest,
+            $2.TailLogEntriesResponse>(
+        'TailLogEntries',
+        tailLogEntries,
+        true,
+        true,
+        ($core.List<$core.int> value) =>
+            $2.TailLogEntriesRequest.fromBuffer(value),
+        ($2.TailLogEntriesResponse value) => value.writeToBuffer()));
   }
 
   $async.Future<$1.Empty> deleteLog_Pre($grpc.ServiceCall call,
@@ -171,4 +192,6 @@ abstract class LoggingServiceV2ServiceBase extends $grpc.Service {
           $2.ListMonitoredResourceDescriptorsRequest request);
   $async.Future<$2.ListLogsResponse> listLogs(
       $grpc.ServiceCall call, $2.ListLogsRequest request);
+  $async.Stream<$2.TailLogEntriesResponse> tailLogEntries(
+      $grpc.ServiceCall call, $async.Stream<$2.TailLogEntriesRequest> request);
 }
