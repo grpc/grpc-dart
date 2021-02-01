@@ -30,16 +30,27 @@ const _trailerEchoKey = 'x-grpc-test-echo-trailing-bin';
 const _trailerEchoData = 'q6ur'; // 0xababab in base64
 
 class Tester {
-  String serverHost;
-  String serverHostOverride;
-  int _serverPort;
-  String testCase;
-  bool _useTls;
-  bool _useTestCA;
-  String defaultServiceAccount;
-  String oauthScope;
-  String serviceAccountKeyFile;
-  String _serviceAccountJson;
+  final String serverHost;
+  final String? serverHostOverride;
+  final int serverPort;
+  final String testCase;
+  final bool useTls;
+  final bool useTestCA;
+  final String? defaultServiceAccount;
+  final String? oauthScope;
+  final String? serviceAccountKeyFile;
+  String? _serviceAccountJson;
+
+  Tester(
+      {required this.serverHost,
+      required this.serverHostOverride,
+      required this.serverPort,
+      required this.testCase,
+      required this.useTls,
+      required this.useTestCA,
+      required this.defaultServiceAccount,
+      required this.oauthScope,
+      required this.serviceAccountKeyFile});
 
   String get serviceAccountJson =>
       _serviceAccountJson ??= _readServiceAccountJson();
@@ -48,51 +59,18 @@ class Tester {
     if (serviceAccountKeyFile?.isEmpty ?? true) {
       throw 'Service account key file not specified.';
     }
-    return File(serviceAccountKeyFile).readAsStringSync();
+    return File(serviceAccountKeyFile!).readAsStringSync();
   }
 
-  set serverPort(String value) {
-    if (value == null) {
-      _serverPort = null;
-      return;
-    }
-    try {
-      _serverPort = int.parse(value);
-    } catch (e) {
-      print('Invalid port "$value": $e');
-    }
-  }
-
-  set useTls(String value) {
-    _useTls = value != 'false';
-  }
-
-  set useTestCA(String value) {
-    _useTestCA = value == 'true';
-  }
-
-  ClientChannel channel;
-  TestServiceClient client;
-  UnimplementedServiceClient unimplementedServiceClient;
-
-  bool validate() {
-    if (serverHost == null) {
-      print('Must specify --server_host');
-      return false;
-    }
-    if (_serverPort == null) {
-      print('Must specify --server_port');
-      return false;
-    }
-
-    return true;
-  }
+  late final ClientChannel channel;
+  late final TestServiceClient client;
+  late final UnimplementedServiceClient unimplementedServiceClient;
 
   Future<void> runTest() async {
     ChannelCredentials credentials;
-    if (_useTls) {
-      List<int> trustedRoot;
-      if (_useTestCA) {
+    if (useTls) {
+      List<int>? trustedRoot;
+      if (useTestCA) {
         trustedRoot = File('ca.pem').readAsBytesSync();
       }
       credentials = ChannelCredentials.secure(
@@ -102,7 +80,7 @@ class Tester {
     }
 
     final options = ChannelOptions(credentials: credentials);
-    channel = ClientChannel(serverHost, port: _serverPort, options: options);
+    channel = ClientChannel(serverHost, port: serverPort, options: options);
     client = TestServiceClient(channel);
     unimplementedServiceClient = UnimplementedServiceClient(channel);
     await runTestCase();
@@ -175,7 +153,6 @@ class Tester {
   /// * response is non-null
   Future<void> emptyUnary() async {
     final response = await client.emptyCall(Empty());
-    if (response == null) throw 'Expected non-null response.';
     if (response is! Empty) throw 'Expected Empty response.';
   }
 
@@ -661,17 +638,17 @@ class Tester {
     final user = response.username;
     final oauth = response.oauthScope;
 
-    if (user?.isEmpty ?? true) {
+    if (user.isEmpty) {
       throw 'Username not received.';
     }
-    if (oauth?.isEmpty ?? true) {
+    if (oauth.isEmpty) {
       throw 'OAuth scope not received.';
     }
 
     if (user != defaultServiceAccount) {
       throw 'Got user name $user, wanted $defaultServiceAccount';
     }
-    if (!oauthScope.contains(oauth)) {
+    if (!oauthScope!.contains(oauth)) {
       throw 'Got OAuth scope $oauth, which is not a substring of $oauthScope';
     }
   }
@@ -748,7 +725,7 @@ class Tester {
     final response = await _sendSimpleRequestForAuth(clientWithCredentials,
         fillUsername: true);
     final username = response.username;
-    if (username?.isEmpty ?? true) {
+    if (username.isEmpty) {
       throw 'Username not received.';
     }
     if (!serviceAccountJson.contains(username)) {
@@ -797,7 +774,7 @@ class Tester {
   /// * received SimpleResponse.oauth_scope is in `--oauth_scope`
   Future<void> oauth2AuthToken() async {
     final credentials =
-        ServiceAccountAuthenticator(serviceAccountJson, [oauthScope]);
+        ServiceAccountAuthenticator(serviceAccountJson, [oauthScope!]);
     final clientWithCredentials =
         TestServiceClient(channel, options: credentials.toCallOptions);
 
@@ -807,17 +784,18 @@ class Tester {
     final user = response.username;
     final oauth = response.oauthScope;
 
-    if (user?.isEmpty ?? true) {
+    if (user.isEmpty) {
       throw 'Username not received.';
     }
-    if (oauth?.isEmpty ?? true) {
+    if (oauth.isEmpty) {
       throw 'OAuth scope not received.';
     }
 
     if (!serviceAccountJson.contains(user)) {
-      throw 'Got user name $user, which is not a substring of $serviceAccountJson';
+      throw 'Got user name $user, which is not'
+          ' a substring of $serviceAccountJson';
     }
-    if (!oauthScope.contains(oauth)) {
+    if (!oauthScope!.contains(oauth)) {
       throw 'Got OAuth scope $oauth, which is not a substring of $oauthScope';
     }
   }
@@ -852,7 +830,7 @@ class Tester {
   ///   username matches the email address in the key file.
   Future<void> perRpcCreds() async {
     final credentials =
-        ServiceAccountAuthenticator(serviceAccountJson, [oauthScope]);
+        ServiceAccountAuthenticator(serviceAccountJson, [oauthScope!]);
 
     final response = await _sendSimpleRequestForAuth(client,
         fillUsername: true,
@@ -862,17 +840,17 @@ class Tester {
     final user = response.username;
     final oauth = response.oauthScope;
 
-    if (user?.isEmpty ?? true) {
+    if (user.isEmpty) {
       throw 'Username not received.';
     }
-    if (oauth?.isEmpty ?? true) {
+    if (oauth.isEmpty) {
       throw 'OAuth scope not received.';
     }
 
     if (!serviceAccountJson.contains(user)) {
       throw 'Got user name $user, which is not a substring of $serviceAccountJson';
     }
-    if (!oauthScope.contains(oauth)) {
+    if (!oauthScope!.contains(oauth)) {
       throw 'Got OAuth scope $oauth, which is not a substring of $oauthScope';
     }
   }
@@ -880,7 +858,7 @@ class Tester {
   Future<SimpleResponse> _sendSimpleRequestForAuth(TestServiceClient client,
       {bool fillUsername = false,
       bool fillOauthScope = false,
-      CallOptions options}) async {
+      CallOptions? options}) async {
     final payload = Payload()..body = Uint8List(271828);
     final request = SimpleRequest()
       ..responseSize = 314159
@@ -1003,7 +981,7 @@ class Tester {
     final expectedStatus = GrpcError.custom(2, 'test status message');
     final responseStatus = EchoStatus()
       ..code = expectedStatus.code
-      ..message = expectedStatus.message;
+      ..message = expectedStatus.message!;
     try {
       await client.unaryCall(SimpleRequest()..responseStatus = responseStatus);
       throw 'Did not receive correct status code.';

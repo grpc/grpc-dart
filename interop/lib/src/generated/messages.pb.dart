@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: messages.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -32,7 +32,7 @@ class BoolValue extends $pb.GeneratedMessage {
 
   BoolValue._() : super();
   factory BoolValue({
-    $core.bool value,
+    $core.bool? value,
   }) {
     final _result = create();
     if (value != null) {
@@ -54,8 +54,8 @@ class BoolValue extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   BoolValue copyWith(void Function(BoolValue) updates) =>
-      super.copyWith((message) =>
-          updates(message as BoolValue)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as BoolValue))
+          as BoolValue; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static BoolValue create() => BoolValue._();
@@ -64,7 +64,7 @@ class BoolValue extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static BoolValue getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<BoolValue>(create);
-  static BoolValue _defaultInstance;
+  static BoolValue? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.bool get value => $_getBF(0);
@@ -106,8 +106,8 @@ class Payload extends $pb.GeneratedMessage {
 
   Payload._() : super();
   factory Payload({
-    PayloadType type,
-    $core.List<$core.int> body,
+    PayloadType? type,
+    $core.List<$core.int>? body,
   }) {
     final _result = create();
     if (type != null) {
@@ -132,8 +132,8 @@ class Payload extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   Payload copyWith(void Function(Payload) updates) =>
-      super.copyWith((message) =>
-          updates(message as Payload)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as Payload))
+          as Payload; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Payload create() => Payload._();
@@ -142,7 +142,7 @@ class Payload extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Payload getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload>(create);
-  static Payload _defaultInstance;
+  static Payload? _defaultInstance;
 
   @$pb.TagNumber(1)
   PayloadType get type => $_getN(0);
@@ -194,8 +194,8 @@ class EchoStatus extends $pb.GeneratedMessage {
 
   EchoStatus._() : super();
   factory EchoStatus({
-    $core.int code,
-    $core.String message,
+    $core.int? code,
+    $core.String? message,
   }) {
     final _result = create();
     if (code != null) {
@@ -220,8 +220,8 @@ class EchoStatus extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   EchoStatus copyWith(void Function(EchoStatus) updates) =>
-      super.copyWith((message) =>
-          updates(message as EchoStatus)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as EchoStatus))
+          as EchoStatus; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static EchoStatus create() => EchoStatus._();
@@ -230,7 +230,7 @@ class EchoStatus extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static EchoStatus getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<EchoStatus>(create);
-  static EchoStatus _defaultInstance;
+  static EchoStatus? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get code => $_getIZ(0);
@@ -289,14 +289,14 @@ class SimpleRequest extends $pb.GeneratedMessage {
 
   SimpleRequest._() : super();
   factory SimpleRequest({
-    PayloadType responseType,
-    $core.int responseSize,
-    Payload payload,
-    $core.bool fillUsername,
-    $core.bool fillOauthScope,
-    BoolValue responseCompressed,
-    EchoStatus responseStatus,
-    BoolValue expectCompressed,
+    PayloadType? responseType,
+    $core.int? responseSize,
+    Payload? payload,
+    $core.bool? fillUsername,
+    $core.bool? fillOauthScope,
+    BoolValue? responseCompressed,
+    EchoStatus? responseStatus,
+    BoolValue? expectCompressed,
   }) {
     final _result = create();
     if (responseType != null) {
@@ -339,8 +339,8 @@ class SimpleRequest extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   SimpleRequest copyWith(void Function(SimpleRequest) updates) =>
-      super.copyWith((message) =>
-          updates(message as SimpleRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as SimpleRequest))
+          as SimpleRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static SimpleRequest create() => SimpleRequest._();
@@ -350,7 +350,7 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static SimpleRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<SimpleRequest>(create);
-  static SimpleRequest _defaultInstance;
+  static SimpleRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   PayloadType get responseType => $_getN(0);
@@ -480,9 +480,9 @@ class SimpleResponse extends $pb.GeneratedMessage {
 
   SimpleResponse._() : super();
   factory SimpleResponse({
-    Payload payload,
-    $core.String username,
-    $core.String oauthScope,
+    Payload? payload,
+    $core.String? username,
+    $core.String? oauthScope,
   }) {
     final _result = create();
     if (payload != null) {
@@ -510,8 +510,8 @@ class SimpleResponse extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   SimpleResponse copyWith(void Function(SimpleResponse) updates) =>
-      super.copyWith((message) =>
-          updates(message as SimpleResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as SimpleResponse))
+          as SimpleResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static SimpleResponse create() => SimpleResponse._();
@@ -521,7 +521,7 @@ class SimpleResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static SimpleResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<SimpleResponse>(create);
-  static SimpleResponse _defaultInstance;
+  static SimpleResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
@@ -585,8 +585,8 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
 
   StreamingInputCallRequest._() : super();
   factory StreamingInputCallRequest({
-    Payload payload,
-    BoolValue expectCompressed,
+    Payload? payload,
+    BoolValue? expectCompressed,
   }) {
     final _result = create();
     if (payload != null) {
@@ -613,8 +613,8 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   StreamingInputCallRequest copyWith(
           void Function(StreamingInputCallRequest) updates) =>
-      super.copyWith((message) => updates(message
-          as StreamingInputCallRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as StreamingInputCallRequest))
+          as StreamingInputCallRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static StreamingInputCallRequest create() => StreamingInputCallRequest._();
@@ -624,7 +624,7 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static StreamingInputCallRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<StreamingInputCallRequest>(create);
-  static StreamingInputCallRequest _defaultInstance;
+  static StreamingInputCallRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
@@ -675,7 +675,7 @@ class StreamingInputCallResponse extends $pb.GeneratedMessage {
 
   StreamingInputCallResponse._() : super();
   factory StreamingInputCallResponse({
-    $core.int aggregatedPayloadSize,
+    $core.int? aggregatedPayloadSize,
   }) {
     final _result = create();
     if (aggregatedPayloadSize != null) {
@@ -699,8 +699,9 @@ class StreamingInputCallResponse extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   StreamingInputCallResponse copyWith(
           void Function(StreamingInputCallResponse) updates) =>
-      super.copyWith((message) => updates(message
-          as StreamingInputCallResponse)); // ignore: deprecated_member_use
+      super.copyWith(
+              (message) => updates(message as StreamingInputCallResponse))
+          as StreamingInputCallResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static StreamingInputCallResponse create() => StreamingInputCallResponse._();
@@ -710,7 +711,7 @@ class StreamingInputCallResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static StreamingInputCallResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<StreamingInputCallResponse>(create);
-  static StreamingInputCallResponse _defaultInstance;
+  static StreamingInputCallResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get aggregatedPayloadSize => $_getIZ(0);
@@ -754,9 +755,9 @@ class ResponseParameters extends $pb.GeneratedMessage {
 
   ResponseParameters._() : super();
   factory ResponseParameters({
-    $core.int size,
-    $core.int intervalUs,
-    BoolValue compressed,
+    $core.int? size,
+    $core.int? intervalUs,
+    BoolValue? compressed,
   }) {
     final _result = create();
     if (size != null) {
@@ -784,8 +785,8 @@ class ResponseParameters extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   ResponseParameters copyWith(void Function(ResponseParameters) updates) =>
-      super.copyWith((message) => updates(
-          message as ResponseParameters)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as ResponseParameters))
+          as ResponseParameters; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ResponseParameters create() => ResponseParameters._();
@@ -795,7 +796,7 @@ class ResponseParameters extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static ResponseParameters getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ResponseParameters>(create);
-  static ResponseParameters _defaultInstance;
+  static ResponseParameters? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get size => $_getIZ(0);
@@ -862,10 +863,10 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
 
   StreamingOutputCallRequest._() : super();
   factory StreamingOutputCallRequest({
-    PayloadType responseType,
-    $core.Iterable<ResponseParameters> responseParameters,
-    Payload payload,
-    EchoStatus responseStatus,
+    PayloadType? responseType,
+    $core.Iterable<ResponseParameters>? responseParameters,
+    Payload? payload,
+    EchoStatus? responseStatus,
   }) {
     final _result = create();
     if (responseType != null) {
@@ -898,8 +899,9 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   StreamingOutputCallRequest copyWith(
           void Function(StreamingOutputCallRequest) updates) =>
-      super.copyWith((message) => updates(message
-          as StreamingOutputCallRequest)); // ignore: deprecated_member_use
+      super.copyWith(
+              (message) => updates(message as StreamingOutputCallRequest))
+          as StreamingOutputCallRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static StreamingOutputCallRequest create() => StreamingOutputCallRequest._();
@@ -909,7 +911,7 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static StreamingOutputCallRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<StreamingOutputCallRequest>(create);
-  static StreamingOutputCallRequest _defaultInstance;
+  static StreamingOutputCallRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   PayloadType get responseType => $_getN(0);
@@ -975,7 +977,7 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
 
   StreamingOutputCallResponse._() : super();
   factory StreamingOutputCallResponse({
-    Payload payload,
+    Payload? payload,
   }) {
     final _result = create();
     if (payload != null) {
@@ -999,8 +1001,9 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   StreamingOutputCallResponse copyWith(
           void Function(StreamingOutputCallResponse) updates) =>
-      super.copyWith((message) => updates(message
-          as StreamingOutputCallResponse)); // ignore: deprecated_member_use
+      super.copyWith(
+              (message) => updates(message as StreamingOutputCallResponse))
+          as StreamingOutputCallResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static StreamingOutputCallResponse create() =>
@@ -1011,7 +1014,7 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static StreamingOutputCallResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<StreamingOutputCallResponse>(create);
-  static StreamingOutputCallResponse _defaultInstance;
+  static StreamingOutputCallResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
@@ -1048,7 +1051,7 @@ class ReconnectParams extends $pb.GeneratedMessage {
 
   ReconnectParams._() : super();
   factory ReconnectParams({
-    $core.int maxReconnectBackoffMs,
+    $core.int? maxReconnectBackoffMs,
   }) {
     final _result = create();
     if (maxReconnectBackoffMs != null) {
@@ -1070,8 +1073,8 @@ class ReconnectParams extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   ReconnectParams copyWith(void Function(ReconnectParams) updates) =>
-      super.copyWith((message) =>
-          updates(message as ReconnectParams)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as ReconnectParams))
+          as ReconnectParams; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ReconnectParams create() => ReconnectParams._();
@@ -1081,7 +1084,7 @@ class ReconnectParams extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static ReconnectParams getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ReconnectParams>(create);
-  static ReconnectParams _defaultInstance;
+  static ReconnectParams? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get maxReconnectBackoffMs => $_getIZ(0);
@@ -1121,8 +1124,8 @@ class ReconnectInfo extends $pb.GeneratedMessage {
 
   ReconnectInfo._() : super();
   factory ReconnectInfo({
-    $core.bool passed,
-    $core.Iterable<$core.int> backoffMs,
+    $core.bool? passed,
+    $core.Iterable<$core.int>? backoffMs,
   }) {
     final _result = create();
     if (passed != null) {
@@ -1147,8 +1150,8 @@ class ReconnectInfo extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   ReconnectInfo copyWith(void Function(ReconnectInfo) updates) =>
-      super.copyWith((message) =>
-          updates(message as ReconnectInfo)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as ReconnectInfo))
+          as ReconnectInfo; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ReconnectInfo create() => ReconnectInfo._();
@@ -1158,7 +1161,7 @@ class ReconnectInfo extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static ReconnectInfo getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ReconnectInfo>(create);
-  static ReconnectInfo _defaultInstance;
+  static ReconnectInfo? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.bool get passed => $_getBF(0);

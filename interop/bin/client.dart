@@ -88,19 +88,24 @@ Future<int> main(List<String> args) async {
           'developer console.');
   final arguments = argumentParser.parse(args);
 
-  final testClient = Tester();
-
-  testClient.serverHost = arguments[_serverHostArgument];
-  testClient.serverHostOverride = arguments[_serverHostOverrideArgument];
-  testClient.serverPort = arguments[_serverPortArgument];
-  testClient.testCase = arguments[_testCaseArgument];
-  testClient.useTls = arguments[_useTLSArgument];
-  testClient.useTestCA = arguments[_useTestCAArgument];
-  testClient.defaultServiceAccount = arguments[_defaultServiceAccountArgument];
-  testClient.oauthScope = arguments[_oauthScopeArgument];
-  testClient.serviceAccountKeyFile = arguments[_serviceAccountKeyFileArgument];
-
-  if (!testClient.validate()) {
+  late Tester testClient;
+  try {
+    testClient = Tester(
+        serverHost: arguments[_serverHostArgument] ??
+            (throw 'Must specify --$_serverHostArgument'),
+        serverHostOverride: arguments[_serverHostOverrideArgument],
+        serverPort: int.tryParse(arguments[_serverPortArgument] ??
+                (throw 'Must specify --$_serverPortArgument')) ??
+            (throw 'Invalid port "${arguments[_serverPortArgument]}"'),
+        testCase: arguments[_testCaseArgument] ??
+            (throw 'Must specify --$_testCaseArgument'),
+        useTls: arguments[_useTLSArgument] != 'false',
+        useTestCA: arguments[_useTestCAArgument],
+        defaultServiceAccount: arguments[_defaultServiceAccountArgument],
+        oauthScope: arguments[_oauthScopeArgument],
+        serviceAccountKeyFile: arguments[_serviceAccountKeyFileArgument]);
+  } catch (e) {
+    print(e);
     print(argumentParser.usage);
     return -1;
   }

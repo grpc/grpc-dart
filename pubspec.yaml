@@ -13,9 +13,9 @@ dependencies:
   async: ^2.2.0
   crypto: ^3.0.0-nullsafety
   fixnum: ^1.0.0-nullsafety
-  googleapis_auth: ^0.2.7
+  googleapis_auth: ^1.0.0-nullsafety
   meta: ^1.1.6
-  http: ^0.12.0
+  http: ^0.13.0-nullsafety
   http2: ^2.0.0-nullsafety
   protobuf: ^2.0.0-nullsafety.1
 
@@ -28,15 +28,5 @@ dev_dependencies:
   stream_transform: ^2.0.0-nullsafety
 
 dependency_overrides:
-  http:
-    git:
-      url: https://github.com/dart-lang/http.git
-      ref: 3845753a54624b070828cb3eff7a6c2a4e046cfb
-  googleapis_auth:
-    git:
-      url: https://github.com/dart-lang/googleapis_auth.git
-      ref: 30c084b7650fbd3e52525a127e0e65fc528e85a8
   shelf:
-    git:
-      url: https://github.com/dart-lang/shelf.git
-      ref: 2102572a6c27b1321823bb3e3723ddb5448e04ae
+    version: ^1.0.0-nullsafety
