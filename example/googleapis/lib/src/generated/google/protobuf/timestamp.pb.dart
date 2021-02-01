@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/protobuf/timestamp.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -38,7 +38,19 @@ class Timestamp extends $pb.GeneratedMessage with $mixin.TimestampMixin {
     ..hasRequiredFields = false;
 
   Timestamp._() : super();
-  factory Timestamp() => create();
+  factory Timestamp({
+    $fixnum.Int64 seconds,
+    $core.int nanos,
+  }) {
+    final _result = create();
+    if (seconds != null) {
+      _result.seconds = seconds;
+    }
+    if (nanos != null) {
+      _result.nanos = nanos;
+    }
+    return _result;
+  }
   factory Timestamp.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);

@@ -50,7 +50,7 @@ const _statusDetailsHeader = 'grpc-status-details-bin';
 /// by previous metadata providers) and the [uri] that is being called, and is
 /// expected to modify the map before returning or before completing the
 /// returned [Future].
-typedef FutureOr<void> MetadataProvider(
+typedef MetadataProvider = FutureOr<void> Function(
     Map<String, String> metadata, String uri);
 
 /// Runtime options for an RPC.

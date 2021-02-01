@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: metadata.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -27,7 +27,15 @@ class Record extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   Record._() : super();
-  factory Record() => create();
+  factory Record({
+    $core.String value,
+  }) {
+    final _result = create();
+    if (value != null) {
+      _result.value = value;
+    }
+    return _result;
+  }
   factory Record.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -85,7 +93,15 @@ class Number extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   Number._() : super();
-  factory Number() => create();
+  factory Number({
+    $core.int value,
+  }) {
+    final _result = create();
+    if (value != null) {
+      _result.value = value;
+    }
+    return _result;
+  }
   factory Number.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);

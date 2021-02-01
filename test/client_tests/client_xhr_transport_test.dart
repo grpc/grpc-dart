@@ -53,6 +53,7 @@ class MockHttpRequest extends Mock implements HttpRequest {
   @override
   final int status;
 
+  @override
   int get readyState => super.noSuchMethod(Invocation.getter(#readyState), -1);
 
   @override
@@ -69,7 +70,7 @@ class MockXhrClientConnection extends XhrClientConnection {
   final int _statusCode;
 
   @override
-  createHttpRequest() {
+  HttpRequest createHttpRequest() {
     final request = MockHttpRequest(code: _statusCode);
     latestRequest = request;
     return request;
@@ -360,9 +361,9 @@ void main() {
     final errorReceived = Completer<void>();
     connection.makeRequest('test_path', Duration(seconds: 10), {}, (e, _) {
       errorReceived.complete();
-      errors.add(e);
+      errors.add(e as GrpcError);
     });
-    const errorDetails = "error details";
+    const errorDetails = 'error details';
     when(connection.latestRequest.getResponseHeader('Content-Type'))
         .thenReturn('application/grpc+proto');
     when(connection.latestRequest.responseHeaders).thenReturn({});

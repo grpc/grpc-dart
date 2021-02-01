@@ -26,7 +26,7 @@ const defaultIdleTimeout = Duration(minutes: 5);
 const defaultConnectionTimeOut = Duration(minutes: 50);
 const defaultUserAgent = 'dart-grpc/2.0.0';
 
-typedef Duration BackoffStrategy(Duration? lastBackoff);
+typedef BackoffStrategy = Duration Function(Duration? lastBackoff);
 
 // Backoff algorithm from https://github.com/grpc/grpc/blob/master/doc/connection-backoff.md
 const _initialBackoff = Duration(seconds: 1);

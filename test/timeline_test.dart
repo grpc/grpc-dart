@@ -40,6 +40,7 @@ class TestClient extends Client {
 }
 
 class TestService extends Service {
+  @override
   String get $name => 'test.TestService';
 
   TestService() {
@@ -84,6 +85,7 @@ class FakeTimelineTask extends Fake implements TimelineTask {
 
   bool get isComplete => _startFinishCount == 0;
 
+  @override
   void start(String name, {Map? arguments}) {
     events.add({
       'id': id,
@@ -98,6 +100,7 @@ class FakeTimelineTask extends Fake implements TimelineTask {
     ++_startFinishCount;
   }
 
+  @override
   void instant(String name, {Map? arguments}) {
     events.add({
       'id': id,
@@ -110,6 +113,7 @@ class FakeTimelineTask extends Fake implements TimelineTask {
     });
   }
 
+  @override
   void finish({Map? arguments}) {
     events.add({
       'id': id,
@@ -128,8 +132,8 @@ TimelineTask fakeTimelineTaskFactory(
         {String? filterKey, TimelineTask? parent}) =>
     FakeTimelineTask(filterKey: filterKey, parent: parent);
 
-testee() async {
-  final Server server = Server([TestService()]);
+Future<void> testee() async {
+  final server = Server([TestService()]);
   await server.serve(address: 'localhost', port: 0);
   isTimelineLoggingEnabled = true;
   timelineTaskFactory = fakeTimelineTaskFactory;
@@ -171,7 +175,7 @@ void checkWriteEvent(List<Map> events) {
 void checkReceiveEvent(List<Map> events) {
   events = events.where((e) => e['name'] == 'Data received').toList();
   expect(events.length, equals(3));
-  int sum = 0;
+  var sum = 0;
   for (final e in events) {
     expect(e['id'], 1);
     // 3 elements are 1, 2 and 3.
@@ -200,7 +204,7 @@ void checkFinishEvent(List<Map> events) {
   expect(e.length, 2);
 }
 
-main([args = const <String>[]]) {
+void main([args = const <String>[]]) {
   test('Test gRPC timeline logging', () async {
     await testee();
     for (final task in FakeTimelineTask.tasks) {

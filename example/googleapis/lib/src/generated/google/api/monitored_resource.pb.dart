@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/api/monitored_resource.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -47,7 +47,35 @@ class MonitoredResourceDescriptor extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   MonitoredResourceDescriptor._() : super();
-  factory MonitoredResourceDescriptor() => create();
+  factory MonitoredResourceDescriptor({
+    $core.String type,
+    $core.String displayName,
+    $core.String description,
+    $core.Iterable<$0.LabelDescriptor> labels,
+    $core.String name,
+    $2.LaunchStage launchStage,
+  }) {
+    final _result = create();
+    if (type != null) {
+      _result.type = type;
+    }
+    if (displayName != null) {
+      _result.displayName = displayName;
+    }
+    if (description != null) {
+      _result.description = description;
+    }
+    if (labels != null) {
+      _result.labels.addAll(labels);
+    }
+    if (name != null) {
+      _result.name = name;
+    }
+    if (launchStage != null) {
+      _result.launchStage = launchStage;
+    }
+    return _result;
+  }
   factory MonitoredResourceDescriptor.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -169,7 +197,19 @@ class MonitoredResource extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   MonitoredResource._() : super();
-  factory MonitoredResource() => create();
+  factory MonitoredResource({
+    $core.String type,
+    $core.Map<$core.String, $core.String> labels,
+  }) {
+    final _result = create();
+    if (type != null) {
+      _result.type = type;
+    }
+    if (labels != null) {
+      _result.labels.addAll(labels);
+    }
+    return _result;
+  }
   factory MonitoredResource.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -238,7 +278,19 @@ class MonitoredResourceMetadata extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   MonitoredResourceMetadata._() : super();
-  factory MonitoredResourceMetadata() => create();
+  factory MonitoredResourceMetadata({
+    $1.Struct systemLabels,
+    $core.Map<$core.String, $core.String> userLabels,
+  }) {
+    final _result = create();
+    if (systemLabels != null) {
+      _result.systemLabels = systemLabels;
+    }
+    if (userLabels != null) {
+      _result.userLabels.addAll(userLabels);
+    }
+    return _result;
+  }
   factory MonitoredResourceMetadata.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);

@@ -61,6 +61,7 @@ class ServerTlsCredentials extends ServerCredentials {
       this.privateKey,
       this.privateKeyPassword});
 
+  @override
   SecurityContext get securityContext {
     final context = createSecurityContext(true);
     if (privateKey != null) {
@@ -152,6 +153,7 @@ class Server extends ConnectionServer {
     return null;
   }
 
+  @override
   Service? lookupService(String service) => _services[service];
 
   /// Starts the [Server] with the given options.
@@ -162,9 +164,9 @@ class Server extends ConnectionServer {
       int? port,
       ServerCredentials? security,
       ServerSettings? http2ServerSettings,
-      int backlog: 0,
-      bool v6Only: false,
-      bool shared: false}) async {
+      int backlog = 0,
+      bool v6Only = false,
+      bool shared = false}) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
     Stream<Socket>? server;
     final securityContext = security?.securityContext;
@@ -198,6 +200,7 @@ class Server extends ConnectionServer {
     });
   }
 
+  @override
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream) {
     return ServerHandler_(lookupService, stream, _interceptors, _codecRegistry)

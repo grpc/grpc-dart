@@ -330,7 +330,7 @@ void main() {
     }
 
     harness.client = TestClient(harness.channel, decode: (bytes) {
-      throw "error decoding";
+      throw 'error decoding';
     });
 
     await harness.runFailureTest(
@@ -439,9 +439,9 @@ void main() {
   });
 
   test('Default reconnect backoff backs off', () {
-    Duration lastBackoff = defaultBackoffStrategy(null);
+    var lastBackoff = defaultBackoffStrategy(null);
     expect(lastBackoff, const Duration(seconds: 1));
-    for (int i = 0; i < 12; i++) {
+    for (var i = 0; i < 12; i++) {
       final minNext = lastBackoff * (1.6 - 0.2);
       final maxNext = lastBackoff * (1.6 + 0.2);
       lastBackoff = defaultBackoffStrategy(lastBackoff);

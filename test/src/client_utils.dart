@@ -62,16 +62,23 @@ class FakeClientTransportConnection extends Http2ClientConnection {
 Duration testBackoff(Duration? lastBackoff) => const Duration(milliseconds: 1);
 
 class FakeChannelOptions implements ChannelOptions {
+  @override
   ChannelCredentials credentials = const ChannelCredentials.secure();
+  @override
   Duration idleTimeout = const Duration(seconds: 1);
+  @override
   Duration connectionTimeout = const Duration(seconds: 10);
+  @override
   String userAgent = 'dart-grpc/1.0.0 test';
+  @override
   BackoffStrategy backoffStrategy = testBackoff;
+  @override
   CodecRegistry codecRegistry = CodecRegistry.empty();
 }
 
 class FakeChannel extends ClientChannel {
   final Http2ClientConnection connection;
+  @override
   final FakeChannelOptions options;
 
   FakeChannel(String host, this.connection, this.options)
@@ -83,6 +90,7 @@ class FakeChannel extends ClientChannel {
 
 class FakeClientConnectorChannel extends ClientTransportConnectorChannel {
   final Http2ClientConnection connection;
+  @override
   final FakeChannelOptions options;
 
   FakeClientConnectorChannel(
@@ -106,7 +114,7 @@ class TestClient extends Client {
   TestClient(base.ClientChannel channel,
       {CallOptions? options,
       Iterable<ClientInterceptor>? interceptors,
-      this.decode: mockDecode})
+      this.decode = mockDecode})
       : super(channel, options: options, interceptors: interceptors) {
     _$unary = ClientMethod<int, int>('/Test/Unary', mockEncode, decode);
     _$clientStreaming =
@@ -255,7 +263,7 @@ abstract class _Harness {
       List<MessageHandler> serverHandlers = const [],
       void Function()? doneHandler,
       bool expectDone = true}) async {
-    int serverHandlerIndex = 0;
+    var serverHandlerIndex = 0;
     void handleServerMessage(StreamMessage message) {
       serverHandlers[serverHandlerIndex++](message);
     }

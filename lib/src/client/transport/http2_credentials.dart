@@ -21,7 +21,8 @@ import '../../shared/security.dart';
 /// returns `true`, the bad certificate is allowed, and the TLS handshake can
 /// continue. If the handler returns `false`, the TLS handshake fails, and the
 /// connection is aborted.
-typedef bool BadCertificateHandler(X509Certificate certificate, String host);
+typedef BadCertificateHandler = bool Function(
+    X509Certificate certificate, String host);
 
 /// Bad certificate handler that disables all certificate checks.
 /// DO NOT USE IN PRODUCTION!
@@ -60,7 +61,7 @@ class ChannelCredentials {
         ..setTrustedCertificatesBytes(_certificateBytes!,
             password: _certificatePassword);
     }
-    final context = new SecurityContext(withTrustedRoots: true);
+    final context = SecurityContext(withTrustedRoots: true);
     context.setAlpnProtocols(supportedAlpnProtocols, false);
     return context;
   }

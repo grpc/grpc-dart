@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'auth.dart';
 
 class ComputeEngineAuthenticator extends HttpBasedAuthenticator {
+  @override
   Future<auth.AccessCredentials> obtainCredentialsWithClient(
           http.Client client, String uri) =>
       auth.obtainAccessCredentialsViaMetadataServer(client);
@@ -30,6 +31,7 @@ class ServiceAccountAuthenticator extends HttpBasedAuthenticator {
 
   String? get projectId => _projectId;
 
+  @override
   Future<auth.AccessCredentials> obtainCredentialsWithClient(
           http.Client client, String uri) =>
       auth.obtainAccessCredentialsViaServiceAccount(
@@ -47,6 +49,7 @@ class _CredentialsRefreshingAuthenticator extends HttpBasedAuthenticator {
     this._quotaProject,
   );
 
+  @override
   Future<void> authenticate(Map<String, String> metadata, String uri) async {
     await super.authenticate(metadata, uri);
     if (_quotaProject != null) {

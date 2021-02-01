@@ -91,7 +91,9 @@ class TestInterceptor {
 }
 
 class TestServerStream extends ServerTransportStream {
+  @override
   final Stream<StreamMessage> incomingMessages;
+  @override
   final StreamSink<StreamMessage> outgoingMessages;
 
   TestServerStream(this.incomingMessages, this.outgoingMessages);
@@ -106,7 +108,7 @@ class TestServerStream extends ServerTransportStream {
   }
 
   @override
-  set onTerminated(void value(int x)) {}
+  set onTerminated(void Function(int x) value) {}
 
   @override
   bool get canPush => true;
@@ -162,7 +164,7 @@ abstract class _Harness {
   }
 
   void setupTest(List<MessageHandler> handlers) {
-    int handlerIndex = 0;
+    var handlerIndex = 0;
     void handleMessages(StreamMessage message) {
       handlers[handlerIndex++](message);
     }
@@ -204,7 +206,7 @@ abstract class _Harness {
       validateResponseHeaders(header.metadata);
     }
 
-    int responseIndex = 0;
+    var responseIndex = 0;
     void handleResponse(StreamMessage message) {
       final response = validateDataMessage(message);
       expect(mockDecode(response.data), expectedResponses[responseIndex++]);

@@ -84,7 +84,7 @@ class ServiceMethod<Q, R> {
     return future;
   }
 
-  void _awaitAndCatch<Q>(Future<Q> f) async {
+  void _awaitAndCatch(Future<Q> f) async {
     try {
       await f;
     } catch (_) {}

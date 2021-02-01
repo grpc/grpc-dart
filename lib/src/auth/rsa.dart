@@ -30,7 +30,7 @@ class RS256Signer {
   // NIST sha-256 OID (2 16 840 1 101 3 4 2 1)
   // See a reference for the encoding here:
   // http://msdn.microsoft.com/en-us/library/bb540809%28v=vs.85%29.aspx
-  static const _RSA_SHA256_ALGORITHM_IDENTIFIER = const [
+  static const _RSA_SHA256_ALGORITHM_IDENTIFIER = [
     0x06,
     0x09,
     0x60,
@@ -52,7 +52,7 @@ class RS256Signer {
     final digest = _digestInfo(sha256.convert(bytes).bytes);
     final modulusLen = (_rsaKey.bitLength + 7) ~/ 8;
 
-    final block = new Uint8List(modulusLen);
+    final block = Uint8List(modulusLen);
     final padLength = block.length - digest.length - 3;
     block[0] = 0x00;
     block[1] = 0x01;
@@ -68,7 +68,7 @@ class RS256Signer {
     //     digest OCTET STRING
     // }
     var offset = 0;
-    final digestInfo = new Uint8List(
+    final digestInfo = Uint8List(
         2 + 2 + _RSA_SHA256_ALGORITHM_IDENTIFIER.length + 2 + 2 + hash.length);
     {
       // DigestInfo
@@ -100,14 +100,14 @@ class ASN1Parser {
 
   static ASN1Object parse(Uint8List bytes) {
     Never invalidFormat(String msg) {
-      throw new ArgumentError("Invalid DER encoding: $msg");
+      throw ArgumentError('Invalid DER encoding: $msg');
     }
 
-    final data = new ByteData.view(bytes.buffer);
-    int offset = 0;
+    final data = ByteData.view(bytes.buffer);
+    var offset = 0;
     final end = bytes.length;
 
-    checkNBytesAvailable(int n) {
+    void checkNBytesAvailable(int n) {
       if ((offset + n) > end) {
         invalidFormat('Tried to read more bytes than available.');
       }
@@ -134,10 +134,10 @@ class ASN1Parser {
       // Long length encoding form:
       // This byte has in bits 0..6 the number of bytes following which encode
       // the length.
-      int countLengthBytes = lengthByte & 0x7f;
+      var countLengthBytes = lengthByte & 0x7f;
       checkNBytesAvailable(countLengthBytes);
 
-      int length = 0;
+      var length = 0;
       while (countLengthBytes > 0) {
         length = (length << 8) | data.getUint8(offset++);
         countLengthBytes--;
@@ -159,16 +159,16 @@ class ASN1Parser {
       switch (tag) {
         case INTEGER_TAG:
           final size = readEncodedLength();
-          return new ASN1Integer(RSAAlgorithm.bytes2BigInt(readBytes(size)));
+          return ASN1Integer(RSAAlgorithm.bytes2BigInt(readBytes(size)));
         case OCTET_STRING_TAG:
           final size = readEncodedLength();
-          return new ASN1OctetString(readBytes(size));
+          return ASN1OctetString(readBytes(size));
         case NULL_TAG:
           readNullBytes();
-          return new ASN1Null();
+          return ASN1Null();
         case OBJECT_ID_TAG:
           final size = readEncodedLength();
-          return new ASN1ObjectIdentifier(readBytes(size));
+          return ASN1ObjectIdentifier(readBytes(size));
         case SEQUENCE_TAG:
           final lengthInBytes = readEncodedLength();
           if ((offset + lengthInBytes) > end) {
@@ -180,7 +180,7 @@ class ASN1Parser {
           while (offset < endOfSequence) {
             objects.add(decodeObject());
           }
-          return new ASN1Sequence(objects);
+          return ASN1Sequence(objects);
         default:
           invalidFormat(
               'Unexpected tag $tag at offset ${offset - 1} (end: $end).');
@@ -189,7 +189,7 @@ class ASN1Parser {
 
     final obj = decodeObject();
     if (offset != bytes.length) {
-      throw new ArgumentError('More bytes than expected in ASN1 encoding.');
+      throw ArgumentError('More bytes than expected in ASN1 encoding.');
     }
     return obj;
   }
@@ -300,17 +300,17 @@ abstract class RSAAlgorithm {
   static BigInt bytes2BigInt(List<int> bytes) {
     var number = BigInt.zero;
     for (var i = 0; i < bytes.length; i++) {
-      number = (number << 8) | new BigInt.from(bytes[i]);
+      number = (number << 8) | BigInt.from(bytes[i]);
     }
     return number;
   }
 
   static List<int> integer2Bytes(BigInt integer, int intendedLength) {
     if (integer < BigInt.one) {
-      throw new ArgumentError('Only positive integers are supported.');
+      throw ArgumentError('Only positive integers are supported.');
     }
-    final bytes = new Uint8List(intendedLength);
-    for (int i = bytes.length - 1; i >= 0; i--) {
+    final bytes = Uint8List(intendedLength);
+    for (var i = bytes.length - 1; i >= 0; i--) {
       bytes[i] = (integer & _bigIntFF).toInt();
       integer >>= 8;
     }
@@ -318,4 +318,4 @@ abstract class RSAAlgorithm {
   }
 }
 
-final _bigIntFF = new BigInt.from(0xff);
+final _bigIntFF = BigInt.from(0xff);
