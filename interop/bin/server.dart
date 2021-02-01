@@ -30,13 +30,13 @@ const _trailerEchoKey = 'x-grpc-test-echo-trailing-bin';
 class TestService extends TestServiceBase {
   @override
   void $onMetadata(ServiceCall context) {
-    final headerEcho = context.clientMetadata[_headerEchoKey];
+    final headerEcho = context.clientMetadata![_headerEchoKey];
     if (headerEcho != null) {
-      context.headers[_headerEchoKey] = headerEcho;
+      context.headers![_headerEchoKey] = headerEcho;
     }
-    final trailerEcho = context.clientMetadata[_trailerEchoKey];
+    final trailerEcho = context.clientMetadata![_trailerEchoKey];
     if (trailerEcho != null) {
-      context.trailers[_trailerEchoKey] = trailerEcho;
+      context.trailers![_trailerEchoKey] = trailerEcho;
     }
   }
 
@@ -67,7 +67,7 @@ class TestService extends TestServiceBase {
   @override
   Future<StreamingInputCallResponse> streamingInputCall(
       ServiceCall call, Stream<StreamingInputCallRequest> request) async {
-    final aggregatedPayloadSize = await request.fold(
+    final aggregatedPayloadSize = await request.fold<int>(
         0, (size, message) => size + message.payload.body.length);
     return StreamingInputCallResponse()
       ..aggregatedPayloadSize = aggregatedPayloadSize;
@@ -114,9 +114,9 @@ class TestService extends TestServiceBase {
   }
 
   @override
-  Future<Empty> unimplementedCall(ServiceCall call, Empty request) {
+  Future<Empty> unimplementedCall(ServiceCall call, Empty request) async {
     call.sendTrailers(status: StatusCode.unimplemented);
-    return null;
+    return Empty();
   }
 }
 
@@ -133,7 +133,7 @@ Future<void> main(List<String> args) async {
 
   final server = Server(services);
 
-  ServerTlsCredentials tlsCredentials;
+  late ServerTlsCredentials tlsCredentials;
   if (arguments['use_tls'] == 'true') {
     final certificate = File(arguments['tls_cert_file']).readAsBytes();
     final privateKey = File(arguments['tls_key_file']).readAsBytes();

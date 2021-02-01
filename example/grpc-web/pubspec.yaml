@@ -18,3 +18,5 @@ dependency_overrides:
   # TODO: Need bazel_worker 1.0.0-nullsafety.0 published
   bazel_worker:
     git: https://github.com/dart-lang/bazel_worker
+  shelf:
+    version: ^1.0.0-nullsafety
