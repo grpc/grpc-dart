@@ -94,7 +94,7 @@ class Client {
     Stream<Point> generateRoute(int count) async* {
       final random = Random();
 
-      for (int i = 0; i < count; i++) {
+      for (var i = 0; i < count; i++) {
         final point = featuresDb[random.nextInt(featuresDb.length)].location;
         print(
             'Visiting point ${point.latitude / coordFactor}, ${point.longitude / coordFactor}');

@@ -5,7 +5,7 @@ void main() {
   test('WebCallOptions mergeWith CallOptions returns WebCallOptions', () {
     final options =
         WebCallOptions(bypassCorsPreflight: true, withCredentials: true);
-    final metadata = {"test": "42"};
+    final metadata = {'test': '42'};
     final mergedOptions =
         options.mergedWith(CallOptions(metadata: metadata)) as WebCallOptions;
 

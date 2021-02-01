@@ -51,7 +51,7 @@ class Tester {
     return File(serviceAccountKeyFile).readAsStringSync();
   }
 
-  void set serverPort(String value) {
+  set serverPort(String value) {
     if (value == null) {
       _serverPort = null;
       return;
@@ -63,11 +63,11 @@ class Tester {
     }
   }
 
-  void set useTls(String value) {
+  set useTls(String value) {
     _useTls = value != 'false';
   }
 
-  void set useTestCA(String value) {
+  set useTestCA(String value) {
     _useTestCA = value == 'true';
   }
 
@@ -190,8 +190,8 @@ class Tester {
   ///    payload set to current timestamp. Timestamp format is irrelevant, and
   ///    resolution is in nanoseconds.
   ///    Client adds a `x-user-ip` header with value `1.2.3.4` to the request.
-  ///    This is done since some proxys such as GFE will not cache requests from
-  ///    localhost.
+  ///    This is done since some proxies such as GFE will not cache requests
+  ///    from localhost.
   ///    Client marks the request as cacheable by setting the cacheable flag in
   ///    the request context. Longer term this should be driven by the method
   ///    option specified in the proto file itself.
@@ -613,7 +613,7 @@ class Tester {
     final call = client.fullDuplexCall(requests.stream);
     requests.close();
     final responses = await call.toList();
-    if (responses.length != 0) {
+    if (responses.isNotEmpty) {
       throw 'Received too many responses. ${responses.length} != 0';
     }
   }
@@ -833,7 +833,7 @@ class Tester {
   ///   if using a usable auth implementation, it may specify the file location
   ///   in the environment variable GOOGLE_APPLICATION_CREDENTIALS
   /// * optionally uses the flag `--oauth_scope` for the oauth scope if
-  ///   implementator wishes to use service account credential instead of JWT
+  ///   implementor wishes to use service account credential instead of JWT
   ///   credential. For testing against grpc-test.sandbox.googleapis.com, oauth
   ///   scope "https://www.googleapis.com/auth/xapi.zoo" should be used.
   ///

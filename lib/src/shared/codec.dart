@@ -54,7 +54,7 @@ class GzipCodec implements Codec {
   const GzipCodec();
 
   @override
-  final encodingName = "gzip";
+  final encodingName = 'gzip';
 
   @override
   List<int> compress(List<int> data) {

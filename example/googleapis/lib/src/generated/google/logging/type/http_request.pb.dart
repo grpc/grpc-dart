@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/logging/type/http_request.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -55,7 +55,71 @@ class HttpRequest extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   HttpRequest._() : super();
-  factory HttpRequest() => create();
+  factory HttpRequest({
+    $core.String requestMethod,
+    $core.String requestUrl,
+    $fixnum.Int64 requestSize,
+    $core.int status,
+    $fixnum.Int64 responseSize,
+    $core.String userAgent,
+    $core.String remoteIp,
+    $core.String referer,
+    $core.bool cacheHit,
+    $core.bool cacheValidatedWithOriginServer,
+    $core.bool cacheLookup,
+    $fixnum.Int64 cacheFillBytes,
+    $core.String serverIp,
+    $0.Duration latency,
+    $core.String protocol,
+  }) {
+    final _result = create();
+    if (requestMethod != null) {
+      _result.requestMethod = requestMethod;
+    }
+    if (requestUrl != null) {
+      _result.requestUrl = requestUrl;
+    }
+    if (requestSize != null) {
+      _result.requestSize = requestSize;
+    }
+    if (status != null) {
+      _result.status = status;
+    }
+    if (responseSize != null) {
+      _result.responseSize = responseSize;
+    }
+    if (userAgent != null) {
+      _result.userAgent = userAgent;
+    }
+    if (remoteIp != null) {
+      _result.remoteIp = remoteIp;
+    }
+    if (referer != null) {
+      _result.referer = referer;
+    }
+    if (cacheHit != null) {
+      _result.cacheHit = cacheHit;
+    }
+    if (cacheValidatedWithOriginServer != null) {
+      _result.cacheValidatedWithOriginServer = cacheValidatedWithOriginServer;
+    }
+    if (cacheLookup != null) {
+      _result.cacheLookup = cacheLookup;
+    }
+    if (cacheFillBytes != null) {
+      _result.cacheFillBytes = cacheFillBytes;
+    }
+    if (serverIp != null) {
+      _result.serverIp = serverIp;
+    }
+    if (latency != null) {
+      _result.latency = latency;
+    }
+    if (protocol != null) {
+      _result.protocol = protocol;
+    }
+    return _result;
+  }
   factory HttpRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);

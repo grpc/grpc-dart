@@ -66,16 +66,22 @@ class ServerHandler_ extends ServiceCall {
     this._codecRegistry,
   );
 
+  @override
   DateTime? get deadline => _deadline;
 
+  @override
   bool get isCanceled => _isCanceled;
 
+  @override
   bool get isTimedOut => _isTimedOut;
 
+  @override
   Map<String, String>? get clientMetadata => _clientMetadata;
 
+  @override
   Map<String, String>? get headers => _customHeaders;
 
+  @override
   Map<String, String>? get trailers => _customTrailers;
 
   void handle() {
@@ -162,7 +168,7 @@ class ServerHandler_ extends ServiceCall {
   Future<GrpcError?> _applyInterceptors() async {
     try {
       for (final interceptor in _interceptors) {
-        final error = await interceptor(this, this._descriptor);
+        final error = await interceptor(this, _descriptor);
         if (error != null) {
           return error;
         }
@@ -293,6 +299,7 @@ class ServerHandler_ extends ServiceCall {
     }
   }
 
+  @override
   void sendHeaders() {
     if (_headersSent) throw GrpcError.internal('Headers already sent');
 
@@ -316,6 +323,7 @@ class ServerHandler_ extends ServiceCall {
     _headersSent = true;
   }
 
+  @override
   void sendTrailers({int? status = 0, String? message}) {
     _timeoutTimer?.cancel();
 
@@ -336,7 +344,7 @@ class ServerHandler_ extends ServiceCall {
     outgoingTrailersMap['grpc-status'] = status.toString();
     if (message != null) {
       outgoingTrailersMap['grpc-message'] =
-          Uri.encodeFull(message).replaceAll("%20", " ");
+          Uri.encodeFull(message).replaceAll('%20', ' ');
     }
 
     final outgoingTrailers = <Header>[];

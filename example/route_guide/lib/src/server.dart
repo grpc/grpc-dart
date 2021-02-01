@@ -75,9 +75,9 @@ class RouteGuideService extends RouteGuideServiceBase {
   @override
   Future<RouteSummary> recordRoute(
       grpc.ServiceCall call, Stream<Point> request) async {
-    int pointCount = 0;
-    int featureCount = 0;
-    double distance = 0.0;
+    var pointCount = 0;
+    var featureCount = 0;
+    var distance = 0.0;
     Point previous;
     final timer = Stopwatch();
 
@@ -110,7 +110,9 @@ class RouteGuideService extends RouteGuideServiceBase {
       grpc.ServiceCall call, Stream<RouteNote> request) async* {
     await for (var note in request) {
       final notes = routeNotes.putIfAbsent(note.location, () => <RouteNote>[]);
-      for (var note in notes) yield note;
+      for (var note in notes) {
+        yield note;
+      }
       notes.add(note);
     }
   }

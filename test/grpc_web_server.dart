@@ -85,7 +85,7 @@ static_resources:
                     port_value: %TARGET_PORT%
 ''';
 
-hybridMain(StreamChannel channel) async {
+Future<void> hybridMain(StreamChannel channel) async {
   // Envoy output will be collected and dumped to stdout if envoy exits
   // with an error. Otherwise if verbose is specified it will be dumped
   // to stdout unconditionally.

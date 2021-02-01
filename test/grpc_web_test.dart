@@ -56,7 +56,7 @@ void main() {
 
   // Verify that terminate does not cause an exception when terminating
   // channel with multiple active requests.
-  test("terminate works", () async {
+  test('terminate works', () async {
     final channel = GrpcWebClientChannel.xhr(server.uri);
     final service = EchoServiceClient(channel);
 
@@ -96,7 +96,7 @@ void main() {
   });
 
   // Verify that stream cancellation does not cause an exception
-  test("stream cancellation works", () async {
+  test('stream cancellation works', () async {
     final channel = GrpcWebClientChannel.xhr(server.uri);
     final service = EchoServiceClient(channel);
 

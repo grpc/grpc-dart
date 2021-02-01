@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: route_guide.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -34,7 +34,19 @@ class Point extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   Point._() : super();
-  factory Point() => create();
+  factory Point({
+    $core.int latitude,
+    $core.int longitude,
+  }) {
+    final _result = create();
+    if (latitude != null) {
+      _result.latitude = latitude;
+    }
+    if (longitude != null) {
+      _result.longitude = longitude;
+    }
+    return _result;
+  }
   factory Point.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -104,7 +116,19 @@ class Rectangle extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   Rectangle._() : super();
-  factory Rectangle() => create();
+  factory Rectangle({
+    Point lo,
+    Point hi,
+  }) {
+    final _result = create();
+    if (lo != null) {
+      _result.lo = lo;
+    }
+    if (hi != null) {
+      _result.hi = hi;
+    }
+    return _result;
+  }
   factory Rectangle.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -184,7 +208,19 @@ class Feature extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   Feature._() : super();
-  factory Feature() => create();
+  factory Feature({
+    $core.String name,
+    Point location,
+  }) {
+    final _result = create();
+    if (name != null) {
+      _result.name = name;
+    }
+    if (location != null) {
+      _result.location = location;
+    }
+    return _result;
+  }
   factory Feature.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -262,7 +298,19 @@ class RouteNote extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   RouteNote._() : super();
-  factory RouteNote() => create();
+  factory RouteNote({
+    Point location,
+    $core.String message,
+  }) {
+    final _result = create();
+    if (location != null) {
+      _result.location = location;
+    }
+    if (message != null) {
+      _result.message = message;
+    }
+    return _result;
+  }
   factory RouteNote.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -346,7 +394,27 @@ class RouteSummary extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   RouteSummary._() : super();
-  factory RouteSummary() => create();
+  factory RouteSummary({
+    $core.int pointCount,
+    $core.int featureCount,
+    $core.int distance,
+    $core.int elapsedTime,
+  }) {
+    final _result = create();
+    if (pointCount != null) {
+      _result.pointCount = pointCount;
+    }
+    if (featureCount != null) {
+      _result.featureCount = featureCount;
+    }
+    if (distance != null) {
+      _result.distance = distance;
+    }
+    if (elapsedTime != null) {
+      _result.elapsedTime = elapsedTime;
+    }
+    return _result;
+  }
   factory RouteSummary.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);

@@ -66,13 +66,15 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   ChannelCredentials get credentials => options.credentials;
 
+  @override
   String get authority => _transportConnector.authority;
 
+  @override
   String get scheme => options.credentials.isSecure ? 'https' : 'http';
 
   ConnectionState get state => _state;
 
-  static const _estimatedRoundTripTime = const Duration(milliseconds: 20);
+  static const _estimatedRoundTripTime = Duration(milliseconds: 20);
 
   Future<ClientTransportConnection> connectTransport() async {
     final connection = await _transportConnector.connect();
@@ -81,7 +83,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     // Give the settings settings-frame a bit of time to arrive.
     // TODO(sigurdm): This is a hack. The http2 package should expose a way of
     // waiting for the settings frame to arrive.
-    await new Future.delayed(_estimatedRoundTripTime);
+    await Future.delayed(_estimatedRoundTripTime);
 
     if (_state == ConnectionState.shutdown) {
       _transportConnector.shutdown();
@@ -119,8 +121,8 @@ class Http2ClientConnection implements connection.ClientConnection {
   ///
   /// Assumes [_transportConnection] is not `null`.
   void _refreshConnectionIfUnhealthy() {
-    final bool isHealthy = _transportConnection!.isOpen;
-    final bool shouldRefresh =
+    final isHealthy = _transportConnection!.isOpen;
+    final shouldRefresh =
         _connectionLifeTimer.elapsed > options.connectionTimeout;
     if (shouldRefresh) {
       _transportConnection!.finish();
@@ -130,6 +132,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     }
   }
 
+  @override
   void dispatchCall(ClientCall call) {
     if (_transportConnection != null) {
       _refreshConnectionIfUnhealthy();
@@ -149,6 +152,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     }
   }
 
+  @override
   GrpcTransportStream makeRequest(String path, Duration? timeout,
       Map<String, String> metadata, ErrorHandler onRequestFailure,
       {CallOptions? callOptions}) {
@@ -188,12 +192,14 @@ class Http2ClientConnection implements connection.ClientConnection {
     _failCall(call, 'Connection shutting down.');
   }
 
+  @override
   Future<void> shutdown() async {
     if (_state == ConnectionState.shutdown) return null;
     _setShutdownState();
     await _transportConnection?.finish();
   }
 
+  @override
   Future<void> terminate() async {
     _setShutdownState();
     await _transportConnection?.terminate();
@@ -353,7 +359,7 @@ class _SocketTransportConnector implements ClientTransportConnector {
     final host =
         _host is String ? _host as String : (_host as InternetAddress).host;
     return _options.credentials.authority ??
-        (_port == 443 ? host : "$host:$_port");
+        (_port == 443 ? host : '$host:$_port');
   }
 
   @override
