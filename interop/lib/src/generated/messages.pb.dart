@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: messages.proto
 //
-// @dart = 2.3
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -31,7 +31,15 @@ class BoolValue extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   BoolValue._() : super();
-  factory BoolValue() => create();
+  factory BoolValue({
+    $core.bool value,
+  }) {
+    final _result = create();
+    if (value != null) {
+      _result.value = value;
+    }
+    return _result;
+  }
   factory BoolValue.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -97,7 +105,19 @@ class Payload extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   Payload._() : super();
-  factory Payload() => create();
+  factory Payload({
+    PayloadType type,
+    $core.List<$core.int> body,
+  }) {
+    final _result = create();
+    if (type != null) {
+      _result.type = type;
+    }
+    if (body != null) {
+      _result.body = body;
+    }
+    return _result;
+  }
   factory Payload.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -173,7 +193,19 @@ class EchoStatus extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   EchoStatus._() : super();
-  factory EchoStatus() => create();
+  factory EchoStatus({
+    $core.int code,
+    $core.String message,
+  }) {
+    final _result = create();
+    if (code != null) {
+      _result.code = code;
+    }
+    if (message != null) {
+      _result.message = message;
+    }
+    return _result;
+  }
   factory EchoStatus.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -256,7 +288,43 @@ class SimpleRequest extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   SimpleRequest._() : super();
-  factory SimpleRequest() => create();
+  factory SimpleRequest({
+    PayloadType responseType,
+    $core.int responseSize,
+    Payload payload,
+    $core.bool fillUsername,
+    $core.bool fillOauthScope,
+    BoolValue responseCompressed,
+    EchoStatus responseStatus,
+    BoolValue expectCompressed,
+  }) {
+    final _result = create();
+    if (responseType != null) {
+      _result.responseType = responseType;
+    }
+    if (responseSize != null) {
+      _result.responseSize = responseSize;
+    }
+    if (payload != null) {
+      _result.payload = payload;
+    }
+    if (fillUsername != null) {
+      _result.fillUsername = fillUsername;
+    }
+    if (fillOauthScope != null) {
+      _result.fillOauthScope = fillOauthScope;
+    }
+    if (responseCompressed != null) {
+      _result.responseCompressed = responseCompressed;
+    }
+    if (responseStatus != null) {
+      _result.responseStatus = responseStatus;
+    }
+    if (expectCompressed != null) {
+      _result.expectCompressed = expectCompressed;
+    }
+    return _result;
+  }
   factory SimpleRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -411,7 +479,23 @@ class SimpleResponse extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   SimpleResponse._() : super();
-  factory SimpleResponse() => create();
+  factory SimpleResponse({
+    Payload payload,
+    $core.String username,
+    $core.String oauthScope,
+  }) {
+    final _result = create();
+    if (payload != null) {
+      _result.payload = payload;
+    }
+    if (username != null) {
+      _result.username = username;
+    }
+    if (oauthScope != null) {
+      _result.oauthScope = oauthScope;
+    }
+    return _result;
+  }
   factory SimpleResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -500,7 +584,19 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   StreamingInputCallRequest._() : super();
-  factory StreamingInputCallRequest() => create();
+  factory StreamingInputCallRequest({
+    Payload payload,
+    BoolValue expectCompressed,
+  }) {
+    final _result = create();
+    if (payload != null) {
+      _result.payload = payload;
+    }
+    if (expectCompressed != null) {
+      _result.expectCompressed = expectCompressed;
+    }
+    return _result;
+  }
   factory StreamingInputCallRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -578,7 +674,15 @@ class StreamingInputCallResponse extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   StreamingInputCallResponse._() : super();
-  factory StreamingInputCallResponse() => create();
+  factory StreamingInputCallResponse({
+    $core.int aggregatedPayloadSize,
+  }) {
+    final _result = create();
+    if (aggregatedPayloadSize != null) {
+      _result.aggregatedPayloadSize = aggregatedPayloadSize;
+    }
+    return _result;
+  }
   factory StreamingInputCallResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -649,7 +753,23 @@ class ResponseParameters extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   ResponseParameters._() : super();
-  factory ResponseParameters() => create();
+  factory ResponseParameters({
+    $core.int size,
+    $core.int intervalUs,
+    BoolValue compressed,
+  }) {
+    final _result = create();
+    if (size != null) {
+      _result.size = size;
+    }
+    if (intervalUs != null) {
+      _result.intervalUs = intervalUs;
+    }
+    if (compressed != null) {
+      _result.compressed = compressed;
+    }
+    return _result;
+  }
   factory ResponseParameters.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -741,7 +861,27 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   StreamingOutputCallRequest._() : super();
-  factory StreamingOutputCallRequest() => create();
+  factory StreamingOutputCallRequest({
+    PayloadType responseType,
+    $core.Iterable<ResponseParameters> responseParameters,
+    Payload payload,
+    EchoStatus responseStatus,
+  }) {
+    final _result = create();
+    if (responseType != null) {
+      _result.responseType = responseType;
+    }
+    if (responseParameters != null) {
+      _result.responseParameters.addAll(responseParameters);
+    }
+    if (payload != null) {
+      _result.payload = payload;
+    }
+    if (responseStatus != null) {
+      _result.responseStatus = responseStatus;
+    }
+    return _result;
+  }
   factory StreamingOutputCallRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -834,7 +974,15 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   StreamingOutputCallResponse._() : super();
-  factory StreamingOutputCallResponse() => create();
+  factory StreamingOutputCallResponse({
+    Payload payload,
+  }) {
+    final _result = create();
+    if (payload != null) {
+      _result.payload = payload;
+    }
+    return _result;
+  }
   factory StreamingOutputCallResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -899,7 +1047,15 @@ class ReconnectParams extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   ReconnectParams._() : super();
-  factory ReconnectParams() => create();
+  factory ReconnectParams({
+    $core.int maxReconnectBackoffMs,
+  }) {
+    final _result = create();
+    if (maxReconnectBackoffMs != null) {
+      _result.maxReconnectBackoffMs = maxReconnectBackoffMs;
+    }
+    return _result;
+  }
   factory ReconnectParams.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
@@ -964,7 +1120,19 @@ class ReconnectInfo extends $pb.GeneratedMessage {
     ..hasRequiredFields = false;
 
   ReconnectInfo._() : super();
-  factory ReconnectInfo() => create();
+  factory ReconnectInfo({
+    $core.bool passed,
+    $core.Iterable<$core.int> backoffMs,
+  }) {
+    final _result = create();
+    if (passed != null) {
+      _result.passed = passed;
+    }
+    if (backoffMs != null) {
+      _result.backoffMs.addAll(backoffMs);
+    }
+    return _result;
+  }
   factory ReconnectInfo.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
