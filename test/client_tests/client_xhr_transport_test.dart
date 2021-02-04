@@ -54,11 +54,13 @@ class MockHttpRequest extends Mock implements HttpRequest {
   final int status;
 
   @override
-  int get readyState => super.noSuchMethod(Invocation.getter(#readyState), -1);
+  int get readyState =>
+      super.noSuchMethod(Invocation.getter(#readyState), returnValue: -1);
 
   @override
-  Map<String, String> get responseHeaders => super
-      .noSuchMethod(Invocation.getter(#responseHeaders), <String, String>{});
+  Map<String, String> get responseHeaders =>
+      super.noSuchMethod(Invocation.getter(#responseHeaders),
+          returnValue: <String, String>{});
 }
 
 class MockXhrClientConnection extends XhrClientConnection {
