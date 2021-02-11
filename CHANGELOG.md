@@ -1,6 +1,7 @@
-## 3.0.0-nullsafety.0
+## 3.0.0
 
 * Migrate library and tests to null safety.
+* Require Dart 2.12 or greater.
 
 ## 2.9.0
 
