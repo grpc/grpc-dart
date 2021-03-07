@@ -1108,12 +1108,14 @@ class Tester {
       }
       call.cancel();
     }, onError: (e) {
-      if (e is! GrpcError) completer.completeError('Unexpected error: $e.');
-      if (e.code != StatusCode.cancelled) {
+      if (e is! GrpcError) {
+        completer.completeError('Unexpected error: $e.');
+      } else if (e.code != StatusCode.cancelled) {
         completer
             .completeError('Unexpected status code ${e.code}: ${e.message}.');
+      } else {
+        completer.complete(true);
       }
-      completer.complete(true);
     }, onDone: () {
       if (!completer.isCompleted) completer.completeError('Expected error.');
     });
