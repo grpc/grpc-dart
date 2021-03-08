@@ -16,7 +16,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:googleapis_auth/auth.dart' as auth;
+import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 import 'package:http/http.dart' as http;
 
 import '../client/call.dart';

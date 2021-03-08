@@ -1,5 +1,7 @@
 ## 3.0.1-dev
 
+* Require `package:googleapis_auth` `^1.1.0`
+
 ## 3.0.0
 
 * Migrate library and tests to null safety.
