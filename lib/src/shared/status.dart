@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io' show HttpStatus;
+
 import 'package:grpc/src/generated/google/protobuf/any.pb.dart';
 import 'package:grpc/src/generated/google/rpc/code.pbenum.dart';
 import 'package:grpc/src/generated/google/rpc/error_details.pb.dart';
@@ -121,41 +123,25 @@ class StatusCode {
   /// operation.
   static const unauthenticated = 16;
 
+  static const _httpStatusToGrpcStatus = <int, int>{
+    HttpStatus.ok: StatusCode.ok,
+    HttpStatus.badRequest: StatusCode.invalidArgument,
+    HttpStatus.unauthorized: StatusCode.unauthenticated,
+    HttpStatus.forbidden: StatusCode.permissionDenied,
+    HttpStatus.notFound: StatusCode.notFound,
+    HttpStatus.conflict: StatusCode.aborted,
+    HttpStatus.preconditionFailed: StatusCode.failedPrecondition,
+    HttpStatus.tooManyRequests: StatusCode.resourceExhausted,
+    HttpStatus.clientClosedRequest: StatusCode.cancelled,
+    HttpStatus.internalServerError: StatusCode.unknown,
+    HttpStatus.notImplemented: StatusCode.unimplemented,
+    HttpStatus.serviceUnavailable: StatusCode.unavailable,
+    HttpStatus.gatewayTimeout: StatusCode.deadlineExceeded,
+  };
+
   /// Creates a gRPC Status code from a HTTP Status code
-  ///
-  /// Copied from: https://github.com/grpc/grpc-web/blob/master/javascript/net/grpc/web/statuscode.js
   static int fromHttpStatus(int status) {
-    switch (status) {
-      case 200:
-        return StatusCode.ok;
-      case 400:
-        return StatusCode.invalidArgument;
-      case 401:
-        return StatusCode.unauthenticated;
-      case 403:
-        return StatusCode.permissionDenied;
-      case 404:
-        return StatusCode.notFound;
-      case 409:
-        return StatusCode.aborted;
-      case 412:
-        return StatusCode.failedPrecondition;
-      case 429:
-        return StatusCode.resourceExhausted;
-      case 499:
-        return StatusCode.cancelled;
-      case 500:
-        return StatusCode.unknown;
-      case 501:
-        return StatusCode.unimplemented;
-      case 503:
-        return StatusCode.unavailable;
-      case 504:
-        return StatusCode.deadlineExceeded;
-      // everything else is unknown
-      default:
-        return StatusCode.unknown;
-    }
+    return _httpStatusToGrpcStatus[status] ?? StatusCode.unknown;
   }
 }
 
