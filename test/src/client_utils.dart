@@ -233,7 +233,11 @@ abstract class _Harness {
     toClient.close();
   }
 
-  void sendResponseHeader({List<Header> headers = const []}) {
+  void sendResponseHeader() {
+    final headers = [
+      Header.ascii(':status', '200'),
+      Header.ascii('content-type', 'application/grpc'),
+    ];
     toClient.add(HeadersStreamMessage(headers));
   }
 

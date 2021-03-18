@@ -173,7 +173,7 @@ void main() {
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
-      expectedException: GrpcError.unimplemented('No responses received'),
+      expectedException: GrpcError.unknown('missing :status header'),
       serverHandlers: [handleRequest],
     );
   });
@@ -272,6 +272,8 @@ void main() {
 
     void handleRequest(_) {
       harness.toClient.add(HeadersStreamMessage([
+        Header.ascii(':status', '200'),
+        Header.ascii('content-type', 'application/grpc'),
         Header.ascii('grpc-status', '$customStatusCode'),
         Header.ascii('grpc-message', customStatusMessage)
       ], endStream: true));
@@ -293,6 +295,8 @@ void main() {
 
     void handleRequest(_) {
       harness.toClient.add(HeadersStreamMessage([
+        Header.ascii(':status', '200'),
+        Header.ascii('content-type', 'application/grpc'),
         Header.ascii('grpc-status', '$customStatusCode'),
         Header.ascii('grpc-message', encodedCustomStatusMessage)
       ], endStream: true));
@@ -509,6 +513,8 @@ void main() {
 
     void handleRequest(_) {
       harness.toClient.add(HeadersStreamMessage([
+        Header.ascii(':status', '200'),
+        Header.ascii('content-type', 'application/grpc'),
         Header.ascii('grpc-status', code.toString()),
         Header.ascii('grpc-message', message),
         Header.ascii('grpc-status-details-bin', details),
