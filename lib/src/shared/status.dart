@@ -120,6 +120,43 @@ class StatusCode {
   /// The request does not have valid authentication credentials for the
   /// operation.
   static const unauthenticated = 16;
+
+  /// Creates a gRPC Status code from a HTTP Status code
+  ///
+  /// Copied from: https://github.com/grpc/grpc-web/blob/master/javascript/net/grpc/web/statuscode.js
+  static int fromHttpStatus(int status) {
+    switch (status) {
+      case 200:
+        return StatusCode.ok;
+      case 400:
+        return StatusCode.invalidArgument;
+      case 401:
+        return StatusCode.unauthenticated;
+      case 403:
+        return StatusCode.permissionDenied;
+      case 404:
+        return StatusCode.notFound;
+      case 409:
+        return StatusCode.aborted;
+      case 412:
+        return StatusCode.failedPrecondition;
+      case 429:
+        return StatusCode.resourceExhausted;
+      case 499:
+        return StatusCode.cancelled;
+      case 500:
+        return StatusCode.unknown;
+      case 501:
+        return StatusCode.unimplemented;
+      case 503:
+        return StatusCode.unavailable;
+      case 504:
+        return StatusCode.deadlineExceeded;
+      // everything else is unknown
+      default:
+        return StatusCode.unknown;
+    }
+  }
 }
 
 class GrpcError implements Exception {

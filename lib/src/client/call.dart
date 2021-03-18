@@ -346,7 +346,17 @@ class ClientCall<Q, R> implements Response {
   /// If there's an error status then process it as a response error
   void _checkForErrorStatus(Map<String, String> metadata) {
     final status = metadata['grpc-status'];
-    final statusCode = int.parse(status ?? '0');
+    late final int statusCode;
+
+    if (status != null) {
+      statusCode = int.parse(status);
+    } else {
+      final httpStatus = metadata[':status'];
+
+      statusCode = httpStatus == null
+          ? 0
+          : StatusCode.fromHttpStatus(int.parse(httpStatus));
+    }
 
     if (statusCode != 0) {
       final messageMetadata = metadata['grpc-message'];
