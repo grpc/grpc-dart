@@ -346,15 +346,15 @@ class ClientCall<Q, R> implements Response {
   /// If there's an error status then process it as a response error
   void _checkForErrorStatus(Map<String, String> metadata) {
     final status = metadata['grpc-status'];
-    late final int statusCode;
+    final int statusCode;
 
     if (status != null) {
       statusCode = int.parse(status);
     } else {
-      final httpStatus = metadata[':status'];
+      final httpStatus = _headerMetadata[':status'];
 
       statusCode = httpStatus == null
-          ? 0
+          ? StatusCode.unknown
           : StatusCode.fromHttpStatus(int.parse(httpStatus));
     }
 
@@ -406,7 +406,9 @@ class ClientCall<Q, R> implements Response {
         _responseTimeline?.instant('Metadata received', arguments: {
           'headers': _headerMetadata.toString(),
         });
-        _headers.complete(_headerMetadata);
+        if (_validateHeaders(_headerMetadata)) {
+          _headers.complete(_headerMetadata);
+        }
         return;
       }
       if (_trailers.isCompleted) {
@@ -424,6 +426,34 @@ class ClientCall<Q, R> implements Response {
     } else {
       _responseError(GrpcError.unimplemented('Unexpected frame received'));
     }
+  }
+
+  /// Validates the headers. Ensures that the ':status' field is present, that
+  /// 'content-type' field is present and that the content-type starts with
+  /// 'application/grpc'.
+  bool _validateHeaders(Map<String, String> metadata) {
+    final httpStatus = metadata.containsKey(':status')
+        ? int.tryParse(metadata[':status']!)
+        : null;
+    if (httpStatus == null) {
+      _responseError(GrpcError.unknown('missing :status header'));
+      return false;
+    }
+
+    final contentType = metadata['content-type'];
+    if (contentType == null) {
+      _responseError(GrpcError.custom(StatusCode.fromHttpStatus(httpStatus),
+          'missing content-type header'));
+      return false;
+    }
+
+    if (!contentType.startsWith('application/grpc')) {
+      _responseError(GrpcError.custom(StatusCode.fromHttpStatus(httpStatus),
+          'content-type is not application/grpc'));
+      return false;
+    }
+
+    return true;
   }
 
   /// Handler for response errors. Forward the error to the [_responses] stream,
