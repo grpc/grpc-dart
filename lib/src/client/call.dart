@@ -19,7 +19,6 @@ import 'dart:developer';
 
 import '../shared/codec.dart';
 import '../shared/message.dart';
-import '../shared/metadata.dart';
 import '../shared/profiler.dart';
 import '../shared/status.dart';
 import 'common.dart';
@@ -34,15 +33,6 @@ const _reservedHeaders = [
   'grpc-accept-encoding',
   'grpc-encoding',
   'user-agent',
-];
-
-/// All accepted content-type header's prefix. We are being more permissive
-/// then gRPC and gRPC-Web specifications because some of the services
-/// return slightly different content-types.
-const _validContentTypePrefix = [
-  'application/grpc',
-  'application/json+protobuf',
-  'application/x-protobuf'
 ];
 
 /// Provides per-RPC metadata.

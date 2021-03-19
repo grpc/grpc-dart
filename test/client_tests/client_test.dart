@@ -21,7 +21,6 @@ import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/call.dart';
 import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/generated/google/rpc/status.pb.dart';
-import 'package:grpc/src/shared/metadata.dart';
 import 'package:grpc/src/shared/status.dart';
 import 'package:http2/transport.dart';
 import 'package:protobuf/protobuf.dart';

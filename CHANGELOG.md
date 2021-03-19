@@ -1,6 +1,12 @@
 ## 3.0.1-dev
 
 * Require `package:googleapis_auth` `^1.1.0`
+* Fix issues [#421](https://github.com/grpc/grpc-dart/issues/421) and
+  [#458](https://github.com/grpc/grpc-dart/issues/458). Validate
+  responses according to gRPC/gRPC-Web protocol specifications: require
+  200 HTTP status and a supported `Content-Type` header to be present, as well
+  as `grpc-status: 0` header. When handling malformed responses make effort
+  to translate HTTP statuses into gRPC statuses.
 
 ## 3.0.0
 

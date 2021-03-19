@@ -20,7 +20,6 @@ import 'dart:typed_data';
 import 'package:http2/transport.dart';
 
 import 'message.dart';
-import 'metadata.dart';
 import 'status.dart';
 
 class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {

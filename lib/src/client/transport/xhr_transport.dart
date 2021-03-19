@@ -17,7 +17,6 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
-import 'package:grpc/src/shared/metadata.dart';
 import 'package:meta/meta.dart';
 
 import '../../client/call.dart';
