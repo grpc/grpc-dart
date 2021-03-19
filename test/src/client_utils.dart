@@ -204,6 +204,8 @@ abstract class _Harness {
 
   Iterable<ClientInterceptor>? interceptors;
 
+  bool headersWereSent = false;
+
   late TestClient client;
 
   base.ClientChannel createChannel();
@@ -233,21 +235,24 @@ abstract class _Harness {
     toClient.close();
   }
 
+  static final _defaultHeaders = [
+    Header.ascii(':status', '200'),
+    Header.ascii('content-type', 'application/grpc'),
+  ];
+
   void sendResponseHeader() {
-    final headers = [
-      Header.ascii(':status', '200'),
-      Header.ascii('content-type', 'application/grpc'),
-    ];
-    toClient.add(HeadersStreamMessage(headers));
+    headersWereSent = true;
+    toClient.add(HeadersStreamMessage(_defaultHeaders));
   }
 
   void sendResponseValue(int value) {
     toClient.add(DataStreamMessage(frame(mockEncode(value))));
   }
 
-  void sendResponseTrailer(
-      {List<Header> headers = const [], bool closeStream = true}) {
-    toClient.add(HeadersStreamMessage(headers, endStream: true));
+  void sendResponseTrailer({bool closeStream = true}) {
+    toClient.add(HeadersStreamMessage(
+        headersWereSent ? const [] : _defaultHeaders,
+        endStream: true));
     if (closeStream) toClient.close();
   }
 

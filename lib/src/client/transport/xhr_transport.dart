@@ -29,13 +29,6 @@ import 'web_streams.dart';
 
 const _contentTypeKey = 'Content-Type';
 
-/// All accepted content-type header's prefix.
-const _validContentTypePrefix = [
-  'application/grpc',
-  'application/json+protobuf',
-  'application/x-protobuf'
-];
-
 class XhrTransportStream implements GrpcTransportStream {
   final HttpRequest _request;
   final ErrorHandler _onError;
@@ -104,39 +97,18 @@ class XhrTransportStream implements GrpcTransportStream {
             onError: _onError, onDone: _incomingMessages.close);
   }
 
-  bool _checkContentType(String contentType) {
-    return _validContentTypePrefix.any(contentType.startsWith);
-  }
-
   void _onHeadersReceived() {
     // Force a metadata message with headers.
-    final headers = GrpcMetadata(_request.responseHeaders);
-    _incomingMessages.add(headers);
+    final headers = {..._request.responseHeaders};
+
+    // Shared call handling code validates :status header
+    // which XHR transport does not populate by default.
+    // Synthesize it instead from [HttpRequest.status].
+    headers[':status'] = _request.status.toString();
+    _incomingMessages.add(GrpcMetadata(headers));
   }
 
   void _onRequestDone() {
-    final contentType = _request.getResponseHeader(_contentTypeKey);
-    if (_request.status != 200) {
-      _onError(
-          GrpcError.unavailable('XhrConnection status ${_request.status}', null,
-              _request.responseText),
-          StackTrace.current);
-      return;
-    }
-    if (contentType == null) {
-      _onError(
-          GrpcError.unavailable('XhrConnection missing Content-Type', null,
-              _request.responseText),
-          StackTrace.current);
-      return;
-    }
-    if (!_checkContentType(contentType)) {
-      _onError(
-          GrpcError.unavailable('XhrConnection bad Content-Type $contentType',
-              null, _request.responseText),
-          StackTrace.current);
-      return;
-    }
     if (_request.response == null) {
       _onError(
           GrpcError.unavailable('XhrConnection request null response', null,

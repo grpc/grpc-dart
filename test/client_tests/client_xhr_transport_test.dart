@@ -240,9 +240,10 @@ void main() {
     transport.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
 
-    // Should be only one metadata message with headers.
+    // Should be only one metadata message with headers augmented with :status
+    // field.
     final message = await stream.incomingMessages.single as GrpcMetadata;
-    expect(message.metadata, responseHeaders);
+    expect(message.metadata, {...responseHeaders, ':status': '200'});
   });
 
   test('Stream handles trailers properly', () async {
@@ -284,7 +285,7 @@ void main() {
     final messages =
         await stream.incomingMessages.whereType<GrpcMetadata>().toList();
     expect(messages.length, 2);
-    expect(messages.first.metadata, isEmpty);
+    expect(messages.first.metadata, {':status': '200'});
     expect(messages.last.metadata, responseTrailers);
   });
 
@@ -318,7 +319,7 @@ void main() {
     final messages =
         await stream.incomingMessages.whereType<GrpcMetadata>().toList();
     expect(messages.length, 2);
-    expect(messages.first.metadata, isEmpty);
+    expect(messages.first.metadata, {':status': '200'});
     expect(messages.last.metadata, isEmpty);
   });
 
@@ -420,7 +421,8 @@ void main() {
     // Headers.
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
-    expect(((await queue.next) as GrpcMetadata).metadata, metadata);
+    expect(((await queue.next) as GrpcMetadata).metadata,
+        {...metadata, ':status': '200'});
     // Data 1.
     connection.latestRequest.progressController.add(progressEvent);
     expect(((await queue.next) as GrpcData).data, data[0]);

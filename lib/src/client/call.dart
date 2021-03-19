@@ -40,6 +40,15 @@ const _reservedHeaders = [
 ];
 const _statusDetailsHeader = 'grpc-status-details-bin';
 
+/// All accepted content-type header's prefix. We are being more permissive
+/// then gRPC and gRPC-Web specifications because some of the services
+/// return slightly different content-types.
+const _validContentTypePrefix = [
+  'application/grpc',
+  'application/json+protobuf',
+  'application/x-protobuf'
+];
+
 /// Provides per-RPC metadata.
 ///
 /// Metadata providers will be invoked for every RPC, and can add their own
@@ -447,9 +456,10 @@ class ClientCall<Q, R> implements Response {
       return false;
     }
 
-    if (!contentType.startsWith('application/grpc')) {
+    // Check if content-type header indicates a supported format.
+    if (!_validContentTypePrefix.any(contentType.startsWith)) {
       _responseError(GrpcError.custom(StatusCode.fromHttpStatus(httpStatus),
-          'content-type is not application/grpc'));
+          'unsupported content-type (${contentType})'));
       return false;
     }
 

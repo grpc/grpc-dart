@@ -144,7 +144,7 @@ void main() {
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
-      expectedException: GrpcError.unknown('missing :status header'),
+      expectedException: GrpcError.unimplemented('No responses received'),
       serverHandlers: [handleRequest],
     );
   });
