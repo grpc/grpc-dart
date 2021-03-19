@@ -240,6 +240,10 @@ abstract class _Harness {
     Header.ascii('content-type', 'application/grpc'),
   ];
 
+  static final _defaultTrailers = [
+    Header.ascii('grpc-status', '0'),
+  ];
+
   void sendResponseHeader() {
     headersWereSent = true;
     toClient.add(HeadersStreamMessage(_defaultHeaders));
@@ -250,9 +254,10 @@ abstract class _Harness {
   }
 
   void sendResponseTrailer({bool closeStream = true}) {
-    toClient.add(HeadersStreamMessage(
-        headersWereSent ? const [] : _defaultHeaders,
-        endStream: true));
+    toClient.add(HeadersStreamMessage([
+      if (!headersWereSent) ..._defaultHeaders,
+      ..._defaultTrailers,
+    ], endStream: true));
     if (closeStream) toClient.close();
   }
 

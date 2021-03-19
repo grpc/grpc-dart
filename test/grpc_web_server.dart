@@ -1,9 +1,9 @@
-// @dart = 2.3
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:grpc/grpc.dart';
+import 'package:http2/transport.dart';
 import 'package:path/path.dart' as p;
 import 'package:stream_channel/stream_channel.dart';
 
@@ -85,23 +85,26 @@ static_resources:
                     port_value: %TARGET_PORT%
 ''';
 
-Future<void> hybridMain(StreamChannel channel) async {
-  // Envoy output will be collected and dumped to stdout if envoy exits
-  // with an error. Otherwise if verbose is specified it will be dumped
-  // to stdout unconditionally.
-  final output = <String>[];
-  void _info(String line) {
-    if (!verbose) {
-      output.add(line);
-    } else {
-      print(line);
-    }
+// Envoy output will be collected and dumped to stdout if envoy exits
+// with an error. Otherwise if verbose is specified it will be dumped
+// to stdout unconditionally.
+final output = <String>[];
+void _info(String line) {
+  if (!verbose) {
+    output.add(line);
+  } else {
+    print(line);
   }
+}
 
+Future<void> hybridMain(StreamChannel channel) async {
   // Spawn a gRPC server.
   final server = Server([EchoService()]);
   await server.serve(port: 0);
   _info('grpc server listening on ${server.port}');
+
+  final httpServer = await startHttpServer();
+  _info('HTTP server listening on ${httpServer.port}');
 
   // Create Envoy configuration.
   final tempDir = await Directory.systemTemp.createTemp();
@@ -136,7 +139,8 @@ if you are running tests locally.
     _info('envoy|stderr] $line');
     final m = portRe.firstMatch(line);
     if (m != null) {
-      channel.sink.add(int.parse(m[1]));
+      channel.sink
+          .add({'grpcPort': int.parse(m[1]!), 'httpPort': httpServer.port});
     }
   });
 
@@ -164,4 +168,54 @@ if you are running tests locally.
     tempDir.deleteSync(recursive: true);
   }
   channel.sink.add('EXITED');
+
+  await server.shutdown().catchError((_) {});
+  await httpServer.close().catchError((_) {});
+}
+
+final testCases = <String, void Function(HttpResponse)>{
+  'test:cors': (rs) {
+    rs.headers.removeAll('Access-Control-Allow-Origin');
+    rs.headers.add(HttpHeaders.contentTypeHeader, 'text/html');
+    rs.write('some body');
+    rs.close();
+  },
+  'test:status-503': (rs) {
+    rs.headers.add(HttpHeaders.contentTypeHeader, 'text/html');
+    rs.statusCode = HttpStatus.serviceUnavailable;
+    rs.write('some body');
+    rs.close();
+  },
+  'test:bad-content-type': (rs) {
+    rs.headers.add(HttpHeaders.contentTypeHeader, 'text/html');
+    rs.statusCode = HttpStatus.ok;
+    rs.write('some body');
+    rs.close();
+  },
+};
+
+void defaultHandler(HttpResponse rs) {
+  rs.close();
+}
+
+Future<HttpServer> startHttpServer() async {
+  final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 51428);
+  server.defaultResponseHeaders.removeAll('x-frame-options');
+  server.defaultResponseHeaders.removeAll('x-xss-protection');
+  server.defaultResponseHeaders.removeAll('x-content-type-options');
+  server.defaultResponseHeaders.add('Access-Control-Allow-Origin', '*');
+  server.listen((request) async {
+    _info('${request.method} ${request.requestedUri} ${request.headers}');
+    final message = await GrpcHttpDecoder()
+        .bind(request.map((list) => DataStreamMessage(list)))
+        .first as GrpcData;
+    final echoRequest = EchoRequest.fromBuffer(message.data);
+    (testCases[echoRequest.message] ?? defaultHandler)(request.response);
+  });
+  return server;
+}
+
+Future<void> main() async {
+  final controller = StreamChannelController();
+  await hybridMain(controller.local);
 }

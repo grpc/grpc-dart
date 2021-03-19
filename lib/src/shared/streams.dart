@@ -20,6 +20,7 @@ import 'dart:typed_data';
 import 'package:http2/transport.dart';
 
 import 'message.dart';
+import 'metadata.dart';
 import 'status.dart';
 
 class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
@@ -39,6 +40,11 @@ class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
 }
 
 class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
+  /// [true] if this decoder is used for decoding responses.
+  final bool forResponse;
+
+  GrpcHttpDecoder({this.forResponse = false});
+
   @override
   GrpcMessage convert(StreamMessage input) {
     final sink = GrpcMessageSink();
@@ -50,18 +56,21 @@ class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
 
   @override
   Sink<StreamMessage> startChunkedConversion(Sink<GrpcMessage> sink) {
-    return _GrpcMessageConversionSink(sink);
+    return _GrpcMessageConversionSink(sink, forResponse);
   }
 }
 
 class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
   final Sink<GrpcMessage> _out;
+  final bool _forResponse;
 
   final _dataHeader = Uint8List(5);
   Uint8List? _data;
   int _dataOffset = 0;
 
-  _GrpcMessageConversionSink(this._out);
+  bool _headersReceived = false;
+
+  _GrpcMessageConversionSink(this._out, this._forResponse);
 
   void _addData(DataStreamMessage chunk) {
     final chunkData = chunk.bytes;
@@ -117,7 +126,17 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
       // TODO(jakobr): Handle duplicate header names correctly.
       headers[ascii.decode(header.name)] = ascii.decode(header.value);
     }
-    // TODO(jakobr): Check :status, go to error mode if not 2xx.
+    if (!_headersReceived) {
+      if (_forResponse) {
+        // Validate :status and content-type header here synchronously before
+        // attempting to parse subsequent DataStreamMessage.
+        final httpStatus = headers.containsKey(':status')
+            ? int.tryParse(headers[':status']!)
+            : null;
+        validateHttpStatusAndContentType(httpStatus, headers);
+      }
+      _headersReceived = true;
+    }
     _out.add(GrpcMetadata(headers));
   }
 

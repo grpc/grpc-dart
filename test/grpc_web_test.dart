@@ -25,7 +25,7 @@ void main() {
   // server (written in Dart) via gRPC-web protocol through a third party
   // gRPC-web proxy.
   test('gRPC-web echo test', () async {
-    final channel = GrpcWebClientChannel.xhr(server.uri);
+    final channel = GrpcWebClientChannel.xhr(server.grpcUri);
     final service = EchoServiceClient(channel);
 
     const testMessage = 'hello from gRPC-web';
@@ -57,7 +57,7 @@ void main() {
   // Verify that terminate does not cause an exception when terminating
   // channel with multiple active requests.
   test('terminate works', () async {
-    final channel = GrpcWebClientChannel.xhr(server.uri);
+    final channel = GrpcWebClientChannel.xhr(server.grpcUri);
     final service = EchoServiceClient(channel);
 
     const testMessage = 'hello from gRPC-web';
@@ -97,7 +97,7 @@ void main() {
 
   // Verify that stream cancellation does not cause an exception
   test('stream cancellation works', () async {
-    final channel = GrpcWebClientChannel.xhr(server.uri);
+    final channel = GrpcWebClientChannel.xhr(server.grpcUri);
     final service = EchoServiceClient(channel);
 
     const testMessage = 'hello from gRPC-web';
@@ -116,14 +116,34 @@ void main() {
 
     await channel.terminate();
   });
+
+  final invalidResponseTests = {
+    'cors': GrpcError.unknown(
+        'HTTP request completed without a status (potential CORS issue)'),
+    'status-503': GrpcError.unavailable(
+        'HTTP connection completed with 503 instead of 200'),
+    'bad-content-type':
+        GrpcError.unknown('unsupported content-type (text/html)'),
+  };
+
+  for (var entry in invalidResponseTests.entries) {
+    test('invalid response: ${entry.key}', () async {
+      final channel = GrpcWebClientChannel.xhr(server.httpUri);
+      final service = EchoServiceClient(channel,
+          options: WebCallOptions(bypassCorsPreflight: true));
+      expect(() => service.echo(EchoRequest()..message = 'test:${entry.key}'),
+          throwsA(entry.value));
+    });
+  }
 }
 
 class GrpcWebServer {
   final StreamChannel channel;
   final Future<void> whenExited;
-  final Uri uri;
+  final Uri grpcUri;
+  final Uri httpUri;
 
-  GrpcWebServer(this.channel, this.whenExited, this.uri);
+  GrpcWebServer(this.channel, this.whenExited, this.grpcUri, this.httpUri);
 
   Future<void> shutdown() async {
     channel.sink.add('shutdown');
@@ -142,7 +162,7 @@ class GrpcWebServer {
     // number we should be talking to.
     final serverChannel =
         spawnHybridUri('grpc_web_server.dart', stayAlive: true);
-    final portCompleter = Completer<int>();
+    final portCompleter = Completer<Map>();
     final exitCompleter = Completer<void>();
     serverChannel.stream.listen((event) {
       if (!portCompleter.isCompleted) {
@@ -158,12 +178,18 @@ class GrpcWebServer {
       }
     });
 
-    final port = await portCompleter.future;
+    final ports = await portCompleter.future;
+
+    final grpcPort = ports['grpcPort'];
+    final httpPort = ports['httpPort'];
 
     // Note: we would like to test https as well, but we can't easily do it
     // because browsers like chrome don't trust self-signed certificates by
     // default.
-    return GrpcWebServer(serverChannel, exitCompleter.future,
-        Uri.parse('http://localhost:$port'));
+    return GrpcWebServer(
+        serverChannel,
+        exitCompleter.future,
+        Uri.parse('http://localhost:${grpcPort}'),
+        Uri.parse('http://localhost:${httpPort}'));
   }
 }

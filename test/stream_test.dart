@@ -27,7 +27,7 @@ void main() {
 
     setUp(() {
       input = StreamController();
-      output = input.stream.transform(GrpcHttpDecoder());
+      output = input.stream.transform(GrpcHttpDecoder(forResponse: false));
     });
 
     test('converts chunked data correctly', () async {

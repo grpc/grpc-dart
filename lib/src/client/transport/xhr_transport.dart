@@ -17,6 +17,7 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
+import 'package:grpc/src/shared/metadata.dart';
 import 'package:meta/meta.dart';
 
 import '../../client/call.dart';
@@ -33,6 +34,7 @@ class XhrTransportStream implements GrpcTransportStream {
   final HttpRequest _request;
   final ErrorHandler _onError;
   final Function(XhrTransportStream stream) _onDone;
+  bool _headersReceived = false;
   int _requestBytesRead = 0;
   final StreamController<ByteBuffer> _incomingProcessor = StreamController();
   final StreamController<GrpcMessage> _incomingMessages = StreamController();
@@ -97,18 +99,30 @@ class XhrTransportStream implements GrpcTransportStream {
             onError: _onError, onDone: _incomingMessages.close);
   }
 
-  void _onHeadersReceived() {
-    // Force a metadata message with headers.
-    final headers = {..._request.responseHeaders};
+  bool _validateResponseState() {
+    try {
+      validateHttpStatusAndContentType(
+          _request.status, _request.responseHeaders,
+          rawResponse: _request.responseText);
+      return true;
+    } catch (e, st) {
+      _onError(e, st);
+      return false;
+    }
+  }
 
-    // Shared call handling code validates :status header
-    // which XHR transport does not populate by default.
-    // Synthesize it instead from [HttpRequest.status].
-    headers[':status'] = _request.status.toString();
-    _incomingMessages.add(GrpcMetadata(headers));
+  void _onHeadersReceived() {
+    _headersReceived = true;
+    if (!_validateResponseState()) {
+      return;
+    }
+    _incomingMessages.add(GrpcMetadata(_request.responseHeaders));
   }
 
   void _onRequestDone() {
+    if (!_headersReceived && !_validateResponseState()) {
+      return;
+    }
     if (_request.response == null) {
       _onError(
           GrpcError.unavailable('XhrConnection request null response', null,

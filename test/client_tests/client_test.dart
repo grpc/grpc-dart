@@ -15,11 +15,13 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show HttpStatus;
 
 import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/call.dart';
 import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/generated/google/rpc/status.pb.dart';
+import 'package:grpc/src/shared/metadata.dart';
 import 'package:grpc/src/shared/status.dart';
 import 'package:http2/transport.dart';
 import 'package:protobuf/protobuf.dart';
@@ -287,6 +289,77 @@ void main() {
       serverHandlers: [handleRequest],
     );
   });
+
+  test('Call throws if HTTP status indicates an error', () async {
+    void handleRequest(_) {
+      harness.toClient.add(HeadersStreamMessage([
+        Header.ascii(':status', HttpStatus.serviceUnavailable.toString()),
+        Header.ascii('content-type', 'application/grpc'),
+      ]));
+      // Send a frame that might be misinterpreted as header frame and cause
+      // OOM.
+      harness.toClient
+          .add(DataStreamMessage([0, 0xFF, 0xFF, 0xFF, 0xFF], endStream: true));
+      harness.toClient.close();
+    }
+
+    await harness.runFailureTest(
+      clientCall: harness.client.unary(dummyValue),
+      expectedException: GrpcError.unavailable(
+          'HTTP connection completed with 503 instead of 200'),
+      serverHandlers: [handleRequest],
+    );
+  });
+
+  test('Call throws if content-type indicates an error', () async {
+    void handleRequest(_) {
+      harness.toClient.add(HeadersStreamMessage([
+        Header.ascii(':status', '200'),
+        Header.ascii('content-type', 'text/html'),
+      ]));
+      // Send a frame that might be misinterpreted as header frame and cause
+      // OOM.
+      harness.toClient.add(DataStreamMessage([0, 0xFF, 0xFF, 0xFF, 0xFF]));
+      harness.sendResponseTrailer();
+    }
+
+    await harness.runFailureTest(
+      clientCall: harness.client.unary(dummyValue),
+      expectedException:
+          GrpcError.unknown('unsupported content-type (text/html)'),
+      serverHandlers: [handleRequest],
+    );
+  });
+
+  for (var contentType in [
+    'application/json+protobuf',
+    'application/x-protobuf'
+  ]) {
+    test('$contentType content type is accepted', () async {
+      const requestValue = 17;
+      const responseValue = 19;
+
+      void handleRequest(StreamMessage message) {
+        final data = validateDataMessage(message);
+        expect(mockDecode(data.data), requestValue);
+
+        harness
+          ..toClient.add(HeadersStreamMessage([
+            Header.ascii(':status', '200'),
+            Header.ascii('content-type', contentType),
+          ]))
+          ..sendResponseValue(responseValue)
+          ..sendResponseTrailer();
+      }
+
+      await harness.runTest(
+        clientCall: harness.client.unary(requestValue),
+        expectedResult: responseValue,
+        expectedPath: '/Test/Unary',
+        serverHandlers: [handleRequest],
+      );
+    });
+  }
 
   test('Call throws decoded message', () async {
     const customStatusCode = 17;
