@@ -127,6 +127,12 @@ void main() {
   };
 
   for (var entry in invalidResponseTests.entries) {
+    // We test a bunch of boundary conditions by starting a simple HTTP server
+    // we sends various erroneous responses back. The kind of response is
+    // selected based on the payload of the request (i.e. the server expects
+    // to get valid gRPC request with an [EchoRequest] payload and responds
+    // with different errors based on the [EchoRequest.message] value.
+    // See [startHttpServer] in [grpc_web_server.dart] for the server part.
     test('invalid response: ${entry.key}', () async {
       final channel = GrpcWebClientChannel.xhr(server.httpUri);
       final service = EchoServiceClient(channel,

@@ -337,7 +337,7 @@ class ClientCall<Q, R> implements Response {
     _stream!.terminate();
   }
 
-  /// If there's an error status then process it as a response error
+  /// If there's an error status then process it as a response error.
   void _checkForErrorStatus(Map<String, String> trailers) {
     final error = grpcErrorFromTrailers(trailers);
     if (error != null) {

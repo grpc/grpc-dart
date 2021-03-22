@@ -127,6 +127,8 @@ class StatusCode {
   /// operation.
   static const unauthenticated = 16;
 
+  /// Mapping taken from gRPC-Web JS implementation:
+  /// https://github.com/grpc/grpc-web/blob/master/javascript/net/grpc/web/statuscode.js
   static const _httpStatusToGrpcStatus = <int, int>{
     HttpStatus.ok: StatusCode.ok,
     HttpStatus.badRequest: StatusCode.invalidArgument,
@@ -337,6 +339,20 @@ GeneratedMessage parseErrorDetailsFromAny(Any any) {
   }
 }
 
+/// Validate HTTP status and Content-Type which arrived with the response:
+/// reject reponses with non-ok (200) status or unsupported Content-Type.
+///
+/// Note that grpc-status arrives in trailers and will be handled by
+/// [ClientCall._onResponseData].
+///
+/// gRPC over HTTP2 protocol specification mandates the following:
+///
+///     Implementations should expect broken deployments to send non-200 HTTP
+///     status codes in responses as well as a variety of non-GRPC content-types
+///     and to omit Status & Status-Message. Implementations must synthesize a
+///     Status & Status-Message to propagate to the application layer when this
+///     occurs.
+///
 void validateHttpStatusAndContentType(
     int? httpStatus, Map<String, String> headers,
     {Object? rawResponse}) {
@@ -354,6 +370,11 @@ void validateHttpStatusAndContentType(
 
   final status = StatusCode.fromHttpStatus(httpStatus);
   if (status != StatusCode.ok) {
+    // [httpStatus] itself already indicates an error. Check if we also
+    // received grpc-status/message (i.e. this is a Trailers-Only response)
+    // and use this information to report a better error to the application
+    // layer. However prefer to use status code derived from HTTP status
+    // if grpc-status itself does not provide an informative error.
     final error = grpcErrorFromTrailers(headers);
     if (error == null || error.code == StatusCode.unknown) {
       throw GrpcError.custom(
@@ -383,10 +404,7 @@ GrpcError? grpcErrorFromTrailers(Map<String, String> trailers) {
   final statusCode = status != null ? int.parse(status) : StatusCode.unknown;
 
   if (statusCode != StatusCode.ok) {
-    final messageMetadata = trailers['grpc-message'];
-    final message =
-        messageMetadata == null ? null : Uri.decodeFull(messageMetadata);
-
+    final message = _tryDecodeStatusMessage(trailers['grpc-message']);
     final statusDetails = trailers[_statusDetailsHeader];
     return GrpcError.custom(
         statusCode,
@@ -427,5 +445,25 @@ List<GeneratedMessage> decodeStatusDetails(String data) {
     return parsedStatus.details.map(parseErrorDetailsFromAny).toList();
   } catch (e) {
     return <GeneratedMessage>[];
+  }
+}
+
+/// Decode percent encoded status message contained in 'grpc-message' trailer.
+String? _tryDecodeStatusMessage(String? statusMessage) {
+  if (statusMessage == null) {
+    return statusMessage;
+  }
+
+  try {
+    return Uri.decodeFull(statusMessage);
+  } catch (_) {
+    // gRPC over HTTP2 protocol specification mandates:
+    //
+    //    When decoding invalid values, implementations MUST NOT error or throw
+    //    away the message. At worst, the implementation can abort decoding the
+    //    status message altogether such that the user would received the raw
+    //    percent-encoded form.
+    //
+    return statusMessage;
   }
 }

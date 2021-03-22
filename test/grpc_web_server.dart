@@ -169,8 +169,8 @@ if you are running tests locally.
   }
   channel.sink.add('EXITED');
 
-  await server.shutdown().catchError((_) {});
-  await httpServer.close().catchError((_) {});
+  await server.shutdown();
+  await httpServer.close();
 }
 
 final testCases = <String, void Function(HttpResponse)>{
@@ -199,7 +199,7 @@ void defaultHandler(HttpResponse rs) {
 }
 
 Future<HttpServer> startHttpServer() async {
-  final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 51428);
+  final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
   server.defaultResponseHeaders.removeAll('x-frame-options');
   server.defaultResponseHeaders.removeAll('x-xss-protection');
   server.defaultResponseHeaders.removeAll('x-content-type-options');

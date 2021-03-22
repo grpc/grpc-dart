@@ -245,6 +245,7 @@ abstract class _Harness {
   ];
 
   void sendResponseHeader() {
+    assert(!headersWereSent);
     headersWereSent = true;
     toClient.add(HeadersStreamMessage(_defaultHeaders));
   }

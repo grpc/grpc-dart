@@ -132,6 +132,11 @@ class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
         final httpStatus = headers.containsKey(':status')
             ? int.tryParse(headers[':status']!)
             : null;
+
+        // Validation might throw an exception. When [GrpcHttpDecoder] is
+        // used as a [StreamTransformer] the underlying implementation of
+        // [StreamTransformer.bind] will take care of forwarding this
+        // exception into the stream as an error.
         validateHttpStatusAndContentType(httpStatus, headers);
       }
       _headersReceived = true;
