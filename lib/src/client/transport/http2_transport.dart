@@ -39,7 +39,7 @@ class Http2TransportStream extends GrpcTransportStream {
     CodecRegistry? codecRegistry,
     Codec? compression,
   ) : incomingMessages = _transportStream.incomingMessages
-            .transform(GrpcHttpDecoder())
+            .transform(GrpcHttpDecoder(forResponse: true))
             .transform(grpcDecompressor(codecRegistry: codecRegistry)) {
     _outgoingMessages.stream
         .map((payload) => frame(payload, compression))

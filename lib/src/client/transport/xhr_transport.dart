@@ -29,17 +29,11 @@ import 'web_streams.dart';
 
 const _contentTypeKey = 'Content-Type';
 
-/// All accepted content-type header's prefix.
-const _validContentTypePrefix = [
-  'application/grpc',
-  'application/json+protobuf',
-  'application/x-protobuf'
-];
-
 class XhrTransportStream implements GrpcTransportStream {
   final HttpRequest _request;
   final ErrorHandler _onError;
   final Function(XhrTransportStream stream) _onDone;
+  bool _headersReceived = false;
   int _requestBytesRead = 0;
   final StreamController<ByteBuffer> _incomingProcessor = StreamController();
   final StreamController<GrpcMessage> _incomingMessages = StreamController();
@@ -104,37 +98,28 @@ class XhrTransportStream implements GrpcTransportStream {
             onError: _onError, onDone: _incomingMessages.close);
   }
 
-  bool _checkContentType(String contentType) {
-    return _validContentTypePrefix.any(contentType.startsWith);
+  bool _validateResponseState() {
+    try {
+      validateHttpStatusAndContentType(
+          _request.status, _request.responseHeaders,
+          rawResponse: _request.responseText);
+      return true;
+    } catch (e, st) {
+      _onError(e, st);
+      return false;
+    }
   }
 
   void _onHeadersReceived() {
-    // Force a metadata message with headers.
-    final headers = GrpcMetadata(_request.responseHeaders);
-    _incomingMessages.add(headers);
+    _headersReceived = true;
+    if (!_validateResponseState()) {
+      return;
+    }
+    _incomingMessages.add(GrpcMetadata(_request.responseHeaders));
   }
 
   void _onRequestDone() {
-    final contentType = _request.getResponseHeader(_contentTypeKey);
-    if (_request.status != 200) {
-      _onError(
-          GrpcError.unavailable('XhrConnection status ${_request.status}', null,
-              _request.responseText),
-          StackTrace.current);
-      return;
-    }
-    if (contentType == null) {
-      _onError(
-          GrpcError.unavailable('XhrConnection missing Content-Type', null,
-              _request.responseText),
-          StackTrace.current);
-      return;
-    }
-    if (!_checkContentType(contentType)) {
-      _onError(
-          GrpcError.unavailable('XhrConnection bad Content-Type $contentType',
-              null, _request.responseText),
-          StackTrace.current);
+    if (!_headersReceived && !_validateResponseState()) {
       return;
     }
     if (_request.response == null) {

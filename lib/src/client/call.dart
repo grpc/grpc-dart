@@ -14,12 +14,7 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
-
-import 'package:grpc/src/generated/google/rpc/status.pb.dart';
-import 'package:meta/meta.dart';
-import 'package:protobuf/protobuf.dart';
 
 import '../shared/codec.dart';
 import '../shared/message.dart';
@@ -38,7 +33,6 @@ const _reservedHeaders = [
   'grpc-encoding',
   'user-agent',
 ];
-const _statusDetailsHeader = 'grpc-status-details-bin';
 
 /// Provides per-RPC metadata.
 ///
@@ -343,23 +337,11 @@ class ClientCall<Q, R> implements Response {
     _stream!.terminate();
   }
 
-  /// If there's an error status then process it as a response error
-  void _checkForErrorStatus(Map<String, String> metadata) {
-    final status = metadata['grpc-status'];
-    final statusCode = int.parse(status ?? '0');
-
-    if (statusCode != 0) {
-      final messageMetadata = metadata['grpc-message'];
-      final message =
-          messageMetadata == null ? null : Uri.decodeFull(messageMetadata);
-
-      final statusDetails = metadata[_statusDetailsHeader];
-      _responseError(GrpcError.custom(
-          statusCode,
-          message,
-          statusDetails == null
-              ? const <GeneratedMessage>[]
-              : decodeStatusDetails(statusDetails)));
+  /// If there's an error status then process it as a response error.
+  void _checkForErrorStatus(Map<String, String> trailers) {
+    final error = grpcErrorFromTrailers(trailers);
+    if (error != null) {
+      _responseError(error);
     }
   }
 
@@ -510,25 +492,5 @@ class ClientCall<Q, R> implements Response {
     try {
       await _terminate();
     } catch (_) {}
-  }
-}
-
-/// Given a string of base64url data, attempt to parse a Status object from it.
-/// Once parsed, it will then map each detail item and attempt to parse it into
-/// its respective GeneratedMessage type, returning the list of parsed detail items
-/// as a `List<GeneratedMessage>`.
-///
-/// Prior to creating the Status object we pad the data to ensure its length is
-/// an even multiple of 4, which is a requirement in Dart when decoding base64url data.
-///
-/// If any errors are thrown during decoding/parsing, it will return an empty list.
-@visibleForTesting
-List<GeneratedMessage> decodeStatusDetails(String data) {
-  try {
-    final parsedStatus = Status.fromBuffer(
-        base64Url.decode(data.padRight((data.length + 3) & ~3, '=')));
-    return parsedStatus.details.map(parseErrorDetailsFromAny).toList();
-  } catch (e) {
-    return <GeneratedMessage>[];
   }
 }

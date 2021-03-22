@@ -243,6 +243,8 @@ void main() {
 
     void handleRequest(_) {
       harness.toClient.add(HeadersStreamMessage([
+        Header.ascii(':status', '200'),
+        Header.ascii('content-type', 'application/grpc'),
         Header.ascii('grpc-status', '$customStatusCode'),
         Header.ascii('grpc-message', customStatusMessage)
       ], endStream: true));
