@@ -295,8 +295,8 @@ void main() {
         Header.ascii(':status', HttpStatus.serviceUnavailable.toString()),
         Header.ascii('content-type', 'application/grpc'),
       ]));
-      // Send a frame that might be misinterpreted as header frame and cause
-      // OOM.
+      // Send a frame that might be misinterpreted as a length-prefixed proto
+      // message and cause OOM.
       harness.toClient
           .add(DataStreamMessage([0, 0xFF, 0xFF, 0xFF, 0xFF], endStream: true));
       harness.toClient.close();
@@ -316,8 +316,8 @@ void main() {
         Header.ascii(':status', '200'),
         Header.ascii('content-type', 'text/html'),
       ]));
-      // Send a frame that might be misinterpreted as header frame and cause
-      // OOM.
+      // Send a frame that might be misinterpreted as a length-prefixed proto
+      // message and cause OOM.
       harness.toClient.add(DataStreamMessage([0, 0xFF, 0xFF, 0xFF, 0xFF]));
       harness.sendResponseTrailer();
     }
