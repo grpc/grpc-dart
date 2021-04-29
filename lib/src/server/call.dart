@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io';
+
 /// Server-side context for a gRPC call.
 ///
 /// Gives the method handler access to custom metadata from the client, and
@@ -38,6 +40,9 @@ abstract class ServiceCall {
 
   /// Returns [true] if the client has canceled this call.
   bool get isCanceled;
+
+  /// Returns the client certificate if it is requested and available
+  X509Certificate? get clientCertificate;
 
   /// Send response headers. This is done automatically before sending the first
   /// response message, but can be done manually before the first response is

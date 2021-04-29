@@ -103,13 +103,14 @@ class ConnectionServer {
 
   Service? lookupService(String service) => _services[service];
 
-  Future<void> serveConnection(ServerTransportConnection connection) async {
+  Future<void> serveConnection(ServerTransportConnection connection,
+      [X509Certificate? clientCertificate]) async {
     _connections.add(connection);
     ServerHandler_? handler;
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
     connection.incomingStreams.listen((stream) {
-      handler = serveStream_(stream);
+      handler = serveStream_(stream, clientCertificate);
     }, onError: (error, stackTrace) {
       if (error is Error) {
         Zone.current.handleUncaughtError(error, stackTrace);
@@ -125,8 +126,10 @@ class ConnectionServer {
   }
 
   @visibleForTesting
-  ServerHandler_ serveStream_(ServerTransportStream stream) {
-    return ServerHandler_(lookupService, stream, _interceptors, _codecRegistry)
+  ServerHandler_ serveStream_(ServerTransportStream stream,
+      [X509Certificate? clientCertificate]) {
+    return ServerHandler_(
+        lookupService, stream, _interceptors, _codecRegistry, clientCertificate)
       ..handle();
   }
 }
@@ -159,21 +162,28 @@ class Server extends ConnectionServer {
   /// Starts the [Server] with the given options.
   /// [address] can be either a [String] or an [InternetAddress], in the latter
   /// case it can be a Unix Domain Socket address.
-  Future<void> serve(
-      {dynamic address,
-      int? port,
-      ServerCredentials? security,
-      ServerSettings? http2ServerSettings,
-      int backlog = 0,
-      bool v6Only = false,
-      bool shared = false}) async {
+  Future<void> serve({
+    dynamic address,
+    int? port,
+    ServerCredentials? security,
+    ServerSettings? http2ServerSettings,
+    int backlog = 0,
+    bool v6Only = false,
+    bool shared = false,
+    bool requestClientCertificate = false,
+    bool requireClientCertificate = false,
+  }) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
     Stream<Socket>? server;
     final securityContext = security?.securityContext;
     if (securityContext != null) {
       _secureServer = await SecureServerSocket.bind(
           address ?? InternetAddress.anyIPv4, port ?? 443, securityContext,
-          backlog: backlog, shared: shared, v6Only: v6Only);
+          backlog: backlog,
+          shared: shared,
+          v6Only: v6Only,
+          requestClientCertificate: requestClientCertificate,
+          requireClientCertificate: requireClientCertificate);
       server = _secureServer;
     } else {
       _insecureServer = await ServerSocket.bind(
@@ -190,9 +200,13 @@ class Server extends ConnectionServer {
       if (socket.address.type != InternetAddressType.unix) {
         socket.setOption(SocketOption.tcpNoDelay, true);
       }
+      X509Certificate? clientCertificate;
+      if (socket is SecureSocket) {
+        clientCertificate = socket.peerCertificate;
+      }
       final connection = ServerTransportConnection.viaSocket(socket,
           settings: http2ServerSettings);
-      serveConnection(connection);
+      serveConnection(connection, clientCertificate);
     }, onError: (error, stackTrace) {
       if (error is Error) {
         Zone.current.handleUncaughtError(error, stackTrace);
@@ -202,8 +216,10 @@ class Server extends ConnectionServer {
 
   @override
   @visibleForTesting
-  ServerHandler_ serveStream_(ServerTransportStream stream) {
-    return ServerHandler_(lookupService, stream, _interceptors, _codecRegistry)
+  ServerHandler_ serveStream_(ServerTransportStream stream,
+      [X509Certificate? clientCertificate]) {
+    return ServerHandler_(
+        lookupService, stream, _interceptors, _codecRegistry, clientCertificate)
       ..handle();
   }
 

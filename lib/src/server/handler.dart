@@ -15,6 +15,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http2/transport.dart';
 
@@ -58,13 +59,11 @@ class ServerHandler_ extends ServiceCall {
   bool _isCanceled = false;
   bool _isTimedOut = false;
   Timer? _timeoutTimer;
+  final X509Certificate? _clientCertificate;
 
-  ServerHandler_(
-    this._serviceLookup,
-    this._stream,
-    this._interceptors,
-    this._codecRegistry,
-  );
+  ServerHandler_(this._serviceLookup, this._stream, this._interceptors,
+      this._codecRegistry,
+      [this._clientCertificate]);
 
   @override
   DateTime? get deadline => _deadline;
@@ -83,6 +82,9 @@ class ServerHandler_ extends ServiceCall {
 
   @override
   Map<String, String>? get trailers => _customTrailers;
+
+  @override
+  X509Certificate? get clientCertificate => _clientCertificate;
 
   void handle() {
     _stream.onTerminated = (_) => cancel();
@@ -410,10 +412,10 @@ class ServerHandler_ extends ServiceCall {
 }
 
 class ServerHandler extends ServerHandler_ {
-  ServerHandler(
-    Service Function(String service) serviceLookup,
-    stream, [
-    List<Interceptor> interceptors = const <Interceptor>[],
-    CodecRegistry? codecRegistry,
-  ]) : super(serviceLookup, stream, interceptors, codecRegistry);
+  ServerHandler(Service Function(String service) serviceLookup, stream,
+      [List<Interceptor> interceptors = const <Interceptor>[],
+      CodecRegistry? codecRegistry,
+      X509Certificate? clientCertificate])
+      : super(serviceLookup, stream, interceptors, codecRegistry,
+            clientCertificate);
 }
