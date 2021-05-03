@@ -1,7 +1,7 @@
 import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/interceptor.dart';
-import 'package:test/test.dart';
 import 'package:http2/transport.dart';
+import 'package:test/test.dart';
 
 import '../src/client_utils.dart';
 import '../src/utils.dart';

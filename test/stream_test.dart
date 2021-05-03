@@ -15,10 +15,9 @@
 
 import 'dart:async';
 
+import 'package:grpc/grpc.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
-
-import 'package:grpc/grpc.dart';
 
 void main() {
   group('GrpcHttpDecoder', () {

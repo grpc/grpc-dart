@@ -1,12 +1,10 @@
 @TestOn('browser')
-
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:grpc/grpc_web.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
-
-import 'package:grpc/grpc_web.dart';
 
 import 'src/generated/echo.pbgrpc.dart';
 
