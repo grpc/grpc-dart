@@ -19,10 +19,10 @@ import 'dart:io' show HttpStatus;
 import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
 
-import 'package:grpc/src/generated/google/protobuf/any.pb.dart';
-import 'package:grpc/src/generated/google/rpc/code.pbenum.dart';
-import 'package:grpc/src/generated/google/rpc/error_details.pb.dart';
-import 'package:grpc/src/generated/google/rpc/status.pb.dart';
+import '../generated/google/protobuf/any.pb.dart';
+import '../generated/google/rpc/code.pbenum.dart';
+import '../generated/google/rpc/error_details.pb.dart';
+import '../generated/google/rpc/status.pb.dart';
 
 class StatusCode {
   /// The operation completed successfully.
