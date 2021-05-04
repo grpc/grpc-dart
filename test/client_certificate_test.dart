@@ -23,83 +23,74 @@ class EchoService extends EchoServiceBase {
 }
 
 const String address = 'localhost';
-const int port = 19360;
 Future<void> main() async {
+  setUp(() {});
   test('Client certificate required', () async {
-    //Server
-    final server = Server(
-      [EchoService()],
-    );
-    final serverContext =
-        SecurityContextChannelCredentials.baseSecurityContext();
+    // Server
+    final server = await _setUpServer(true);
 
-    serverContext.useCertificateChain('test/data/localhost.crt');
-    serverContext.usePrivateKey('test/data/localhost.key');
-    serverContext.setTrustedCertificates('test/data/localhost.crt');
-    final ServerCredentials serverCredentials =
-        SecurityContextServerCredentials(serverContext);
-
-    await server.serve(
-        address: address,
-        port: port,
-        security: serverCredentials,
-        requireClientCertificate: true);
-
-    //Client
+    // Client
     final channelContext =
         SecurityContextChannelCredentials.baseSecurityContext();
-    channelContext.useCertificateChain(
-      'test/data/localhost.crt',
-    );
+    channelContext.useCertificateChain('test/data/localhost.crt');
     channelContext.usePrivateKey('test/data/localhost.key');
     final channelCredentials = SecurityContextChannelCredentials(channelContext,
         onBadCertificate: (cert, s) {
       return true;
     });
     final channel = ClientChannel(address,
-        port: port, options: ChannelOptions(credentials: channelCredentials));
+        port: server.port ?? 443,
+        options: ChannelOptions(credentials: channelCredentials));
     final client = EchoServiceClient(channel);
+
+    // Test
     expect((await client.echo(EchoRequest())).message, '/CN=localhost');
+
+    // Clean up
     await channel.shutdown();
     await server.shutdown();
   });
 
   test('Client certificate not required', () async {
-    //Server
-    final server = Server(
-      [EchoService()],
-    );
-    final serverContext =
-        SecurityContextChannelCredentials.baseSecurityContext();
+    // Server
+    final server = await _setUpServer();
 
-    serverContext.useCertificateChain('test/data/localhost.crt');
-    serverContext.usePrivateKey('test/data/localhost.key');
-    serverContext.setTrustedCertificates('test/data/localhost.crt');
-    final ServerCredentials serverCredentials =
-        SecurityContextServerCredentials(serverContext);
-    await server.serve(
-      address: address,
-      port: port,
-      security: serverCredentials,
-    );
     // Client
     final channelContext =
         SecurityContextChannelCredentials.baseSecurityContext();
-    channelContext.useCertificateChain(
-      'test/data/localhost.crt',
-    );
+    channelContext.useCertificateChain('test/data/localhost.crt');
     channelContext.usePrivateKey('test/data/localhost.key');
     final channelCredentials = SecurityContextChannelCredentials(channelContext,
         onBadCertificate: (cert, s) {
       return true;
     });
     final channel = ClientChannel(address,
-        port: port, options: ChannelOptions(credentials: channelCredentials));
+        port: server.port ?? 443,
+        options: ChannelOptions(credentials: channelCredentials));
     final client = EchoServiceClient(channel);
+
+    // Test
     expect((await client.echo(EchoRequest())).message, 'NO CERT');
+
+    // Clean up
     await channel.shutdown();
     await server.shutdown();
   });
+}
+
+Future<Server> _setUpServer([bool requireClientCertificate = false]) async {
+  final server = Server([EchoService()]);
+  final serverContext = SecurityContextChannelCredentials.baseSecurityContext();
+  serverContext.useCertificateChain('test/data/localhost.crt');
+  serverContext.usePrivateKey('test/data/localhost.key');
+  serverContext.setTrustedCertificates('test/data/localhost.crt');
+  final ServerCredentials serverCredentials =
+      SecurityContextServerCredentials(serverContext);
+  await server.serve(
+      address: address,
+      security: serverCredentials,
+      requireClientCertificate: requireClientCertificate);
+  return server;
 }
 
 class SecurityContextChannelCredentials extends ChannelCredentials {
