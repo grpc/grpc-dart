@@ -24,7 +24,6 @@ class EchoService extends EchoServiceBase {
 
 const String address = 'localhost';
 Future<void> main() async {
-  setUp(() {});
   test('Client certificate required', () async {
     // Server
     final server = await _setUpServer(true);
