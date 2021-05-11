@@ -162,6 +162,10 @@ class Server extends ConnectionServer {
   /// Starts the [Server] with the given options.
   /// [address] can be either a [String] or an [InternetAddress], in the latter
   /// case it can be a Unix Domain Socket address.
+  ///
+  /// If [port] is [null] then it defaults to `80` for non-secure and `443` for
+  /// secure variants.  Pass `0` for [port] to let OS select a port for the
+  /// server.
   Future<void> serve({
     dynamic address,
     int? port,

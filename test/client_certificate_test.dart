@@ -87,6 +87,7 @@ Future<Server> _setUpServer([bool requireClientCertificate = false]) async {
       SecurityContextServerCredentials(serverContext);
   await server.serve(
       address: address,
+      port: 0,
       security: serverCredentials,
       requireClientCertificate: requireClientCertificate);
   return server;
