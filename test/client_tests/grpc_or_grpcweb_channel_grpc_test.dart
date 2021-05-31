@@ -31,10 +31,9 @@ void main() {
       secure: false,
     );
     expect(channel is ClientChannel, isTrue);
-    final grpcChannel = channel as ClientChannel;
-    expect(grpcChannel.host, equals(host));
-    expect(grpcChannel.port, equals(grpcPort));
-    expect(grpcChannel.options.credentials.isSecure, isFalse);
+    expect(channel.host, equals(host));
+    expect(channel.port, equals(grpcPort));
+    expect(channel.options.credentials.isSecure, isFalse);
   });
 
   test('Constructor throws throwsArgumentError if ports are the same', () {
