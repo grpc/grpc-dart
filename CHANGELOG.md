@@ -7,6 +7,8 @@
   200 HTTP status and a supported `Content-Type` header to be present, as well
   as `grpc-status: 0` header. When handling malformed responses make effort
   to translate HTTP statuses into gRPC statuses.
+* Add GrpcOrGrpcWebClientChannel which uses gRPC on all platforms except web,
+  on which it uses gRPC-web.
 
 ## 3.0.0
 
