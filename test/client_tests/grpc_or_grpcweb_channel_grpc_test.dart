@@ -14,8 +14,8 @@
 // limitations under the License.
 @TestOn('!browser')
 
-import 'package:grpc/grpc_or_grpcweb.dart';
 import 'package:grpc/grpc.dart';
+import 'package:grpc/grpc_or_grpcweb.dart';
 import 'package:test/test.dart';
 
 const host = 'example.com';
