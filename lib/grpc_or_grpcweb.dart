@@ -17,9 +17,13 @@
 /// on all platfroms except web, on which it uses [GrpcWebClientChannel].
 ///
 /// Note that gRPC and gRPC-web are 2 different protocols and server must be
-/// able to speak both of them (usually on separate ports) for this to work.
-/// Therefore applications using this class must provide both ports and the
-/// channel will use the one for the actual protocol being used.
+/// able to speak both of them for this to work.
+/// As several existing implementations (such as in-process gRPC-web to gRPC
+/// proxies or Envoy gRPC-web to gRPC proxy) expose gRPC and gRPC-web on
+/// separate ports, the constructor requires 2 ports to be provided and
+/// the channel will use the one for the actual protocol being used.
+/// If the server supports both protocols on the same port (such as AspNetCore
+/// implementation), then the same port value should be provided on both params.
 
 export 'src/client/grpc_or_grpcweb_channel_grpc.dart'
     if (dart.library.html) 'src/client/grpc_or_grpcweb_channel_web.dart';
