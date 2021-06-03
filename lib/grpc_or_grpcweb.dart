@@ -17,9 +17,9 @@
 /// on all platfroms except web, on which it uses [GrpcWebClientChannel].
 ///
 /// Note that gRPC and gRPC-web are 2 different protocols and server must be
-/// able to speak both of them (on separate ports) for this to work. Therefore
-/// applications using this class must provide both ports and the channel will
-/// use the one for the actual protocol being used.
+/// able to speak both of them (usually on separate ports) for this to work.
+/// Therefore applications using this class must provide both ports and the
+/// channel will use the one for the actual protocol being used.
 
 export 'src/client/grpc_or_grpcweb_channel_grpc.dart'
     if (dart.library.html) 'src/client/grpc_or_grpcweb_channel_web.dart';

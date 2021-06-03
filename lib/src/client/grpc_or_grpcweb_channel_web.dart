@@ -23,11 +23,7 @@ class GrpcOrGrpcWebClientChannel extends GrpcWebClientChannel {
     required int grpcWebPort,
     required bool secure,
   }) : super.xhr(Uri(
-            host: host, port: grpcWebPort, scheme: secure ? 'https' : 'http')) {
-    if (grpcWebPort == grpcPort) {
-      throw ArgumentError('grpcPort and grpcWebPort cannot be the same');
-    }
-  }
+            host: host, port: grpcWebPort, scheme: secure ? 'https' : 'http'));
 
   GrpcOrGrpcWebClientChannel.grpc(
     Object host, {

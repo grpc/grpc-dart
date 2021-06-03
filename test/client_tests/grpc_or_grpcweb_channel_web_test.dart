@@ -36,17 +36,6 @@ void main() {
         equals(Uri(host: host, port: grpcWebPort, scheme: 'https')));
   });
 
-  test('Constructor throws throwsArgumentError if ports are the same', () {
-    expect(
-        () => GrpcOrGrpcWebClientChannel(
-              host: host,
-              grpcPort: grpcPort,
-              grpcWebPort: grpcPort,
-              secure: false,
-            ),
-        throwsArgumentError);
-  });
-
   test('Constructor grpc on web throws UnsupportedError', () {
     expect(() => GrpcOrGrpcWebClientChannel.grpc(host, port: grpcPort),
         throwsUnsupportedError);
