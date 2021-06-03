@@ -18,16 +18,18 @@ import 'options.dart';
 import 'transport/http2_credentials.dart';
 
 class GrpcOrGrpcWebClientChannel extends ClientChannel {
-  GrpcOrGrpcWebClientChannel({
-    required String host,
+  GrpcOrGrpcWebClientChannel.toSeparateEndpoints({
+    required String grpcHost,
     required int grpcPort,
+    required bool grpcTransportSecure,
+    required String grpcWebHost,
     required int grpcWebPort,
-    required bool secure,
+    required bool grpcWebTransportSecure,
   }) : super(
-          host,
+          grpcHost,
           port: grpcPort,
           options: ChannelOptions(
-            credentials: secure
+            credentials: grpcTransportSecure
                 ? ChannelCredentials.secure()
                 : ChannelCredentials.insecure(),
           ),
