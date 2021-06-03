@@ -36,17 +36,6 @@ void main() {
     expect(channel.options.credentials.isSecure, isFalse);
   });
 
-  test('Constructor throws throwsArgumentError if ports are the same', () {
-    expect(
-        () => GrpcOrGrpcWebClientChannel(
-              host: host,
-              grpcPort: grpcPort,
-              grpcWebPort: grpcPort,
-              secure: false,
-            ),
-        throwsArgumentError);
-  });
-
   test('Constructor grpc on non-web passes params correctly', () {
     final options = ChannelOptions(credentials: ChannelCredentials.insecure());
     final channel = GrpcOrGrpcWebClientChannel.grpc(

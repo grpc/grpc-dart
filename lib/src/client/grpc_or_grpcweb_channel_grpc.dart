@@ -31,11 +31,7 @@ class GrpcOrGrpcWebClientChannel extends ClientChannel {
                 ? ChannelCredentials.secure()
                 : ChannelCredentials.insecure(),
           ),
-        ) {
-    if (grpcWebPort == grpcPort) {
-      throw ArgumentError('grpcPort and grpcWebPort cannot be the same');
-    }
-  }
+        );
 
   GrpcOrGrpcWebClientChannel.grpc(
     Object host, {
