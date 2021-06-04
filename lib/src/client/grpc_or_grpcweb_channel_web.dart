@@ -32,8 +32,8 @@ class GrpcOrGrpcWebClientChannelInternal extends GrpcWebClientChannel {
 
   GrpcOrGrpcWebClientChannelInternal.grpc(
     Object host, {
-    int port = 443,
-    ChannelOptions options = const ChannelOptions(),
+    required int port,
+    required ChannelOptions options,
   }) : super.xhr(
           Uri(
               host: host.toString(),
