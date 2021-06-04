@@ -23,7 +23,7 @@ const port = 8080;
 
 void main() {
   test('Channel on non-web uses gRPC ClientChannel with correct params', () {
-    final channel = GrpcOrGrpcWebClientChannelConstructors.toSingleEndpoint(
+    final channel = GrpcOrGrpcWebClientChannel.toSingleEndpoint(
       host: host,
       port: port,
       transportSecure: false,

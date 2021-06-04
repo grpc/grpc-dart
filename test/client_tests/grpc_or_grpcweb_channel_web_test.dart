@@ -23,7 +23,7 @@ const port = 8080;
 
 void main() {
   test('Channel on web uses GrpcWebClientChannel with correct URI', () {
-    final channel = GrpcOrGrpcWebClientChannelConstructors.toSingleEndpoint(
+    final channel = GrpcOrGrpcWebClientChannel.toSingleEndpoint(
       host: host,
       port: port,
       transportSecure: true,

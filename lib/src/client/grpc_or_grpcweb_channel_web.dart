@@ -16,8 +16,8 @@
 import 'options.dart';
 import 'web_channel.dart';
 
-class GrpcOrGrpcWebClientChannel extends GrpcWebClientChannel {
-  GrpcOrGrpcWebClientChannel.toSeparateEndpoints({
+class GrpcOrGrpcWebClientChannelInternal extends GrpcWebClientChannel {
+  GrpcOrGrpcWebClientChannelInternal({
     required String grpcHost,
     required int grpcPort,
     required bool grpcTransportSecure,
@@ -30,7 +30,7 @@ class GrpcOrGrpcWebClientChannel extends GrpcWebClientChannel {
           scheme: grpcWebTransportSecure ? 'https' : 'http',
         ));
 
-  GrpcOrGrpcWebClientChannel.grpc(
+  GrpcOrGrpcWebClientChannelInternal.grpc(
     Object host, {
     int port = 443,
     ChannelOptions options = const ChannelOptions(),
