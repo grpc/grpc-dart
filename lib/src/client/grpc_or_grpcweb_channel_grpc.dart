@@ -17,25 +17,27 @@ import 'http2_channel.dart';
 import 'options.dart';
 import 'transport/http2_credentials.dart';
 
-class GrpcOrGrpcWebClientChannel extends ClientChannel {
-  GrpcOrGrpcWebClientChannel({
-    required String host,
+class GrpcOrGrpcWebClientChannelInternal extends ClientChannel {
+  GrpcOrGrpcWebClientChannelInternal({
+    required String grpcHost,
     required int grpcPort,
+    required bool grpcTransportSecure,
+    required String grpcWebHost,
     required int grpcWebPort,
-    required bool secure,
+    required bool grpcWebTransportSecure,
   }) : super(
-          host,
+          grpcHost,
           port: grpcPort,
           options: ChannelOptions(
-            credentials: secure
+            credentials: grpcTransportSecure
                 ? ChannelCredentials.secure()
                 : ChannelCredentials.insecure(),
           ),
         );
 
-  GrpcOrGrpcWebClientChannel.grpc(
+  GrpcOrGrpcWebClientChannelInternal.grpc(
     Object host, {
-    int port = 443,
-    ChannelOptions options = const ChannelOptions(),
+    required int port,
+    required ChannelOptions options,
   }) : super(host, port: port, options: options);
 }

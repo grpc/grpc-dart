@@ -16,19 +16,24 @@
 import 'options.dart';
 import 'web_channel.dart';
 
-class GrpcOrGrpcWebClientChannel extends GrpcWebClientChannel {
-  GrpcOrGrpcWebClientChannel({
-    required String host,
+class GrpcOrGrpcWebClientChannelInternal extends GrpcWebClientChannel {
+  GrpcOrGrpcWebClientChannelInternal({
+    required String grpcHost,
     required int grpcPort,
+    required bool grpcTransportSecure,
+    required String grpcWebHost,
     required int grpcWebPort,
-    required bool secure,
+    required bool grpcWebTransportSecure,
   }) : super.xhr(Uri(
-            host: host, port: grpcWebPort, scheme: secure ? 'https' : 'http'));
+          host: grpcWebHost,
+          port: grpcWebPort,
+          scheme: grpcWebTransportSecure ? 'https' : 'http',
+        ));
 
-  GrpcOrGrpcWebClientChannel.grpc(
+  GrpcOrGrpcWebClientChannelInternal.grpc(
     Object host, {
-    int port = 443,
-    ChannelOptions options = const ChannelOptions(),
+    required int port,
+    required ChannelOptions options,
   }) : super.xhr(
           Uri(
               host: host.toString(),

@@ -19,25 +19,23 @@ import 'package:grpc/grpc_web.dart';
 import 'package:test/test.dart';
 
 const host = 'example.com';
-const grpcPort = 9090;
-const grpcWebPort = 8080;
+const port = 8080;
 
 void main() {
   test('Channel on web uses GrpcWebClientChannel with correct URI', () {
-    final channel = GrpcOrGrpcWebClientChannel(
+    final channel = GrpcOrGrpcWebClientChannel.toSingleEndpoint(
       host: host,
-      grpcPort: grpcPort,
-      grpcWebPort: grpcWebPort,
-      secure: true,
+      port: port,
+      transportSecure: true,
     );
     expect(channel is GrpcWebClientChannel, isTrue);
     final webChannel = channel as GrpcWebClientChannel;
-    expect(webChannel.uri,
-        equals(Uri(host: host, port: grpcWebPort, scheme: 'https')));
+    expect(
+        webChannel.uri, equals(Uri(host: host, port: port, scheme: 'https')));
   });
 
   test('Constructor grpc on web throws UnsupportedError', () {
-    expect(() => GrpcOrGrpcWebClientChannel.grpc(host, port: grpcPort),
+    expect(() => GrpcOrGrpcWebClientChannel.grpc(host, port: port),
         throwsUnsupportedError);
   });
 }
