@@ -81,3 +81,14 @@ class GrpcOrGrpcWebClientChannel extends GrpcOrGrpcWebClientChannelInternal {
     ChannelOptions options = const ChannelOptions(),
   }) : super.grpc(host, port: port, options: options);
 }
+
+export 'src/auth/auth.dart'
+    show HttpBasedAuthenticator, JwtServiceAccountAuthenticator;
+
+export 'src/client/call.dart' show MetadataProvider, CallOptions;
+
+export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
+
+export 'src/shared/profiler.dart' show isTimelineLoggingEnabled;
+
+export 'src/shared/status.dart' show StatusCode, GrpcError;
