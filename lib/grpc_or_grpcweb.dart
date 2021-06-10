@@ -13,21 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'src/auth/auth.dart'
-    show HttpBasedAuthenticator, JwtServiceAccountAuthenticator;
-
-export 'src/client/call.dart' show MetadataProvider, CallOptions;
-
-export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
-
-export 'src/shared/profiler.dart' show isTimelineLoggingEnabled;
-
-export 'src/shared/status.dart' show StatusCode, GrpcError;
-
 import 'src/client/grpc_or_grpcweb_channel_grpc.dart'
     if (dart.library.html) 'src/client/grpc_or_grpcweb_channel_web.dart';
 import 'src/client/http2_channel.dart';
 import 'src/client/options.dart';
+
+export 'src/shared/api.dart';
 
 /// A client channel that underneath uses gRPC [ClientChannel] on all platforms
 /// except web, on which it uses [GrpcWebClientChannel].

@@ -13,16 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'src/auth/auth.dart'
-    show HttpBasedAuthenticator, JwtServiceAccountAuthenticator;
-
-export 'src/client/call.dart'
-    show MetadataProvider, CallOptions, WebCallOptions;
-
-export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
+export 'src/client/call.dart' show WebCallOptions;
 
 export 'src/client/web_channel.dart' show GrpcWebClientChannel;
 
-export 'src/shared/profiler.dart' show isTimelineLoggingEnabled;
-
-export 'src/shared/status.dart' show StatusCode, GrpcError;
+export 'src/shared/api.dart';
