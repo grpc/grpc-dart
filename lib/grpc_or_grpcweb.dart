@@ -18,6 +18,8 @@ import 'src/client/grpc_or_grpcweb_channel_grpc.dart'
 import 'src/client/http2_channel.dart';
 import 'src/client/options.dart';
 
+export 'src/shared/api.dart';
+
 /// A client channel that underneath uses gRPC [ClientChannel] on all platforms
 /// except web, on which it uses [GrpcWebClientChannel].
 ///

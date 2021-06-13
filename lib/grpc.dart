@@ -13,21 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'src/auth/auth.dart'
-    show
-        BaseAuthenticator,
-        HttpBasedAuthenticator,
-        JwtServiceAccountAuthenticator;
+export 'src/auth/auth.dart' show BaseAuthenticator;
 export 'src/auth/auth_io.dart'
     show
         applicationDefaultCredentialsAuthenticator,
         ComputeEngineAuthenticator,
         ServiceAccountAuthenticator;
-export 'src/client/call.dart' show CallOptions, ClientCall, MetadataProvider;
+export 'src/client/call.dart' show ClientCall;
 export 'src/client/client.dart' show Client;
 export 'src/client/client_transport_connector.dart'
     show ClientTransportConnector;
-export 'src/client/common.dart' show Response, ResponseStream, ResponseFuture;
 export 'src/client/connection.dart' show ConnectionState;
 export 'src/client/http2_channel.dart'
     show ClientChannel, ClientTransportConnectorChannel;
@@ -55,13 +50,12 @@ export 'src/server/server.dart'
         ConnectionServer,
         Server;
 export 'src/server/service.dart' show ServiceMethod, Service;
+export 'src/shared/api.dart';
 export 'src/shared/codec.dart' show Codec, IdentityCodec, GzipCodec;
 export 'src/shared/codec_registry.dart';
 export 'src/shared/message.dart'
     show GrpcMessage, GrpcMetadata, GrpcData, grpcDecompressor;
-export 'src/shared/profiler.dart' show isTimelineLoggingEnabled;
 export 'src/shared/security.dart'
     show supportedAlpnProtocols, createSecurityContext;
-export 'src/shared/status.dart' show StatusCode, GrpcError;
 export 'src/shared/streams.dart' show GrpcHttpEncoder, GrpcHttpDecoder;
 export 'src/shared/timeout.dart' show toTimeoutString, fromTimeoutString;
