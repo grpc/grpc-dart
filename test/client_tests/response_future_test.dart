@@ -43,12 +43,13 @@ void main() {
 
   test('Support ResponseFuture after ResponseFuture', () async {
     final response1 = 1;
-    final response2 = 1;
+    final response2 = 2;
 
     final responseFuture1 = ResponseFuture<int>(FakeClientCall(response1));
     final responseFuture2 = ResponseFuture<int>(FakeClientCall(response2));
 
     expect(responseFuture1.responseThen((value) => responseFuture2), isA<ResponseFuture<int>>());
-    expect(await responseFuture1.responseThen((value) => responseFuture2), 1);
+    expect(await responseFuture1, response1);
+    expect(await responseFuture1.responseThen((value) => responseFuture2), response2);
   });
 }
