@@ -24,6 +24,11 @@ void main() {
     expect(responseFuture.responseThen((p1) => p1), isA<ResponseFuture>());
 
     expect(await responseFuture.responseThen((p1) => p1 * 2), response * 2);
+    expect(
+        await responseFuture
+            .responseThen((p1) => p1 * 2)
+            .responseThen((p2) => p2 * 2),
+        response * 2 * 2);
 
     expect(responseFuture.responseThen((p1) => p1), isA<ResponseFuture>());
     expect(responseFuture.then((p1) => '2'), isA<Future>());
@@ -48,8 +53,10 @@ void main() {
     final responseFuture1 = ResponseFuture<int>(FakeClientCall(response1));
     final responseFuture2 = ResponseFuture<int>(FakeClientCall(response2));
 
-    expect(responseFuture1.responseThen((value) => responseFuture2), isA<ResponseFuture<int>>());
+    expect(responseFuture1.responseThen((value) => responseFuture2),
+        isA<ResponseFuture<int>>());
     expect(await responseFuture1, response1);
-    expect(await responseFuture1.responseThen((value) => responseFuture2), response2);
+    expect(await responseFuture1.responseThen((value) => responseFuture2),
+        response2);
   });
 }
