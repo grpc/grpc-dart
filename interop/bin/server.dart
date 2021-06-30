@@ -133,7 +133,7 @@ Future<void> main(List<String> args) async {
 
   final server = Server(services);
 
-  late ServerTlsCredentials tlsCredentials;
+  ServerTlsCredentials? tlsCredentials;
   if (arguments['use_tls'] == 'true') {
     final certificate = File(arguments['tls_cert_file']).readAsBytes();
     final privateKey = File(arguments['tls_key_file']).readAsBytes();
