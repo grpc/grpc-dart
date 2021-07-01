@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/interceptor.dart';
 import 'package:http2/transport.dart';
@@ -44,7 +46,11 @@ class FakeInterceptor implements ClientInterceptor {
       ClientStreamingInvoker<Q, R> invoker) {
     _invocations.add(InterceptorInvocation(_id, _unary, ++_streaming));
 
-    return invoker(method, requests, _inject(options));
+    final requestStream = _id > 10
+        ? requests.cast<int>().map((req) => req * _id).cast<Q>()
+        : requests;
+
+    return invoker(method, requestStream, _inject(options));
   }
 
   CallOptions _inject(CallOptions options) {
@@ -199,6 +205,45 @@ void main() {
         'x-interceptor':
             '{id: 1, unary: 0, streaming: 1}, {id: 2, unary: 0, streaming: 1}'
       },
+      serverHandlers: [handleRequest, handleRequest, handleRequest],
+      doneHandler: handleDone,
+    );
+
+    harness.tearDown();
+    FakeInterceptor.tearDown();
+  });
+
+  test('streaming interceptors with request stream operation', () async {
+    const ids = [21, 73, 37];
+
+    final harness = ClientHarness()
+      ..interceptors = ids.map((e) => FakeInterceptor(e))
+      ..setUp();
+
+    const requests = [1, 15, 7];
+    const multiplier = 21 * 73 * 37;
+    const responses = [1 * multiplier, 15 * multiplier, 7 * multiplier];
+
+    var index = 0;
+
+    void handleRequest(StreamMessage message) {
+      final data = validateDataMessage(message);
+      final request = mockDecode(data.data);
+      if (index++ == 0) {
+        harness.sendResponseHeader();
+      }
+      harness.sendResponseValue(request);
+    }
+
+    void handleDone() {
+      harness.sendResponseTrailer();
+    }
+
+    await harness.runTest(
+      clientCall:
+          harness.client.bidirectional(Stream.fromIterable(requests)).toList(),
+      expectedResult: responses,
+      expectedPath: '/Test/Bidirectional',
       serverHandlers: [handleRequest, handleRequest, handleRequest],
       doneHandler: handleDone,
     );
