@@ -100,7 +100,7 @@ Future<int> main(List<String> args) async {
         testCase: arguments[_testCaseArgument] ??
             (throw 'Must specify --$_testCaseArgument'),
         useTls: arguments[_useTLSArgument] != 'false',
-        useTestCA: arguments[_useTestCAArgument],
+        useTestCA: arguments[_useTestCAArgument] != 'false',
         defaultServiceAccount: arguments[_defaultServiceAccountArgument],
         oauthScope: arguments[_oauthScopeArgument],
         serviceAccountKeyFile: arguments[_serviceAccountKeyFileArgument]);
