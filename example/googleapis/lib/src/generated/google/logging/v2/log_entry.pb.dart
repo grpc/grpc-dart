@@ -43,22 +43,96 @@ class LogEntry extends $pb.GeneratedMessage {
             ? ''
             : 'protoPayload',
         subBuilder: $0.Any.create)
-    ..aOS(3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'textPayload')
-    ..aOS(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'insertId')
-    ..aOM<$1.Struct>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'jsonPayload', subBuilder: $1.Struct.create)
-    ..aOM<$2.HttpRequest>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'httpRequest', subBuilder: $2.HttpRequest.create)
-    ..aOM<$3.MonitoredResource>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'resource', subBuilder: $3.MonitoredResource.create)
-    ..aOM<$4.Timestamp>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'timestamp', subBuilder: $4.Timestamp.create)
-    ..e<$5.LogSeverity>(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'severity', $pb.PbFieldType.OE, defaultOrMaker: $5.LogSeverity.DEFAULT, valueOf: $5.LogSeverity.valueOf, enumValues: $5.LogSeverity.values)
-    ..m<$core.String, $core.String>(11, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'labels', entryClassName: 'LogEntry.LabelsEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('google.logging.v2'))
-    ..aOS(12, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'logName')
-    ..aOM<LogEntryOperation>(15, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'operation', subBuilder: LogEntryOperation.create)
-    ..aOS(22, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'trace')
-    ..aOM<LogEntrySourceLocation>(23, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'sourceLocation', subBuilder: LogEntrySourceLocation.create)
-    ..aOM<$4.Timestamp>(24, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'receiveTimestamp', subBuilder: $4.Timestamp.create)
-    ..aOS(27, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'spanId')
-    ..aOB(30, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'traceSampled')
+    ..aOS(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'textPayload')
+    ..aOS(
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'insertId')
+    ..aOM<$1.Struct>(
+        6,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'jsonPayload',
+        subBuilder: $1.Struct.create)
+    ..aOM<$2.HttpRequest>(
+        7,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'httpRequest',
+        subBuilder: $2.HttpRequest.create)
+    ..aOM<$3.MonitoredResource>(
+        8,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'resource',
+        subBuilder: $3.MonitoredResource.create)
+    ..aOM<$4.Timestamp>(
+        9,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'timestamp',
+        subBuilder: $4.Timestamp.create)
+    ..e<$5.LogSeverity>(
+        10,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'severity',
+        $pb.PbFieldType.OE,
+        defaultOrMaker: $5.LogSeverity.DEFAULT,
+        valueOf: $5.LogSeverity.valueOf,
+        enumValues: $5.LogSeverity.values)
+    ..m<$core.String, $core.String>(
+        11,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'labels',
+        entryClassName: 'LogEntry.LabelsEntry',
+        keyFieldType: $pb.PbFieldType.OS,
+        valueFieldType: $pb.PbFieldType.OS,
+        packageName: const $pb.PackageName('google.logging.v2'))
+    ..aOS(
+        12,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'logName')
+    ..aOM<LogEntryOperation>(
+        15,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'operation',
+        subBuilder: LogEntryOperation.create)
+    ..aOS(
+        22,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'trace')
+    ..aOM<LogEntrySourceLocation>(
+        23,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'sourceLocation',
+        subBuilder: LogEntrySourceLocation.create)
+    ..aOM<$4.Timestamp>(
+        24,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'receiveTimestamp',
+        subBuilder: $4.Timestamp.create)
+    ..aOS(
+        27,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'spanId')
+    ..aOB(
+        30,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'traceSampled')
     ..hasRequiredFields = false;
 
   LogEntry._() : super();
@@ -385,8 +459,11 @@ class LogEntryOperation extends $pb.GeneratedMessage {
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'first')
-    ..aOB(4,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'last')
+    ..aOB(
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'last')
     ..hasRequiredFields = false;
 
   LogEntryOperation._() : super();
