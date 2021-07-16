@@ -284,7 +284,7 @@ void main() {
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
       expectedException:
-          GrpcError.custom(customStatusCode, message: customStatusMessage),
+          GrpcError.custom(customStatusCode, customStatusMessage),
       serverHandlers: [handleRequest],
     );
   });
@@ -378,7 +378,7 @@ void main() {
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
       expectedException:
-          GrpcError.custom(customStatusCode, message: customStatusMessage),
+          GrpcError.custom(customStatusCode, customStatusMessage),
       serverHandlers: [handleRequest],
     );
   });
@@ -598,8 +598,8 @@ void main() {
       clientCall: harness.client.unary(dummyValue),
       expectedException: GrpcError.custom(
         code,
-        message: message,
-        details: decodeStatusDetails(details),
+        message,
+        decodeStatusDetails(details),
       ),
       serverHandlers: [handleRequest],
     );
@@ -626,9 +626,9 @@ void main() {
       clientCall: harness.client.unary(dummyValue),
       expectedException: GrpcError.custom(
         code,
-        details: [],
-        message: message,
-        trailers: customTrailers,
+        message,
+        [],
+        customTrailers,
       ),
       expectedCustomTrailers: customTrailers,
       serverHandlers: [handleRequest],

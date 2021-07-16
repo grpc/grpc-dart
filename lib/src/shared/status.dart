@@ -160,7 +160,7 @@ class GrpcError implements Exception {
 
   /// Custom error code.
   GrpcError.custom(this.code,
-      {this.message, this.details, this.rawResponse, this.trailers = const {}});
+      [this.message, this.details, this.rawResponse, this.trailers = const {}]);
 
   /// The operation completed successfully.
   GrpcError.ok([this.message, this.details, this.rawResponse])
@@ -399,11 +399,11 @@ void validateHttpStatusAndContentType(
     if (error == null || error.code == StatusCode.unknown) {
       throw GrpcError.custom(
         status,
-        message: error?.message ??
+        error?.message ??
             'HTTP connection completed with ${httpStatus} instead of 200',
-        details: error?.details,
-        rawResponse: rawResponse,
-        trailers: error?.trailers ?? toCustomTrailers(headers),
+        error?.details,
+        rawResponse,
+        error?.trailers ?? toCustomTrailers(headers),
       );
     }
     throw error;
@@ -430,11 +430,12 @@ GrpcError? grpcErrorDetailsFromTrailers(Map<String, String> trailers) {
     final statusDetails = trailers[_statusDetailsHeader];
     return GrpcError.custom(
       statusCode,
-      message: message,
-      trailers: toCustomTrailers(trailers),
-      details: statusDetails == null
+      message,
+      statusDetails == null
           ? const <GeneratedMessage>[]
           : decodeStatusDetails(statusDetails),
+      null,
+      toCustomTrailers(trailers),
     );
   }
 
