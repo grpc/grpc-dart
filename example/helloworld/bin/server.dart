@@ -33,4 +33,11 @@ Future<void> main(List<String> args) async {
   );
   await server.serve(port: 50051);
   print('Server listening on port ${server.port}...');
+  ProcessSignal.SIGINT.watch().listen((signal) {
+    if (signal == ProcessSignal.SIGINT){
+      print("Shutting down");
+      server.shutdown();
+      exit(0); 
+    }
+  });
 }
