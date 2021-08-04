@@ -33,4 +33,11 @@ Future<void> main(List<String> args) async {
   final server = Server([GreeterService()]);
   await server.serve(address: udsAddress);
   print('Start UNIX Server @localhost...');
+  ProcessSignal.SIGINT.watch().listen((signal) {
+    if (signal == ProcessSignal.SIGINT){
+      print("Shutting down");
+      server.shutdown();
+      exit(0); 
+    }
+  });
 }
