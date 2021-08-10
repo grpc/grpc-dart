@@ -102,9 +102,10 @@ class Value extends $pb.GeneratedMessage with $mixin.ValueMixin {
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
           : 'Value',
-      package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'google.protobuf'),
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.protobuf'),
       createEmptyInstance: create,
       toProto3Json: $mixin.ValueMixin.toProto3JsonHelper,
       fromProto3Json: $mixin.ValueMixin.fromProto3JsonHelper)
@@ -120,12 +121,32 @@ class Value extends $pb.GeneratedMessage with $mixin.ValueMixin {
         enumValues: NullValue.values)
     ..a<$core.double>(
         2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'numberValue',
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'numberValue',
         $pb.PbFieldType.OD)
-    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'stringValue')
-    ..aOB(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'boolValue')
-    ..aOM<Struct>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'structValue', subBuilder: Struct.create)
-    ..aOM<ListValue>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'listValue', subBuilder: ListValue.create)
+    ..aOS(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'stringValue')
+    ..aOB(
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'boolValue')
+    ..aOM<Struct>(
+        5,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'structValue',
+        subBuilder: Struct.create)
+    ..aOM<ListValue>(
+        6,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'listValue',
+        subBuilder: ListValue.create)
     ..hasRequiredFields = false;
 
   Value._() : super();

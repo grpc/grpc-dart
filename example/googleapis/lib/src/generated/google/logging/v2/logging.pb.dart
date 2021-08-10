@@ -86,7 +86,10 @@ class DeleteLogRequest extends $pb.GeneratedMessage {
 }
 
 class WriteLogEntriesRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'WriteLogEntriesRequest',
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'WriteLogEntriesRequest',
       package: const $pb.PackageName(
           const $core.bool.fromEnvironment('protobuf.omit_message_names')
               ? ''
@@ -98,21 +101,37 @@ class WriteLogEntriesRequest extends $pb.GeneratedMessage {
             ? ''
             : 'logName')
     ..aOM<$3.MonitoredResource>(
-        2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'resource',
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'resource',
         subBuilder: $3.MonitoredResource.create)
     ..m<$core.String, $core.String>(
-        3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'labels',
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'labels',
         entryClassName: 'WriteLogEntriesRequest.LabelsEntry',
         keyFieldType: $pb.PbFieldType.OS,
         valueFieldType: $pb.PbFieldType.OS,
         packageName: const $pb.PackageName('google.logging.v2'))
     ..pc<$4.LogEntry>(
         4,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'entries',
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'entries',
         $pb.PbFieldType.PM,
         subBuilder: $4.LogEntry.create)
-    ..aOB(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'partialSuccess')
-    ..aOB(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'dryRun')
+    ..aOB(
+        5,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'partialSuccess')
+    ..aOB(
+        6,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'dryRun')
     ..hasRequiredFields = false;
 
   WriteLogEntriesRequest._() : super();
@@ -368,8 +387,15 @@ class ListLogEntriesRequest extends $pb.GeneratedMessage {
             : 'pageSize',
         $pb.PbFieldType.O3)
     ..aOS(
-        5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'pageToken')
-    ..pPS(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'resourceNames')
+        5,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'pageToken')
+    ..pPS(
+        8,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'resourceNames')
     ..hasRequiredFields = false;
 
   ListLogEntriesRequest._() : super();
@@ -496,8 +522,11 @@ class ListLogEntriesResponse extends $pb.GeneratedMessage {
             : 'entries',
         $pb.PbFieldType.PM,
         subBuilder: $4.LogEntry.create)
-    ..aOS(2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'nextPageToken')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'nextPageToken')
     ..hasRequiredFields = false;
 
   ListLogEntriesResponse._() : super();
@@ -670,8 +699,11 @@ class ListMonitoredResourceDescriptorsResponse extends $pb.GeneratedMessage {
             : 'resourceDescriptors',
         $pb.PbFieldType.PM,
         subBuilder: $3.MonitoredResourceDescriptor.create)
-    ..aOS(2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'nextPageToken')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'nextPageToken')
     ..hasRequiredFields = false;
 
   ListMonitoredResourceDescriptorsResponse._() : super();
@@ -764,7 +796,11 @@ class ListLogsRequest extends $pb.GeneratedMessage {
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'pageToken')
-    ..pPS(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'resourceNames')
+    ..pPS(
+        8,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'resourceNames')
     ..hasRequiredFields = false;
 
   ListLogsRequest._() : super();
@@ -1051,14 +1087,20 @@ class TailLogEntriesResponse_SuppressionInfo extends $pb.GeneratedMessage {
               : 'google.logging.v2'),
       createEmptyInstance: create)
     ..e<TailLogEntriesResponse_SuppressionInfo_Reason>(
-        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'reason', $pb.PbFieldType.OE,
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'reason',
+        $pb.PbFieldType.OE,
         defaultOrMaker:
             TailLogEntriesResponse_SuppressionInfo_Reason.REASON_UNSPECIFIED,
         valueOf: TailLogEntriesResponse_SuppressionInfo_Reason.valueOf,
         enumValues: TailLogEntriesResponse_SuppressionInfo_Reason.values)
     ..a<$core.int>(
         2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'suppressedCount',
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'suppressedCount',
         $pb.PbFieldType.O3)
     ..hasRequiredFields = false;
 
@@ -1143,7 +1185,12 @@ class TailLogEntriesResponse extends $pb.GeneratedMessage {
               ? ''
               : 'google.logging.v2'),
       createEmptyInstance: create)
-    ..pc<$4.LogEntry>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'entries', $pb.PbFieldType.PM,
+    ..pc<$4.LogEntry>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'entries',
+        $pb.PbFieldType.PM,
         subBuilder: $4.LogEntry.create)
     ..pc<TailLogEntriesResponse_SuppressionInfo>(
         2,
