@@ -77,6 +77,7 @@ Future<int> main(List<String> args) async {
       defaultsTo: 'false',
       help: 'Whether to use a plaintext or encrypted connection.');
   argumentParser.addOption(_useTestCAArgument,
+      defaultsTo: 'false',
       help: 'Whether to replace platform root CAs with ca.pem as the CA root.');
   argumentParser.addOption(_defaultServiceAccountArgument,
       help: 'Email of the GCE default service account.');
@@ -99,8 +100,8 @@ Future<int> main(List<String> args) async {
             (throw 'Invalid port "${arguments[_serverPortArgument]}"'),
         testCase: arguments[_testCaseArgument] ??
             (throw 'Must specify --$_testCaseArgument'),
-        useTls: arguments[_useTLSArgument] != 'false',
-        useTestCA: arguments[_useTestCAArgument] != 'false',
+        useTls: arguments[_useTLSArgument] == 'true',
+        useTestCA: arguments[_useTestCAArgument] == 'true',
         defaultServiceAccount: arguments[_defaultServiceAccountArgument],
         oauthScope: arguments[_oauthScopeArgument],
         serviceAccountKeyFile: arguments[_serviceAccountKeyFileArgument]);
