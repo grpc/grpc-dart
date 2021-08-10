@@ -1,4 +1,4 @@
-## 3.0.1-dev
+## 3.0.1
 
 * Require `package:googleapis_auth` `^1.1.0`
 * Fix issues [#421](https://github.com/grpc/grpc-dart/issues/421) and
@@ -9,6 +9,7 @@
   to translate HTTP statuses into gRPC statuses.
 * Add GrpcOrGrpcWebClientChannel which uses gRPC on all platforms except web,
   on which it uses gRPC-web.
+* `GrpcError` now exposes response trailers via `GrpcError.trailers`.
 
 ## 3.0.0
 
