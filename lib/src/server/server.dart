@@ -24,6 +24,7 @@ import '../shared/security.dart';
 import 'handler.dart';
 import 'interceptor.dart';
 import 'service.dart';
+import '../shared/io_bits/io_bits.dart' as io_bits;
 
 /// Wrapper around grpc_server_credentials, a way to authenticate a server.
 abstract class ServerCredentials {
@@ -128,8 +129,8 @@ class ConnectionServer {
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream,
       [X509Certificate? clientCertificate]) {
-    return ServerHandler_(
-        lookupService, stream, _interceptors, _codecRegistry, clientCertificate)
+    return ServerHandler_(lookupService, stream, _interceptors, _codecRegistry,
+        clientCertificate as io_bits.X509Certificate)
       ..handle();
   }
 }
@@ -222,8 +223,8 @@ class Server extends ConnectionServer {
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream,
       [X509Certificate? clientCertificate]) {
-    return ServerHandler_(
-        lookupService, stream, _interceptors, _codecRegistry, clientCertificate)
+    return ServerHandler_(lookupService, stream, _interceptors, _codecRegistry,
+        clientCertificate as io_bits.X509Certificate)
       ..handle();
   }
 
