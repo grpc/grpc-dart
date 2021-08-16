@@ -20,11 +20,11 @@ import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
 import '../shared/codec_registry.dart';
+import '../shared/io_bits/io_bits.dart' as io_bits;
 import '../shared/security.dart';
 import 'handler.dart';
 import 'interceptor.dart';
 import 'service.dart';
-import '../shared/io_bits/io_bits.dart' as io_bits;
 
 /// Wrapper around grpc_server_credentials, a way to authenticate a server.
 abstract class ServerCredentials {
