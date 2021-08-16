@@ -13,6 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'dart:io' show HttpStatus, X509Certificate;
+import 'dart:io' as io;
 
-//export 'io_bits_io.dart' if (dart.library.html) 'io_bits_web.dart';
+export 'io_bits_io.dart' if (dart.library.html) 'io_bits_web.dart';
