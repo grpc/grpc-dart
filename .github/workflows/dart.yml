@@ -26,8 +26,8 @@ jobs:
         run: dart --version
       - name: Install dependencies
         run: dart pub get
-      - name: Check formatting (using stable dartfmt release)
-        if: ${{ matrix.sdk == 'stable' }}
+      - name: Check formatting (using dev dartfmt release)
+        if: ${{ matrix.sdk == 'dev' }}
         run: dart format --output=none --set-exit-if-changed .
       - name: Analyze code (introp and examples)
         run: |
