@@ -15,12 +15,12 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
 import '../shared/codec_registry.dart';
+import '../shared/io_bits/io_bits.dart' show X509Certificate;
 import '../shared/message.dart';
 import '../shared/status.dart';
 import '../shared/streams.dart';

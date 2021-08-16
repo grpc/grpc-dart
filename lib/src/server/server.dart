@@ -20,6 +20,7 @@ import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
 import '../shared/codec_registry.dart';
+import '../shared/io_bits/io_bits.dart' as io_bits;
 import '../shared/security.dart';
 import 'handler.dart';
 import 'interceptor.dart';
@@ -129,8 +130,10 @@ class ConnectionServer {
   ServerHandler_ serveStream_(ServerTransportStream stream,
       [X509Certificate? clientCertificate]) {
     return ServerHandler_(
-        lookupService, stream, _interceptors, _codecRegistry, clientCertificate)
-      ..handle();
+      lookupService, stream, _interceptors, _codecRegistry,
+      // ignore: unnecessary_cast
+      clientCertificate as io_bits.X509Certificate?,
+    )..handle();
   }
 }
 
@@ -223,8 +226,13 @@ class Server extends ConnectionServer {
   ServerHandler_ serveStream_(ServerTransportStream stream,
       [X509Certificate? clientCertificate]) {
     return ServerHandler_(
-        lookupService, stream, _interceptors, _codecRegistry, clientCertificate)
-      ..handle();
+      lookupService,
+      stream,
+      _interceptors,
+      _codecRegistry,
+      // ignore: unnecessary_cast
+      clientCertificate as io_bits.X509Certificate?,
+    )..handle();
   }
 
   @Deprecated(

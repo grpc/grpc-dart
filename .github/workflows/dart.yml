@@ -19,14 +19,15 @@ jobs:
         sdk: [dev, 2.12.0]
     steps:
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1.0
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: ${{ matrix.sdk }}
       - name: Report version
         run: dart --version
       - name: Install dependencies
         run: dart pub get
-      - name: Check formatting
+      - name: Check formatting (using dev dartfmt release)
+        if: ${{ matrix.sdk == 'dev' }}
         run: dart format --output=none --set-exit-if-changed .
       - name: Analyze code (introp and examples)
         run: |
@@ -39,6 +40,16 @@ jobs:
         shell: bash
       - name: Analyze code
         run: dart analyze --fatal-infos .
+      - name: Check that grpc-web sample builds with DDC
+        if: ${{ matrix.sdk == 'dev' }}
+        # webdev build --no-release to force compilation with DDC.
+        run: |
+          dart pub global activate webdev
+          pushd example/grpc-web
+          rm -rf build
+          dart pub global run webdev build --no-release
+          test -f ./build/main.dart.js
+          popd
 
   # Run tests on a matrix consisting of three dimensions:
   # 1. OS: mac, windows, linux
@@ -61,7 +72,7 @@ jobs:
             platform: chrome
     steps:
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1.0
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: ${{ matrix.sdk }}
       - name: Report version

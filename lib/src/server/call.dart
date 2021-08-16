@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:io';
+import '../shared/io_bits/io_bits.dart' show X509Certificate;
 
 /// Server-side context for a gRPC call.
 ///
