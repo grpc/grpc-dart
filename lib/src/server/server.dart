@@ -129,9 +129,11 @@ class ConnectionServer {
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream,
       [X509Certificate? clientCertificate]) {
-    return ServerHandler_(lookupService, stream, _interceptors, _codecRegistry,
-        clientCertificate as io_bits.X509Certificate)
-      ..handle();
+    return ServerHandler_(
+      lookupService, stream, _interceptors, _codecRegistry,
+      // ignore: unnecessary_cast
+      clientCertificate as io_bits.X509Certificate?,
+    )..handle();
   }
 }
 
@@ -223,9 +225,14 @@ class Server extends ConnectionServer {
   @visibleForTesting
   ServerHandler_ serveStream_(ServerTransportStream stream,
       [X509Certificate? clientCertificate]) {
-    return ServerHandler_(lookupService, stream, _interceptors, _codecRegistry,
-        clientCertificate as io_bits.X509Certificate)
-      ..handle();
+    return ServerHandler_(
+      lookupService,
+      stream,
+      _interceptors,
+      _codecRegistry,
+      // ignore: unnecessary_cast
+      clientCertificate as io_bits.X509Certificate?,
+    )..handle();
   }
 
   @Deprecated(
