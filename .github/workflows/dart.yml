@@ -42,6 +42,7 @@ jobs:
         run: dart analyze --fatal-infos .
       - name: Check that grpc-web sample builds with DDC
         if: ${{ matrix.sdk == 'dev' }}
+        # webdev build --no-release to force compilation with DDC.
         run: |
           dart pub global activate webdev
           pushd example/grpc-web
