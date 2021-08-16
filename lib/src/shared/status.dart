@@ -14,7 +14,6 @@
 // limitations under the License.
 
 import 'dart:convert';
-import 'dart:io' show HttpStatus;
 
 import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
@@ -23,6 +22,7 @@ import '../generated/google/protobuf/any.pb.dart';
 import '../generated/google/rpc/code.pbenum.dart';
 import '../generated/google/rpc/error_details.pb.dart';
 import '../generated/google/rpc/status.pb.dart';
+import 'io_bits/io_bits.dart' show HttpStatus;
 
 class StatusCode {
   /// The operation completed successfully.

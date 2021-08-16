@@ -39,6 +39,14 @@ jobs:
         shell: bash
       - name: Analyze code
         run: dart analyze --fatal-infos .
+      - name: Check that grpc-web sample builds with DDC
+        run: |
+          dart pub global activate webdev
+          pushd example/grpc-web
+          rm -rf build
+          dart pub global run webdev build --no-release
+          test -f ./build/main.dart.js
+          popd
 
   # Run tests on a matrix consisting of three dimensions:
   # 1. OS: mac, windows, linux

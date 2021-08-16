@@ -1,3 +1,7 @@
+## 3.0.2
+
+* Fix compilation on the Web with DDC.
+
 ## 3.0.1
 
 * Require `package:googleapis_auth` `^1.1.0`
