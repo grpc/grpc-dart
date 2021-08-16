@@ -40,26 +40,10 @@ class MonitoredResourceDescriptor extends $pb.GeneratedMessage {
             ? ''
             : 'description')
     ..pc<$0.LabelDescriptor>(
-        4,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'labels',
-        $pb.PbFieldType.PM,
+        4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'labels', $pb.PbFieldType.PM,
         subBuilder: $0.LabelDescriptor.create)
-    ..aOS(
-        5,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'name')
-    ..e<$2.LaunchStage>(
-        7,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'launchStage',
-        $pb.PbFieldType.OE,
-        defaultOrMaker: $2.LaunchStage.LAUNCH_STAGE_UNSPECIFIED,
-        valueOf: $2.LaunchStage.valueOf,
-        enumValues: $2.LaunchStage.values)
+    ..aOS(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
+    ..e<$2.LaunchStage>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'launchStage', $pb.PbFieldType.OE, defaultOrMaker: $2.LaunchStage.LAUNCH_STAGE_UNSPECIFIED, valueOf: $2.LaunchStage.valueOf, enumValues: $2.LaunchStage.values)
     ..hasRequiredFields = false;
 
   MonitoredResourceDescriptor._() : super();
@@ -286,10 +270,7 @@ class MonitoredResourceMetadata extends $pb.GeneratedMessage {
             : 'systemLabels',
         subBuilder: $1.Struct.create)
     ..m<$core.String, $core.String>(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'userLabels',
+        2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'userLabels',
         entryClassName: 'MonitoredResourceMetadata.UserLabelsEntry',
         keyFieldType: $pb.PbFieldType.OS,
         valueFieldType: $pb.PbFieldType.OS,

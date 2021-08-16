@@ -305,9 +305,7 @@ class ServerHandler_ extends ServiceCall {
   void sendHeaders() {
     if (_headersSent) throw GrpcError.internal('Headers already sent');
 
-    _customHeaders!
-      ..remove(':status')
-      ..remove('content-type');
+    _customHeaders!..remove(':status')..remove('content-type');
 
     // TODO(jakobr): Should come from package:http2?
     final outgoingHeadersMap = <String, String>{
@@ -337,16 +335,12 @@ class ServerHandler_ extends ServiceCall {
       outgoingTrailersMap[':status'] = '200';
       outgoingTrailersMap['content-type'] = 'application/grpc';
 
-      _customHeaders!
-        ..remove(':status')
-        ..remove('content-type');
+      _customHeaders!..remove(':status')..remove('content-type');
       outgoingTrailersMap.addAll(_customHeaders!);
       _customHeaders = null;
       _headersSent = true;
     }
-    _customTrailers!
-      ..remove(':status')
-      ..remove('content-type');
+    _customTrailers!..remove(':status')..remove('content-type');
     outgoingTrailersMap.addAll(_customTrailers!);
     _customTrailers = null;
     outgoingTrailersMap['grpc-status'] = status.toString();

@@ -38,10 +38,7 @@ class LabelDescriptor extends $pb.GeneratedMessage {
         valueOf: LabelDescriptor_ValueType.valueOf,
         enumValues: LabelDescriptor_ValueType.values)
     ..aOS(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'description')
+        3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'description')
     ..hasRequiredFields = false;
 
   LabelDescriptor._() : super();

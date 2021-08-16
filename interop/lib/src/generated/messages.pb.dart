@@ -100,9 +100,7 @@ class Payload extends $pb.GeneratedMessage {
         enumValues: PayloadType.values)
     ..a<$core.List<$core.int>>(
         2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'body',
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'body',
         $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
 
@@ -264,10 +262,9 @@ class SimpleRequest extends $pb.GeneratedMessage {
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
           : 'SimpleRequest',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
+      package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'grpc.testing'),
       createEmptyInstance: create)
     ..e<PayloadType>(
         1,
@@ -280,44 +277,14 @@ class SimpleRequest extends $pb.GeneratedMessage {
         enumValues: PayloadType.values)
     ..a<$core.int>(
         2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseSize',
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'responseSize',
         $pb.PbFieldType.O3)
-    ..aOM<Payload>(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'payload',
-        subBuilder: Payload.create)
-    ..aOB(
-        4,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'fillUsername')
-    ..aOB(
-        5,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'fillOauthScope')
-    ..aOM<BoolValue>(
-        6,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseCompressed',
-        subBuilder: BoolValue.create)
-    ..aOM<EchoStatus>(
-        7,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseStatus',
-        subBuilder: EchoStatus.create)
-    ..aOM<BoolValue>(
-        8,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'expectCompressed',
-        subBuilder: BoolValue.create)
+    ..aOM<Payload>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'payload', subBuilder: Payload.create)
+    ..aOB(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'fillUsername')
+    ..aOB(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'fillOauthScope')
+    ..aOM<BoolValue>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'responseCompressed', subBuilder: BoolValue.create)
+    ..aOM<EchoStatus>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'responseStatus', subBuilder: EchoStatus.create)
+    ..aOM<BoolValue>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'expectCompressed', subBuilder: BoolValue.create)
     ..hasRequiredFields = false;
 
   SimpleRequest._() : super();
@@ -500,22 +467,15 @@ class SimpleResponse extends $pb.GeneratedMessage {
               ? ''
               : 'grpc.testing'),
       createEmptyInstance: create)
-    ..aOM<Payload>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'payload',
+    ..aOM<Payload>(1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'payload',
         subBuilder: Payload.create)
     ..aOS(
         2,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'username')
-    ..aOS(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'oauthScope')
+    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'oauthScope')
     ..hasRequiredFields = false;
 
   SimpleResponse._() : super();
@@ -613,10 +573,7 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
               : 'grpc.testing'),
       createEmptyInstance: create)
     ..aOM<Payload>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'payload',
+        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'payload',
         subBuilder: Payload.create)
     ..aOM<BoolValue>(
         2,
@@ -792,10 +749,7 @@ class ResponseParameters extends $pb.GeneratedMessage {
             : 'intervalUs',
         $pb.PbFieldType.O3)
     ..aOM<BoolValue>(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'compressed',
+        3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'compressed',
         subBuilder: BoolValue.create)
     ..hasRequiredFields = false;
 
@@ -894,33 +848,17 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
               : 'grpc.testing'),
       createEmptyInstance: create)
     ..e<PayloadType>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseType',
-        $pb.PbFieldType.OE,
+        1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'responseType', $pb.PbFieldType.OE,
         defaultOrMaker: PayloadType.COMPRESSABLE,
         valueOf: PayloadType.valueOf,
         enumValues: PayloadType.values)
     ..pc<ResponseParameters>(
         2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseParameters',
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'responseParameters',
         $pb.PbFieldType.PM,
         subBuilder: ResponseParameters.create)
-    ..aOM<Payload>(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'payload',
-        subBuilder: Payload.create)
-    ..aOM<EchoStatus>(
-        7,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseStatus',
-        subBuilder: EchoStatus.create)
+    ..aOM<Payload>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'payload', subBuilder: Payload.create)
+    ..aOM<EchoStatus>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'responseStatus', subBuilder: EchoStatus.create)
     ..hasRequiredFields = false;
 
   StreamingOutputCallRequest._() : super();

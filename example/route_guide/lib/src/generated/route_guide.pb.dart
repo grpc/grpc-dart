@@ -107,17 +107,11 @@ class Rectangle extends $pb.GeneratedMessage {
               ? ''
               : 'routeguide'),
       createEmptyInstance: create)
-    ..aOM<Point>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'lo',
+    ..aOM<Point>(1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'lo',
         subBuilder: Point.create)
-    ..aOM<Point>(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'hi',
+    ..aOM<Point>(2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'hi',
         subBuilder: Point.create)
     ..hasRequiredFields = false;
 
@@ -394,16 +388,9 @@ class RouteSummary extends $pb.GeneratedMessage {
         $pb.PbFieldType.O3)
     ..a<$core.int>(
         3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'distance',
+        const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'distance',
         $pb.PbFieldType.O3)
-    ..a<$core.int>(
-        4,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'elapsedTime',
-        $pb.PbFieldType.O3)
+    ..a<$core.int>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'elapsedTime', $pb.PbFieldType.O3)
     ..hasRequiredFields = false;
 
   RouteSummary._() : super();
