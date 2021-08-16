@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: [dev, 2.12.0]
+        sdk: [dev, stable]
     steps:
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1.0
+      - uses: dart-lang/setup-dart@v1.2
         with:
           sdk: ${{ matrix.sdk }}
       - name: Report version
