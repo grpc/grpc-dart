@@ -80,7 +80,7 @@ jobs:
       - name: Install envoy
         if: ${{ matrix.platform == 'chrome' }}
         run: |
-          ENVOY_VERSION="1.19.0"
+          ENVOY_VERSION="1.19.1"
           wget https://archive.tetratelabs.io/envoy/download/v${ENVOY_VERSION}/envoy-v${ENVOY_VERSION}-linux-amd64.tar.xz
           tar -xf envoy-v${ENVOY_VERSION}-linux-amd64.tar.xz
           chmod +x envoy-v${ENVOY_VERSION}-linux-amd64/bin/envoy
