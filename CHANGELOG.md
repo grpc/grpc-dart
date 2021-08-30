@@ -1,3 +1,7 @@
+## 3.0.3
+
+- Add `responseErrorHandler`, Fix issue [#51](https://github.com/grpc/grpc-dart/issues/51)
+
 ## 3.0.2
 
 * Fix compilation on the Web with DDC.
