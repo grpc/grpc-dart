@@ -87,6 +87,7 @@ class ConnectionServer {
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
+  final Function? _responseErrorHandler;
 
   final _connections = <ServerTransportConnection>[];
 
@@ -95,6 +96,7 @@ class ConnectionServer {
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
+    this._responseErrorHandler,
   ])  : _codecRegistry = codecRegistry,
         _interceptors = interceptors {
     for (final service in services) {
@@ -133,6 +135,7 @@ class ConnectionServer {
       lookupService, stream, _interceptors, _codecRegistry,
       // ignore: unnecessary_cast
       clientCertificate as io_bits.X509Certificate?,
+      _responseErrorHandler,
     )..handle();
   }
 }
@@ -149,7 +152,13 @@ class Server extends ConnectionServer {
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
-  ]) : super(services, interceptors, codecRegistry);
+    Function? responseErrorHandler,
+  ]) : super(
+          services,
+          interceptors,
+          codecRegistry,
+          responseErrorHandler,
+        );
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
@@ -232,6 +241,7 @@ class Server extends ConnectionServer {
       _codecRegistry,
       // ignore: unnecessary_cast
       clientCertificate as io_bits.X509Certificate?,
+      _responseErrorHandler,
     )..handle();
   }
 
