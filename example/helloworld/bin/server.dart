@@ -15,7 +15,6 @@
 
 /// Dart implementation of the gRPC helloworld.Greeter server.
 import 'package:grpc/grpc.dart';
-import 'package:helloworld/src/generated/helloworld.pb.dart';
 import 'package:helloworld/src/generated/helloworld.pbgrpc.dart';
 
 class GreeterService extends GreeterServiceBase {

@@ -18,7 +18,6 @@ import 'dart:math' show Random;
 import 'package:grpc/grpc.dart';
 
 import 'common.dart';
-import 'generated/route_guide.pb.dart';
 import 'generated/route_guide.pbgrpc.dart';
 
 class Client {

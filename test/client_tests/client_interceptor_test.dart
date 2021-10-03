@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:grpc/grpc.dart';
-import 'package:grpc/src/client/interceptor.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 
