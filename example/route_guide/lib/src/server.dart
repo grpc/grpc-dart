@@ -18,7 +18,6 @@ import 'dart:math' show atan2, cos, max, min, pi, sin, sqrt;
 import 'package:grpc/grpc.dart' as grpc;
 
 import 'common.dart';
-import 'generated/route_guide.pb.dart';
 import 'generated/route_guide.pbgrpc.dart';
 
 class RouteGuideService extends RouteGuideServiceBase {
