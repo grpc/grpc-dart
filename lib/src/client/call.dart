@@ -24,6 +24,7 @@ import 'common.dart';
 import 'connection.dart';
 import 'method.dart';
 import 'transport/transport.dart';
+import 'package:flutter/foundation.dart';
 
 const _reservedHeaders = [
   'content-type',
