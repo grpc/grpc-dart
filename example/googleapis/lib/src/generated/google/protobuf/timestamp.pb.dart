@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/protobuf/timestamp.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -39,8 +39,8 @@ class Timestamp extends $pb.GeneratedMessage with $mixin.TimestampMixin {
 
   Timestamp._() : super();
   factory Timestamp({
-    $fixnum.Int64 seconds,
-    $core.int nanos,
+    $fixnum.Int64? seconds,
+    $core.int? nanos,
   }) {
     final _result = create();
     if (seconds != null) {
@@ -65,8 +65,8 @@ class Timestamp extends $pb.GeneratedMessage with $mixin.TimestampMixin {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   Timestamp copyWith(void Function(Timestamp) updates) =>
-      super.copyWith((message) =>
-          updates(message as Timestamp)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as Timestamp))
+          as Timestamp; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Timestamp create() => Timestamp._();
@@ -75,7 +75,7 @@ class Timestamp extends $pb.GeneratedMessage with $mixin.TimestampMixin {
   @$core.pragma('dart2js:noInline')
   static Timestamp getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Timestamp>(create);
-  static Timestamp _defaultInstance;
+  static Timestamp? _defaultInstance;
 
   @$pb.TagNumber(1)
   $fixnum.Int64 get seconds => $_getI64(0);

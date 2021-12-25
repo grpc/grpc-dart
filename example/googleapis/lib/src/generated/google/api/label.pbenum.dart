@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/api/label.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 // ignore_for_file: UNDEFINED_SHOWN_NAME
@@ -35,7 +35,7 @@ class LabelDescriptor_ValueType extends $pb.ProtobufEnum {
 
   static final $core.Map<$core.int, LabelDescriptor_ValueType> _byValue =
       $pb.ProtobufEnum.initByValue(values);
-  static LabelDescriptor_ValueType valueOf($core.int value) => _byValue[value];
+  static LabelDescriptor_ValueType? valueOf($core.int value) => _byValue[value];
 
   const LabelDescriptor_ValueType._($core.int v, $core.String n) : super(v, n);
 }

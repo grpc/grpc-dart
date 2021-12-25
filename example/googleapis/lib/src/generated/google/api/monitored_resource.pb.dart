@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/api/monitored_resource.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -64,12 +64,12 @@ class MonitoredResourceDescriptor extends $pb.GeneratedMessage {
 
   MonitoredResourceDescriptor._() : super();
   factory MonitoredResourceDescriptor({
-    $core.String type,
-    $core.String displayName,
-    $core.String description,
-    $core.Iterable<$0.LabelDescriptor> labels,
-    $core.String name,
-    $2.LaunchStage launchStage,
+    $core.String? type,
+    $core.String? displayName,
+    $core.String? description,
+    $core.Iterable<$0.LabelDescriptor>? labels,
+    $core.String? name,
+    $2.LaunchStage? launchStage,
   }) {
     final _result = create();
     if (type != null) {
@@ -108,8 +108,9 @@ class MonitoredResourceDescriptor extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   MonitoredResourceDescriptor copyWith(
           void Function(MonitoredResourceDescriptor) updates) =>
-      super.copyWith((message) => updates(message
-          as MonitoredResourceDescriptor)); // ignore: deprecated_member_use
+      super.copyWith(
+              (message) => updates(message as MonitoredResourceDescriptor))
+          as MonitoredResourceDescriptor; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static MonitoredResourceDescriptor create() =>
@@ -120,7 +121,7 @@ class MonitoredResourceDescriptor extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static MonitoredResourceDescriptor getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<MonitoredResourceDescriptor>(create);
-  static MonitoredResourceDescriptor _defaultInstance;
+  static MonitoredResourceDescriptor? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get type => $_getSZ(0);
@@ -214,8 +215,8 @@ class MonitoredResource extends $pb.GeneratedMessage {
 
   MonitoredResource._() : super();
   factory MonitoredResource({
-    $core.String type,
-    $core.Map<$core.String, $core.String> labels,
+    $core.String? type,
+    $core.Map<$core.String, $core.String>? labels,
   }) {
     final _result = create();
     if (type != null) {
@@ -240,8 +241,8 @@ class MonitoredResource extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   MonitoredResource copyWith(void Function(MonitoredResource) updates) =>
-      super.copyWith((message) => updates(
-          message as MonitoredResource)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as MonitoredResource))
+          as MonitoredResource; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static MonitoredResource create() => MonitoredResource._();
@@ -251,7 +252,7 @@ class MonitoredResource extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static MonitoredResource getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<MonitoredResource>(create);
-  static MonitoredResource _defaultInstance;
+  static MonitoredResource? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get type => $_getSZ(0);
@@ -298,8 +299,8 @@ class MonitoredResourceMetadata extends $pb.GeneratedMessage {
 
   MonitoredResourceMetadata._() : super();
   factory MonitoredResourceMetadata({
-    $1.Struct systemLabels,
-    $core.Map<$core.String, $core.String> userLabels,
+    $1.Struct? systemLabels,
+    $core.Map<$core.String, $core.String>? userLabels,
   }) {
     final _result = create();
     if (systemLabels != null) {
@@ -326,8 +327,8 @@ class MonitoredResourceMetadata extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   MonitoredResourceMetadata copyWith(
           void Function(MonitoredResourceMetadata) updates) =>
-      super.copyWith((message) => updates(message
-          as MonitoredResourceMetadata)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as MonitoredResourceMetadata))
+          as MonitoredResourceMetadata; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static MonitoredResourceMetadata create() => MonitoredResourceMetadata._();
@@ -337,7 +338,7 @@ class MonitoredResourceMetadata extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static MonitoredResourceMetadata getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<MonitoredResourceMetadata>(create);
-  static MonitoredResourceMetadata _defaultInstance;
+  static MonitoredResourceMetadata? _defaultInstance;
 
   @$pb.TagNumber(1)
   $1.Struct get systemLabels => $_getN(0);

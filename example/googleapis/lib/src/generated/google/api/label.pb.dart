@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/api/label.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -46,9 +46,9 @@ class LabelDescriptor extends $pb.GeneratedMessage {
 
   LabelDescriptor._() : super();
   factory LabelDescriptor({
-    $core.String key,
-    LabelDescriptor_ValueType valueType,
-    $core.String description,
+    $core.String? key,
+    LabelDescriptor_ValueType? valueType,
+    $core.String? description,
   }) {
     final _result = create();
     if (key != null) {
@@ -76,8 +76,8 @@ class LabelDescriptor extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   LabelDescriptor copyWith(void Function(LabelDescriptor) updates) =>
-      super.copyWith((message) =>
-          updates(message as LabelDescriptor)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as LabelDescriptor))
+          as LabelDescriptor; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static LabelDescriptor create() => LabelDescriptor._();
@@ -87,7 +87,7 @@ class LabelDescriptor extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static LabelDescriptor getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<LabelDescriptor>(create);
-  static LabelDescriptor _defaultInstance;
+  static LabelDescriptor? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get key => $_getSZ(0);

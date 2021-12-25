@@ -20,8 +20,8 @@ import 'package:grpc/grpc.dart';
 import 'generated/metadata.pbgrpc.dart';
 
 class Client {
-  ClientChannel channel;
-  MetadataClient stub;
+  late ClientChannel channel;
+  late MetadataClient stub;
 
   Future<void> main(List<String> args) async {
     channel = ClientChannel('127.0.0.1',

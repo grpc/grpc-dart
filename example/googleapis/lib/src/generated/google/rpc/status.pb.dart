@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/rpc/status.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -43,9 +43,9 @@ class Status extends $pb.GeneratedMessage {
 
   Status._() : super();
   factory Status({
-    $core.int code,
-    $core.String message,
-    $core.Iterable<$0.Any> details,
+    $core.int? code,
+    $core.String? message,
+    $core.Iterable<$0.Any>? details,
   }) {
     final _result = create();
     if (code != null) {
@@ -72,8 +72,9 @@ class Status extends $pb.GeneratedMessage {
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
-  Status copyWith(void Function(Status) updates) => super.copyWith(
-      (message) => updates(message as Status)); // ignore: deprecated_member_use
+  Status copyWith(void Function(Status) updates) =>
+      super.copyWith((message) => updates(message as Status))
+          as Status; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Status create() => Status._();
@@ -82,7 +83,7 @@ class Status extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Status getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Status>(create);
-  static Status _defaultInstance;
+  static Status? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get code => $_getIZ(0);
