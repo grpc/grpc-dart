@@ -84,7 +84,8 @@ class RouteGuideService extends RouteGuideServiceBase {
     await for (var location in request) {
       if (!timer.isRunning) timer.start();
       pointCount++;
-      final feature = featuresDb.firstWhereOrNull((f) => f.location == location);
+      final feature =
+          featuresDb.firstWhereOrNull((f) => f.location == location);
       if (feature != null) {
         featureCount++;
       }
