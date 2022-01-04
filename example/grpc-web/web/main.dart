@@ -26,10 +26,10 @@ void main() {
   final button = querySelector('#send') as ButtonElement;
   button.onClick.listen((e) async {
     final msg = querySelector('#msg') as TextInputElement;
-    final value = msg.value.trim();
+    final value = msg.value!.trim();
     msg.value = '';
 
-    if (value.isEmpty) return false;
+    if (value.isEmpty) return;
 
     if (value.indexOf(' ') > 0) {
       final countStr = value.substring(0, value.indexOf(' '));

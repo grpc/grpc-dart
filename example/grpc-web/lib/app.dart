@@ -42,7 +42,7 @@ class EchoApp {
 
   void _addMessage(String message, String cssClass) {
     final classes = cssClass.split(' ');
-    querySelector('#first').after(DivElement()
+    querySelector('#first')!.after(DivElement()
       ..classes.add('row')
       ..append(Element.tag('h2')
         ..append(SpanElement()

@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/logging/v2/logging.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -37,7 +37,7 @@ class DeleteLogRequest extends $pb.GeneratedMessage {
 
   DeleteLogRequest._() : super();
   factory DeleteLogRequest({
-    $core.String logName,
+    $core.String? logName,
   }) {
     final _result = create();
     if (logName != null) {
@@ -59,8 +59,8 @@ class DeleteLogRequest extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   DeleteLogRequest copyWith(void Function(DeleteLogRequest) updates) =>
-      super.copyWith((message) => updates(
-          message as DeleteLogRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as DeleteLogRequest))
+          as DeleteLogRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static DeleteLogRequest create() => DeleteLogRequest._();
@@ -70,7 +70,7 @@ class DeleteLogRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static DeleteLogRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<DeleteLogRequest>(create);
-  static DeleteLogRequest _defaultInstance;
+  static DeleteLogRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get logName => $_getSZ(0);
@@ -136,12 +136,12 @@ class WriteLogEntriesRequest extends $pb.GeneratedMessage {
 
   WriteLogEntriesRequest._() : super();
   factory WriteLogEntriesRequest({
-    $core.String logName,
-    $3.MonitoredResource resource,
-    $core.Map<$core.String, $core.String> labels,
-    $core.Iterable<$4.LogEntry> entries,
-    $core.bool partialSuccess,
-    $core.bool dryRun,
+    $core.String? logName,
+    $3.MonitoredResource? resource,
+    $core.Map<$core.String, $core.String>? labels,
+    $core.Iterable<$4.LogEntry>? entries,
+    $core.bool? partialSuccess,
+    $core.bool? dryRun,
   }) {
     final _result = create();
     if (logName != null) {
@@ -180,8 +180,8 @@ class WriteLogEntriesRequest extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   WriteLogEntriesRequest copyWith(
           void Function(WriteLogEntriesRequest) updates) =>
-      super.copyWith((message) => updates(
-          message as WriteLogEntriesRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as WriteLogEntriesRequest))
+          as WriteLogEntriesRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static WriteLogEntriesRequest create() => WriteLogEntriesRequest._();
@@ -191,7 +191,7 @@ class WriteLogEntriesRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static WriteLogEntriesRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<WriteLogEntriesRequest>(create);
-  static WriteLogEntriesRequest _defaultInstance;
+  static WriteLogEntriesRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get logName => $_getSZ(0);
@@ -280,8 +280,8 @@ class WriteLogEntriesResponse extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   WriteLogEntriesResponse copyWith(
           void Function(WriteLogEntriesResponse) updates) =>
-      super.copyWith((message) => updates(
-          message as WriteLogEntriesResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as WriteLogEntriesResponse))
+          as WriteLogEntriesResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static WriteLogEntriesResponse create() => WriteLogEntriesResponse._();
@@ -291,7 +291,7 @@ class WriteLogEntriesResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static WriteLogEntriesResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<WriteLogEntriesResponse>(create);
-  static WriteLogEntriesResponse _defaultInstance;
+  static WriteLogEntriesResponse? _defaultInstance;
 }
 
 class WriteLogEntriesPartialErrors extends $pb.GeneratedMessage {
@@ -318,7 +318,7 @@ class WriteLogEntriesPartialErrors extends $pb.GeneratedMessage {
 
   WriteLogEntriesPartialErrors._() : super();
   factory WriteLogEntriesPartialErrors({
-    $core.Map<$core.int, $5.Status> logEntryErrors,
+    $core.Map<$core.int, $5.Status>? logEntryErrors,
   }) {
     final _result = create();
     if (logEntryErrors != null) {
@@ -342,8 +342,9 @@ class WriteLogEntriesPartialErrors extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   WriteLogEntriesPartialErrors copyWith(
           void Function(WriteLogEntriesPartialErrors) updates) =>
-      super.copyWith((message) => updates(message
-          as WriteLogEntriesPartialErrors)); // ignore: deprecated_member_use
+      super.copyWith(
+              (message) => updates(message as WriteLogEntriesPartialErrors))
+          as WriteLogEntriesPartialErrors; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static WriteLogEntriesPartialErrors create() =>
@@ -354,7 +355,7 @@ class WriteLogEntriesPartialErrors extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static WriteLogEntriesPartialErrors getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<WriteLogEntriesPartialErrors>(create);
-  static WriteLogEntriesPartialErrors _defaultInstance;
+  static WriteLogEntriesPartialErrors? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.Map<$core.int, $5.Status> get logEntryErrors => $_getMap(0);
@@ -400,11 +401,11 @@ class ListLogEntriesRequest extends $pb.GeneratedMessage {
 
   ListLogEntriesRequest._() : super();
   factory ListLogEntriesRequest({
-    $core.String filter,
-    $core.String orderBy,
-    $core.int pageSize,
-    $core.String pageToken,
-    $core.Iterable<$core.String> resourceNames,
+    $core.String? filter,
+    $core.String? orderBy,
+    $core.int? pageSize,
+    $core.String? pageToken,
+    $core.Iterable<$core.String>? resourceNames,
   }) {
     final _result = create();
     if (filter != null) {
@@ -440,8 +441,8 @@ class ListLogEntriesRequest extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   ListLogEntriesRequest copyWith(
           void Function(ListLogEntriesRequest) updates) =>
-      super.copyWith((message) => updates(
-          message as ListLogEntriesRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as ListLogEntriesRequest))
+          as ListLogEntriesRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ListLogEntriesRequest create() => ListLogEntriesRequest._();
@@ -451,7 +452,7 @@ class ListLogEntriesRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static ListLogEntriesRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ListLogEntriesRequest>(create);
-  static ListLogEntriesRequest _defaultInstance;
+  static ListLogEntriesRequest? _defaultInstance;
 
   @$pb.TagNumber(2)
   $core.String get filter => $_getSZ(0);
@@ -531,8 +532,8 @@ class ListLogEntriesResponse extends $pb.GeneratedMessage {
 
   ListLogEntriesResponse._() : super();
   factory ListLogEntriesResponse({
-    $core.Iterable<$4.LogEntry> entries,
-    $core.String nextPageToken,
+    $core.Iterable<$4.LogEntry>? entries,
+    $core.String? nextPageToken,
   }) {
     final _result = create();
     if (entries != null) {
@@ -559,8 +560,8 @@ class ListLogEntriesResponse extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   ListLogEntriesResponse copyWith(
           void Function(ListLogEntriesResponse) updates) =>
-      super.copyWith((message) => updates(
-          message as ListLogEntriesResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as ListLogEntriesResponse))
+          as ListLogEntriesResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ListLogEntriesResponse create() => ListLogEntriesResponse._();
@@ -570,7 +571,7 @@ class ListLogEntriesResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static ListLogEntriesResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ListLogEntriesResponse>(create);
-  static ListLogEntriesResponse _defaultInstance;
+  static ListLogEntriesResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<$4.LogEntry> get entries => $_getList(0);
@@ -613,8 +614,8 @@ class ListMonitoredResourceDescriptorsRequest extends $pb.GeneratedMessage {
 
   ListMonitoredResourceDescriptorsRequest._() : super();
   factory ListMonitoredResourceDescriptorsRequest({
-    $core.int pageSize,
-    $core.String pageToken,
+    $core.int? pageSize,
+    $core.String? pageToken,
   }) {
     final _result = create();
     if (pageSize != null) {
@@ -642,8 +643,9 @@ class ListMonitoredResourceDescriptorsRequest extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   ListMonitoredResourceDescriptorsRequest copyWith(
           void Function(ListMonitoredResourceDescriptorsRequest) updates) =>
-      super.copyWith((message) => updates(message
-          as ListMonitoredResourceDescriptorsRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) =>
+              updates(message as ListMonitoredResourceDescriptorsRequest))
+          as ListMonitoredResourceDescriptorsRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ListMonitoredResourceDescriptorsRequest create() =>
@@ -655,7 +657,7 @@ class ListMonitoredResourceDescriptorsRequest extends $pb.GeneratedMessage {
   static ListMonitoredResourceDescriptorsRequest getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<
           ListMonitoredResourceDescriptorsRequest>(create);
-  static ListMonitoredResourceDescriptorsRequest _defaultInstance;
+  static ListMonitoredResourceDescriptorsRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get pageSize => $_getIZ(0);
@@ -708,8 +710,8 @@ class ListMonitoredResourceDescriptorsResponse extends $pb.GeneratedMessage {
 
   ListMonitoredResourceDescriptorsResponse._() : super();
   factory ListMonitoredResourceDescriptorsResponse({
-    $core.Iterable<$3.MonitoredResourceDescriptor> resourceDescriptors,
-    $core.String nextPageToken,
+    $core.Iterable<$3.MonitoredResourceDescriptor>? resourceDescriptors,
+    $core.String? nextPageToken,
   }) {
     final _result = create();
     if (resourceDescriptors != null) {
@@ -737,8 +739,9 @@ class ListMonitoredResourceDescriptorsResponse extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   ListMonitoredResourceDescriptorsResponse copyWith(
           void Function(ListMonitoredResourceDescriptorsResponse) updates) =>
-      super.copyWith((message) => updates(message
-          as ListMonitoredResourceDescriptorsResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) =>
+              updates(message as ListMonitoredResourceDescriptorsResponse))
+          as ListMonitoredResourceDescriptorsResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ListMonitoredResourceDescriptorsResponse create() =>
@@ -751,7 +754,7 @@ class ListMonitoredResourceDescriptorsResponse extends $pb.GeneratedMessage {
   static ListMonitoredResourceDescriptorsResponse getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<
           ListMonitoredResourceDescriptorsResponse>(create);
-  static ListMonitoredResourceDescriptorsResponse _defaultInstance;
+  static ListMonitoredResourceDescriptorsResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<$3.MonitoredResourceDescriptor> get resourceDescriptors =>
@@ -805,10 +808,10 @@ class ListLogsRequest extends $pb.GeneratedMessage {
 
   ListLogsRequest._() : super();
   factory ListLogsRequest({
-    $core.String parent,
-    $core.int pageSize,
-    $core.String pageToken,
-    $core.Iterable<$core.String> resourceNames,
+    $core.String? parent,
+    $core.int? pageSize,
+    $core.String? pageToken,
+    $core.Iterable<$core.String>? resourceNames,
   }) {
     final _result = create();
     if (parent != null) {
@@ -839,8 +842,8 @@ class ListLogsRequest extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   ListLogsRequest copyWith(void Function(ListLogsRequest) updates) =>
-      super.copyWith((message) =>
-          updates(message as ListLogsRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as ListLogsRequest))
+          as ListLogsRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ListLogsRequest create() => ListLogsRequest._();
@@ -850,7 +853,7 @@ class ListLogsRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static ListLogsRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ListLogsRequest>(create);
-  static ListLogsRequest _defaultInstance;
+  static ListLogsRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get parent => $_getSZ(0);
@@ -916,8 +919,8 @@ class ListLogsResponse extends $pb.GeneratedMessage {
 
   ListLogsResponse._() : super();
   factory ListLogsResponse({
-    $core.String nextPageToken,
-    $core.Iterable<$core.String> logNames,
+    $core.String? nextPageToken,
+    $core.Iterable<$core.String>? logNames,
   }) {
     final _result = create();
     if (nextPageToken != null) {
@@ -942,8 +945,8 @@ class ListLogsResponse extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   ListLogsResponse copyWith(void Function(ListLogsResponse) updates) =>
-      super.copyWith((message) => updates(
-          message as ListLogsResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as ListLogsResponse))
+          as ListLogsResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ListLogsResponse create() => ListLogsResponse._();
@@ -953,7 +956,7 @@ class ListLogsResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static ListLogsResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ListLogsResponse>(create);
-  static ListLogsResponse _defaultInstance;
+  static ListLogsResponse? _defaultInstance;
 
   @$pb.TagNumber(2)
   $core.String get nextPageToken => $_getSZ(0);
@@ -1001,9 +1004,9 @@ class TailLogEntriesRequest extends $pb.GeneratedMessage {
 
   TailLogEntriesRequest._() : super();
   factory TailLogEntriesRequest({
-    $core.Iterable<$core.String> resourceNames,
-    $core.String filter,
-    $6.Duration bufferWindow,
+    $core.Iterable<$core.String>? resourceNames,
+    $core.String? filter,
+    $6.Duration? bufferWindow,
   }) {
     final _result = create();
     if (resourceNames != null) {
@@ -1033,8 +1036,8 @@ class TailLogEntriesRequest extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   TailLogEntriesRequest copyWith(
           void Function(TailLogEntriesRequest) updates) =>
-      super.copyWith((message) => updates(
-          message as TailLogEntriesRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as TailLogEntriesRequest))
+          as TailLogEntriesRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static TailLogEntriesRequest create() => TailLogEntriesRequest._();
@@ -1044,7 +1047,7 @@ class TailLogEntriesRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static TailLogEntriesRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<TailLogEntriesRequest>(create);
-  static TailLogEntriesRequest _defaultInstance;
+  static TailLogEntriesRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<$core.String> get resourceNames => $_getList(0);
@@ -1106,8 +1109,8 @@ class TailLogEntriesResponse_SuppressionInfo extends $pb.GeneratedMessage {
 
   TailLogEntriesResponse_SuppressionInfo._() : super();
   factory TailLogEntriesResponse_SuppressionInfo({
-    TailLogEntriesResponse_SuppressionInfo_Reason reason,
-    $core.int suppressedCount,
+    TailLogEntriesResponse_SuppressionInfo_Reason? reason,
+    $core.int? suppressedCount,
   }) {
     final _result = create();
     if (reason != null) {
@@ -1135,8 +1138,9 @@ class TailLogEntriesResponse_SuppressionInfo extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   TailLogEntriesResponse_SuppressionInfo copyWith(
           void Function(TailLogEntriesResponse_SuppressionInfo) updates) =>
-      super.copyWith((message) => updates(message
-          as TailLogEntriesResponse_SuppressionInfo)); // ignore: deprecated_member_use
+      super.copyWith((message) =>
+              updates(message as TailLogEntriesResponse_SuppressionInfo))
+          as TailLogEntriesResponse_SuppressionInfo; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static TailLogEntriesResponse_SuppressionInfo create() =>
@@ -1148,7 +1152,7 @@ class TailLogEntriesResponse_SuppressionInfo extends $pb.GeneratedMessage {
   static TailLogEntriesResponse_SuppressionInfo getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<
           TailLogEntriesResponse_SuppressionInfo>(create);
-  static TailLogEntriesResponse_SuppressionInfo _defaultInstance;
+  static TailLogEntriesResponse_SuppressionInfo? _defaultInstance;
 
   @$pb.TagNumber(1)
   TailLogEntriesResponse_SuppressionInfo_Reason get reason => $_getN(0);
@@ -1203,8 +1207,8 @@ class TailLogEntriesResponse extends $pb.GeneratedMessage {
 
   TailLogEntriesResponse._() : super();
   factory TailLogEntriesResponse({
-    $core.Iterable<$4.LogEntry> entries,
-    $core.Iterable<TailLogEntriesResponse_SuppressionInfo> suppressionInfo,
+    $core.Iterable<$4.LogEntry>? entries,
+    $core.Iterable<TailLogEntriesResponse_SuppressionInfo>? suppressionInfo,
   }) {
     final _result = create();
     if (entries != null) {
@@ -1231,8 +1235,8 @@ class TailLogEntriesResponse extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   TailLogEntriesResponse copyWith(
           void Function(TailLogEntriesResponse) updates) =>
-      super.copyWith((message) => updates(
-          message as TailLogEntriesResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as TailLogEntriesResponse))
+          as TailLogEntriesResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static TailLogEntriesResponse create() => TailLogEntriesResponse._();
@@ -1242,7 +1246,7 @@ class TailLogEntriesResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static TailLogEntriesResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<TailLogEntriesResponse>(create);
-  static TailLogEntriesResponse _defaultInstance;
+  static TailLogEntriesResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<$4.LogEntry> get entries => $_getList(0);

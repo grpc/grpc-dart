@@ -29,4 +29,4 @@ $PROTOC $PROTOBUF/src/google/protobuf/empty.proto
 $PROTOC $PROTOBUF/src/google/protobuf/struct.proto
 $PROTOC $PROTOBUF/src/google/protobuf/timestamp.proto
 
-dartfmt -w lib/src/generated
+dart format lib/src/generated

@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: route_guide.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -35,8 +35,8 @@ class Point extends $pb.GeneratedMessage {
 
   Point._() : super();
   factory Point({
-    $core.int latitude,
-    $core.int longitude,
+    $core.int? latitude,
+    $core.int? longitude,
   }) {
     final _result = create();
     if (latitude != null) {
@@ -60,8 +60,9 @@ class Point extends $pb.GeneratedMessage {
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
-  Point copyWith(void Function(Point) updates) => super.copyWith(
-      (message) => updates(message as Point)); // ignore: deprecated_member_use
+  Point copyWith(void Function(Point) updates) =>
+      super.copyWith((message) => updates(message as Point))
+          as Point; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Point create() => Point._();
@@ -70,7 +71,7 @@ class Point extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Point getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Point>(create);
-  static Point _defaultInstance;
+  static Point? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get latitude => $_getIZ(0);
@@ -123,8 +124,8 @@ class Rectangle extends $pb.GeneratedMessage {
 
   Rectangle._() : super();
   factory Rectangle({
-    Point lo,
-    Point hi,
+    Point? lo,
+    Point? hi,
   }) {
     final _result = create();
     if (lo != null) {
@@ -149,8 +150,8 @@ class Rectangle extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   Rectangle copyWith(void Function(Rectangle) updates) =>
-      super.copyWith((message) =>
-          updates(message as Rectangle)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as Rectangle))
+          as Rectangle; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Rectangle create() => Rectangle._();
@@ -159,7 +160,7 @@ class Rectangle extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Rectangle getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Rectangle>(create);
-  static Rectangle _defaultInstance;
+  static Rectangle? _defaultInstance;
 
   @$pb.TagNumber(1)
   Point get lo => $_getN(0);
@@ -215,8 +216,8 @@ class Feature extends $pb.GeneratedMessage {
 
   Feature._() : super();
   factory Feature({
-    $core.String name,
-    Point location,
+    $core.String? name,
+    Point? location,
   }) {
     final _result = create();
     if (name != null) {
@@ -241,8 +242,8 @@ class Feature extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   Feature copyWith(void Function(Feature) updates) =>
-      super.copyWith((message) =>
-          updates(message as Feature)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as Feature))
+          as Feature; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Feature create() => Feature._();
@@ -251,7 +252,7 @@ class Feature extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Feature getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Feature>(create);
-  static Feature _defaultInstance;
+  static Feature? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get name => $_getSZ(0);
@@ -305,8 +306,8 @@ class RouteNote extends $pb.GeneratedMessage {
 
   RouteNote._() : super();
   factory RouteNote({
-    Point location,
-    $core.String message,
+    Point? location,
+    $core.String? message,
   }) {
     final _result = create();
     if (location != null) {
@@ -331,8 +332,8 @@ class RouteNote extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   RouteNote copyWith(void Function(RouteNote) updates) =>
-      super.copyWith((message) =>
-          updates(message as RouteNote)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as RouteNote))
+          as RouteNote; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static RouteNote create() => RouteNote._();
@@ -341,7 +342,7 @@ class RouteNote extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static RouteNote getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RouteNote>(create);
-  static RouteNote _defaultInstance;
+  static RouteNote? _defaultInstance;
 
   @$pb.TagNumber(1)
   Point get location => $_getN(0);
@@ -408,10 +409,10 @@ class RouteSummary extends $pb.GeneratedMessage {
 
   RouteSummary._() : super();
   factory RouteSummary({
-    $core.int pointCount,
-    $core.int featureCount,
-    $core.int distance,
-    $core.int elapsedTime,
+    $core.int? pointCount,
+    $core.int? featureCount,
+    $core.int? distance,
+    $core.int? elapsedTime,
   }) {
     final _result = create();
     if (pointCount != null) {
@@ -442,8 +443,8 @@ class RouteSummary extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   RouteSummary copyWith(void Function(RouteSummary) updates) =>
-      super.copyWith((message) =>
-          updates(message as RouteSummary)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as RouteSummary))
+          as RouteSummary; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static RouteSummary create() => RouteSummary._();
@@ -453,7 +454,7 @@ class RouteSummary extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static RouteSummary getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<RouteSummary>(create);
-  static RouteSummary _defaultInstance;
+  static RouteSummary? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get pointCount => $_getIZ(0);

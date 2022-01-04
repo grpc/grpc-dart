@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: metadata.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -28,7 +28,7 @@ class Record extends $pb.GeneratedMessage {
 
   Record._() : super();
   factory Record({
-    $core.String value,
+    $core.String? value,
   }) {
     final _result = create();
     if (value != null) {
@@ -49,8 +49,9 @@ class Record extends $pb.GeneratedMessage {
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
-  Record copyWith(void Function(Record) updates) => super.copyWith(
-      (message) => updates(message as Record)); // ignore: deprecated_member_use
+  Record copyWith(void Function(Record) updates) =>
+      super.copyWith((message) => updates(message as Record))
+          as Record; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Record create() => Record._();
@@ -59,7 +60,7 @@ class Record extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Record getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Record>(create);
-  static Record _defaultInstance;
+  static Record? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get value => $_getSZ(0);
@@ -94,7 +95,7 @@ class Number extends $pb.GeneratedMessage {
 
   Number._() : super();
   factory Number({
-    $core.int value,
+    $core.int? value,
   }) {
     final _result = create();
     if (value != null) {
@@ -115,8 +116,9 @@ class Number extends $pb.GeneratedMessage {
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
-  Number copyWith(void Function(Number) updates) => super.copyWith(
-      (message) => updates(message as Number)); // ignore: deprecated_member_use
+  Number copyWith(void Function(Number) updates) =>
+      super.copyWith((message) => updates(message as Number))
+          as Number; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Number create() => Number._();
@@ -125,7 +127,7 @@ class Number extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Number getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Number>(create);
-  static Number _defaultInstance;
+  static Number? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get value => $_getIZ(0);
@@ -167,8 +169,9 @@ class Empty extends $pb.GeneratedMessage {
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
-  Empty copyWith(void Function(Empty) updates) => super.copyWith(
-      (message) => updates(message as Empty)); // ignore: deprecated_member_use
+  Empty copyWith(void Function(Empty) updates) =>
+      super.copyWith((message) => updates(message as Empty))
+          as Empty; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Empty create() => Empty._();
@@ -177,5 +180,5 @@ class Empty extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Empty getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Empty>(create);
-  static Empty _defaultInstance;
+  static Empty? _defaultInstance;
 }
