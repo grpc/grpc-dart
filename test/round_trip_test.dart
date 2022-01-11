@@ -50,6 +50,22 @@ class TestServiceWithOnMetadataException extends TestService {
   }
 }
 
+class TestServiceWithGrpcError extends TestService {
+  @override
+  Stream<int> stream(ServiceCall call, Future request) async* {
+    throw GrpcError.custom(
+      StatusCode.internal,
+      'This error should contain trailers',
+      null,
+      null,
+      {
+        'key1': 'value1',
+        'key2': 'value2',
+      },
+    );
+  }
+}
+
 class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
   List<ConnectionState> states = <ConnectionState>[];
@@ -153,6 +169,32 @@ Future<void> main() async {
     final testClient = TestClient(channel);
     expect(await testClient.stream(TestService.requestInfiniteStream).first, 1);
     await channel.shutdown();
+    await server.shutdown();
+  });
+
+  test('trailers on server GrpcError', () async {
+    final server = Server([TestServiceWithGrpcError()]);
+    await server.serve(address: 'localhost', port: 0);
+
+    final channel = FixedConnectionClientChannel(Http2ClientConnection(
+      'localhost',
+      server.port!,
+      ChannelOptions(credentials: ChannelCredentials.insecure()),
+    ));
+    final testClient = TestClient(channel);
+    await expectLater(
+      testClient.stream(TestService.requestFiniteStream).toList(),
+      throwsA(predicate<GrpcError>((e) {
+        final trailers = e.trailers;
+        if (trailers == null || trailers.length != 2) return false;
+        final entries = trailers.entries.toList();
+        final isOk = entries[0].key == 'key1' &&
+            entries[0].value == 'value1' &&
+            entries[1].key == 'key2' &&
+            entries[1].value == 'value2';
+        return isOk;
+      })),
+    );
     await server.shutdown();
   });
 }
