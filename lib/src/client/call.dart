@@ -25,6 +25,7 @@ import 'connection.dart';
 import 'method.dart';
 import 'transport/transport.dart';
 import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 const _reservedHeaders = [
   'content-type',
@@ -99,6 +100,31 @@ class CallOptions {
       mergedCompression,
     );
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is CallOptions &&
+            const DeepCollectionEquality().equals(
+                other.compression, compression) &&
+            const DeepCollectionEquality()
+                .equals(other.metadata, metadata) &&
+            const DeepCollectionEquality().equals(
+                other.metadataProviders, metadataProviders) &&
+            const DeepCollectionEquality().equals(other.timeout, timeout));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(
+        runtimeType,
+        const DeepCollectionEquality().hash(compression),
+        const DeepCollectionEquality().hash(metadata),
+        const DeepCollectionEquality().hash(metadataProviders),
+        const DeepCollectionEquality().hash(timeout),
+
+      );
 }
 
 /// Runtime options for gRPC-web.
