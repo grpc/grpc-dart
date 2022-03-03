@@ -15,10 +15,10 @@
 
 import 'dart:math' show atan2, cos, max, min, pi, sin, sqrt;
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:grpc/grpc.dart' as grpc;
 
 import 'common.dart';
-import 'generated/route_guide.pb.dart';
 import 'generated/route_guide.pbgrpc.dart';
 
 class RouteGuideService extends RouteGuideServiceBase {
@@ -78,14 +78,14 @@ class RouteGuideService extends RouteGuideServiceBase {
     var pointCount = 0;
     var featureCount = 0;
     var distance = 0.0;
-    Point previous;
+    Point? previous;
     final timer = Stopwatch();
 
     await for (var location in request) {
       if (!timer.isRunning) timer.start();
       pointCount++;
-      final feature = featuresDb.firstWhere((f) => f.location == location,
-          orElse: () => null);
+      final feature =
+          featuresDb.firstWhereOrNull((f) => f.location == location);
       if (feature != null) {
         featureCount++;
       }

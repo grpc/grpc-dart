@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/logging/v2/logging.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:async' as $async;
@@ -53,43 +53,43 @@ class LoggingServiceV2Client extends $grpc.Client {
               $2.TailLogEntriesResponse.fromBuffer(value));
 
   LoggingServiceV2Client($grpc.ClientChannel channel,
-      {$grpc.CallOptions options,
-      $core.Iterable<$grpc.ClientInterceptor> interceptors})
+      {$grpc.CallOptions? options,
+      $core.Iterable<$grpc.ClientInterceptor>? interceptors})
       : super(channel, options: options, interceptors: interceptors);
 
   $grpc.ResponseFuture<$1.Empty> deleteLog($2.DeleteLogRequest request,
-      {$grpc.CallOptions options}) {
+      {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$deleteLog, request, options: options);
   }
 
   $grpc.ResponseFuture<$2.WriteLogEntriesResponse> writeLogEntries(
       $2.WriteLogEntriesRequest request,
-      {$grpc.CallOptions options}) {
+      {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$writeLogEntries, request, options: options);
   }
 
   $grpc.ResponseFuture<$2.ListLogEntriesResponse> listLogEntries(
       $2.ListLogEntriesRequest request,
-      {$grpc.CallOptions options}) {
+      {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$listLogEntries, request, options: options);
   }
 
   $grpc.ResponseFuture<$2.ListMonitoredResourceDescriptorsResponse>
       listMonitoredResourceDescriptors(
           $2.ListMonitoredResourceDescriptorsRequest request,
-          {$grpc.CallOptions options}) {
+          {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$listMonitoredResourceDescriptors, request,
         options: options);
   }
 
   $grpc.ResponseFuture<$2.ListLogsResponse> listLogs($2.ListLogsRequest request,
-      {$grpc.CallOptions options}) {
+      {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$listLogs, request, options: options);
   }
 
   $grpc.ResponseStream<$2.TailLogEntriesResponse> tailLogEntries(
       $async.Stream<$2.TailLogEntriesRequest> request,
-      {$grpc.CallOptions options}) {
+      {$grpc.CallOptions? options}) {
     return $createStreamingCall(_$tailLogEntries, request, options: options);
   }
 }

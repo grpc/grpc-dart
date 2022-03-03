@@ -8,7 +8,7 @@ This is meant to be used with the echo example provided by the grpc-web reposito
 Install 'webdev', by running
 
 ```sh
-$ pub global activate webdev
+$ dart pub global activate webdev
 ```
 
 You will need a clone of the [grpc-web](https://github.com/grpc/grpc-web) repository to run the example server.
@@ -24,7 +24,7 @@ To compile and run the example, assuming you are in the root of the grpc-web
 folder, i.e., .../example/grpc-web/, first get the dependencies by running:
 
 ```sh
-$ pub get
+$ dart pub get
 ```
 
 Compile and run the website with:
@@ -50,7 +50,7 @@ To install protoc, see the instructions on
 The easiest way to get the Dart protoc plugin is by running
 
 ```sh
-$ pub global activate protoc_plugin
+$ dart pub global activate protoc_plugin
 ```
 
 and follow the directions to add `~/.pub-cache/bin` to your PATH, if you haven't

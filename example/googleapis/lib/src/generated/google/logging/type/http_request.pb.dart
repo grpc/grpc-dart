@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/logging/type/http_request.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -103,21 +103,21 @@ class HttpRequest extends $pb.GeneratedMessage {
 
   HttpRequest._() : super();
   factory HttpRequest({
-    $core.String requestMethod,
-    $core.String requestUrl,
-    $fixnum.Int64 requestSize,
-    $core.int status,
-    $fixnum.Int64 responseSize,
-    $core.String userAgent,
-    $core.String remoteIp,
-    $core.String referer,
-    $core.bool cacheHit,
-    $core.bool cacheValidatedWithOriginServer,
-    $core.bool cacheLookup,
-    $fixnum.Int64 cacheFillBytes,
-    $core.String serverIp,
-    $0.Duration latency,
-    $core.String protocol,
+    $core.String? requestMethod,
+    $core.String? requestUrl,
+    $fixnum.Int64? requestSize,
+    $core.int? status,
+    $fixnum.Int64? responseSize,
+    $core.String? userAgent,
+    $core.String? remoteIp,
+    $core.String? referer,
+    $core.bool? cacheHit,
+    $core.bool? cacheValidatedWithOriginServer,
+    $core.bool? cacheLookup,
+    $fixnum.Int64? cacheFillBytes,
+    $core.String? serverIp,
+    $0.Duration? latency,
+    $core.String? protocol,
   }) {
     final _result = create();
     if (requestMethod != null) {
@@ -181,8 +181,8 @@ class HttpRequest extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   HttpRequest copyWith(void Function(HttpRequest) updates) =>
-      super.copyWith((message) =>
-          updates(message as HttpRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as HttpRequest))
+          as HttpRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static HttpRequest create() => HttpRequest._();
@@ -191,7 +191,7 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static HttpRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<HttpRequest>(create);
-  static HttpRequest _defaultInstance;
+  static HttpRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get requestMethod => $_getSZ(0);

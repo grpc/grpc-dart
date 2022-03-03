@@ -19,6 +19,7 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:grpc/grpc.dart';
+
 import 'generated/empty.pb.dart';
 import 'generated/messages.pb.dart';
 import 'generated/test.pbgrpc.dart';
@@ -152,8 +153,7 @@ class Tester {
   /// * call was successful
   /// * response is non-null
   Future<void> emptyUnary() async {
-    final response = await client.emptyCall(Empty());
-    if (response is! Empty) throw 'Expected Empty response.';
+    await client.emptyCall(Empty());
   }
 
   /// This test verifies that gRPC requests marked as cacheable use GET verb

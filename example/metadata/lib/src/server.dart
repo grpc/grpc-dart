@@ -24,13 +24,13 @@ class MetadataService extends MetadataServiceBase {
 
   @override
   Future<Record> echo(grpc.ServiceCall call, Record request) async {
-    final peer = call.clientMetadata['peer'];
+    final peer = call.clientMetadata!['peer']!;
     final count = callCount++;
     print('Echo: Call #$count: Peer: $peer, request: ${request.value}');
-    call.headers['count'] = '${count}';
-    call.trailers['hello'] = request.value;
+    call.headers!['count'] = '${count}';
+    call.trailers!['hello'] = request.value;
 
-    final delay = call.clientMetadata['delay'];
+    final delay = call.clientMetadata!['delay'];
     if (delay != null) {
       await Future.delayed(Duration(seconds: int.parse(delay)));
     }

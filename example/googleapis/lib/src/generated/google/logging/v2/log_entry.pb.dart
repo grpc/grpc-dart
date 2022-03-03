@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: google/logging/v2/log_entry.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -137,22 +137,22 @@ class LogEntry extends $pb.GeneratedMessage {
 
   LogEntry._() : super();
   factory LogEntry({
-    $0.Any protoPayload,
-    $core.String textPayload,
-    $core.String insertId,
-    $1.Struct jsonPayload,
-    $2.HttpRequest httpRequest,
-    $3.MonitoredResource resource,
-    $4.Timestamp timestamp,
-    $5.LogSeverity severity,
-    $core.Map<$core.String, $core.String> labels,
-    $core.String logName,
-    LogEntryOperation operation,
-    $core.String trace,
-    LogEntrySourceLocation sourceLocation,
-    $4.Timestamp receiveTimestamp,
-    $core.String spanId,
-    $core.bool traceSampled,
+    $0.Any? protoPayload,
+    $core.String? textPayload,
+    $core.String? insertId,
+    $1.Struct? jsonPayload,
+    $2.HttpRequest? httpRequest,
+    $3.MonitoredResource? resource,
+    $4.Timestamp? timestamp,
+    $5.LogSeverity? severity,
+    $core.Map<$core.String, $core.String>? labels,
+    $core.String? logName,
+    LogEntryOperation? operation,
+    $core.String? trace,
+    LogEntrySourceLocation? sourceLocation,
+    $4.Timestamp? receiveTimestamp,
+    $core.String? spanId,
+    $core.bool? traceSampled,
   }) {
     final _result = create();
     if (protoPayload != null) {
@@ -219,8 +219,8 @@ class LogEntry extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   LogEntry copyWith(void Function(LogEntry) updates) =>
-      super.copyWith((message) =>
-          updates(message as LogEntry)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as LogEntry))
+          as LogEntry; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static LogEntry create() => LogEntry._();
@@ -229,9 +229,9 @@ class LogEntry extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static LogEntry getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<LogEntry>(create);
-  static LogEntry _defaultInstance;
+  static LogEntry? _defaultInstance;
 
-  LogEntry_Payload whichPayload() => _LogEntry_PayloadByTag[$_whichOneof(0)];
+  LogEntry_Payload whichPayload() => _LogEntry_PayloadByTag[$_whichOneof(0)]!;
   void clearPayload() => clearField($_whichOneof(0));
 
   @$pb.TagNumber(2)
@@ -468,10 +468,10 @@ class LogEntryOperation extends $pb.GeneratedMessage {
 
   LogEntryOperation._() : super();
   factory LogEntryOperation({
-    $core.String id,
-    $core.String producer,
-    $core.bool first,
-    $core.bool last,
+    $core.String? id,
+    $core.String? producer,
+    $core.bool? first,
+    $core.bool? last,
   }) {
     final _result = create();
     if (id != null) {
@@ -502,8 +502,8 @@ class LogEntryOperation extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   LogEntryOperation copyWith(void Function(LogEntryOperation) updates) =>
-      super.copyWith((message) => updates(
-          message as LogEntryOperation)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as LogEntryOperation))
+          as LogEntryOperation; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static LogEntryOperation create() => LogEntryOperation._();
@@ -513,7 +513,7 @@ class LogEntryOperation extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static LogEntryOperation getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<LogEntryOperation>(create);
-  static LogEntryOperation _defaultInstance;
+  static LogEntryOperation? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get id => $_getSZ(0);
@@ -593,9 +593,9 @@ class LogEntrySourceLocation extends $pb.GeneratedMessage {
 
   LogEntrySourceLocation._() : super();
   factory LogEntrySourceLocation({
-    $core.String file,
-    $fixnum.Int64 line,
-    $core.String function,
+    $core.String? file,
+    $fixnum.Int64? line,
+    $core.String? function,
   }) {
     final _result = create();
     if (file != null) {
@@ -625,8 +625,8 @@ class LogEntrySourceLocation extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   LogEntrySourceLocation copyWith(
           void Function(LogEntrySourceLocation) updates) =>
-      super.copyWith((message) => updates(
-          message as LogEntrySourceLocation)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as LogEntrySourceLocation))
+          as LogEntrySourceLocation; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static LogEntrySourceLocation create() => LogEntrySourceLocation._();
@@ -636,7 +636,7 @@ class LogEntrySourceLocation extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static LogEntrySourceLocation getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<LogEntrySourceLocation>(create);
-  static LogEntrySourceLocation _defaultInstance;
+  static LogEntrySourceLocation? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get file => $_getSZ(0);

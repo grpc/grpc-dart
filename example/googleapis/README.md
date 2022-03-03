@@ -19,13 +19,13 @@ To run the example, assuming you are in the root of the googleapis folder, i.e.,
 .../example/googleapis/, first get the dependencies by running:
 
 ```sh
-$ pub get
+$ dart pub get
 ```
 
 Then, to run the logging client sample:
 
 ```sh
-$ pub run googleapis:logging
+$ dart run bin/logging.dart
 ```
 
 # Regenerate the stubs

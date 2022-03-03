@@ -3,7 +3,7 @@ description: Dart gRPC-Web sample client
 publish_to: none
 
 environment:
-  sdk: '>=2.11.99 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   grpc:

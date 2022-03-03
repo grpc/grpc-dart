@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 @TestOn('!browser')
-
 import 'package:grpc/grpc.dart';
 import 'package:grpc/grpc_or_grpcweb.dart';
 import 'package:test/test.dart';
@@ -28,7 +27,6 @@ void main() {
       port: port,
       transportSecure: false,
     );
-    expect(channel is ClientChannel, isTrue);
     expect(channel.host, equals(host));
     expect(channel.port, equals(port));
     expect(channel.options.credentials.isSecure, isFalse);

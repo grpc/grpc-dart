@@ -9,7 +9,7 @@ To compile and run the example, assuming you are in the root of the metadata
 folder, i.e., .../example/metadata/, first get the dependencies by running:
 
 ```sh
-$ pub get
+$ dart pub get
 ```
 
 Then, to run the server:
@@ -40,7 +40,7 @@ To install protoc with Dart support, take these steps:
 1. Get the Dart protoc plugin by running
 
     ```sh
-    $ pub global activate protoc_plugin
+    $ dart pub global activate protoc_plugin
     ```
 
 1. Add `~/.pub-cache/bin` to your PATH, if you haven't
