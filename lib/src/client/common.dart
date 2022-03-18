@@ -97,6 +97,15 @@ class ResponseStream<R> extends DelegatingStream<R>
 
   @override
   ResponseFuture<R> get single => ResponseFuture(_call);
+
+  ResponseStream._next(this._call, Stream<R> future) : super(future);
+
+  ResponseStream<S> responseTransform<S>(StreamTransformer<R, S> transformer) {
+    return ResponseStream<S>._next(
+      _call as dynamic,
+      transform(transformer),
+    );
+  }
 }
 
 abstract class _ResponseMixin<Q, R> implements Response {
