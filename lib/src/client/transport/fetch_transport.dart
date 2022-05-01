@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:html';
 import 'dart:js_util' as js_util;
 import 'dart:typed_data';
@@ -80,20 +81,25 @@ class FetchHttpRequest {
   Future send([List<int>? data]) async {
     final wgs = WorkerGlobalScope.instance;
     _setReadyState(HttpRequest.LOADING);
-    final init = <String, dynamic>{
-      'method': method,
-      'referrerPolicy': referrerPolicy,
-      'mode': mode,
-      'credentials': credentials,
-      'cache': cache,
-      'redirect': redirect,
-      'integrity': integrity,
-      'keepalive': keepAlive,
-      if (headers.isNotEmpty) 'headers': headers,
-      if (data != null) 'body': String.fromCharCodes(data),
-    };
-    final operation =
-        _cancelable = CancelableOperation.fromFuture(wgs.fetch(uri, init));
+    final headersStr =
+        headers.isNotEmpty ? '"headers": ${json.encode(headers)},' : '';
+    final bodyStr = data != null ? '"body": Uint8Array.from($data),' : '';
+    final initStr = '''{
+      $headersStr
+      $bodyStr
+      "method": "$method",
+      "referrerPolicy": "$referrerPolicy",
+      "mode": "$mode",
+      "credentials": "$credentials",
+      "cache": "$cache",
+      "redirect": "$redirect",
+      "integrity": "$integrity",
+      "keepalive": $keepAlive
+    }''';
+
+    final promise = js_util.promiseToFuture(
+        js_util.callMethod(wgs, 'eval', ['fetch("$uri", $initStr)']));
+    final operation = _cancelable = CancelableOperation.fromFuture(promise);
 
     _response = await operation.value;
     _setReadyState(HttpRequest.HEADERS_RECEIVED);
