@@ -38,7 +38,14 @@ abstract class ClientChannel {
 
   /// Initiates a new RPC on this connection.
   ClientCall<Q, R> createCall<Q, R>(
-      ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options);
+    ClientMethod<Q, R> method,
+    Stream<Q> requests,
+    CallOptions options, {
+    Future<Map<String, String>> Function(Future<Map<String, String>>)?
+        headersTransformer,
+    Future<Map<String, String>> Function(Future<Map<String, String>>)?
+        trailersTransformer,
+  });
 }
 
 /// Auxiliary base class implementing much of ClientChannel.
@@ -83,7 +90,14 @@ abstract class ClientChannelBase implements ClientChannel {
 
   @override
   ClientCall<Q, R> createCall<Q, R>(
-      ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
+    ClientMethod<Q, R> method,
+    Stream<Q> requests,
+    CallOptions options, {
+    Future<Map<String, String>> Function(Future<Map<String, String>>)?
+        headersTransformer,
+    Future<Map<String, String>> Function(Future<Map<String, String>>)?
+        trailersTransformer,
+  }) {
     final call = ClientCall(
         method,
         requests,

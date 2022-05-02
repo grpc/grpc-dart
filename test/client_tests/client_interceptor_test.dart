@@ -38,6 +38,24 @@ class FakeInterceptor implements ClientInterceptor {
   }
 
   @override
+  Future<Map<String, String>> interceptHeaders<Q, R>(
+      ClientMethod<Q, R> method, Future<Map<String, String>> headers) {
+    return headers;
+  }
+
+  @override
+  Future<Map<String, String>> interceptTrailers<Q, R>(
+      ClientMethod<Q, R> method, Future<Map<String, String>> trailers) {
+    return trailers;
+  }
+
+  @override
+  Future<R> interceptUnaryResponse<Q, R>(
+      ClientMethod<Q, R> method, Q request, Future<R> response) {
+    return response;
+  }
+
+  @override
   ResponseStream<R> interceptStreaming<Q, R>(
       ClientMethod<Q, R> method,
       Stream<Q> requests,
@@ -50,6 +68,12 @@ class FakeInterceptor implements ClientInterceptor {
         : requests;
 
     return invoker(method, requestStream, _inject(options));
+  }
+
+  @override
+  Stream<R> interceptStreamingResponse<Q, R>(
+      ClientMethod<Q, R> method, Stream<Q> request, Stream<R> response) {
+    return response;
   }
 
   CallOptions _inject(CallOptions options) {

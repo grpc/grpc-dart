@@ -41,9 +41,25 @@ abstract class Response {
   Future<void> cancel();
 }
 
+typedef HeadersTransform = Future<Map<String, String>> Function(
+    Future<Map<String, String>>);
+
+class CallTransforms {
+  final HeadersTransform trailersTransform;
+  final HeadersTransform headersTransform;
+
+  CallTransforms({
+    required this.headersTransform,
+    required this.trailersTransform,
+  });
+}
+
 /// A gRPC response producing a single value.
 class ResponseFuture<R> extends DelegatingFuture<R>
     with _ResponseMixin<dynamic, R> {
+  @override
+  final CallTransforms? _transforms;
+
   @override
   final ClientCall<dynamic, R> _call;
 
@@ -59,32 +75,51 @@ class ResponseFuture<R> extends DelegatingFuture<R>
     return value;
   }
 
-  ResponseFuture(this._call)
-      : super(_call.response
+  ResponseFuture(
+    this._call, {
+    required Future<R> Function(Future<R>) responseTransform,
+    CallTransforms? callTransforms,
+  })  : _transforms = callTransforms,
+        super(responseTransform(_call.response
             .fold<R?>(null, _ensureOnlyOneResponse)
-            .then(_ensureOneResponse));
+            .then(_ensureOneResponse)));
 }
 
 /// A gRPC response producing a stream of values.
 class ResponseStream<R> extends DelegatingStream<R>
     with _ResponseMixin<dynamic, R> {
   @override
-  final ClientCall<dynamic, R> _call;
-
-  ResponseStream(this._call) : super(_call.response);
+  final CallTransforms? _transforms;
 
   @override
-  ResponseFuture<R> get single => ResponseFuture(_call);
+  final ClientCall<dynamic, R> _call;
+
+  ResponseStream(
+    this._call, {
+    required Stream<R> Function(Stream<R>) responseTransform,
+    CallTransforms? callTransforms,
+  })  : _transforms = callTransforms,
+        super(responseTransform(_call.response));
+
+  @override
+  ResponseFuture<R> get single =>
+      ResponseFuture(_call, responseTransform: (future) => future);
 }
 
-abstract class _ResponseMixin<Q, R> implements Response {
+mixin _ResponseMixin<Q, R> implements Response {
+  CallTransforms? get _transforms;
+
   ClientCall<Q, R> get _call;
 
   @override
-  Future<Map<String, String>> get headers => _call.headers;
+  late Future<Map<String, String>> headers = _transforms == null
+      ? _call.headers
+      : _transforms!.headersTransform(_call.headers);
 
   @override
-  Future<Map<String, String>> get trailers => _call.trailers;
+  late Future<Map<String, String>> trailers = _transforms == null
+      ? _call.trailers
+      : _transforms!.headersTransform(_call.trailers);
 
   @override
   Future<void> cancel() => _call.cancel();

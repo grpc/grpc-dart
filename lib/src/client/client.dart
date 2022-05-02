@@ -43,10 +43,47 @@ regenerate these stubs using  protobuf compiler plugin version 19.2.0 or newer.
     return _channel.createCall(method, requests, _options.mergedWith(options));
   }
 
+  CallTransforms? _createCallTransforms<Q, R>(ClientMethod<Q, R> method) {
+    CallTransforms? transforms;
+    if (_interceptors.isNotEmpty) {
+      transforms = CallTransforms(
+        headersTransform: (Future<Map<String, String>> map) {
+          for (final interceptor in _interceptors) {
+            map = interceptor.interceptHeaders(method, map);
+          }
+          return map;
+        },
+        trailersTransform: (Future<Map<String, String>> map) {
+          for (final interceptor in _interceptors) {
+            map = interceptor.interceptTrailers(method, map);
+          }
+          return map;
+        },
+      );
+    }
+    return transforms;
+  }
+
   ResponseFuture<R> $createUnaryCall<Q, R>(ClientMethod<Q, R> method, Q request,
       {CallOptions? options}) {
-    var invoker = (method, request, options) => ResponseFuture<R>(
-        _channel.createCall<Q, R>(method, Stream.value(request), options));
+    var responseTransformer = (Future<R> response) => response;
+    if (_interceptors.isNotEmpty) {
+      responseTransformer = (Future<R> response) {
+        for (final interceptor in _interceptors) {
+          response =
+              interceptor.interceptUnaryResponse(method, request, response);
+        }
+        return response;
+      };
+    }
+
+    final callTransforms = _createCallTransforms(method);
+
+    var invoker = (ClientMethod<Q, R> method, Q request, CallOptions options) =>
+        ResponseFuture<R>(
+            _channel.createCall<Q, R>(method, Stream.value(request), options),
+            responseTransform: responseTransformer,
+            callTransforms: callTransforms);
 
     for (final interceptor in _interceptors.reversed) {
       final delegate = invoker;
@@ -60,8 +97,23 @@ regenerate these stubs using  protobuf compiler plugin version 19.2.0 or newer.
   ResponseStream<R> $createStreamingCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests,
       {CallOptions? options}) {
-    var invoker = (method, requests, options) =>
-        ResponseStream<R>(_channel.createCall<Q, R>(method, requests, options));
+    var responseTransformer = (Stream<R> response) => response;
+    if (_interceptors.isNotEmpty) {
+      responseTransformer = (Stream<R> response) {
+        for (final interceptor in _interceptors) {
+          response = interceptor.interceptStreamingResponse(
+              method, requests, response);
+        }
+        return response;
+      };
+    }
+
+    final callTransforms = _createCallTransforms(method);
+
+    var invoker = (method, requests, options) => ResponseStream<R>(
+        _channel.createCall<Q, R>(method, requests, options),
+        responseTransform: responseTransformer,
+        callTransforms: callTransforms);
 
     for (final interceptor in _interceptors.reversed) {
       final delegate = invoker;
