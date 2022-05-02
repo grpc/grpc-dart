@@ -81,7 +81,7 @@ Future<void> main() async {
 
 Future<Server> _setUpServer([bool requireClientCertificate = false]) async {
   final server = Server([EchoService()]);
-  final serverContext = SecurityContextChannelCredentials.baseSecurityContext();
+  final serverContext = SecurityContextServerCredentials.baseSecurityContext();
   serverContext.useCertificateChain('test/data/localhost.crt');
   serverContext.usePrivateKey('test/data/localhost.key');
   serverContext.setTrustedCertificates('test/data/localhost.crt');
