@@ -14,12 +14,12 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:html';
 import 'dart:js_util' as js_util;
 import 'dart:typed_data';
 
 import 'package:async/async.dart';
+import 'package:js/js.dart';
 import 'package:meta/meta.dart';
 
 import '../../client/call.dart';
@@ -31,6 +31,52 @@ import 'transport.dart';
 import 'web_streams.dart';
 
 const _contentTypeKey = 'Content-Type';
+
+@anonymous
+@JS()
+class RequestInit {
+  external factory RequestInit(
+      {required String method,
+      Object? headers,
+      List<int>? body,
+      required String referrerPolicy,
+      required String mode,
+      required String credentials,
+      required String cache,
+      required String redirect,
+      required String integrity,
+      required bool keepalive});
+
+  external String get method;
+  external set method(String newValue);
+
+  external Object? get headers;
+  external set headers(Object? newValue);
+
+  external Uint8List? get body;
+  external set body(Uint8List? newValue);
+
+  external String get referrerPolicy;
+  external set referrerPolicy(String newValue);
+
+  external String get mode;
+  external set mode(String newValue);
+
+  external String get credentials;
+  external set credentials(String newValue);
+
+  external String get cache;
+  external set cache(String newValue);
+
+  external String get redirect;
+  external set redirect(String newValue);
+
+  external String get integrity;
+  external set integrity(String newValue);
+
+  external bool get keepalive;
+  external set keepalive(bool newValue);
+}
 
 /// Implementation of Fetch API simulating @HttpRequest for minimal changes
 class FetchHttpRequest {
@@ -81,25 +127,20 @@ class FetchHttpRequest {
   Future send([List<int>? data]) async {
     final wgs = WorkerGlobalScope.instance;
     _setReadyState(HttpRequest.LOADING);
-    final headersStr =
-        headers.isNotEmpty ? '"headers": ${json.encode(headers)},' : '';
-    final bodyStr = data != null ? '"body": Uint8Array.from($data),' : '';
-    final initStr = '''{
-      $headersStr
-      $bodyStr
-      "method": "$method",
-      "referrerPolicy": "$referrerPolicy",
-      "mode": "$mode",
-      "credentials": "$credentials",
-      "cache": "$cache",
-      "redirect": "$redirect",
-      "integrity": "$integrity",
-      "keepalive": $keepAlive
-    }''';
 
-    final promise = js_util.promiseToFuture(
-        js_util.callMethod(wgs, 'eval', ['fetch("$uri", $initStr)']));
-    final operation = _cancelable = CancelableOperation.fromFuture(promise);
+    final init = RequestInit(
+        cache: cache,
+        credentials: credentials,
+        integrity: integrity,
+        keepalive: keepAlive,
+        method: method,
+        mode: mode,
+        redirect: redirect,
+        referrerPolicy: referrerPolicy,
+        body: data,
+        headers: js_util.jsify(headers));
+    final operation = _cancelable = CancelableOperation.fromFuture(
+        js_util.promiseToFuture(js_util.callMethod(wgs, 'fetch', [uri, init])));
 
     _response = await operation.value;
     _setReadyState(HttpRequest.HEADERS_RECEIVED);
