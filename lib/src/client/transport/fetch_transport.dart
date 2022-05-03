@@ -104,7 +104,8 @@ class FetchHttpRequest {
   Stream<int> get onError => onErrorController.stream;
 
   // Response information
-  CancelableOperation<dynamic>? _cancelable;
+  CancelableOperation<dynamic>? _cancelableFetch;
+  CancelableOperation<dynamic>? _cancelableSend;
   dynamic _response;
   dynamic get response => _response;
   int get status =>
@@ -125,6 +126,12 @@ class FetchHttpRequest {
       List<String>.from(js_util.callMethod(obj, 'keys', []));
 
   Future send([List<int>? data]) async {
+    final doSend = _doSend(data);
+    _cancelableSend = CancelableOperation.fromFuture(doSend);
+    await doSend;
+  }
+
+  Future _doSend([List<int>? data]) async {
     final wgs = WorkerGlobalScope.instance;
     _setReadyState(HttpRequest.LOADING);
 
@@ -139,11 +146,15 @@ class FetchHttpRequest {
         referrerPolicy: referrerPolicy,
         body: data,
         headers: js_util.jsify(headers));
-    final operation = _cancelable = CancelableOperation.fromFuture(
+    final operation = _cancelableFetch = CancelableOperation.fromFuture(
         js_util.promiseToFuture(js_util.callMethod(wgs, 'fetch', [uri, init])));
 
     _response = await operation.value;
     _setReadyState(HttpRequest.HEADERS_RECEIVED);
+    if (_cancelableSend?.isCanceled ?? false) {
+      return;
+    }
+
     if (status < 200 || status >= 300) {
       onErrorController.add(status);
     }
@@ -156,6 +167,9 @@ class FetchHttpRequest {
 
     while (true) {
       final result = await js_util.promiseToFuture(reader.read());
+      if (_cancelableSend?.isCanceled ?? false) {
+        return;
+      }
       final value = js_util.getProperty(result, 'value');
       if (value != null) {
         onProgressController.add(value as Uint8List);
@@ -180,7 +194,8 @@ class FetchHttpRequest {
   }
 
   void abort() async {
-    await _cancelable?.cancel();
+    await _cancelableFetch?.cancel();
+    await _cancelableSend?.cancel();
     close();
   }
 
