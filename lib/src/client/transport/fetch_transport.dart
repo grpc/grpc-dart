@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:html';
 import 'dart:js_util' as js_util;
 import 'dart:typed_data';
@@ -107,16 +108,17 @@ class FetchHttpRequest {
   CancelableOperation<dynamic>? _cancelableFetch;
   CancelableOperation<dynamic>? _cancelableSend;
   dynamic _response;
-  dynamic get response => _response;
+  Uint8List? _lastResponse;
+  String? get response => responseText;
   int get status =>
-      response != null ? js_util.getProperty(response, 'status') : 0;
-  Map<String, String> get responseHeaders => response != null
-      ? toDartMap(js_util.getProperty(response, 'headers'))
+      _response != null ? js_util.getProperty(_response, 'status') : 0;
+  Map<String, String> get responseHeaders => _response != null
+      ? toDartMap(js_util.getProperty(_response, 'headers'))
       : <String, String>{};
-  String get responseText =>
-      response != null ? js_util.getProperty(response, 'statusText') : '';
+  String? get responseText =>
+      _lastResponse != null ? utf8.decode(_lastResponse!) : null;
   dynamic get body =>
-      response != null ? js_util.getProperty(response, 'body') : null;
+      _response != null ? js_util.getProperty(_response, 'body') : null;
 
   static Map<String, String> toDartMap(Headers obj) =>
       Map.fromIterable(getObjectKeys(obj),
@@ -172,6 +174,7 @@ class FetchHttpRequest {
       }
       final value = js_util.getProperty(result, 'value');
       if (value != null) {
+        _lastResponse = value;
         onProgressController.add(value as Uint8List);
       }
       if (js_util.getProperty(result, 'done')) {
