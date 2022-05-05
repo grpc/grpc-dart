@@ -34,6 +34,7 @@ import 'web_streams.dart';
 const _contentTypeKey = 'Content-Type';
 
 @anonymous
+// ignore: missing_js_lib_annotation
 @JS()
 class RequestInit {
   external factory RequestInit(
