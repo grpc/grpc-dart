@@ -116,8 +116,9 @@ class FetchHttpRequest {
   Map<String, String> get responseHeaders => _response != null
       ? toDartMap(js_util.getProperty(_response, 'headers'))
       : <String, String>{};
-  String? get responseText =>
-      _lastResponse != null ? utf8.decode(_lastResponse!) : null;
+  String? get responseText => _lastResponse != null
+      ? utf8.decode(_lastResponse!, allowMalformed: true)
+      : null;
   dynamic get body =>
       _response != null ? js_util.getProperty(_response, 'body') : null;
 
