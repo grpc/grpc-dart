@@ -180,6 +180,7 @@ class FetchHttpRequest {
         onProgressController.add(value as Uint8List);
       }
       if (js_util.getProperty(result, 'done')) {
+        _lastResponse ??= Uint8List(0);
         _setReadyState(HttpRequest.DONE);
         break;
       }
