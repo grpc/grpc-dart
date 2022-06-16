@@ -126,8 +126,24 @@ class FetchHttpRequest {
       Map.fromIterable(getObjectKeys(obj),
           value: (key) => js_util.callMethod(obj, 'get', [key]).toString());
 
-  static List<String> getObjectKeys(Headers obj) =>
-      List<String>.from(js_util.callMethod(obj, 'keys', []));
+  static List<String> getObjectKeys(Headers obj) {
+    final keys = js_util.callMethod(obj, 'keys', []);
+    // This used to work prior to flutter 3.0 now we type check to see if supported
+    if (keys is Iterable) {
+      return List<String>.from(keys);
+    }
+
+    // Otherwise we have to fall back and manually iterate through the javascript iterator
+    final res = List<String>.empty(growable: true);
+    while (true) {
+      final next = js_util.callMethod(keys, 'next', []);
+      if (js_util.getProperty(next, 'done')) {
+        break;
+      }
+      res.add(js_util.getProperty(next, 'value').toString());
+    }
+    return res;
+  }
 
   Future send([List<int>? data]) async {
     final doSend = _doSend(data);
