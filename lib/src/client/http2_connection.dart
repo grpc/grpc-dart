@@ -17,6 +17,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:grpc/grpc.dart';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
@@ -42,6 +43,10 @@ class Http2ClientConnection implements connection.ClientConnection {
   final ChannelOptions options;
 
   connection.ConnectionState _state = ConnectionState.idle;
+
+  @override
+  void Function(ConnectionState prevState, ConnectionState state)?
+      onConnectionStateChanged;
 
   @visibleForTesting
   void Function(Http2ClientConnection connection)? onStateChanged;
@@ -213,7 +218,9 @@ class Http2ClientConnection implements connection.ClientConnection {
   }
 
   void _setState(ConnectionState state) {
+    final oldState = _state;
     _state = state;
+    onConnectionStateChanged?.call(oldState, state);
     onStateChanged?.call(this);
   }
 

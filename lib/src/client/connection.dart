@@ -57,4 +57,7 @@ abstract class ClientConnection {
   /// All open calls are terminated immediately, and no further calls may be
   /// made on this connection.
   Future<void> terminate();
+
+  void Function(ConnectionState prevState, ConnectionState state)?
+      onConnectionStateChanged;
 }
