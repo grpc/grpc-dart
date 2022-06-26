@@ -42,7 +42,7 @@ abstract class ClientChannel {
 
   /// Stream to listen for connection changes
   /// 
-  /// This returns a broadcast stream that can be listened to for conenction changes.
+  /// This returns a broadcast stream that can be listened to for connection changes.
   Stream<ConnectionState> get onConnectionStateChanged;
 }
 
