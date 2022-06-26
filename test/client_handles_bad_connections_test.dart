@@ -41,12 +41,30 @@ class TestService extends grpc.Service {
 
 class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
+  final StreamController<ConnectionState> connectionStateStreamController =
+      StreamController.broadcast();
   List<grpc.ConnectionState> states = <grpc.ConnectionState>[];
   FixedConnectionClientChannel(this.clientConnection) {
-    clientConnection.onStateChanged = (c) => states.add(c.state);
+    clientConnection.onStateChanged = (c) {
+      if (connectionStateStreamController.isClosed) {
+        return;
+      }
+      connectionStateStreamController.add(c.state);
+      if (c.state == ConnectionState.shutdown) {
+        connectionStateStreamController.close();
+      }
+    };
+
+    onConnectionStateChanged.listen((state) {
+      states.add(state);
+    });
   }
   @override
   ClientConnection createConnection() => clientConnection;
+
+  @override
+  Stream<ConnectionState> get onConnectionStateChanged =>
+      connectionStateStreamController.stream;
 }
 
 Future<void> main() async {
@@ -89,8 +107,9 @@ Future<void> main() async {
         server.port!,
         grpc.ChannelOptions(credentials: grpc.ChannelCredentials.insecure())));
     final states = <grpc.ConnectionState>[];
-    channel.clientConnection.onStateChanged =
-        (Http2ClientConnection connection) => states.add(connection.state);
+    channel.onConnectionStateChanged.listen((state) {
+      states.add(state);
+    });
     final testClient = TestClient(channel);
 
     await Future.wait(<Future>[

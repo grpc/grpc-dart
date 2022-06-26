@@ -351,43 +351,43 @@ void main() {
 
   test('Connection errors are reported', () async {
     final connectionStates = <ConnectionState>[];
-    harness.connection!.connectionError = 'Connection error';
-    harness.connection!.onStateChanged = (connection) {
-      final state = connection.state;
-      connectionStates.add(state);
-    };
-
     final expectedException =
         GrpcError.unavailable('Error connecting: Connection error');
-
-    await harness.expectThrows(
+    harness.connection!.connectionError = 'Connection error';
+    harness.channel.onConnectionStateChanged.listen((state) {
+      connectionStates.add(state);
+    }
+    ,onDone: () async {
+      await harness.expectThrows(
         harness.client.unary(dummyValue), expectedException);
 
     expect(
         connectionStates, [ConnectionState.connecting, ConnectionState.idle]);
+    });
   });
 
   test('Connections time out if idle', () async {
     final done = Completer();
     final connectionStates = <ConnectionState>[];
-    harness.connection!.onStateChanged = (connection) {
-      final state = connection.state;
+    harness.channel.onConnectionStateChanged.listen((state) {
       connectionStates.add(state);
       if (state == ConnectionState.idle) done.complete();
-    };
+    }
+    ,onDone: () async {
+      expect(
+        connectionStates, [ConnectionState.connecting, ConnectionState.ready]);
+      await done.future;
+      expect(connectionStates, [
+        ConnectionState.connecting,
+        ConnectionState.ready,
+        ConnectionState.idle
+      ]);
+    });
 
     harness.channelOptions.idleTimeout = const Duration(microseconds: 10);
 
     await makeUnaryCall();
     harness.signalIdle();
-    expect(
-        connectionStates, [ConnectionState.connecting, ConnectionState.ready]);
-    await done.future;
-    expect(connectionStates, [
-      ConnectionState.connecting,
-      ConnectionState.ready,
-      ConnectionState.idle
-    ]);
   });
 
   test('Default reconnect backoff backs off', () {

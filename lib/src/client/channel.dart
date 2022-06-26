@@ -39,6 +39,11 @@ abstract class ClientChannel {
   /// Initiates a new RPC on this connection.
   ClientCall<Q, R> createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options);
+
+  /// Stream to listen for connection changes
+  /// 
+  /// This returns a broadcast stream that can be listened to for conenction changes.
+  Stream<ConnectionState> get onConnectionStateChanged;
 }
 
 /// Auxiliary base class implementing much of ClientChannel.

@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
+
 import 'channel.dart';
 import 'client_transport_connector.dart';
 import 'connection.dart';
@@ -31,6 +33,8 @@ class ClientChannel extends ClientChannelBase {
   final Object host;
   final int port;
   final ChannelOptions options;
+  final StreamController<ConnectionState> connectionStateStreamController =
+      StreamController.broadcast();
 
   ClientChannel(this.host,
       {this.port = 443, this.options = const ChannelOptions()})
@@ -38,20 +42,80 @@ class ClientChannel extends ClientChannelBase {
 
   @override
   ClientConnection createConnection() {
-    return Http2ClientConnection(host, port, options);
+    final connection = Http2ClientConnection(host, port, options);
+    connection.onStateChanged = (c) {
+      if (connectionStateStreamController.isClosed) {
+        return;
+      }
+      connectionStateStreamController.add(c.state);
+    };
+    return connection;
   }
+
+  @override
+  Future<void> shutdown() {
+    return super.shutdown()
+    .then((value) {
+      connectionStateStreamController.close();
+      return value;
+    });
+  }
+
+  @override
+  Future<void> terminate() {
+    return super.terminate()
+    .then((value) {
+      connectionStateStreamController.close();
+      return value;
+    });
+  }
+
+  @override
+  Stream<ConnectionState> get onConnectionStateChanged =>
+      connectionStateStreamController.stream;
 }
 
 class ClientTransportConnectorChannel extends ClientChannelBase {
   final ClientTransportConnector transportConnector;
   final ChannelOptions options;
+  final StreamController<ConnectionState> connectionStateStreamController =
+      StreamController.broadcast();
 
   ClientTransportConnectorChannel(this.transportConnector,
       {this.options = const ChannelOptions()});
 
   @override
   ClientConnection createConnection() {
-    return Http2ClientConnection.fromClientTransportConnector(
+    final connection = Http2ClientConnection.fromClientTransportConnector(
         transportConnector, options);
+    connection.onStateChanged = (c) {
+      if (connectionStateStreamController.isClosed) {
+        return;
+      }
+      connectionStateStreamController.add(c.state);
+    };
+    return connection;
   }
+
+  @override
+  Future<void> shutdown() {
+    return super.shutdown()
+    .then((value) {
+      connectionStateStreamController.close();
+      return value;
+    });
+  }
+
+  @override
+  Future<void> terminate() {
+    return super.terminate()
+    .then((value) {
+      connectionStateStreamController.close();
+      return value;
+    });
+  }
+
+  @override
+  Stream<ConnectionState> get onConnectionStateChanged =>
+      connectionStateStreamController.stream;
 }

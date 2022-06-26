@@ -43,7 +43,6 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   connection.ConnectionState _state = ConnectionState.idle;
 
-  @visibleForTesting
   void Function(Http2ClientConnection connection)? onStateChanged;
   final _pendingCalls = <ClientCall>[];
 

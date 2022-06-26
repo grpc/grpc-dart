@@ -57,12 +57,28 @@ class TestService extends Service {
 
 class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
+  final StreamController<ConnectionState> connectionStateStreamController =
+      StreamController.broadcast();
   List<ConnectionState> states = <ConnectionState>[];
   FixedConnectionClientChannel(this.clientConnection) {
-    clientConnection.onStateChanged = (c) => states.add(c.state);
+    clientConnection.onStateChanged = (c) {
+      if (connectionStateStreamController.isClosed) {
+        return;
+      }
+      connectionStateStreamController.add(c.state);
+      if (c.state == ConnectionState.shutdown) {
+        connectionStateStreamController.close();
+      }
+    };
+
+    onConnectionStateChanged.listen((state) => states.add(state));
   }
   @override
   ClientConnection createConnection() => clientConnection;
+
+  @override
+  Stream<ConnectionState> get onConnectionStateChanged =>
+      connectionStateStreamController.stream;
 }
 
 class FakeTimelineTask extends Fake implements TimelineTask {
