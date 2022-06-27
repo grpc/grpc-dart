@@ -57,8 +57,6 @@ class TestService extends Service {
 
 class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
-  final StreamController<ConnectionState> connectionStateStreamController =
-      StreamController.broadcast();
   List<ConnectionState> states = <ConnectionState>[];
   FixedConnectionClientChannel(this.clientConnection) {
     clientConnection.onStateChanged = (c) {

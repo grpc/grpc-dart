@@ -33,8 +33,6 @@ class ClientChannel extends ClientChannelBase {
   final Object host;
   final int port;
   final ChannelOptions options;
-  final StreamController<ConnectionState> connectionStateStreamController =
-      StreamController.broadcast();
 
   ClientChannel(this.host,
       {this.port = 443, this.options = const ChannelOptions()})
@@ -55,18 +53,16 @@ class ClientChannel extends ClientChannelBase {
   @override
   Future<void> shutdown() {
     return super.shutdown()
-    .then((value) {
+    .whenComplete(() {
       connectionStateStreamController.close();
-      return value;
     });
   }
 
   @override
   Future<void> terminate() {
     return super.terminate()
-    .then((value) {
+    .whenComplete(() {
       connectionStateStreamController.close();
-      return value;
     });
   }
 
@@ -78,8 +74,6 @@ class ClientChannel extends ClientChannelBase {
 class ClientTransportConnectorChannel extends ClientChannelBase {
   final ClientTransportConnector transportConnector;
   final ChannelOptions options;
-  final StreamController<ConnectionState> connectionStateStreamController =
-      StreamController.broadcast();
 
   ClientTransportConnectorChannel(this.transportConnector,
       {this.options = const ChannelOptions()});

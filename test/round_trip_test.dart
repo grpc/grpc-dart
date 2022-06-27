@@ -53,8 +53,6 @@ class TestServiceWithOnMetadataException extends TestService {
 class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
   List<ConnectionState> states = <ConnectionState>[];
-  final StreamController<ConnectionState> connectionStateStreamController =
-      StreamController.broadcast();
   FixedConnectionClientChannel(this.clientConnection) {
     clientConnection.onStateChanged = (c) {
       if (connectionStateStreamController.isClosed) {

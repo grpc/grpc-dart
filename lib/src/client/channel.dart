@@ -40,7 +40,7 @@ abstract class ClientChannel {
   ClientCall<Q, R> createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options);
 
-  /// Stream to listen for connection changes
+  /// Stream of connection state changes
   /// 
   /// This returns a broadcast stream that can be listened to for connection changes.
   Stream<ConnectionState> get onConnectionStateChanged;
@@ -52,6 +52,10 @@ abstract class ClientChannelBase implements ClientChannel {
   late ClientConnection _connection;
   var _connected = false;
   bool _isShutdown = false;
+  //  Closing is done in Http2ClientChannel
+  // ignore: close_sinks
+  final StreamController<ConnectionState> connectionStateStreamController =
+      StreamController.broadcast();
 
   ClientChannelBase();
 

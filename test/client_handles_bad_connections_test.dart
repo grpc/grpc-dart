@@ -41,8 +41,6 @@ class TestService extends grpc.Service {
 
 class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
-  final StreamController<ConnectionState> connectionStateStreamController =
-      StreamController.broadcast();
   List<grpc.ConnectionState> states = <grpc.ConnectionState>[];
   FixedConnectionClientChannel(this.clientConnection) {
     clientConnection.onStateChanged = (c) {
