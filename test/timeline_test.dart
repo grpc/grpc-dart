@@ -73,10 +73,6 @@ class FixedConnectionClientChannel extends ClientChannelBase {
   }
   @override
   ClientConnection createConnection() => clientConnection;
-
-  @override
-  Stream<ConnectionState> get onConnectionStateChanged =>
-      connectionStateStreamController.stream;
 }
 
 class FakeTimelineTask extends Fake implements TimelineTask {

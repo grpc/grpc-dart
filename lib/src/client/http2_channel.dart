@@ -13,8 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
-
 import 'channel.dart';
 import 'client_transport_connector.dart';
 import 'connection.dart';
@@ -49,26 +47,6 @@ class ClientChannel extends ClientChannelBase {
     };
     return connection;
   }
-
-  @override
-  Future<void> shutdown() {
-    return super.shutdown()
-    .whenComplete(() {
-      connectionStateStreamController.close();
-    });
-  }
-
-  @override
-  Future<void> terminate() {
-    return super.terminate()
-    .whenComplete(() {
-      connectionStateStreamController.close();
-    });
-  }
-
-  @override
-  Stream<ConnectionState> get onConnectionStateChanged =>
-      connectionStateStreamController.stream;
 }
 
 class ClientTransportConnectorChannel extends ClientChannelBase {
@@ -90,26 +68,4 @@ class ClientTransportConnectorChannel extends ClientChannelBase {
     };
     return connection;
   }
-
-  @override
-  Future<void> shutdown() {
-    return super.shutdown()
-    .then((value) {
-      connectionStateStreamController.close();
-      return value;
-    });
-  }
-
-  @override
-  Future<void> terminate() {
-    return super.terminate()
-    .then((value) {
-      connectionStateStreamController.close();
-      return value;
-    });
-  }
-
-  @override
-  Stream<ConnectionState> get onConnectionStateChanged =>
-      connectionStateStreamController.stream;
 }

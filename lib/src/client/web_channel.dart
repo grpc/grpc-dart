@@ -27,7 +27,4 @@ class GrpcWebClientChannel extends ClientChannelBase {
   ClientConnection createConnection() {
     return XhrClientConnection(uri);
   }
-
-  @override
-  Stream<ConnectionState> get onConnectionStateChanged => throw UnimplementedError();
 }

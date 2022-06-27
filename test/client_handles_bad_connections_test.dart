@@ -59,10 +59,6 @@ class FixedConnectionClientChannel extends ClientChannelBase {
   }
   @override
   ClientConnection createConnection() => clientConnection;
-
-  @override
-  Stream<ConnectionState> get onConnectionStateChanged =>
-      connectionStateStreamController.stream;
 }
 
 Future<void> main() async {

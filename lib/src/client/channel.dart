@@ -15,6 +15,8 @@
 
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+
 import '../shared/profiler.dart';
 import '../shared/status.dart';
 
@@ -43,6 +45,7 @@ abstract class ClientChannel {
   /// Stream of connection state changes
   /// 
   /// This returns a broadcast stream that can be listened to for connection changes.
+  /// Note: on web channels, this will not yield any values.
   Stream<ConnectionState> get onConnectionStateChanged;
 }
 
@@ -52,8 +55,7 @@ abstract class ClientChannelBase implements ClientChannel {
   late ClientConnection _connection;
   var _connected = false;
   bool _isShutdown = false;
-  //  Closing is done in Http2ClientChannel
-  // ignore: close_sinks
+  @protected // no need for this to be public but needed in http2_channel.dart
   final StreamController<ConnectionState> connectionStateStreamController =
       StreamController.broadcast();
 
@@ -65,6 +67,7 @@ abstract class ClientChannelBase implements ClientChannel {
     _isShutdown = true;
     if (_connected) {
       await _connection.shutdown();
+      await connectionStateStreamController.close();
     }
   }
 
@@ -73,6 +76,7 @@ abstract class ClientChannelBase implements ClientChannel {
     _isShutdown = true;
     if (_connected) {
       await _connection.terminate();
+      await connectionStateStreamController.close();
     }
   }
 
@@ -106,4 +110,8 @@ abstract class ClientChannelBase implements ClientChannel {
     }, onError: call.onConnectionError);
     return call;
   }
+
+  @override
+  Stream<ConnectionState> get onConnectionStateChanged =>
+      connectionStateStreamController.stream;
 }
