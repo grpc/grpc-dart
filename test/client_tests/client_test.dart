@@ -476,14 +476,12 @@ void main() {
     final connectionStates = <ConnectionState>[];
     harness.channel.onConnectionStateChanged.listen((state) {
       connectionStates.add(state);
-    }
-    ,onDone: () {
-      expect(
-        connectionStates, [
-          ConnectionState.connecting,
-          ConnectionState.ready,
-          ConnectionState.shutdown
-        ]);
+    }, onDone: () {
+      expect(connectionStates, [
+        ConnectionState.connecting,
+        ConnectionState.ready,
+        ConnectionState.shutdown
+      ]);
     });
 
     await makeUnaryCall();
@@ -494,10 +492,9 @@ void main() {
     harness.connection!.connectionError = 'Connection error';
     harness.channel.onConnectionStateChanged.listen((state) {
       connectionStates.add(state);
-    }
-    ,onDone: () {
+    }, onDone: () {
       expect(
-        connectionStates, [ConnectionState.connecting, ConnectionState.idle]);
+          connectionStates, [ConnectionState.connecting, ConnectionState.idle]);
     });
 
     final expectedException =
@@ -513,10 +510,9 @@ void main() {
     harness.channel.onConnectionStateChanged.listen((state) {
       connectionStates.add(state);
       if (state == ConnectionState.idle) done.complete();
-    }
-    ,onDone: () async {
-      expect(
-        connectionStates, [ConnectionState.connecting, ConnectionState.ready]);
+    }, onDone: () async {
+      expect(connectionStates,
+          [ConnectionState.connecting, ConnectionState.ready]);
       await done.future;
       expect(connectionStates, [
         ConnectionState.connecting,

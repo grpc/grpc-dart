@@ -37,16 +37,8 @@ class ClientChannel extends ClientChannelBase {
       : super();
 
   @override
-  ClientConnection createConnection() {
-    final connection = Http2ClientConnection(host, port, options);
-    connection.onStateChanged = (state) {
-      if (connectionStateStreamController.isClosed) {
-        return;
-      }
-      connectionStateStreamController.add(state);
-    };
-    return connection;
-  }
+  ClientConnection createConnection() =>
+      Http2ClientConnection(host, port, options);
 }
 
 class ClientTransportConnectorChannel extends ClientChannelBase {
@@ -57,15 +49,7 @@ class ClientTransportConnectorChannel extends ClientChannelBase {
       {this.options = const ChannelOptions()});
 
   @override
-  ClientConnection createConnection() {
-    final connection = Http2ClientConnection.fromClientTransportConnector(
-        transportConnector, options);
-    connection.onStateChanged = (state) {
-      if (connectionStateStreamController.isClosed) {
-        return;
-      }
-      connectionStateStreamController.add(state);
-    };
-    return connection;
-  }
+  ClientConnection createConnection() =>
+      Http2ClientConnection.fromClientTransportConnector(
+          transportConnector, options);
 }

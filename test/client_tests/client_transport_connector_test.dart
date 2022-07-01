@@ -356,13 +356,12 @@ void main() {
     harness.connection!.connectionError = 'Connection error';
     harness.channel.onConnectionStateChanged.listen((state) {
       connectionStates.add(state);
-    }
-    ,onDone: () async {
+    }, onDone: () async {
       await harness.expectThrows(
-        harness.client.unary(dummyValue), expectedException);
+          harness.client.unary(dummyValue), expectedException);
 
-    expect(
-        connectionStates, [ConnectionState.connecting, ConnectionState.idle]);
+      expect(
+          connectionStates, [ConnectionState.connecting, ConnectionState.idle]);
     });
   });
 
@@ -372,10 +371,9 @@ void main() {
     harness.channel.onConnectionStateChanged.listen((state) {
       connectionStates.add(state);
       if (state == ConnectionState.idle) done.complete();
-    }
-    ,onDone: () async {
-      expect(
-        connectionStates, [ConnectionState.connecting, ConnectionState.ready]);
+    }, onDone: () async {
+      expect(connectionStates,
+          [ConnectionState.connecting, ConnectionState.ready]);
       await done.future;
       expect(connectionStates, [
         ConnectionState.connecting,

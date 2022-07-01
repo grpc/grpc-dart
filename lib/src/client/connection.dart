@@ -13,8 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:meta/meta.dart';
-
 import 'call.dart';
 
 import 'transport/transport.dart';
@@ -64,9 +62,5 @@ abstract class ClientConnection {
   /// invoked when the state of this connection changes.
   // no need for this to be public,
   // but needed in the actual implementations
-  @protected
-  void Function(ConnectionState)? onStateChangedCb;
-  set onStateChanged(void Function(ConnectionState) cb) {
-    onStateChangedCb = cb;
-  }
+  set onStateChanged(void Function(ConnectionState) cb);
 }

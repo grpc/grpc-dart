@@ -144,7 +144,7 @@ class XhrTransportStream implements GrpcTransportStream {
   }
 }
 
-class XhrClientConnection extends ClientConnection {
+class XhrClientConnection implements ClientConnection {
   final Uri uri;
 
   final _requests = <XhrTransportStream>{};
@@ -217,6 +217,11 @@ class XhrClientConnection extends ClientConnection {
 
   @override
   Future<void> shutdown() async {}
+
+  @override
+  set onStateChanged(void Function(ConnectionState) cb) {
+    // Do nothing.
+  }
 }
 
 MapEntry<String, String>? _getContentTypeHeader(Map<String, String> metadata) {

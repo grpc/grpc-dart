@@ -30,7 +30,7 @@ import 'transport/http2_credentials.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
 
-class Http2ClientConnection extends connection.ClientConnection {
+class Http2ClientConnection implements connection.ClientConnection {
   static final _methodPost = Header.ascii(':method', 'POST');
   static final _schemeHttp = Header.ascii(':scheme', 'http');
   static final _schemeHttps = Header.ascii(':scheme', 'https');
@@ -41,6 +41,8 @@ class Http2ClientConnection extends connection.ClientConnection {
   final ChannelOptions options;
 
   connection.ConnectionState _state = ConnectionState.idle;
+
+  void Function(connection.ConnectionState)? onStateChanged;
 
   final _pendingCalls = <ClientCall>[];
 
@@ -211,7 +213,7 @@ class Http2ClientConnection extends connection.ClientConnection {
 
   void _setState(ConnectionState state) {
     _state = state;
-    onStateChangedCb?.call(state);
+    onStateChanged?.call(state);
   }
 
   void _handleIdleTimeout() {
