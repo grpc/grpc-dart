@@ -39,11 +39,11 @@ class ClientChannel extends ClientChannelBase {
   @override
   ClientConnection createConnection() {
     final connection = Http2ClientConnection(host, port, options);
-    connection.onStateChanged = (c) {
+    connection.onStateChanged = (state) {
       if (connectionStateStreamController.isClosed) {
         return;
       }
-      connectionStateStreamController.add(c.state);
+      connectionStateStreamController.add(state);
     };
     return connection;
   }
@@ -60,11 +60,11 @@ class ClientTransportConnectorChannel extends ClientChannelBase {
   ClientConnection createConnection() {
     final connection = Http2ClientConnection.fromClientTransportConnector(
         transportConnector, options);
-    connection.onStateChanged = (c) {
+    connection.onStateChanged = (state) {
       if (connectionStateStreamController.isClosed) {
         return;
       }
-      connectionStateStreamController.add(c.state);
+      connectionStateStreamController.add(state);
     };
     return connection;
   }

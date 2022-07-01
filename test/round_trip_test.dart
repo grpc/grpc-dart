@@ -54,12 +54,12 @@ class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
   List<ConnectionState> states = <ConnectionState>[];
   FixedConnectionClientChannel(this.clientConnection) {
-    clientConnection.onStateChanged = (c) {
+    clientConnection.onStateChanged = (state) {
       if (connectionStateStreamController.isClosed) {
         return;
       }
-      connectionStateStreamController.add(c.state);
-      if (c.state == ConnectionState.shutdown) {
+      connectionStateStreamController.add(state);
+      if (state == ConnectionState.shutdown) {
         connectionStateStreamController.close();
       }
     };

@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:meta/meta.dart';
+
 import 'call.dart';
 
 import 'transport/transport.dart';
@@ -57,4 +59,14 @@ abstract class ClientConnection {
   /// All open calls are terminated immediately, and no further calls may be
   /// made on this connection.
   Future<void> terminate();
+
+  /// Set state change listener for this connection. The given callback will be
+  /// invoked when the state of this connection changes.
+  // no need for this to be public,
+  // but needed in the actual implementations
+  @protected
+  void Function(ConnectionState)? onStateChangedCb;
+  set onStateChanged(void Function(ConnectionState) cb) {
+    onStateChangedCb = cb;
+  }
 }
