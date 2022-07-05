@@ -179,14 +179,17 @@ class FetchHttpRequest {
       onErrorController.add(status);
     }
 
-    final reader = body?.getReader();
+    final stream = body;
+    final reader =
+        stream != null ? js_util.callMethod(stream, 'getReader', []) : null;
     if (reader == null) {
       onErrorController.add(0);
       return;
     }
 
     while (true) {
-      final result = await js_util.promiseToFuture(reader.read());
+      final result =
+          await js_util.promiseToFuture(js_util.callMethod(reader, 'read', []));
       if (_cancelableSend?.isCanceled ?? false) {
         return;
       }
