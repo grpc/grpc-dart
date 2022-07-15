@@ -33,6 +33,19 @@ import 'web_streams.dart';
 
 const _contentTypeKey = 'Content-Type';
 
+@JS()
+class AbortSignal {
+  external factory AbortSignal();
+  external bool get aborted;
+}
+
+@JS()
+class AbortController {
+  external factory AbortController();
+  external void abort([dynamic reason]);
+  external AbortSignal get signal;
+}
+
 @anonymous
 // ignore: missing_js_lib_annotation
 @JS()
@@ -41,6 +54,7 @@ class RequestInit {
       {required String method,
       Object? headers,
       List<int>? body,
+      AbortSignal? signal,
       required String referrerPolicy,
       required String mode,
       required String credentials,
@@ -57,6 +71,9 @@ class RequestInit {
 
   external Uint8List? get body;
   external set body(Uint8List? newValue);
+
+  external AbortSignal? get signal;
+  external set signal(AbortSignal? newValue);
 
   external String get referrerPolicy;
   external set referrerPolicy(String newValue);
@@ -106,7 +123,7 @@ class FetchHttpRequest {
   Stream<int> get onError => onErrorController.stream;
 
   // Response information
-  CancelableOperation<dynamic>? _cancelableFetch;
+  AbortController? _abortController;
   CancelableOperation<dynamic>? _cancelableSend;
   dynamic _response;
   Uint8List? _lastResponse;
@@ -155,6 +172,7 @@ class FetchHttpRequest {
     final wgs = WorkerGlobalScope.instance;
     _setReadyState(HttpRequest.LOADING);
 
+    _abortController = AbortController();
     final init = RequestInit(
         cache: cache,
         credentials: credentials,
@@ -164,17 +182,19 @@ class FetchHttpRequest {
         mode: mode,
         redirect: redirect,
         referrerPolicy: referrerPolicy,
+        signal: _abortController?.signal,
         body: data,
         headers: js_util.jsify(headers));
-    final operation = _cancelableFetch = CancelableOperation.fromFuture(
-        js_util.promiseToFuture(js_util.callMethod(wgs, 'fetch', [uri, init])));
 
-    _response = await operation.value;
-    _setReadyState(HttpRequest.HEADERS_RECEIVED);
-    if (_cancelableSend?.isCanceled ?? false) {
+    _response = await js_util
+        .promiseToFuture(js_util.callMethod(wgs, 'fetch', [uri, init]))
+        .onError((error, stackTrace) => null,
+            test: (error) => _abortController?.signal.aborted ?? false);
+    if (_response == null || (_cancelableSend?.isCanceled ?? false)) {
       return;
     }
 
+    _setReadyState(HttpRequest.HEADERS_RECEIVED);
     if (status < 200 || status >= 300) {
       onErrorController.add(status);
     }
@@ -188,9 +208,11 @@ class FetchHttpRequest {
     }
 
     while (true) {
-      final result =
-          await js_util.promiseToFuture(js_util.callMethod(reader, 'read', []));
-      if (_cancelableSend?.isCanceled ?? false) {
+      final result = await js_util
+          .promiseToFuture(js_util.callMethod(reader, 'read', []))
+          .onError((error, stackTrace) => null,
+              test: (error) => _abortController?.signal.aborted ?? false);
+      if (result == null || (_cancelableSend?.isCanceled ?? false)) {
         return;
       }
       final value = js_util.getProperty(result, 'value');
@@ -219,7 +241,7 @@ class FetchHttpRequest {
   }
 
   void abort() async {
-    await _cancelableFetch?.cancel();
+    _abortController?.abort();
     await _cancelableSend?.cancel();
     close();
   }
@@ -228,6 +250,7 @@ class FetchHttpRequest {
     onReadyStateChangeController.close();
     onProgressController.close();
     onErrorController.close();
+    _response = null;
   }
 
   void setRequestHeader(String name, String value) {
