@@ -1,3 +1,9 @@
+## 3.1.0-dev
+
+* Expose a stream for connection state changes on ClientChannel to address
+  [#428](https://github.com/grpc/grpc-dart/issues/428).
+  This allows users to react to state changes in the connection.
+
 ## 3.0.2
 
 * Fix compilation on the Web with DDC.

@@ -59,7 +59,7 @@ class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
   List<ConnectionState> states = <ConnectionState>[];
   FixedConnectionClientChannel(this.clientConnection) {
-    clientConnection.onStateChanged = (c) => states.add(c.state);
+    onConnectionStateChanged.listen((state) => states.add(state));
   }
   @override
   ClientConnection createConnection() => clientConnection;

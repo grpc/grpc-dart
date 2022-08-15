@@ -57,4 +57,10 @@ abstract class ClientConnection {
   /// All open calls are terminated immediately, and no further calls may be
   /// made on this connection.
   Future<void> terminate();
+
+  /// Set state change listener for this connection. The given callback will be
+  /// invoked when the state of this connection changes.
+  // no need for this to be public,
+  // but needed in the actual implementations
+  set onStateChanged(void Function(ConnectionState) cb);
 }

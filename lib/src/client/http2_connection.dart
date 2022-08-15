@@ -18,7 +18,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http2/transport.dart';
-import 'package:meta/meta.dart';
 
 import '../shared/codec.dart';
 import '../shared/timeout.dart';
@@ -43,8 +42,8 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   connection.ConnectionState _state = ConnectionState.idle;
 
-  @visibleForTesting
-  void Function(Http2ClientConnection connection)? onStateChanged;
+  void Function(connection.ConnectionState)? onStateChanged;
+
   final _pendingCalls = <ClientCall>[];
 
   final ClientTransportConnector _transportConnector;
@@ -214,7 +213,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   void _setState(ConnectionState state) {
     _state = state;
-    onStateChanged?.call(this);
+    onStateChanged?.call(state);
   }
 
   void _handleIdleTimeout() {
