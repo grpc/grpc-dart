@@ -43,7 +43,9 @@ class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
   List<grpc.ConnectionState> states = <grpc.ConnectionState>[];
   FixedConnectionClientChannel(this.clientConnection) {
-    clientConnection.onStateChanged = (c) => states.add(c.state);
+    onConnectionStateChanged.listen((state) {
+      states.add(state);
+    });
   }
   @override
   ClientConnection createConnection() => clientConnection;
@@ -89,8 +91,9 @@ Future<void> main() async {
         server.port!,
         grpc.ChannelOptions(credentials: grpc.ChannelCredentials.insecure())));
     final states = <grpc.ConnectionState>[];
-    channel.clientConnection.onStateChanged =
-        (Http2ClientConnection connection) => states.add(connection.state);
+    channel.onConnectionStateChanged.listen((state) {
+      states.add(state);
+    });
     final testClient = TestClient(channel);
 
     await Future.wait(<Future>[
