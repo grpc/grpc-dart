@@ -328,7 +328,8 @@ class ServerHandler_ extends ServiceCall {
   }
 
   @override
-  void sendTrailers({int? status = 0, String? message}) {
+  void sendTrailers(
+      {int? status = 0, String? message, Map<String, String>? errorTrailers}) {
     _timeoutTimer?.cancel();
 
     final outgoingTrailersMap = <String, String>{};
@@ -353,6 +354,9 @@ class ServerHandler_ extends ServiceCall {
     if (message != null) {
       outgoingTrailersMap['grpc-message'] =
           Uri.encodeFull(message).replaceAll('%20', ' ');
+    }
+    if (errorTrailers != null) {
+      outgoingTrailersMap.addAll(errorTrailers);
     }
 
     final outgoingTrailers = <Header>[];
@@ -407,7 +411,11 @@ class ServerHandler_ extends ServiceCall {
   }
 
   void _sendError(GrpcError error) {
-    sendTrailers(status: error.code, message: error.message);
+    sendTrailers(
+      status: error.code,
+      message: error.message,
+      errorTrailers: error.trailers,
+    );
   }
 
   void cancel() {
