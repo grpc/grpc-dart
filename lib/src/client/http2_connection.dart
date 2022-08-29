@@ -332,7 +332,8 @@ class _SocketTransportConnector implements ClientTransportConnector {
   @override
   Future<ClientTransportConnection> connect() async {
     final securityContext = _options.credentials.securityContext;
-    _socket = await Socket.connect(_host, _port);
+    _socket =
+        await Socket.connect(_host, _port, timeout: _options.connectTimeout);
     // Don't wait for io buffers to fill up before sending requests.
     if (_socket.address.type != InternetAddressType.unix) {
       _socket.setOption(SocketOption.tcpNoDelay, true);
