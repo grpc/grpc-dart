@@ -63,6 +63,7 @@ class ChannelOptions {
     this.idleTimeout = defaultIdleTimeout,
     this.userAgent = defaultUserAgent,
     this.backoffStrategy = defaultBackoffStrategy,
+    this.connectTimeout = null,
     this.connectionTimeout = defaultConnectionTimeOut,
     this.codecRegistry,
   });
