@@ -300,7 +300,7 @@ class ClientCall<Q, R> implements Response {
   void _onTimedOut() {
     final error = GrpcError.deadlineExceeded('Deadline exceeded');
     _finishTimelineWithError(error, _requestTimeline);
-    _responses.addError(error);
+    _responses.addError(error, StackTrace.current);
     _safeTerminate();
   }
 
