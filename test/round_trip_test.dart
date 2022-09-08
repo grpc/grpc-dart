@@ -23,10 +23,12 @@ class TestClient extends Client {
 }
 
 class TestService extends Service {
+  final String? expectedAuthority;
+
   @override
   String get $name => 'test.TestService';
 
-  TestService() {
+  TestService({this.expectedAuthority}) {
     $addMethod(ServiceMethod<int, int>('stream', stream, false, true,
         (List<int> value) => value[0], (int value) => [value]));
   }
@@ -35,10 +37,18 @@ class TestService extends Service {
   static const requestInfiniteStream = 2;
 
   Stream<int> stream(ServiceCall call, Future request) async* {
+    checkMetadata(call.clientMetadata);
+
     final isInfinite = 2 == await request;
     for (var i = 1; i <= 3 || isInfinite; i++) {
       yield i;
       await Future.delayed(Duration(milliseconds: 100));
+    }
+  }
+
+  void checkMetadata(Map<String, String>? metadata) {
+    if (expectedAuthority != null) {
+      expect(metadata![':authority'], equals(expectedAuthority));
     }
   }
 }
@@ -80,6 +90,22 @@ Future<void> main() async {
   testTcpAndUds('round trip insecure connection', (address) async {
     // round trip test of insecure connection.
     final server = Server([TestService()]);
+    await server.serve(address: address, port: 0);
+
+    final channel = FixedConnectionClientChannel(Http2ClientConnection(
+      address,
+      server.port!,
+      ChannelOptions(credentials: ChannelCredentials.insecure()),
+    ));
+    final testClient = TestClient(channel);
+    expect(await testClient.stream(TestService.requestFiniteStream).toList(),
+        [1, 2, 3]);
+    server.shutdown();
+  });
+
+  testUds('UDS provides valid default authority', (address) async {
+    // round trip test of insecure connection.
+    final server = Server([TestService(expectedAuthority: 'localhost')]);
     await server.serve(address: address, port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
