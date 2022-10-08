@@ -79,10 +79,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     final connection = await _transportConnector.connect();
     _transportConnector.done.then((_) => _abandonConnection());
 
-    // Give the settings settings-frame a bit of time to arrive.
-    // TODO(sigurdm): This is a hack. The http2 package should expose a way of
-    // waiting for the settings frame to arrive.
-    await Future.delayed(_estimatedRoundTripTime);
+    await connection.onInitialPeerSettingsReceived;
 
     if (_state == ConnectionState.shutdown) {
       _transportConnector.shutdown();
