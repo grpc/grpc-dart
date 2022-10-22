@@ -356,10 +356,23 @@ class _SocketTransportConnector implements ClientTransportConnector {
 
   @override
   String get authority {
-    final host =
-        _host is String ? _host as String : (_host as InternetAddress).host;
-    return _options.credentials.authority ??
-        (_port == 443 ? host : '$host:$_port');
+    return _options.credentials.authority ?? _makeAuthority();
+  }
+
+  String _makeAuthority() {
+    final host = _host;
+    final portSuffix = _port == 443 ? '' : ':$_port';
+    final hostName;
+    if (host is String) {
+      hostName = '$host';
+    } else {
+      host as InternetAddress;
+      if (host.type == InternetAddressType.unix) {
+        return 'localhost'; // UDS don't have a meaningful authority.
+      }
+      hostName = host.host;
+    }
+    return '$hostName$portSuffix';
   }
 
   @override
