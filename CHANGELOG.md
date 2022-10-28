@@ -1,4 +1,4 @@
-## 3.1.0-dev
+## 3.1.0
 
 * Expose a stream for connection state changes on ClientChannel to address
   [#428](https://github.com/grpc/grpc-dart/issues/428).
