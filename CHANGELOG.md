@@ -7,6 +7,11 @@
   `:authority` value for UDS connections to `localhost` instead of using
   UDS path. Using path triggers checks in HTTP2 servers which
   attempt to validate `:authority` value.
+* `ChannelOptions` now exposes `connectTimeout`, which is used on the 
+  socket connect. This is used to specify the maximum allowed time to wait
+  for a connection to be established. If `connectTime` is longer than the system
+  level timeout duration, a timeout may occur sooner than specified in
+  `connectTimeout`. On timeout, a `SocketException` is thrown.
 
 ## 3.0.2
 
