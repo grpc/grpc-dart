@@ -1,7 +1,7 @@
 name: grpc
 description: Dart implementation of gRPC, a high performance, open-source universal RPC framework.
 
-version: 3.1.0
+version: 3.1.1-dev
 
 repository: https://github.com/grpc/grpc-dart
 
