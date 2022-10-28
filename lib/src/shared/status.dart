@@ -400,7 +400,7 @@ void validateHttpStatusAndContentType(
       throw GrpcError.custom(
         status,
         error?.message ??
-            'HTTP connection completed with ${httpStatus} instead of 200',
+            'HTTP connection completed with $httpStatus instead of 200',
         error?.details,
         rawResponse,
         error?.trailers ?? toCustomTrailers(headers),
@@ -417,7 +417,7 @@ void validateHttpStatusAndContentType(
   // Check if content-type header indicates a supported format.
   if (!_validContentTypePrefix.any(contentType.startsWith)) {
     throw GrpcError.unknown(
-        'unsupported content-type (${contentType})', null, rawResponse);
+        'unsupported content-type ($contentType)', null, rawResponse);
   }
 }
 

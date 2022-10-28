@@ -3,7 +3,7 @@
 //  source: google/logging/v2/logging.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields,deprecated_member_use_from_same_package
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,deprecated_member_use_from_same_package,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
 import 'dart:core' as $core;
 import 'dart:convert' as $convert;
@@ -318,7 +318,7 @@ const ListLogsRequest$json = const {
 
 /// Descriptor for `ListLogsRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List listLogsRequestDescriptor = $convert.base64Decode(
-    'Cg9MaXN0TG9nc1JlcXVlc3QSOgoGcGFyZW50GAEgASgJQiLgQQL6QRwSGmxvZ2dpbmcuZ29vZ2xlYXBpcy5jb20vTG9nUgZwYXJlbnQSIAoJcGFnZV9zaXplGAIgASgFQgPgQQFSCHBhZ2VTaXplEiIKCnBhZ2VfdG9rZW4YAyABKAlCA+BBAVIJcGFnZVRva2VuEioKDnJlc291cmNlX25hbWVzGAggAygJQgPgQQFSDXJlc291cmNlTmFtZXM=');
+    'Cg9MaXN0TG9nc1JlcXVlc3QSOgoGcGFyZW50GAEgASgJQiLgQQL6QRwSGmxvZ2dpbmcuZ29vZ2xlYXBpcy5jb20vTG9nUgZwYXJlbnQSIAoJcGFnZV9zaXplGAIgASgFQgPgQQFSCHBhZ2VTaXplEiIKCnBhZ2VfdG9rZW4YAyABKAlCA+BBAVIJcGFnZVRva2VuEkkKDnJlc291cmNlX25hbWVzGAggAygJQiLgQQH6QRwSGmxvZ2dpbmcuZ29vZ2xlYXBpcy5jb20vTG9nUg1yZXNvdXJjZU5hbWVz');
 @$core.Deprecated('Use listLogsResponseDescriptor instead')
 const ListLogsResponse$json = const {
   '1': 'ListLogsResponse',

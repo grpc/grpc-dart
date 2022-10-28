@@ -10,3 +10,6 @@ dependencies:
   grpc:
     path: ../../
   protobuf: ^2.0.0
+
+dev_dependencies:
+  lints: ^2.0.0

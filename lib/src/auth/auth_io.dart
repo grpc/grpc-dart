@@ -118,7 +118,7 @@ Future<HttpBasedAuthenticator> applicationDefaultCredentialsAuthenticator(
 
   // Attempt to load form credFile, if detected
   if (credFile != null) {
-    var credentials;
+    Object? credentials;
     try {
       credentials = json.decode(await credFile.readAsString());
     } on IOException {

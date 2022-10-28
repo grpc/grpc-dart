@@ -30,7 +30,7 @@ import 'interceptor.dart';
 import 'service.dart';
 
 /// Handles an incoming gRPC call.
-class ServerHandler_ extends ServiceCall {
+class ServerHandlerImpl extends ServiceCall {
   final ServerTransportStream _stream;
   final Service? Function(String service) _serviceLookup;
   final List<Interceptor> _interceptors;
@@ -61,7 +61,7 @@ class ServerHandler_ extends ServiceCall {
   Timer? _timeoutTimer;
   final X509Certificate? _clientCertificate;
 
-  ServerHandler_(this._serviceLookup, this._stream, this._interceptors,
+  ServerHandlerImpl(this._serviceLookup, this._stream, this._interceptors,
       this._codecRegistry,
       [this._clientCertificate]);
 
@@ -251,7 +251,7 @@ class ServerHandler_ extends ServiceCall {
     }
 
     final data = message;
-    var request;
+    Object? request;
     try {
       request = _descriptor.deserialize(data.data);
     } catch (error) {
@@ -425,7 +425,8 @@ class ServerHandler_ extends ServiceCall {
   }
 }
 
-class ServerHandler extends ServerHandler_ {
+class ServerHandler extends ServerHandlerImpl {
+  // ignore: use_super_parameters
   ServerHandler(Service Function(String service) serviceLookup, stream,
       [List<Interceptor> interceptors = const <Interceptor>[],
       CodecRegistry? codecRegistry,

@@ -99,9 +99,9 @@ class SecurityContextChannelCredentials extends ChannelCredentials {
   final SecurityContext _securityContext;
 
   SecurityContextChannelCredentials(SecurityContext securityContext,
-      {String? authority, BadCertificateHandler? onBadCertificate})
+      {super.authority, super.onBadCertificate})
       : _securityContext = securityContext,
-        super.secure(authority: authority, onBadCertificate: onBadCertificate);
+        super.secure();
   @override
   SecurityContext get securityContext => _securityContext;
 

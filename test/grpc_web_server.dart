@@ -152,12 +152,12 @@ if you are running tests locally.
   });
 
   proxy.exitCode.then((value) {
-    _info('proxy quit with ${value}');
+    _info('proxy quit with $value');
     if (value != 0) {
       if (!verbose) {
         stdout.writeAll(output, '\n');
       }
-      channel.sink.addError('proxy exited with ${value}');
+      channel.sink.addError('proxy exited with $value');
     }
   });
 

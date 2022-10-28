@@ -15,7 +15,6 @@
 @TestOn('browser')
 
 import 'dart:async';
-
 import 'dart:html';
 
 import 'package:async/async.dart';
@@ -25,7 +24,6 @@ import 'package:grpc/src/shared/message.dart';
 import 'package:grpc/src/shared/status.dart';
 import 'package:mockito/mockito.dart';
 import 'package:stream_transform/stream_transform.dart';
-
 import 'package:test/test.dart';
 
 final readyStateChangeEvent =
@@ -374,7 +372,7 @@ void main() {
     when(connection.latestRequest.responseText).thenReturn(errorDetails);
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
-    await errorReceived;
+    await errorReceived.future;
     expect(errors.single.rawResponse, errorDetails);
   });
 

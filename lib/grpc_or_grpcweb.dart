@@ -34,34 +34,23 @@ export 'src/shared/api.dart';
 /// provided for each case.
 class GrpcOrGrpcWebClientChannel extends GrpcOrGrpcWebClientChannelInternal {
   GrpcOrGrpcWebClientChannel.toSeparateEndpoints({
-    required String grpcHost,
-    required int grpcPort,
-    required bool grpcTransportSecure,
-    required String grpcWebHost,
-    required int grpcWebPort,
-    required bool grpcWebTransportSecure,
-  }) : super(
-          grpcHost: grpcHost,
-          grpcPort: grpcPort,
-          grpcTransportSecure: grpcTransportSecure,
-          grpcWebHost: grpcWebHost,
-          grpcWebPort: grpcWebPort,
-          grpcWebTransportSecure: grpcWebTransportSecure,
-        );
+    required super.grpcHost,
+    required super.grpcPort,
+    required super.grpcTransportSecure,
+    required super.grpcWebHost,
+    required super.grpcWebPort,
+    required super.grpcWebTransportSecure,
+  });
 
   GrpcOrGrpcWebClientChannel.toSeparatePorts({
     required String host,
-    required int grpcPort,
-    required bool grpcTransportSecure,
-    required int grpcWebPort,
-    required bool grpcWebTransportSecure,
+    required super.grpcPort,
+    required super.grpcTransportSecure,
+    required super.grpcWebPort,
+    required super.grpcWebTransportSecure,
   }) : super(
           grpcHost: host,
-          grpcPort: grpcPort,
-          grpcTransportSecure: grpcTransportSecure,
           grpcWebHost: host,
-          grpcWebPort: grpcWebPort,
-          grpcWebTransportSecure: grpcWebTransportSecure,
         );
 
   GrpcOrGrpcWebClientChannel.toSingleEndpoint({
@@ -78,8 +67,8 @@ class GrpcOrGrpcWebClientChannel extends GrpcOrGrpcWebClientChannelInternal {
         );
 
   GrpcOrGrpcWebClientChannel.grpc(
-    Object host, {
-    int port = 443,
-    ChannelOptions options = const ChannelOptions(),
-  }) : super.grpc(host, port: port, options: options);
+    super.host, {
+    super.port = 443,
+    super.options = const ChannelOptions(),
+  }) : super.grpc();
 }

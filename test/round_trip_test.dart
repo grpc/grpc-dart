@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:grpc/grpc.dart';
-import 'package:grpc/service_api.dart' as api;
 import 'package:grpc/src/client/channel.dart' hide ClientChannel;
 import 'package:grpc/src/client/connection.dart';
 import 'package:grpc/src/client/http2_connection.dart';
@@ -15,7 +14,7 @@ class TestClient extends Client {
   static final _$stream = ClientMethod<int, int>('/test.TestService/stream',
       (int value) => [value], (List<int> value) => value[0]);
 
-  TestClient(api.ClientChannel channel) : super(channel);
+  TestClient(super.channel);
   ResponseStream<int> stream(int request, {CallOptions? options}) {
     return $createStreamingCall(_$stream, Stream.value(request),
         options: options);
