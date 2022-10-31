@@ -1,3 +1,7 @@
+## 3.1.1-dev
+
+* Require Dart 2.17 or greater.
+
 ## 3.1.0
 
 * Expose a stream for connection state changes on ClientChannel to address

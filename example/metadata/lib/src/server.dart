@@ -27,7 +27,7 @@ class MetadataService extends MetadataServiceBase {
     final peer = call.clientMetadata!['peer']!;
     final count = callCount++;
     print('Echo: Call #$count: Peer: $peer, request: ${request.value}');
-    call.headers!['count'] = '${count}';
+    call.headers!['count'] = '$count';
     call.trailers!['hello'] = request.value;
 
     final delay = call.clientMetadata!['delay'];

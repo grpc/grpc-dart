@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ ! -d "$PROTOBUF" ]; then
-  echo "Please set the PROTOBUF environment variable to your clone of google/protobuf."
+  echo "Please set the PROTOBUF environment variable to your clone of protocolbuffers/protobuf."
   exit -1
 fi
 

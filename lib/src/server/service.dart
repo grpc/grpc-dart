@@ -64,20 +64,20 @@ class ServiceMethod<Q, R> {
   }
 
   Future<Q> _toSingleFuture(Stream<Q> stream) {
-    Q _ensureOnlyOneRequest(Q? previous, Q element) {
+    Q ensureOnlyOneRequest(Q? previous, Q element) {
       if (previous != null) {
         throw GrpcError.unimplemented('More than one request received');
       }
       return element;
     }
 
-    Q _ensureOneRequest(Q? value) {
+    Q ensureOneRequest(Q? value) {
       if (value == null) throw GrpcError.unimplemented('No requests received');
       return value;
     }
 
     final future =
-        stream.fold<Q?>(null, _ensureOnlyOneRequest).then(_ensureOneRequest);
+        stream.fold<Q?>(null, ensureOnlyOneRequest).then(ensureOneRequest);
     // Make sure errors on the future aren't unhandled, but return the original
     // future so the request handler can also get the error.
     _awaitAndCatch(future);

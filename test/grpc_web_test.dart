@@ -193,7 +193,7 @@ class GrpcWebServer {
     return GrpcWebServer(
         serverChannel,
         exitCompleter.future,
-        Uri.parse('http://localhost:${grpcPort}'),
-        Uri.parse('http://localhost:${httpPort}'));
+        Uri.parse('http://localhost:$grpcPort'),
+        Uri.parse('http://localhost:$httpPort'));
   }
 }

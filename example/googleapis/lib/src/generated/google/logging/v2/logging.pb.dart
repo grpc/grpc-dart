@@ -3,16 +3,16 @@
 //  source: google/logging/v2/logging.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
 import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import '../../api/monitored_resource.pb.dart' as $3;
-import 'log_entry.pb.dart' as $4;
-import '../../rpc/status.pb.dart' as $5;
-import '../../protobuf/duration.pb.dart' as $6;
+import '../../api/monitored_resource.pb.dart' as $2;
+import 'log_entry.pb.dart' as $3;
+import '../../rpc/status.pb.dart' as $4;
+import '../../protobuf/duration.pb.dart' as $5;
 
 import 'logging.pbenum.dart';
 
@@ -100,12 +100,12 @@ class WriteLogEntriesRequest extends $pb.GeneratedMessage {
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'logName')
-    ..aOM<$3.MonitoredResource>(
+    ..aOM<$2.MonitoredResource>(
         2,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'resource',
-        subBuilder: $3.MonitoredResource.create)
+        subBuilder: $2.MonitoredResource.create)
     ..m<$core.String, $core.String>(
         3,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
@@ -115,13 +115,13 @@ class WriteLogEntriesRequest extends $pb.GeneratedMessage {
         keyFieldType: $pb.PbFieldType.OS,
         valueFieldType: $pb.PbFieldType.OS,
         packageName: const $pb.PackageName('google.logging.v2'))
-    ..pc<$4.LogEntry>(
+    ..pc<$3.LogEntry>(
         4,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'entries',
         $pb.PbFieldType.PM,
-        subBuilder: $4.LogEntry.create)
+        subBuilder: $3.LogEntry.create)
     ..aOB(
         5,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
@@ -137,9 +137,9 @@ class WriteLogEntriesRequest extends $pb.GeneratedMessage {
   WriteLogEntriesRequest._() : super();
   factory WriteLogEntriesRequest({
     $core.String? logName,
-    $3.MonitoredResource? resource,
+    $2.MonitoredResource? resource,
     $core.Map<$core.String, $core.String>? labels,
-    $core.Iterable<$4.LogEntry>? entries,
+    $core.Iterable<$3.LogEntry>? entries,
     $core.bool? partialSuccess,
     $core.bool? dryRun,
   }) {
@@ -206,9 +206,9 @@ class WriteLogEntriesRequest extends $pb.GeneratedMessage {
   void clearLogName() => clearField(1);
 
   @$pb.TagNumber(2)
-  $3.MonitoredResource get resource => $_getN(1);
+  $2.MonitoredResource get resource => $_getN(1);
   @$pb.TagNumber(2)
-  set resource($3.MonitoredResource v) {
+  set resource($2.MonitoredResource v) {
     setField(2, v);
   }
 
@@ -217,13 +217,13 @@ class WriteLogEntriesRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   void clearResource() => clearField(2);
   @$pb.TagNumber(2)
-  $3.MonitoredResource ensureResource() => $_ensure(1);
+  $2.MonitoredResource ensureResource() => $_ensure(1);
 
   @$pb.TagNumber(3)
   $core.Map<$core.String, $core.String> get labels => $_getMap(2);
 
   @$pb.TagNumber(4)
-  $core.List<$4.LogEntry> get entries => $_getList(3);
+  $core.List<$3.LogEntry> get entries => $_getList(3);
 
   @$pb.TagNumber(5)
   $core.bool get partialSuccess => $_getBF(4);
@@ -304,7 +304,7 @@ class WriteLogEntriesPartialErrors extends $pb.GeneratedMessage {
               ? ''
               : 'google.logging.v2'),
       createEmptyInstance: create)
-    ..m<$core.int, $5.Status>(
+    ..m<$core.int, $4.Status>(
         1,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
@@ -312,13 +312,13 @@ class WriteLogEntriesPartialErrors extends $pb.GeneratedMessage {
         entryClassName: 'WriteLogEntriesPartialErrors.LogEntryErrorsEntry',
         keyFieldType: $pb.PbFieldType.O3,
         valueFieldType: $pb.PbFieldType.OM,
-        valueCreator: $5.Status.create,
+        valueCreator: $4.Status.create,
         packageName: const $pb.PackageName('google.logging.v2'))
     ..hasRequiredFields = false;
 
   WriteLogEntriesPartialErrors._() : super();
   factory WriteLogEntriesPartialErrors({
-    $core.Map<$core.int, $5.Status>? logEntryErrors,
+    $core.Map<$core.int, $4.Status>? logEntryErrors,
   }) {
     final _result = create();
     if (logEntryErrors != null) {
@@ -358,7 +358,7 @@ class WriteLogEntriesPartialErrors extends $pb.GeneratedMessage {
   static WriteLogEntriesPartialErrors? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.Map<$core.int, $5.Status> get logEntryErrors => $_getMap(0);
+  $core.Map<$core.int, $4.Status> get logEntryErrors => $_getMap(0);
 }
 
 class ListLogEntriesRequest extends $pb.GeneratedMessage {
@@ -516,13 +516,13 @@ class ListLogEntriesResponse extends $pb.GeneratedMessage {
               ? ''
               : 'google.logging.v2'),
       createEmptyInstance: create)
-    ..pc<$4.LogEntry>(
+    ..pc<$3.LogEntry>(
         1,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'entries',
         $pb.PbFieldType.PM,
-        subBuilder: $4.LogEntry.create)
+        subBuilder: $3.LogEntry.create)
     ..aOS(
         2,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
@@ -532,7 +532,7 @@ class ListLogEntriesResponse extends $pb.GeneratedMessage {
 
   ListLogEntriesResponse._() : super();
   factory ListLogEntriesResponse({
-    $core.Iterable<$4.LogEntry>? entries,
+    $core.Iterable<$3.LogEntry>? entries,
     $core.String? nextPageToken,
   }) {
     final _result = create();
@@ -574,7 +574,7 @@ class ListLogEntriesResponse extends $pb.GeneratedMessage {
   static ListLogEntriesResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.List<$4.LogEntry> get entries => $_getList(0);
+  $core.List<$3.LogEntry> get entries => $_getList(0);
 
   @$pb.TagNumber(2)
   $core.String get nextPageToken => $_getSZ(1);
@@ -694,13 +694,13 @@ class ListMonitoredResourceDescriptorsResponse extends $pb.GeneratedMessage {
               ? ''
               : 'google.logging.v2'),
       createEmptyInstance: create)
-    ..pc<$3.MonitoredResourceDescriptor>(
+    ..pc<$2.MonitoredResourceDescriptor>(
         1,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'resourceDescriptors',
         $pb.PbFieldType.PM,
-        subBuilder: $3.MonitoredResourceDescriptor.create)
+        subBuilder: $2.MonitoredResourceDescriptor.create)
     ..aOS(
         2,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
@@ -710,7 +710,7 @@ class ListMonitoredResourceDescriptorsResponse extends $pb.GeneratedMessage {
 
   ListMonitoredResourceDescriptorsResponse._() : super();
   factory ListMonitoredResourceDescriptorsResponse({
-    $core.Iterable<$3.MonitoredResourceDescriptor>? resourceDescriptors,
+    $core.Iterable<$2.MonitoredResourceDescriptor>? resourceDescriptors,
     $core.String? nextPageToken,
   }) {
     final _result = create();
@@ -757,7 +757,7 @@ class ListMonitoredResourceDescriptorsResponse extends $pb.GeneratedMessage {
   static ListMonitoredResourceDescriptorsResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.List<$3.MonitoredResourceDescriptor> get resourceDescriptors =>
+  $core.List<$2.MonitoredResourceDescriptor> get resourceDescriptors =>
       $_getList(0);
 
   @$pb.TagNumber(2)
@@ -994,19 +994,19 @@ class TailLogEntriesRequest extends $pb.GeneratedMessage {
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'filter')
-    ..aOM<$6.Duration>(
+    ..aOM<$5.Duration>(
         3,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'bufferWindow',
-        subBuilder: $6.Duration.create)
+        subBuilder: $5.Duration.create)
     ..hasRequiredFields = false;
 
   TailLogEntriesRequest._() : super();
   factory TailLogEntriesRequest({
     $core.Iterable<$core.String>? resourceNames,
     $core.String? filter,
-    $6.Duration? bufferWindow,
+    $5.Duration? bufferWindow,
   }) {
     final _result = create();
     if (resourceNames != null) {
@@ -1065,9 +1065,9 @@ class TailLogEntriesRequest extends $pb.GeneratedMessage {
   void clearFilter() => clearField(2);
 
   @$pb.TagNumber(3)
-  $6.Duration get bufferWindow => $_getN(2);
+  $5.Duration get bufferWindow => $_getN(2);
   @$pb.TagNumber(3)
-  set bufferWindow($6.Duration v) {
+  set bufferWindow($5.Duration v) {
     setField(3, v);
   }
 
@@ -1076,7 +1076,7 @@ class TailLogEntriesRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(3)
   void clearBufferWindow() => clearField(3);
   @$pb.TagNumber(3)
-  $6.Duration ensureBufferWindow() => $_ensure(2);
+  $5.Duration ensureBufferWindow() => $_ensure(2);
 }
 
 class TailLogEntriesResponse_SuppressionInfo extends $pb.GeneratedMessage {
@@ -1189,13 +1189,13 @@ class TailLogEntriesResponse extends $pb.GeneratedMessage {
               ? ''
               : 'google.logging.v2'),
       createEmptyInstance: create)
-    ..pc<$4.LogEntry>(
+    ..pc<$3.LogEntry>(
         1,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'entries',
         $pb.PbFieldType.PM,
-        subBuilder: $4.LogEntry.create)
+        subBuilder: $3.LogEntry.create)
     ..pc<TailLogEntriesResponse_SuppressionInfo>(
         2,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
@@ -1207,7 +1207,7 @@ class TailLogEntriesResponse extends $pb.GeneratedMessage {
 
   TailLogEntriesResponse._() : super();
   factory TailLogEntriesResponse({
-    $core.Iterable<$4.LogEntry>? entries,
+    $core.Iterable<$3.LogEntry>? entries,
     $core.Iterable<TailLogEntriesResponse_SuppressionInfo>? suppressionInfo,
   }) {
     final _result = create();
@@ -1249,7 +1249,7 @@ class TailLogEntriesResponse extends $pb.GeneratedMessage {
   static TailLogEntriesResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.List<$4.LogEntry> get entries => $_getList(0);
+  $core.List<$3.LogEntry> get entries => $_getList(0);
 
   @$pb.TagNumber(2)
   $core.List<TailLogEntriesResponse_SuppressionInfo> get suppressionInfo =>

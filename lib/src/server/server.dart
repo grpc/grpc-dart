@@ -107,7 +107,7 @@ class ConnectionServer {
   Future<void> serveConnection(ServerTransportConnection connection,
       [X509Certificate? clientCertificate]) async {
     _connections.add(connection);
-    ServerHandler_? handler;
+    ServerHandlerImpl? handler;
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
     connection.incomingStreams.listen((stream) {
@@ -127,9 +127,9 @@ class ConnectionServer {
   }
 
   @visibleForTesting
-  ServerHandler_ serveStream_(ServerTransportStream stream,
+  ServerHandlerImpl serveStream_(ServerTransportStream stream,
       [X509Certificate? clientCertificate]) {
-    return ServerHandler_(
+    return ServerHandlerImpl(
       lookupService, stream, _interceptors, _codecRegistry,
       // ignore: unnecessary_cast
       clientCertificate as io_bits.X509Certificate?,
@@ -146,10 +146,10 @@ class Server extends ConnectionServer {
 
   /// Create a server for the given [services].
   Server(
-    List<Service> services, [
-    List<Interceptor> interceptors = const <Interceptor>[],
-    CodecRegistry? codecRegistry,
-  ]) : super(services, interceptors, codecRegistry);
+    super.services, [
+    super.interceptors,
+    super.codecRegistry,
+  ]);
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
@@ -223,9 +223,9 @@ class Server extends ConnectionServer {
 
   @override
   @visibleForTesting
-  ServerHandler_ serveStream_(ServerTransportStream stream,
+  ServerHandlerImpl serveStream_(ServerTransportStream stream,
       [X509Certificate? clientCertificate]) {
-    return ServerHandler_(
+    return ServerHandlerImpl(
       lookupService,
       stream,
       _interceptors,

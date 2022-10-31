@@ -16,7 +16,7 @@ class InterceptorInvocation {
 
   @override
   String toString() {
-    return '{id: ${id}, unary: ${unary}, streaming: ${streaming}}';
+    return '{id: $id, unary: $unary, streaming: $streaming}';
   }
 }
 
