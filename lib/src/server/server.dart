@@ -153,6 +153,7 @@ class Server extends ConnectionServer {
     super.services, [
     super.interceptors,
     super.codecRegistry,
+    super.responseErrorHandler,
   ]);
 
   /// The port that the server is listening on, or `null` if the server is not
