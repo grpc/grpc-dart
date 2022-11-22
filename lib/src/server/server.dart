@@ -87,7 +87,7 @@ class ConnectionServer {
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
-  final Function? _responseErrorHandler;
+  final Function? _errorHandler;
 
   final _connections = <ServerTransportConnection>[];
 
@@ -96,10 +96,10 @@ class ConnectionServer {
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
-    Function? responseErrorHandler,
+    Function? errorHandler,
   ])  : _codecRegistry = codecRegistry,
         _interceptors = interceptors,
-        _responseErrorHandler = responseErrorHandler {
+        _errorHandler = errorHandler {
     for (final service in services) {
       _services[service.$name] = service;
     }
@@ -136,7 +136,7 @@ class ConnectionServer {
       lookupService, stream, _interceptors, _codecRegistry,
       // ignore: unnecessary_cast
       clientCertificate as io_bits.X509Certificate?,
-      _responseErrorHandler,
+      _errorHandler,
     )..handle();
   }
 }
@@ -154,7 +154,7 @@ class Server extends ConnectionServer {
     super.services, [
     super.interceptors,
     super.codecRegistry,
-    super.responseErrorHandler,
+    super.errorHandler,
   ]);
 
   /// Create a server for the given [services].
@@ -162,8 +162,8 @@ class Server extends ConnectionServer {
     required List<Service> services,
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
-    Function? responseErrorHandler,
-  }) : super(services, interceptors, codecRegistry, responseErrorHandler);
+    Function? errorHandler,
+  }) : super(services, interceptors, codecRegistry, errorHandler);
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
@@ -246,7 +246,7 @@ class Server extends ConnectionServer {
       _codecRegistry,
       // ignore: unnecessary_cast
       clientCertificate as io_bits.X509Certificate?,
-      _responseErrorHandler,
+      _errorHandler,
     )..handle();
   }
 

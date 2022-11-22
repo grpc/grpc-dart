@@ -1,7 +1,7 @@
 ## 3.1.1-dev
 
 * Require Dart 2.17 or greater.
-* Fix issue [#51](https://github.com/grpc/grpc-dart/issues/51), add support for response error handling.
+* Fix issue [#51](https://github.com/grpc/grpc-dart/issues/51), add support for custom error handling.
 
 ## 3.1.0
 

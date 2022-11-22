@@ -35,7 +35,7 @@ class ServerHandlerImpl extends ServiceCall {
   final Service? Function(String service) _serviceLookup;
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
-  final Function? _responseErrorHandler;
+  final Function? _errorHandler;
 
   // ignore: cancel_subscriptions
   StreamSubscription<GrpcMessage>? _incomingSubscription;
@@ -68,7 +68,7 @@ class ServerHandlerImpl extends ServiceCall {
     this._interceptors,
     this._codecRegistry, [
     this._clientCertificate,
-    this._responseErrorHandler,
+    this._errorHandler,
   ]);
 
   @override
@@ -260,12 +260,12 @@ class ServerHandlerImpl extends ServiceCall {
     Object? request;
     try {
       request = _descriptor.deserialize(data.data);
-    } catch (error) {
+    } catch (error, trace) {
       final grpcError =
           GrpcError.internal('Error deserializing request: $error');
-      _sendError(grpcError);
+      _sendError(grpcError, trace);
       _requests!
-        ..addError(grpcError)
+        ..addError(grpcError, trace)
         ..close();
       return;
     }
@@ -282,7 +282,7 @@ class ServerHandlerImpl extends ServiceCall {
         sendHeaders();
       }
       _stream.sendData(frame(bytes, _callEncodingCodec));
-    } catch (error) {
+    } catch (error, trace) {
       final grpcError = GrpcError.internal('Error sending response: $error');
       if (!_requests!.isClosed) {
         // If we can, alert the handler that things are going wrong.
@@ -290,7 +290,7 @@ class ServerHandlerImpl extends ServiceCall {
           ..addError(grpcError)
           ..close();
       }
-      _sendError(grpcError);
+      _sendError(grpcError, trace);
       _cancelResponseSubscription();
     }
   }
@@ -300,14 +300,10 @@ class ServerHandlerImpl extends ServiceCall {
   }
 
   void _onResponseError(error, trace) {
-    if (_responseErrorHandler != null) {
-      _responseErrorHandler!(error, trace);
-    }
-
     if (error is GrpcError) {
-      _sendError(error);
+      _sendError(error, trace);
     } else {
-      _sendError(GrpcError.unknown(error.toString()));
+      _sendError(GrpcError.unknown(error.toString()), trace);
     }
   }
 
@@ -420,7 +416,11 @@ class ServerHandlerImpl extends ServiceCall {
       ..onDone(_onDone);
   }
 
-  void _sendError(GrpcError error) {
+  void _sendError(GrpcError error, [StackTrace? trace]) {
+    if (_errorHandler != null) {
+      _errorHandler!(error, trace);
+    }
+
     sendTrailers(
       status: error.code,
       message: error.message,
