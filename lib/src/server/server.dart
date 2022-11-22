@@ -149,12 +149,21 @@ class Server extends ConnectionServer {
   SecureServerSocket? _secureServer;
 
   /// Create a server for the given [services].
+  @Deprecated('use Server.create() instead')
   Server(
     super.services, [
     super.interceptors,
     super.codecRegistry,
     super.responseErrorHandler,
   ]);
+
+  /// Create a server for the given [services].
+  Server.create({
+    required List<Service> services,
+    List<Interceptor> interceptors = const <Interceptor>[],
+    CodecRegistry? codecRegistry,
+    Function? responseErrorHandler,
+  }) : super(services, interceptors, codecRegistry, responseErrorHandler);
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
