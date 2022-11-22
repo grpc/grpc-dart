@@ -35,6 +35,7 @@ class ServerHandlerImpl extends ServiceCall {
   final Service? Function(String service) _serviceLookup;
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
+  final Function? _responseErrorHandler;
 
   // ignore: cancel_subscriptions
   StreamSubscription<GrpcMessage>? _incomingSubscription;
@@ -61,9 +62,14 @@ class ServerHandlerImpl extends ServiceCall {
   Timer? _timeoutTimer;
   final X509Certificate? _clientCertificate;
 
-  ServerHandlerImpl(this._serviceLookup, this._stream, this._interceptors,
-      this._codecRegistry,
-      [this._clientCertificate]);
+  ServerHandlerImpl(
+    this._serviceLookup,
+    this._stream,
+    this._interceptors,
+    this._codecRegistry, [
+    this._clientCertificate,
+    this._responseErrorHandler,
+  ]);
 
   @override
   DateTime? get deadline => _deadline;
@@ -293,7 +299,11 @@ class ServerHandlerImpl extends ServiceCall {
     sendTrailers();
   }
 
-  void _onResponseError(error) {
+  void _onResponseError(error, trace) {
+    if (_responseErrorHandler != null) {
+      _responseErrorHandler!(error, trace);
+    }
+
     if (error is GrpcError) {
       _sendError(error);
     } else {
@@ -423,14 +433,4 @@ class ServerHandlerImpl extends ServiceCall {
     _timeoutTimer?.cancel();
     _cancelResponseSubscription();
   }
-}
-
-class ServerHandler extends ServerHandlerImpl {
-  // ignore: use_super_parameters
-  ServerHandler(Service Function(String service) serviceLookup, stream,
-      [List<Interceptor> interceptors = const <Interceptor>[],
-      CodecRegistry? codecRegistry,
-      X509Certificate? clientCertificate])
-      : super(serviceLookup, stream, interceptors, codecRegistry,
-            clientCertificate);
 }
