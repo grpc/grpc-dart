@@ -89,6 +89,7 @@ static_resources:
 // with an error. Otherwise if verbose is specified it will be dumped
 // to stdout unconditionally.
 final output = <String>[];
+
 void _info(String line) {
   if (!verbose) {
     output.add(line);
@@ -99,7 +100,7 @@ void _info(String line) {
 
 Future<void> hybridMain(StreamChannel channel) async {
   // Spawn a gRPC server.
-  final server = Server([EchoService()]);
+  final server = Server.create(services: [EchoService()]);
   await server.serve(port: 0);
   _info('grpc server listening on ${server.port}');
 

@@ -107,10 +107,12 @@ class ConnectionServer {
 
   Service? lookupService(String service) => _services[service];
 
-  Future<void> serveConnection(ServerTransportConnection connection,
-      [X509Certificate? clientCertificate]) async {
+  Future<void> serveConnection(
+    ServerTransportConnection connection, [
+    X509Certificate? clientCertificate,
+  ]) async {
     _connections.add(connection);
-    ServerHandlerImpl? handler;
+    ServerHandler? handler;
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
     connection.incomingStreams.listen((stream) {
@@ -130,13 +132,18 @@ class ConnectionServer {
   }
 
   @visibleForTesting
-  ServerHandlerImpl serveStream_(ServerTransportStream stream,
-      [X509Certificate? clientCertificate]) {
-    return ServerHandlerImpl(
-      lookupService, stream, _interceptors, _codecRegistry,
+  ServerHandler serveStream_(
+    ServerTransportStream stream, [
+    X509Certificate? clientCertificate,
+  ]) {
+    return ServerHandler(
+      stream: stream,
+      serviceLookup: lookupService,
+      interceptors: _interceptors,
+      codecRegistry: _codecRegistry,
       // ignore: unnecessary_cast
-      clientCertificate as io_bits.X509Certificate?,
-      _errorHandler,
+      clientCertificate: clientCertificate as io_bits.X509Certificate?,
+      errorHandler: _errorHandler,
     )..handle();
   }
 }
@@ -237,16 +244,18 @@ class Server extends ConnectionServer {
 
   @override
   @visibleForTesting
-  ServerHandlerImpl serveStream_(ServerTransportStream stream,
-      [X509Certificate? clientCertificate]) {
-    return ServerHandlerImpl(
-      lookupService,
-      stream,
-      _interceptors,
-      _codecRegistry,
+  ServerHandler serveStream_(
+    ServerTransportStream stream, [
+    X509Certificate? clientCertificate,
+  ]) {
+    return ServerHandler(
+      stream: stream,
+      serviceLookup: lookupService,
+      interceptors: _interceptors,
+      codecRegistry: _codecRegistry,
       // ignore: unnecessary_cast
-      clientCertificate as io_bits.X509Certificate?,
-      _errorHandler,
+      clientCertificate: clientCertificate as io_bits.X509Certificate?,
+      errorHandler: _errorHandler,
     )..handle();
   }
 

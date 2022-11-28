@@ -29,10 +29,12 @@ import 'call.dart';
 import 'interceptor.dart';
 import 'service.dart';
 
+typedef ServiceLookup = Service? Function(String service);
+
 /// Handles an incoming gRPC call.
-class ServerHandlerImpl extends ServiceCall {
+class ServerHandler extends ServiceCall {
   final ServerTransportStream _stream;
-  final Service? Function(String service) _serviceLookup;
+  final ServiceLookup _serviceLookup;
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
   final Function? _errorHandler;
@@ -62,14 +64,19 @@ class ServerHandlerImpl extends ServiceCall {
   Timer? _timeoutTimer;
   final X509Certificate? _clientCertificate;
 
-  ServerHandlerImpl(
-    this._serviceLookup,
-    this._stream,
-    this._interceptors,
-    this._codecRegistry, [
-    this._clientCertificate,
-    this._errorHandler,
-  ]);
+  ServerHandler({
+    required ServerTransportStream stream,
+    required ServiceLookup serviceLookup,
+    required List<Interceptor> interceptors,
+    required CodecRegistry? codecRegistry,
+    X509Certificate? clientCertificate,
+    Function? errorHandler,
+  })  : _stream = stream,
+        _serviceLookup = serviceLookup,
+        _interceptors = interceptors,
+        _codecRegistry = codecRegistry,
+        _clientCertificate = clientCertificate,
+        _errorHandler = errorHandler;
 
   @override
   DateTime? get deadline => _deadline;

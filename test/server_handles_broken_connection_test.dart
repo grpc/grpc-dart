@@ -2,8 +2,10 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+
 import 'package:grpc/grpc.dart' as grpc;
 import 'package:test/test.dart';
+
 import 'common.dart';
 
 class TestClient extends grpc.Client {
@@ -13,6 +15,7 @@ class TestClient extends grpc.Client {
       (List<int> value) => value[0]);
 
   TestClient(grpc.ClientChannel super.channel);
+
   grpc.ResponseStream<int> infiniteStream(int request,
       {grpc.CallOptions? options}) {
     return $createStreamingCall(_$infiniteStream, Stream.value(request),
@@ -52,6 +55,7 @@ class ClientData {
   final InternetAddress address;
   final int port;
   final SendPort sendPort;
+
   ClientData(
       {required this.address, required this.port, required this.sendPort});
 }
@@ -77,11 +81,12 @@ Future<void> main() async {
       (address) async {
     // interrrupt the connect of client, the server does not crash.
     late grpc.Server server;
-    server = grpc.Server([
+    server = grpc.Server.create(services: [
       TestService(
-          finallyCallback: expectAsync0(() {
-        expect(server.shutdown(), completes);
-      }, reason: 'the producer should get cancelled'))
+        finallyCallback: expectAsync0(() {
+          expect(server.shutdown(), completes);
+        }, reason: 'the producer should get cancelled'),
+      )
     ]);
     await server.serve(address: address, port: 0);
     final receivePort = ReceivePort();

@@ -15,6 +15,7 @@ class TestClient extends Client {
       (int value) => [value], (List<int> value) => value[0]);
 
   TestClient(super.channel);
+
   ResponseStream<int> stream(int request, {CallOptions? options}) {
     return $createStreamingCall(_$stream, Stream.value(request),
         options: options);
@@ -78,9 +79,11 @@ class TestServiceWithGrpcError extends TestService {
 class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
   List<ConnectionState> states = <ConnectionState>[];
+
   FixedConnectionClientChannel(this.clientConnection) {
     onConnectionStateChanged.listen((state) => states.add(state));
   }
+
   @override
   ClientConnection createConnection() => clientConnection;
 }
@@ -88,7 +91,7 @@ class FixedConnectionClientChannel extends ClientChannelBase {
 Future<void> main() async {
   testTcpAndUds('round trip insecure connection', (address) async {
     // round trip test of insecure connection.
-    final server = Server([TestService()]);
+    final server = Server.create(services: [TestService()]);
     await server.serve(address: address, port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
@@ -104,7 +107,8 @@ Future<void> main() async {
 
   testUds('UDS provides valid default authority', (address) async {
     // round trip test of insecure connection.
-    final server = Server([TestService(expectedAuthority: 'localhost')]);
+    final server =
+        Server.create(services: [TestService(expectedAuthority: 'localhost')]);
     await server.serve(address: address, port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
@@ -120,8 +124,10 @@ Future<void> main() async {
 
   testTcpAndUds('round trip with outgoing and incoming compression',
       (address) async {
-    final server = Server(
-        [TestService()], const [], CodecRegistry(codecs: const [GzipCodec()]));
+    final server = Server.create(
+      services: [TestService()],
+      codecRegistry: CodecRegistry(codecs: const [GzipCodec()]),
+    );
     await server.serve(address: address, port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
@@ -144,7 +150,7 @@ Future<void> main() async {
 
   testTcpAndUds('round trip secure connection', (address) async {
     // round trip test of secure connection.
-    final server = Server([TestService()]);
+    final server = Server.create(services: [TestService()]);
     await server.serve(
         address: address,
         port: 0,
@@ -167,7 +173,8 @@ Future<void> main() async {
   });
 
   test('exception in onMetadataException', () async {
-    final server = Server([TestServiceWithOnMetadataException()]);
+    final server =
+        Server.create(services: [TestServiceWithOnMetadataException()]);
     await server.serve(address: 'localhost', port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
@@ -183,7 +190,7 @@ Future<void> main() async {
   });
 
   test('cancellation of streaming subscription propagates properly', () async {
-    final server = Server([TestService()]);
+    final server = Server.create(services: [TestService()]);
     await server.serve(address: 'localhost', port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
@@ -198,7 +205,7 @@ Future<void> main() async {
   });
 
   test('trailers on server GrpcError', () async {
-    final server = Server([TestServiceWithGrpcError()]);
+    final server = Server.create(services: [TestServiceWithGrpcError()]);
     await server.serve(address: 'localhost', port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(

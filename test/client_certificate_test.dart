@@ -25,6 +25,7 @@ class EchoService extends EchoServiceBase {
 }
 
 const String address = 'localhost';
+
 Future<void> main() async {
   test('Client certificate required', () async {
     // Server
@@ -80,7 +81,7 @@ Future<void> main() async {
 }
 
 Future<Server> _setUpServer([bool requireClientCertificate = false]) async {
-  final server = Server([EchoService()]);
+  final server = Server.create(services: [EchoService()]);
   final serverContext = SecurityContextServerCredentials.baseSecurityContext();
   serverContext.useCertificateChain('test/data/localhost.crt');
   serverContext.usePrivateKey('test/data/localhost.key');
@@ -102,6 +103,7 @@ class SecurityContextChannelCredentials extends ChannelCredentials {
       {super.authority, super.onBadCertificate})
       : _securityContext = securityContext,
         super.secure();
+
   @override
   SecurityContext get securityContext => _securityContext;
 
@@ -116,8 +118,10 @@ class SecurityContextServerCredentials extends ServerTlsCredentials {
   SecurityContextServerCredentials(SecurityContext securityContext)
       : _securityContext = securityContext,
         super();
+
   @override
   SecurityContext get securityContext => _securityContext;
+
   static SecurityContext baseSecurityContext() {
     return createSecurityContext(true);
   }
