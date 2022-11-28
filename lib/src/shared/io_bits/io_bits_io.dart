@@ -13,4 +13,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'dart:io' show HttpStatus, X509Certificate;
+export 'dart:io' show HttpStatus, InternetAddress, X509Certificate;
