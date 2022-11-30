@@ -87,7 +87,7 @@ class ConnectionServer {
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
-  final Function? _errorHandler;
+  final GrpcErrorHandler? _errorHandler;
 
   final _connections = <ServerTransportConnection>[];
 
@@ -96,7 +96,7 @@ class ConnectionServer {
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
-    Function? errorHandler,
+    GrpcErrorHandler? errorHandler,
   ])  : _codecRegistry = codecRegistry,
         _interceptors = interceptors,
         _errorHandler = errorHandler {
@@ -169,7 +169,7 @@ class Server extends ConnectionServer {
     required List<Service> services,
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
-    Function? errorHandler,
+    GrpcErrorHandler? errorHandler,
   }) : super(services, interceptors, codecRegistry, errorHandler);
 
   /// The port that the server is listening on, or `null` if the server is not
