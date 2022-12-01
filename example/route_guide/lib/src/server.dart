@@ -144,7 +144,7 @@ class RouteGuideService extends RouteGuideServiceBase {
 
 class Server {
   Future<void> main(List<String> args) async {
-    final server = grpc.Server([RouteGuideService()]);
+    final server = grpc.Server.create(services: [RouteGuideService()]);
     await server.serve(port: 8080);
     print('Server listening on port ${server.port}...');
   }

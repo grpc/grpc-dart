@@ -132,7 +132,7 @@ TimelineTask fakeTimelineTaskFactory(
     FakeTimelineTask(filterKey: filterKey, parent: parent);
 
 Future<void> testee() async {
-  final server = Server([TestService()]);
+  final server = Server.create(services: [TestService()]);
   await server.serve(address: 'localhost', port: 0);
   isTimelineLoggingEnabled = true;
   timelineTaskFactory = fakeTimelineTaskFactory;

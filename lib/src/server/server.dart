@@ -87,6 +87,7 @@ class ConnectionServer {
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
+  final GrpcErrorHandler? _errorHandler;
 
   final _connections = <ServerTransportConnection>[];
 
@@ -95,8 +96,10 @@ class ConnectionServer {
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
+    GrpcErrorHandler? errorHandler,
   ])  : _codecRegistry = codecRegistry,
-        _interceptors = interceptors {
+        _interceptors = interceptors,
+        _errorHandler = errorHandler {
     for (final service in services) {
       _services[service.$name] = service;
     }
@@ -104,10 +107,12 @@ class ConnectionServer {
 
   Service? lookupService(String service) => _services[service];
 
-  Future<void> serveConnection(ServerTransportConnection connection,
-      [X509Certificate? clientCertificate]) async {
+  Future<void> serveConnection(
+    ServerTransportConnection connection, [
+    X509Certificate? clientCertificate,
+  ]) async {
     _connections.add(connection);
-    ServerHandlerImpl? handler;
+    ServerHandler? handler;
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
     connection.incomingStreams.listen((stream) {
@@ -127,12 +132,18 @@ class ConnectionServer {
   }
 
   @visibleForTesting
-  ServerHandlerImpl serveStream_(ServerTransportStream stream,
-      [X509Certificate? clientCertificate]) {
-    return ServerHandlerImpl(
-      lookupService, stream, _interceptors, _codecRegistry,
+  ServerHandler serveStream_(
+    ServerTransportStream stream, [
+    X509Certificate? clientCertificate,
+  ]) {
+    return ServerHandler(
+      stream: stream,
+      serviceLookup: lookupService,
+      interceptors: _interceptors,
+      codecRegistry: _codecRegistry,
       // ignore: unnecessary_cast
-      clientCertificate as io_bits.X509Certificate?,
+      clientCertificate: clientCertificate as io_bits.X509Certificate?,
+      errorHandler: _errorHandler,
     )..handle();
   }
 }
@@ -145,11 +156,21 @@ class Server extends ConnectionServer {
   SecureServerSocket? _secureServer;
 
   /// Create a server for the given [services].
+  @Deprecated('use Server.create() instead')
   Server(
     super.services, [
     super.interceptors,
     super.codecRegistry,
+    super.errorHandler,
   ]);
+
+  /// Create a server for the given [services].
+  Server.create({
+    required List<Service> services,
+    List<Interceptor> interceptors = const <Interceptor>[],
+    CodecRegistry? codecRegistry,
+    GrpcErrorHandler? errorHandler,
+  }) : super(services, interceptors, codecRegistry, errorHandler);
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
@@ -223,15 +244,18 @@ class Server extends ConnectionServer {
 
   @override
   @visibleForTesting
-  ServerHandlerImpl serveStream_(ServerTransportStream stream,
-      [X509Certificate? clientCertificate]) {
-    return ServerHandlerImpl(
-      lookupService,
-      stream,
-      _interceptors,
-      _codecRegistry,
+  ServerHandler serveStream_(
+    ServerTransportStream stream, [
+    X509Certificate? clientCertificate,
+  ]) {
+    return ServerHandler(
+      stream: stream,
+      serviceLookup: lookupService,
+      interceptors: _interceptors,
+      codecRegistry: _codecRegistry,
       // ignore: unnecessary_cast
-      clientCertificate as io_bits.X509Certificate?,
+      clientCertificate: clientCertificate as io_bits.X509Certificate?,
+      errorHandler: _errorHandler,
     )..handle();
   }
 

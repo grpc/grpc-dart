@@ -131,7 +131,7 @@ Future<void> main(List<String> args) async {
 
   final services = [TestService()];
 
-  final server = Server(services);
+  final server = Server.create(services: services);
 
   ServerTlsCredentials? tlsCredentials;
   if (arguments['use_tls'] == 'true') {
