@@ -29,7 +29,7 @@ class GreeterService extends GreeterServiceBase {
 Future<void> main(List<String> args) async {
   final udsAddress =
       InternetAddress('localhost', type: InternetAddressType.unix);
-  final server = Server([GreeterService()]);
+  final server = Server.create(services: [GreeterService()]);
   await server.serve(address: udsAddress);
   print('Start UNIX Server @localhost...');
 }

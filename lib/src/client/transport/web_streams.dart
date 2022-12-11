@@ -20,7 +20,7 @@ import 'dart:typed_data';
 import '../../shared/message.dart';
 import '../../shared/status.dart';
 
-enum _GrpcWebParseState { Init, Length, Message }
+enum _GrpcWebParseState { init, length, message }
 
 class GrpcWebDecoder extends Converter<ByteBuffer, GrpcMessage> {
   @override
@@ -46,7 +46,7 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
 
   final _dataHeader = Uint8List(4);
 
-  _GrpcWebParseState _state = _GrpcWebParseState.Init;
+  _GrpcWebParseState _state = _GrpcWebParseState.init;
   var _chunkOffset = 0;
   int? _frameType;
   var _dataOffset = 0;
@@ -58,9 +58,9 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
     final frameType = chunkData[_chunkOffset];
     _chunkOffset++;
     if (frameType != frameTypeData && frameType != frameTypeTrailers) {
-      throw GrpcError.unimplemented('Invalid frame type: ${frameType}');
+      throw GrpcError.unimplemented('Invalid frame type: $frameType');
     }
-    _state = _GrpcWebParseState.Length;
+    _state = _GrpcWebParseState.length;
     return frameType;
   }
 
@@ -77,7 +77,7 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
     if (_dataOffset == _dataHeader.lengthInBytes) {
       final dataLength = _dataHeader.buffer.asByteData().getUint32(0);
       _dataOffset = 0;
-      _state = _GrpcWebParseState.Message;
+      _state = _GrpcWebParseState.message;
       _data = Uint8List(dataLength);
       if (dataLength == 0) {
         // empty message
@@ -112,7 +112,7 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
         _out.add(GrpcMetadata(headers));
         break;
     }
-    _state = _GrpcWebParseState.Init;
+    _state = _GrpcWebParseState.init;
     _data = null;
     _dataOffset = 0;
   }
@@ -134,13 +134,13 @@ class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
     final chunkData = chunk.asUint8List();
     while (_chunkOffset < chunk.lengthInBytes) {
       switch (_state) {
-        case _GrpcWebParseState.Init:
+        case _GrpcWebParseState.init:
           _frameType = _parseFrameType(chunkData);
           break;
-        case _GrpcWebParseState.Length:
+        case _GrpcWebParseState.length:
           _parseLength(chunkData);
           break;
-        case _GrpcWebParseState.Message:
+        case _GrpcWebParseState.message:
           _parseMessage(chunkData);
           break;
       }

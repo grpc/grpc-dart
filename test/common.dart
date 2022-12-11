@@ -24,7 +24,7 @@ void testUds(String name, FutureOr<void> Function(InternetAddress) testCase) {
 
   test(name, () async {
     final tempDir = await Directory.systemTemp.createTemp();
-    final address = InternetAddress(tempDir.path + '/socket',
+    final address = InternetAddress('${tempDir.path}/socket',
         type: InternetAddressType.unix);
     addTearDown(() => tempDir.delete(recursive: true));
     await testCase(address);

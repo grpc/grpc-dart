@@ -193,7 +193,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   @override
   Future<void> shutdown() async {
-    if (_state == ConnectionState.shutdown) return null;
+    if (_state == ConnectionState.shutdown) return;
     _setShutdownState();
     await _transportConnection?.finish();
   }
@@ -254,7 +254,9 @@ class Http2ClientConnection implements connection.ClientConnection {
     }
     // TODO(jakobr): Log error.
     _cancelTimer();
-    _pendingCalls.forEach((call) => _failCall(call, error));
+    for (var call in _pendingCalls) {
+      _failCall(call, error);
+    }
     _pendingCalls.clear();
     _setState(ConnectionState.idle);
   }
@@ -362,9 +364,9 @@ class _SocketTransportConnector implements ClientTransportConnector {
   String _makeAuthority() {
     final host = _host;
     final portSuffix = _port == 443 ? '' : ':$_port';
-    final hostName;
+    final String hostName;
     if (host is String) {
-      hostName = '$host';
+      hostName = host;
     } else {
       host as InternetAddress;
       if (host.type == InternetAddressType.unix) {

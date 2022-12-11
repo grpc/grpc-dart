@@ -25,10 +25,9 @@ class GreeterService extends GreeterServiceBase {
 }
 
 Future<void> main(List<String> args) async {
-  final server = Server(
-    [GreeterService()],
-    const <Interceptor>[],
-    CodecRegistry(codecs: const [GzipCodec(), IdentityCodec()]),
+  final server = Server.create(
+    services: [GreeterService()],
+    codecRegistry: CodecRegistry(codecs: const [GzipCodec(), IdentityCodec()]),
   );
   await server.serve(port: 50051);
   print('Server listening on port ${server.port}...');

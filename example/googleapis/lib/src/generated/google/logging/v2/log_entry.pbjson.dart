@@ -3,7 +3,7 @@
 //  source: google/logging/v2/log_entry.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields,deprecated_member_use_from_same_package
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,deprecated_member_use_from_same_package,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
 import 'dart:core' as $core;
 import 'dart:convert' as $convert;
@@ -144,6 +144,15 @@ const LogEntry$json = const {
       '8': const {},
       '10': 'sourceLocation'
     },
+    const {
+      '1': 'split',
+      '3': 35,
+      '4': 1,
+      '5': 11,
+      '6': '.google.logging.v2.LogSplit',
+      '8': const {},
+      '10': 'split'
+    },
   ],
   '3': const [LogEntry_LabelsEntry$json],
   '7': const {},
@@ -164,7 +173,7 @@ const LogEntry_LabelsEntry$json = const {
 
 /// Descriptor for `LogEntry`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List logEntryDescriptor = $convert.base64Decode(
-    'CghMb2dFbnRyeRIeCghsb2dfbmFtZRgMIAEoCUID4EECUgdsb2dOYW1lEj4KCHJlc291cmNlGAggASgLMh0uZ29vZ2xlLmFwaS5Nb25pdG9yZWRSZXNvdXJjZUID4EECUghyZXNvdXJjZRI7Cg1wcm90b19wYXlsb2FkGAIgASgLMhQuZ29vZ2xlLnByb3RvYnVmLkFueUgAUgxwcm90b1BheWxvYWQSIwoMdGV4dF9wYXlsb2FkGAMgASgJSABSC3RleHRQYXlsb2FkEjwKDGpzb25fcGF5bG9hZBgGIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3RIAFILanNvblBheWxvYWQSPQoJdGltZXN0YW1wGAkgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEBUgl0aW1lc3RhbXASTAoRcmVjZWl2ZV90aW1lc3RhbXAYGCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgPgQQNSEHJlY2VpdmVUaW1lc3RhbXASQQoIc2V2ZXJpdHkYCiABKA4yIC5nb29nbGUubG9nZ2luZy50eXBlLkxvZ1NldmVyaXR5QgPgQQFSCHNldmVyaXR5EiAKCWluc2VydF9pZBgEIAEoCUID4EEBUghpbnNlcnRJZBJICgxodHRwX3JlcXVlc3QYByABKAsyIC5nb29nbGUubG9nZ2luZy50eXBlLkh0dHBSZXF1ZXN0QgPgQQFSC2h0dHBSZXF1ZXN0EkQKBmxhYmVscxgLIAMoCzInLmdvb2dsZS5sb2dnaW5nLnYyLkxvZ0VudHJ5LkxhYmVsc0VudHJ5QgPgQQFSBmxhYmVscxJHCglvcGVyYXRpb24YDyABKAsyJC5nb29nbGUubG9nZ2luZy52Mi5Mb2dFbnRyeU9wZXJhdGlvbkID4EEBUglvcGVyYXRpb24SGQoFdHJhY2UYFiABKAlCA+BBAVIFdHJhY2USHAoHc3Bhbl9pZBgbIAEoCUID4EEBUgZzcGFuSWQSKAoNdHJhY2Vfc2FtcGxlZBgeIAEoCEID4EEBUgx0cmFjZVNhbXBsZWQSVwoPc291cmNlX2xvY2F0aW9uGBcgASgLMikuZ29vZ2xlLmxvZ2dpbmcudjIuTG9nRW50cnlTb3VyY2VMb2NhdGlvbkID4EEBUg5zb3VyY2VMb2NhdGlvbho5CgtMYWJlbHNFbnRyeRIQCgNrZXkYASABKAlSA2tleRIUCgV2YWx1ZRgCIAEoCVIFdmFsdWU6AjgBOr0B6kG5AQoabG9nZ2luZy5nb29nbGVhcGlzLmNvbS9Mb2cSHXByb2plY3RzL3twcm9qZWN0fS9sb2dzL3tsb2d9Eidvcmdhbml6YXRpb25zL3tvcmdhbml6YXRpb259L2xvZ3Mve2xvZ30SG2ZvbGRlcnMve2ZvbGRlcn0vbG9ncy97bG9nfRIsYmlsbGluZ0FjY291bnRzL3tiaWxsaW5nX2FjY291bnR9L2xvZ3Mve2xvZ30aCGxvZ19uYW1lQgkKB3BheWxvYWQ=');
+    'CghMb2dFbnRyeRIeCghsb2dfbmFtZRgMIAEoCUID4EECUgdsb2dOYW1lEj4KCHJlc291cmNlGAggASgLMh0uZ29vZ2xlLmFwaS5Nb25pdG9yZWRSZXNvdXJjZUID4EECUghyZXNvdXJjZRI7Cg1wcm90b19wYXlsb2FkGAIgASgLMhQuZ29vZ2xlLnByb3RvYnVmLkFueUgAUgxwcm90b1BheWxvYWQSIwoMdGV4dF9wYXlsb2FkGAMgASgJSABSC3RleHRQYXlsb2FkEjwKDGpzb25fcGF5bG9hZBgGIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3RIAFILanNvblBheWxvYWQSPQoJdGltZXN0YW1wGAkgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEBUgl0aW1lc3RhbXASTAoRcmVjZWl2ZV90aW1lc3RhbXAYGCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgPgQQNSEHJlY2VpdmVUaW1lc3RhbXASQQoIc2V2ZXJpdHkYCiABKA4yIC5nb29nbGUubG9nZ2luZy50eXBlLkxvZ1NldmVyaXR5QgPgQQFSCHNldmVyaXR5EiAKCWluc2VydF9pZBgEIAEoCUID4EEBUghpbnNlcnRJZBJICgxodHRwX3JlcXVlc3QYByABKAsyIC5nb29nbGUubG9nZ2luZy50eXBlLkh0dHBSZXF1ZXN0QgPgQQFSC2h0dHBSZXF1ZXN0EkQKBmxhYmVscxgLIAMoCzInLmdvb2dsZS5sb2dnaW5nLnYyLkxvZ0VudHJ5LkxhYmVsc0VudHJ5QgPgQQFSBmxhYmVscxJHCglvcGVyYXRpb24YDyABKAsyJC5nb29nbGUubG9nZ2luZy52Mi5Mb2dFbnRyeU9wZXJhdGlvbkID4EEBUglvcGVyYXRpb24SGQoFdHJhY2UYFiABKAlCA+BBAVIFdHJhY2USHAoHc3Bhbl9pZBgbIAEoCUID4EEBUgZzcGFuSWQSKAoNdHJhY2Vfc2FtcGxlZBgeIAEoCEID4EEBUgx0cmFjZVNhbXBsZWQSVwoPc291cmNlX2xvY2F0aW9uGBcgASgLMikuZ29vZ2xlLmxvZ2dpbmcudjIuTG9nRW50cnlTb3VyY2VMb2NhdGlvbkID4EEBUg5zb3VyY2VMb2NhdGlvbhI2CgVzcGxpdBgjIAEoCzIbLmdvb2dsZS5sb2dnaW5nLnYyLkxvZ1NwbGl0QgPgQQFSBXNwbGl0GjkKC0xhYmVsc0VudHJ5EhAKA2tleRgBIAEoCVIDa2V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAE6vQHqQbkBChpsb2dnaW5nLmdvb2dsZWFwaXMuY29tL0xvZxIdcHJvamVjdHMve3Byb2plY3R9L2xvZ3Mve2xvZ30SJ29yZ2FuaXphdGlvbnMve29yZ2FuaXphdGlvbn0vbG9ncy97bG9nfRIbZm9sZGVycy97Zm9sZGVyfS9sb2dzL3tsb2d9EixiaWxsaW5nQWNjb3VudHMve2JpbGxpbmdfYWNjb3VudH0vbG9ncy97bG9nfRoIbG9nX25hbWVCCQoHcGF5bG9hZA==');
 @$core.Deprecated('Use logEntryOperationDescriptor instead')
 const LogEntryOperation$json = const {
   '1': 'LogEntryOperation',
@@ -207,3 +216,16 @@ const LogEntrySourceLocation$json = const {
 final $typed_data.Uint8List logEntrySourceLocationDescriptor =
     $convert.base64Decode(
         'ChZMb2dFbnRyeVNvdXJjZUxvY2F0aW9uEhcKBGZpbGUYASABKAlCA+BBAVIEZmlsZRIXCgRsaW5lGAIgASgDQgPgQQFSBGxpbmUSHwoIZnVuY3Rpb24YAyABKAlCA+BBAVIIZnVuY3Rpb24=');
+@$core.Deprecated('Use logSplitDescriptor instead')
+const LogSplit$json = const {
+  '1': 'LogSplit',
+  '2': const [
+    const {'1': 'uid', '3': 1, '4': 1, '5': 9, '10': 'uid'},
+    const {'1': 'index', '3': 2, '4': 1, '5': 5, '10': 'index'},
+    const {'1': 'total_splits', '3': 3, '4': 1, '5': 5, '10': 'totalSplits'},
+  ],
+};
+
+/// Descriptor for `LogSplit`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List logSplitDescriptor = $convert.base64Decode(
+    'CghMb2dTcGxpdBIQCgN1aWQYASABKAlSA3VpZBIUCgVpbmRleBgCIAEoBVIFaW5kZXgSIQoMdG90YWxfc3BsaXRzGAMgASgFUgt0b3RhbFNwbGl0cw==');

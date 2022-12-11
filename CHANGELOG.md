@@ -5,7 +5,9 @@
   for a connection to be established. If `connectTime` is longer than the system
   level timeout duration, a timeout may occur sooner than specified in
   `connectTimeout`. On timeout, a `SocketException` is thrown.
-  
+* Require Dart 2.17 or greater.
+* Fix issue [#51](https://github.com/grpc/grpc-dart/issues/51), add support for custom error handling.
+
 ## 3.1.0
 
 * Expose a stream for connection state changes on ClientChannel to address

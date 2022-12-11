@@ -27,7 +27,7 @@ class MetadataService extends MetadataServiceBase {
     final peer = call.clientMetadata!['peer']!;
     final count = callCount++;
     print('Echo: Call #$count: Peer: $peer, request: ${request.value}');
-    call.headers!['count'] = '${count}';
+    call.headers!['count'] = '$count';
     call.trailers!['hello'] = request.value;
 
     final delay = call.clientMetadata!['delay'];
@@ -78,7 +78,7 @@ class MetadataService extends MetadataServiceBase {
 
 class Server {
   Future<void> main(List<String> args) async {
-    final server = grpc.Server([MetadataService()]);
+    final server = grpc.Server.create(services: [MetadataService()]);
     await server.serve(port: 8080);
     print('Server listening on port ${server.port}...');
   }

@@ -288,12 +288,12 @@ void main() {
         return expectedResponse;
       }
 
-      final Interceptor interceptor = (call, method) {
+      GrpcError? interceptor(call, method) {
         if (method.name == 'Unary') {
           return null;
         }
         return GrpcError.unauthenticated('Request is unauthenticated');
-      };
+      }
 
       Future<void> doTest(Interceptor handler) async {
         harness
@@ -310,12 +310,12 @@ void main() {
     });
 
     group('returns error if interceptor blocks request', () {
-      final Interceptor interceptor = (call, method) {
+      GrpcError? interceptor(call, method) {
         if (method.name == 'Unary') {
           return GrpcError.unauthenticated('Request is unauthenticated');
         }
         return null;
-      };
+      }
 
       Future<void> doTest(Interceptor handler) async {
         harness
@@ -333,9 +333,9 @@ void main() {
     });
 
     group('returns internal error if interceptor throws exception', () {
-      final Interceptor interceptor = (call, method) {
+      FutureOr<GrpcError?> interceptor(call, method) {
         throw Exception('Reason is unknown');
-      };
+      }
 
       Future<void> doTest(Interceptor handler) async {
         harness
@@ -353,11 +353,11 @@ void main() {
     });
 
     test("don't fail if interceptor await 2 times", () async {
-      final Interceptor interceptor = (call, method) async {
+      FutureOr<GrpcError?> interceptor(call, method) async {
         await Future.value();
         await Future.value();
         throw Exception('Reason is unknown');
-      };
+      }
 
       harness
         ..interceptor.handler = interceptor

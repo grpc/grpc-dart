@@ -16,7 +16,8 @@ class TestClient extends grpc.Client {
       (int value) => [value],
       (List<int> value) => value[0]);
 
-  TestClient(ClientChannel channel) : super(channel);
+  TestClient(super.channel);
+
   grpc.ResponseStream<int> stream(int request, {grpc.CallOptions? options}) {
     return $createStreamingCall(_$stream, Stream.value(request),
         options: options);
@@ -42,11 +43,13 @@ class TestService extends grpc.Service {
 class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
   List<grpc.ConnectionState> states = <grpc.ConnectionState>[];
+
   FixedConnectionClientChannel(this.clientConnection) {
     onConnectionStateChanged.listen((state) {
       states.add(state);
     });
   }
+
   @override
   ClientConnection createConnection() => clientConnection;
 }
@@ -55,7 +58,7 @@ Future<void> main() async {
   testTcpAndUds('client reconnects after the connection gets old',
       (address) async {
     // client reconnect after a short delay.
-    final server = grpc.Server([TestService()]);
+    final server = grpc.Server.create(services: [TestService()]);
     await server.serve(address: address, port: 0);
 
     final channel = FixedConnectionClientChannel(Http2ClientConnection(
@@ -80,7 +83,7 @@ Future<void> main() async {
 
   testTcpAndUds('client reconnects when stream limit is used', (address) async {
     // client reconnect after setting stream limit.
-    final server = grpc.Server([TestService()]);
+    final server = grpc.Server.create(services: [TestService()]);
     await server.serve(
         address: address,
         port: 0,

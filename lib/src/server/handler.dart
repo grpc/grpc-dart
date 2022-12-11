@@ -29,12 +29,16 @@ import 'call.dart';
 import 'interceptor.dart';
 import 'service.dart';
 
+typedef ServiceLookup = Service? Function(String service);
+typedef GrpcErrorHandler = void Function(GrpcError error, StackTrace? trace);
+
 /// Handles an incoming gRPC call.
-class ServerHandler_ extends ServiceCall {
+class ServerHandler extends ServiceCall {
   final ServerTransportStream _stream;
-  final Service? Function(String service) _serviceLookup;
+  final ServiceLookup _serviceLookup;
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
+  final GrpcErrorHandler? _errorHandler;
 
   // ignore: cancel_subscriptions
   StreamSubscription<GrpcMessage>? _incomingSubscription;
@@ -61,9 +65,19 @@ class ServerHandler_ extends ServiceCall {
   Timer? _timeoutTimer;
   final X509Certificate? _clientCertificate;
 
-  ServerHandler_(this._serviceLookup, this._stream, this._interceptors,
-      this._codecRegistry,
-      [this._clientCertificate]);
+  ServerHandler({
+    required ServerTransportStream stream,
+    required ServiceLookup serviceLookup,
+    required List<Interceptor> interceptors,
+    required CodecRegistry? codecRegistry,
+    X509Certificate? clientCertificate,
+    GrpcErrorHandler? errorHandler,
+  })  : _stream = stream,
+        _serviceLookup = serviceLookup,
+        _interceptors = interceptors,
+        _codecRegistry = codecRegistry,
+        _clientCertificate = clientCertificate,
+        _errorHandler = errorHandler;
 
   @override
   DateTime? get deadline => _deadline;
@@ -251,15 +265,15 @@ class ServerHandler_ extends ServiceCall {
     }
 
     final data = message;
-    var request;
+    Object? request;
     try {
       request = _descriptor.deserialize(data.data);
-    } catch (error) {
+    } catch (error, trace) {
       final grpcError =
           GrpcError.internal('Error deserializing request: $error');
-      _sendError(grpcError);
+      _sendError(grpcError, trace);
       _requests!
-        ..addError(grpcError)
+        ..addError(grpcError, trace)
         ..close();
       return;
     }
@@ -276,7 +290,7 @@ class ServerHandler_ extends ServiceCall {
         sendHeaders();
       }
       _stream.sendData(frame(bytes, _callEncodingCodec));
-    } catch (error) {
+    } catch (error, trace) {
       final grpcError = GrpcError.internal('Error sending response: $error');
       if (!_requests!.isClosed) {
         // If we can, alert the handler that things are going wrong.
@@ -284,7 +298,7 @@ class ServerHandler_ extends ServiceCall {
           ..addError(grpcError)
           ..close();
       }
-      _sendError(grpcError);
+      _sendError(grpcError, trace);
       _cancelResponseSubscription();
     }
   }
@@ -293,11 +307,11 @@ class ServerHandler_ extends ServiceCall {
     sendTrailers();
   }
 
-  void _onResponseError(error) {
+  void _onResponseError(error, trace) {
     if (error is GrpcError) {
-      _sendError(error);
+      _sendError(error, trace);
     } else {
-      _sendError(GrpcError.unknown(error.toString()));
+      _sendError(GrpcError.unknown(error.toString()), trace);
     }
   }
 
@@ -410,7 +424,9 @@ class ServerHandler_ extends ServiceCall {
       ..onDone(_onDone);
   }
 
-  void _sendError(GrpcError error) {
+  void _sendError(GrpcError error, [StackTrace? trace]) {
+    _errorHandler?.call(error, trace);
+
     sendTrailers(
       status: error.code,
       message: error.message,
@@ -423,13 +439,4 @@ class ServerHandler_ extends ServiceCall {
     _timeoutTimer?.cancel();
     _cancelResponseSubscription();
   }
-}
-
-class ServerHandler extends ServerHandler_ {
-  ServerHandler(Service Function(String service) serviceLookup, stream,
-      [List<Interceptor> interceptors = const <Interceptor>[],
-      CodecRegistry? codecRegistry,
-      X509Certificate? clientCertificate])
-      : super(serviceLookup, stream, interceptors, codecRegistry,
-            clientCertificate);
 }
