@@ -50,6 +50,11 @@ class ChannelOptions {
 
   /// The maximum time a single connection will be used for new requests.
   final Duration connectionTimeout;
+
+  /// The maximum allowed time to wait for a connection to be established.
+  /// If [connectTimeout] is longer than the system level timeout duration,
+  /// a timeout may occur sooner than specified in [connectTimeout].
+  final Duration? connectTimeout;
   final BackoffStrategy backoffStrategy;
   final String userAgent;
 
@@ -58,6 +63,7 @@ class ChannelOptions {
     this.idleTimeout = defaultIdleTimeout,
     this.userAgent = defaultUserAgent,
     this.backoffStrategy = defaultBackoffStrategy,
+    this.connectTimeout,
     this.connectionTimeout = defaultConnectionTimeOut,
     this.codecRegistry,
   });

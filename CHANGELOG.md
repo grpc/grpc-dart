@@ -1,5 +1,10 @@
 ## 3.1.1-dev
 
+* `ChannelOptions` now exposes `connectTimeout`, which is used on the 
+  socket connect. This is used to specify the maximum allowed time to wait
+  for a connection to be established. If `connectTime` is longer than the system
+  level timeout duration, a timeout may occur sooner than specified in
+  `connectTimeout`. On timeout, a `SocketException` is thrown.
 * Require Dart 2.17 or greater.
 * Fix issue [#51](https://github.com/grpc/grpc-dart/issues/51), add support for custom error handling.
 
