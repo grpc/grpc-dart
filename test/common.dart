@@ -16,6 +16,21 @@ import 'dart:async';
 import 'dart:io';
 import 'package:test/test.dart';
 
+/// Test functionality for Unix domain socket.
+void testUds(String name, FutureOr<void> Function(InternetAddress) testCase) {
+  if (Platform.isWindows) {
+    return;
+  }
+
+  test(name, () async {
+    final tempDir = await Directory.systemTemp.createTemp();
+    final address = InternetAddress('${tempDir.path}/socket',
+        type: InternetAddressType.unix);
+    addTearDown(() => tempDir.delete(recursive: true));
+    await testCase(address);
+  });
+}
+
 /// Test functionality for both TCP and Unix domain sockets.
 void testTcpAndUds(
     String name, FutureOr<void> Function(InternetAddress) testCase,
@@ -25,15 +40,5 @@ void testTcpAndUds(
     await testCase(address.first);
   });
 
-  if (Platform.isWindows) {
-    return;
-  }
-
-  test('$name (over uds)', () async {
-    final tempDir = await Directory.systemTemp.createTemp();
-    final address = InternetAddress(tempDir.path + '/socket',
-        type: InternetAddressType.unix);
-    addTearDown(() => tempDir.delete(recursive: true));
-    await testCase(address);
-  });
+  testUds('$name (over uds)', testCase);
 }

@@ -18,7 +18,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:grpc/grpc.dart';
-import 'package:grpc/service_api.dart' as api;
 import 'package:grpc/src/client/channel.dart' hide ClientChannel;
 import 'package:grpc/src/client/connection.dart';
 import 'package:grpc/src/client/http2_connection.dart';
@@ -32,7 +31,7 @@ class TestClient extends Client {
   static final _$stream = ClientMethod<int, int>(
       path, (int value) => [value], (List<int> value) => value[0]);
 
-  TestClient(api.ClientChannel channel) : super(channel);
+  TestClient(super.channel);
   ResponseStream<int> stream(int request, {CallOptions? options}) {
     return $createStreamingCall(_$stream, Stream.fromIterable([request]),
         options: options);
@@ -59,7 +58,7 @@ class FixedConnectionClientChannel extends ClientChannelBase {
   final Http2ClientConnection clientConnection;
   List<ConnectionState> states = <ConnectionState>[];
   FixedConnectionClientChannel(this.clientConnection) {
-    clientConnection.onStateChanged = (c) => states.add(c.state);
+    onConnectionStateChanged.listen((state) => states.add(state));
   }
   @override
   ClientConnection createConnection() => clientConnection;
@@ -133,7 +132,7 @@ TimelineTask fakeTimelineTaskFactory(
     FakeTimelineTask(filterKey: filterKey, parent: parent);
 
 Future<void> testee() async {
-  final server = Server([TestService()]);
+  final server = Server.create(services: [TestService()]);
   await server.serve(address: 'localhost', port: 0);
   isTimelineLoggingEnabled = true;
   timelineTaskFactory = fakeTimelineTaskFactory;

@@ -30,7 +30,7 @@ class RS256Signer {
   // NIST sha-256 OID (2 16 840 1 101 3 4 2 1)
   // See a reference for the encoding here:
   // http://msdn.microsoft.com/en-us/library/bb540809%28v=vs.85%29.aspx
-  static const _RSA_SHA256_ALGORITHM_IDENTIFIER = [
+  static const _rsaSha256AlgorithmIdentifier = [
     0x06,
     0x09,
     0x60,
@@ -69,21 +69,21 @@ class RS256Signer {
     // }
     var offset = 0;
     final digestInfo = Uint8List(
-        2 + 2 + _RSA_SHA256_ALGORITHM_IDENTIFIER.length + 2 + 2 + hash.length);
+        2 + 2 + _rsaSha256AlgorithmIdentifier.length + 2 + 2 + hash.length);
     {
       // DigestInfo
-      digestInfo[offset++] = ASN1Parser.SEQUENCE_TAG;
+      digestInfo[offset++] = ASN1Parser.sequenceTag;
       digestInfo[offset++] = digestInfo.length - 2;
       {
         // AlgorithmIdentifier.
-        digestInfo[offset++] = ASN1Parser.SEQUENCE_TAG;
-        digestInfo[offset++] = _RSA_SHA256_ALGORITHM_IDENTIFIER.length + 2;
-        digestInfo.setAll(offset, _RSA_SHA256_ALGORITHM_IDENTIFIER);
-        offset += _RSA_SHA256_ALGORITHM_IDENTIFIER.length;
-        digestInfo[offset++] = ASN1Parser.NULL_TAG;
+        digestInfo[offset++] = ASN1Parser.sequenceTag;
+        digestInfo[offset++] = _rsaSha256AlgorithmIdentifier.length + 2;
+        digestInfo.setAll(offset, _rsaSha256AlgorithmIdentifier);
+        offset += _rsaSha256AlgorithmIdentifier.length;
+        digestInfo[offset++] = ASN1Parser.nullTag;
         digestInfo[offset++] = 0;
       }
-      digestInfo[offset++] = ASN1Parser.OCTET_STRING_TAG;
+      digestInfo[offset++] = ASN1Parser.octetStringTag;
       digestInfo[offset++] = hash.length;
       digestInfo.setAll(offset, hash);
     }
@@ -92,11 +92,11 @@ class RS256Signer {
 }
 
 class ASN1Parser {
-  static const INTEGER_TAG = 0x02;
-  static const OCTET_STRING_TAG = 0x04;
-  static const NULL_TAG = 0x05;
-  static const OBJECT_ID_TAG = 0x06;
-  static const SEQUENCE_TAG = 0x30;
+  static const integerTag = 0x02;
+  static const octetStringTag = 0x04;
+  static const nullTag = 0x05;
+  static const objectIdTag = 0x06;
+  static const sequenceTag = 0x30;
 
   static ASN1Object parse(Uint8List bytes) {
     Never invalidFormat(String msg) {
@@ -157,19 +157,19 @@ class ASN1Parser {
       checkNBytesAvailable(1);
       final tag = bytes[offset++];
       switch (tag) {
-        case INTEGER_TAG:
+        case integerTag:
           final size = readEncodedLength();
           return ASN1Integer(RSAAlgorithm.bytes2BigInt(readBytes(size)));
-        case OCTET_STRING_TAG:
+        case octetStringTag:
           final size = readEncodedLength();
           return ASN1OctetString(readBytes(size));
-        case NULL_TAG:
+        case nullTag:
           readNullBytes();
           return ASN1Null();
-        case OBJECT_ID_TAG:
+        case objectIdTag:
           final size = readEncodedLength();
           return ASN1ObjectIdentifier(readBytes(size));
-        case SEQUENCE_TAG:
+        case sequenceTag:
           final lengthInBytes = readEncodedLength();
           if ((offset + lengthInBytes) > end) {
             invalidFormat('Tried to read more bytes than available.');

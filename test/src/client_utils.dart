@@ -32,14 +32,14 @@ import 'utils.dart';
 class FakeConnection extends Http2ClientConnection {
   final ClientTransportConnection transport;
 
-  var connectionError;
+  Object? connectionError;
 
   FakeConnection(String host, this.transport, ChannelOptions options)
       : super(host, 443, options);
 
   @override
   Future<ClientTransportConnection> connectTransport() async {
-    if (connectionError != null) throw connectionError;
+    if (connectionError != null) throw connectionError!;
     return transport;
   }
 }
@@ -47,14 +47,14 @@ class FakeConnection extends Http2ClientConnection {
 class FakeClientTransportConnection extends Http2ClientConnection {
   final ClientTransportConnector connector;
 
-  var connectionError;
+  Object? connectionError;
 
   FakeClientTransportConnection(this.connector, ChannelOptions options)
       : super.fromClientTransportConnector(connector, options);
 
   @override
   Future<ClientTransportConnection> connectTransport() async {
-    if (connectionError != null) throw connectionError;
+    if (connectionError != null) throw connectionError!;
     return await connector.connect();
   }
 }
@@ -69,6 +69,8 @@ class FakeChannelOptions implements ChannelOptions {
   @override
   Duration connectionTimeout = const Duration(seconds: 10);
   @override
+  Duration? connectTimeout;
+  @override
   String userAgent = 'dart-grpc/1.0.0 test';
   @override
   BackoffStrategy backoffStrategy = testBackoff;
@@ -78,11 +80,12 @@ class FakeChannelOptions implements ChannelOptions {
 
 class FakeChannel extends ClientChannel {
   final Http2ClientConnection connection;
-  @override
-  final FakeChannelOptions options;
 
-  FakeChannel(String host, this.connection, this.options)
-      : super(host, options: options);
+  @override
+  FakeChannelOptions get options => super.options as FakeChannelOptions;
+
+  FakeChannel(String super.host, this.connection, FakeChannelOptions options)
+      : super(options: options);
 
   @override
   Future<Http2ClientConnection> getConnection() async => connection;
@@ -90,12 +93,13 @@ class FakeChannel extends ClientChannel {
 
 class FakeClientConnectorChannel extends ClientTransportConnectorChannel {
   final Http2ClientConnection connection;
+
   @override
-  final FakeChannelOptions options;
+  FakeChannelOptions get options => super.options as FakeChannelOptions;
 
   FakeClientConnectorChannel(
-      ClientTransportConnector connector, this.connection, this.options)
-      : super(connector, options: options);
+      super.connector, this.connection, FakeChannelOptions options)
+      : super(options: options);
 
   @override
   Future<Http2ClientConnection> getConnection() async => connection;
@@ -111,11 +115,8 @@ class TestClient extends Client {
 
   final int Function(List<int> value) decode;
 
-  TestClient(base.ClientChannel channel,
-      {CallOptions? options,
-      Iterable<ClientInterceptor>? interceptors,
-      this.decode = mockDecode})
-      : super(channel, options: options, interceptors: interceptors) {
+  TestClient(super.channel,
+      {super.options, super.interceptors, this.decode = mockDecode}) {
     _$unary = ClientMethod<int, int>('/Test/Unary', mockEncode, decode);
     _$clientStreaming =
         ClientMethod<int, int>('/Test/ClientStreaming', mockEncode, decode);

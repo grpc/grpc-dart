@@ -36,8 +36,8 @@ class GrpcOrGrpcWebClientChannelInternal extends ClientChannel {
         );
 
   GrpcOrGrpcWebClientChannelInternal.grpc(
-    Object host, {
-    required int port,
-    required ChannelOptions options,
-  }) : super(host, port: port, options: options);
+    super.host, {
+    required super.port,
+    required super.options,
+  });
 }

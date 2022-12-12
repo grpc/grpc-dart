@@ -1,3 +1,23 @@
+## 3.1.1-dev
+
+* `ChannelOptions` now exposes `connectTimeout`, which is used on the 
+  socket connect. This is used to specify the maximum allowed time to wait
+  for a connection to be established. If `connectTime` is longer than the system
+  level timeout duration, a timeout may occur sooner than specified in
+  `connectTimeout`. On timeout, a `SocketException` is thrown.
+* Require Dart 2.17 or greater.
+* Fix issue [#51](https://github.com/grpc/grpc-dart/issues/51), add support for custom error handling.
+
+## 3.1.0
+
+* Expose a stream for connection state changes on ClientChannel to address
+  [#428](https://github.com/grpc/grpc-dart/issues/428).
+  This allows users to react to state changes in the connection.
+* Fix [#576](https://github.com/grpc/grpc-dart/issues/576): set default
+  `:authority` value for UDS connections to `localhost` instead of using
+  UDS path. Using path triggers checks in HTTP2 servers which
+  attempt to validate `:authority` value.
+
 ## 3.0.2
 
 * Fix compilation on the Web with DDC.

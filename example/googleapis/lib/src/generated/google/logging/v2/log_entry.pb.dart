@@ -3,7 +3,7 @@
 //  source: google/logging/v2/log_entry.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
 import 'dart:core' as $core;
 
@@ -133,6 +133,12 @@ class LogEntry extends $pb.GeneratedMessage {
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'traceSampled')
+    ..aOM<LogSplit>(
+        35,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'split',
+        subBuilder: LogSplit.create)
     ..hasRequiredFields = false;
 
   LogEntry._() : super();
@@ -153,6 +159,7 @@ class LogEntry extends $pb.GeneratedMessage {
     $4.Timestamp? receiveTimestamp,
     $core.String? spanId,
     $core.bool? traceSampled,
+    LogSplit? split,
   }) {
     final _result = create();
     if (protoPayload != null) {
@@ -202,6 +209,9 @@ class LogEntry extends $pb.GeneratedMessage {
     }
     if (traceSampled != null) {
       _result.traceSampled = traceSampled;
+    }
+    if (split != null) {
+      _result.split = split;
     }
     return _result;
   }
@@ -432,6 +442,20 @@ class LogEntry extends $pb.GeneratedMessage {
   $core.bool hasTraceSampled() => $_has(15);
   @$pb.TagNumber(30)
   void clearTraceSampled() => clearField(30);
+
+  @$pb.TagNumber(35)
+  LogSplit get split => $_getN(16);
+  @$pb.TagNumber(35)
+  set split(LogSplit v) {
+    setField(35, v);
+  }
+
+  @$pb.TagNumber(35)
+  $core.bool hasSplit() => $_has(16);
+  @$pb.TagNumber(35)
+  void clearSplit() => clearField(35);
+  @$pb.TagNumber(35)
+  LogSplit ensureSplit() => $_ensure(16);
 }
 
 class LogEntryOperation extends $pb.GeneratedMessage {
@@ -673,4 +697,114 @@ class LogEntrySourceLocation extends $pb.GeneratedMessage {
   $core.bool hasFunction() => $_has(2);
   @$pb.TagNumber(3)
   void clearFunction() => clearField(3);
+}
+
+class LogSplit extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'LogSplit',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'google.logging.v2'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'uid')
+    ..a<$core.int>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'index',
+        $pb.PbFieldType.O3)
+    ..a<$core.int>(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'totalSplits',
+        $pb.PbFieldType.O3)
+    ..hasRequiredFields = false;
+
+  LogSplit._() : super();
+  factory LogSplit({
+    $core.String? uid,
+    $core.int? index,
+    $core.int? totalSplits,
+  }) {
+    final _result = create();
+    if (uid != null) {
+      _result.uid = uid;
+    }
+    if (index != null) {
+      _result.index = index;
+    }
+    if (totalSplits != null) {
+      _result.totalSplits = totalSplits;
+    }
+    return _result;
+  }
+  factory LogSplit.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory LogSplit.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  LogSplit clone() => LogSplit()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  LogSplit copyWith(void Function(LogSplit) updates) =>
+      super.copyWith((message) => updates(message as LogSplit))
+          as LogSplit; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static LogSplit create() => LogSplit._();
+  LogSplit createEmptyInstance() => create();
+  static $pb.PbList<LogSplit> createRepeated() => $pb.PbList<LogSplit>();
+  @$core.pragma('dart2js:noInline')
+  static LogSplit getDefault() =>
+      _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<LogSplit>(create);
+  static LogSplit? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get uid => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set uid($core.String v) {
+    $_setString(0, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasUid() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearUid() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get index => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set index($core.int v) {
+    $_setSignedInt32(1, v);
+  }
+
+  @$pb.TagNumber(2)
+  $core.bool hasIndex() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearIndex() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.int get totalSplits => $_getIZ(2);
+  @$pb.TagNumber(3)
+  set totalSplits($core.int v) {
+    $_setSignedInt32(2, v);
+  }
+
+  @$pb.TagNumber(3)
+  $core.bool hasTotalSplits() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearTotalSplits() => clearField(3);
 }

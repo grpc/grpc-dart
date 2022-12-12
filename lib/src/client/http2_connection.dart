@@ -18,7 +18,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http2/transport.dart';
-import 'package:meta/meta.dart';
 
 import '../shared/codec.dart';
 import '../shared/timeout.dart';
@@ -43,8 +42,8 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   connection.ConnectionState _state = ConnectionState.idle;
 
-  @visibleForTesting
-  void Function(Http2ClientConnection connection)? onStateChanged;
+  void Function(connection.ConnectionState)? onStateChanged;
+
   final _pendingCalls = <ClientCall>[];
 
   final ClientTransportConnector _transportConnector;
@@ -203,7 +202,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   @override
   Future<void> shutdown() async {
-    if (_state == ConnectionState.shutdown) return null;
+    if (_state == ConnectionState.shutdown) return;
     _setShutdownState();
     await _transportConnection?.finish();
   }
@@ -223,7 +222,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   void _setState(ConnectionState state) {
     _state = state;
-    onStateChanged?.call(this);
+    onStateChanged?.call(state);
   }
 
   void _handleIdleTimeout() {
@@ -264,7 +263,9 @@ class Http2ClientConnection implements connection.ClientConnection {
     }
     // TODO(jakobr): Log error.
     _cancelTimer();
-    _pendingCalls.forEach((call) => _failCall(call, error));
+    for (var call in _pendingCalls) {
+      _failCall(call, error);
+    }
     _pendingCalls.clear();
     _setState(ConnectionState.idle);
   }
@@ -342,7 +343,8 @@ class _SocketTransportConnector implements ClientTransportConnector {
   @override
   Future<ClientTransportConnection> connect() async {
     final securityContext = _options.credentials.securityContext;
-    _socket = await Socket.connect(_host, _port);
+    _socket =
+        await Socket.connect(_host, _port, timeout: _options.connectTimeout);
     // Don't wait for io buffers to fill up before sending requests.
     if (_socket.address.type != InternetAddressType.unix) {
       _socket.setOption(SocketOption.tcpNoDelay, true);
@@ -365,10 +367,23 @@ class _SocketTransportConnector implements ClientTransportConnector {
 
   @override
   String get authority {
-    final host =
-        _host is String ? _host as String : (_host as InternetAddress).host;
-    return _options.credentials.authority ??
-        (_port == 443 ? host : '$host:$_port');
+    return _options.credentials.authority ?? _makeAuthority();
+  }
+
+  String _makeAuthority() {
+    final host = _host;
+    final portSuffix = _port == 443 ? '' : ':$_port';
+    final String hostName;
+    if (host is String) {
+      hostName = host;
+    } else {
+      host as InternetAddress;
+      if (host.type == InternetAddressType.unix) {
+        return 'localhost'; // UDS don't have a meaningful authority.
+      }
+      hostName = host.host;
+    }
+    return '$hostName$portSuffix';
   }
 
   @override
