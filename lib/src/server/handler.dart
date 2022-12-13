@@ -65,7 +65,7 @@ class ServerHandler extends ServiceCall {
   Timer? _timeoutTimer;
 
   final X509Certificate? _clientCertificate;
-  final InternetAddress? _clientIpAddress;
+  final InternetAddress? _remoteAddress;
 
   ServerHandler({
     required ServerTransportStream stream,
@@ -73,14 +73,14 @@ class ServerHandler extends ServiceCall {
     required List<Interceptor> interceptors,
     required CodecRegistry? codecRegistry,
     X509Certificate? clientCertificate,
-    InternetAddress? clientIpAddress,
+    InternetAddress? remoteAddress,
     GrpcErrorHandler? errorHandler,
   })  : _stream = stream,
         _serviceLookup = serviceLookup,
         _interceptors = interceptors,
         _codecRegistry = codecRegistry,
         _clientCertificate = clientCertificate,
-        _clientIpAddress = clientIpAddress,
+        _remoteAddress = remoteAddress,
         _errorHandler = errorHandler;
 
   @override
@@ -105,7 +105,7 @@ class ServerHandler extends ServiceCall {
   X509Certificate? get clientCertificate => _clientCertificate;
 
   @override
-  InternetAddress? get clientIpAddress => _clientIpAddress;
+  InternetAddress? get remoteAddress => _remoteAddress;
 
   void handle() {
     _stream.onTerminated = (_) => cancel();
@@ -353,8 +353,11 @@ class ServerHandler extends ServiceCall {
   }
 
   @override
-  void sendTrailers(
-      {int? status = 0, String? message, Map<String, String>? errorTrailers}) {
+  void sendTrailers({
+    int? status = 0,
+    String? message,
+    Map<String, String>? errorTrailers,
+  }) {
     _timeoutTimer?.cancel();
 
     final outgoingTrailersMap = <String, String>{};

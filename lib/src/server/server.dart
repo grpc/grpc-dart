@@ -110,7 +110,7 @@ class ConnectionServer {
   Future<void> serveConnection({
     required ServerTransportConnection connection,
     X509Certificate? clientCertificate,
-    InternetAddress? clientIpAddress,
+    InternetAddress? remoteAddress,
   }) async {
     _connections.add(connection);
     ServerHandler? handler;
@@ -120,7 +120,7 @@ class ConnectionServer {
       handler = serveStream_(
         stream: stream,
         clientCertificate: clientCertificate,
-        clientIpAddress: clientIpAddress,
+        remoteAddress: remoteAddress,
       );
     }, onError: (error, stackTrace) {
       if (error is Error) {
@@ -140,7 +140,7 @@ class ConnectionServer {
   ServerHandler serveStream_({
     required ServerTransportStream stream,
     X509Certificate? clientCertificate,
-    InternetAddress? clientIpAddress,
+    InternetAddress? remoteAddress,
   }) {
     return ServerHandler(
       stream: stream,
@@ -150,7 +150,7 @@ class ConnectionServer {
       // ignore: unnecessary_cast
       clientCertificate: clientCertificate as io_bits.X509Certificate?,
       // ignore: unnecessary_cast
-      clientIpAddress: clientIpAddress as io_bits.InternetAddress?,
+      remoteAddress: remoteAddress as io_bits.InternetAddress?,
       errorHandler: _errorHandler,
     )..handle();
   }
@@ -251,7 +251,7 @@ class Server extends ConnectionServer {
       serveConnection(
         connection: connection,
         clientCertificate: clientCertificate,
-        clientIpAddress: socket.remoteAddress,
+        remoteAddress: socket.remoteAddress,
       );
     }, onError: (error, stackTrace) {
       if (error is Error) {
@@ -265,7 +265,7 @@ class Server extends ConnectionServer {
   ServerHandler serveStream_({
     required ServerTransportStream stream,
     X509Certificate? clientCertificate,
-    InternetAddress? clientIpAddress,
+    InternetAddress? remoteAddress,
   }) {
     return ServerHandler(
       stream: stream,
@@ -275,7 +275,7 @@ class Server extends ConnectionServer {
       // ignore: unnecessary_cast
       clientCertificate: clientCertificate as io_bits.X509Certificate?,
       // ignore: unnecessary_cast
-      clientIpAddress: clientIpAddress as io_bits.InternetAddress?,
+      remoteAddress: remoteAddress as io_bits.InternetAddress?,
       errorHandler: _errorHandler,
     )..handle();
   }

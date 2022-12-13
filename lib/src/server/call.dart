@@ -45,7 +45,7 @@ abstract class ServiceCall {
   X509Certificate? get clientCertificate;
 
   /// Returns the IP address of the client, if available
-  InternetAddress? get clientIpAddress;
+  InternetAddress? get remoteAddress;
 
   /// Send response headers. This is done automatically before sending the first
   /// response message, but can be done manually before the first response is
