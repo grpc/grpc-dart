@@ -77,13 +77,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   Future<ClientTransportConnection> connectTransport() async {
     final connection = await _transportConnector.connect();
-    _transportConnector.done.then((conn) {
-      if (conn == _transportConnection) {
-        // Only abandon the connection if the callback relates to the
-        // current one.
-        _abandonConnection();
-      }
-    });
+    _transportConnector.done.then((_) => _abandonConnection());
 
     // Give the settings settings-frame a bit of time to arrive.
     // TODO(sigurdm): This is a hack. The http2 package should expose a way of
@@ -130,9 +124,6 @@ class Http2ClientConnection implements connection.ClientConnection {
     final shouldRefresh =
         _connectionLifeTimer.elapsed > options.connectionTimeout;
     if (shouldRefresh) {
-      // Deregister onActiveStateChanged callback from connection that we're
-      // not going to use any more.
-      _transportConnection!.onActiveStateChanged = (_) {};
       _transportConnection!.finish();
     }
     if (!isHealthy || shouldRefresh) {
@@ -280,7 +271,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     _cancelTimer();
     _transportConnection = null;
 
-    if (_state == ConnectionState.idle || _state == ConnectionState.shutdown) {
+    if (_state == ConnectionState.idle && _state == ConnectionState.shutdown) {
       // All good.
       return;
     }
