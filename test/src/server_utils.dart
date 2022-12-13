@@ -157,7 +157,7 @@ abstract class _Harness {
 
   void setUp() {
     final stream = TestServerStream(toServer.stream, fromServer.sink);
-    server.serveStream_(stream);
+    server.serveStream_(stream: stream);
   }
 
   void tearDown() {

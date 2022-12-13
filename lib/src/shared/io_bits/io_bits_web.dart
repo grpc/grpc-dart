@@ -15,6 +15,9 @@
 
 export 'dart:html' show HttpStatus;
 
+/// Unavailable on the web
+class InternetAddress {}
+
 /// Should not be used on the Web, but is pulled through [ServiceCall] class
 /// which is used in the protoc generated code.
 class X509Certificate {}

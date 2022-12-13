@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import '../shared/io_bits/io_bits.dart' show X509Certificate;
+import '../shared/io_bits/io_bits.dart' show InternetAddress, X509Certificate;
 
 /// Server-side context for a gRPC call.
 ///
@@ -43,6 +43,9 @@ abstract class ServiceCall {
 
   /// Returns the client certificate if it is requested and available
   X509Certificate? get clientCertificate;
+
+  /// Returns the IP address of the client, if available
+  InternetAddress? get remoteAddress;
 
   /// Send response headers. This is done automatically before sending the first
   /// response message, but can be done manually before the first response is

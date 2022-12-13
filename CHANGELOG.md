@@ -7,6 +7,7 @@
   `connectTimeout`. On timeout, a `SocketException` is thrown.
 * Require Dart 2.17 or greater.
 * Fix issue [#51](https://github.com/grpc/grpc-dart/issues/51), add support for custom error handling.
+* Expose client IP address to server 
 
 ## 3.1.0
 
