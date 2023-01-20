@@ -9,7 +9,7 @@ To compile and run the example, assuming you are in the root of the helloworld
 folder, i.e., .../example/helloworld/, first get the dependencies by running:
 
 ```sh
-$ pub get
+$ dart pub get
 ```
 ## Run TCP sample code
 
