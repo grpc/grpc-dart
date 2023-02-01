@@ -14,3 +14,27 @@ updates:
   directory: "/"
   schedule:
     interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/example/googleapis"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/example/grpc-web"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/example/helloworld"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/example/metadata"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/example/route_guide"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/interop"
+  schedule:
+    interval: "weekly"
