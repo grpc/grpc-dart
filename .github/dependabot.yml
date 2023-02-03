@@ -2,10 +2,39 @@
 # See https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/keeping-your-actions-up-to-date-with-dependabot
 
 version: 2
+enable-beta-ecosystems: true
 updates:
 
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
-    # Check for updates to GitHub Actions every weekday
     interval: "monthly"
+
+- package-ecosystem: "pub"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/example/googleapis"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/example/grpc-web"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/example/helloworld"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/example/metadata"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/example/route_guide"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: "pub"
+  directory: "/interop"
+  schedule:
+    interval: "weekly"
