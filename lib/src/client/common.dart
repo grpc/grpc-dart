@@ -77,7 +77,7 @@ class ResponseStream<R> extends DelegatingStream<R>
   ResponseFuture<R> get single => ResponseFuture(_call);
 }
 
-abstract class _ResponseMixin<Q, R> implements Response {
+mixin _ResponseMixin<Q, R> implements Response {
   ClientCall<Q, R> get _call;
 
   @override
