@@ -22,6 +22,9 @@ import 'call.dart';
 import 'connection.dart';
 import 'method.dart';
 
+/// Handler to be called when the channel is shut down.
+typedef ChannelShutdownHandler = void Function();
+
 /// A channel to a virtual RPC endpoint.
 abstract class ClientChannel {
   /// Shuts down this channel.
@@ -55,8 +58,10 @@ abstract class ClientChannelBase implements ClientChannel {
   bool _isShutdown = false;
   final StreamController<ConnectionState> _connectionStateStreamController =
       StreamController.broadcast();
+  final ChannelShutdownHandler? _channelShutdownHandler;
 
-  ClientChannelBase();
+  ClientChannelBase({ChannelShutdownHandler? channelShutdownHandler})
+      : _channelShutdownHandler = channelShutdownHandler;
 
   @override
   Future<void> shutdown() async {
@@ -66,6 +71,7 @@ abstract class ClientChannelBase implements ClientChannel {
       await _connection.shutdown();
       await _connectionStateStreamController.close();
     }
+    _channelShutdownHandler?.call();
   }
 
   @override
@@ -75,6 +81,7 @@ abstract class ClientChannelBase implements ClientChannel {
       await _connection.terminate();
       await _connectionStateStreamController.close();
     }
+    _channelShutdownHandler?.call();
   }
 
   ClientConnection createConnection();
