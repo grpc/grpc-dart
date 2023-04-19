@@ -66,7 +66,7 @@ class ResponseFuture<R> extends DelegatingFuture<R>
 }
 
 /// A gRPC response producing a stream of values.
-class ResponseStream<R> extends DelegatingStream<R>
+class ResponseStream<R> extends StreamView<R>
     with _ResponseMixin<dynamic, R> {
   @override
   final ClientCall<dynamic, R> _call;
