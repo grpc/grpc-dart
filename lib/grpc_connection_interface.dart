@@ -17,7 +17,7 @@
 /// [ClientChannel].
 
 export 'src/client/call.dart' show CallOptions, ClientCall;
-export 'src/client/channel.dart' show ClientChannelBase, ChannelShutdownHandler;
+export 'src/client/channel.dart' show ClientChannelBase;
 export 'src/client/connection.dart' show ClientConnection;
 export 'src/client/http2_channel.dart' show ClientChannel;
 export 'src/client/options.dart' show ChannelOptions;
