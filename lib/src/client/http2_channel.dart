@@ -37,7 +37,7 @@ class ClientChannel extends ClientChannelBase {
     this.port = 443,
     this.options = const ChannelOptions(),
     super.channelShutdownHandler,
-  }) : super();
+  });
 
   @override
   ClientConnection createConnection() =>
