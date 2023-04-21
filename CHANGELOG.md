@@ -1,4 +1,4 @@
-## 3.1.1-dev
+## 3.2.0-dev
 
 * `ChannelOptions` now exposes `connectTimeout`, which is used on the 
   socket connect. This is used to specify the maximum allowed time to wait
@@ -8,6 +8,8 @@
 * Require Dart 2.17 or greater.
 * Fix issue [#51](https://github.com/grpc/grpc-dart/issues/51), add support for custom error handling.
 * Expose client IP address to server 
+* Add a `channelShutdownHandler` argument to `ClientChannel` and the subclasses.
+  This callback can be used to react to channel shutdown or termination.
 
 ## 3.1.0
 

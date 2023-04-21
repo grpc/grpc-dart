@@ -55,8 +55,10 @@ abstract class ClientChannelBase implements ClientChannel {
   bool _isShutdown = false;
   final StreamController<ConnectionState> _connectionStateStreamController =
       StreamController.broadcast();
+  final void Function()? _channelShutdownHandler;
 
-  ClientChannelBase();
+  ClientChannelBase({void Function()? channelShutdownHandler})
+      : _channelShutdownHandler = channelShutdownHandler;
 
   @override
   Future<void> shutdown() async {
@@ -66,6 +68,7 @@ abstract class ClientChannelBase implements ClientChannel {
       await _connection.shutdown();
       await _connectionStateStreamController.close();
     }
+    _channelShutdownHandler?.call();
   }
 
   @override
@@ -75,6 +78,7 @@ abstract class ClientChannelBase implements ClientChannel {
       await _connection.terminate();
       await _connectionStateStreamController.close();
     }
+    _channelShutdownHandler?.call();
   }
 
   ClientConnection createConnection();

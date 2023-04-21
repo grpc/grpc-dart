@@ -32,9 +32,12 @@ class ClientChannel extends ClientChannelBase {
   final int port;
   final ChannelOptions options;
 
-  ClientChannel(this.host,
-      {this.port = 443, this.options = const ChannelOptions()})
-      : super();
+  ClientChannel(
+    this.host, {
+    this.port = 443,
+    this.options = const ChannelOptions(),
+    super.channelShutdownHandler,
+  });
 
   @override
   ClientConnection createConnection() =>
