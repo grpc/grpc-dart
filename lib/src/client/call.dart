@@ -209,9 +209,7 @@ class ClientCall<Q, R> implements Response {
 
   void _terminateWithError(GrpcError error) {
     _finishTimelineWithError(error, _requestTimeline);
-    if (!_responses.isClosed) {
-      _responses.addError(error);
-    }
+    _responses.addErrorIfNotClosed(error);
     _safeTerminate();
   }
 
@@ -300,7 +298,7 @@ class ClientCall<Q, R> implements Response {
   void _onTimedOut() {
     final error = GrpcError.deadlineExceeded('Deadline exceeded');
     _finishTimelineWithError(error, _requestTimeline);
-    _responses.addError(error);
+    _responses.addErrorIfNotClosed(error);
     _safeTerminate();
   }
 
@@ -329,7 +327,7 @@ class ClientCall<Q, R> implements Response {
   /// Emit an error response to the user, and tear down this call.
   void _responseError(GrpcError error, [StackTrace? stackTrace]) {
     _finishTimelineWithError(error, _responseTimeline);
-    _responses.addError(error, stackTrace);
+    _responses.addErrorIfNotClosed(error);
     _timeoutTimer?.cancel();
     _requestSubscription?.cancel();
     _responseSubscription!.cancel();
@@ -444,7 +442,7 @@ class ClientCall<Q, R> implements Response {
     }
 
     _finishTimelineWithError(error, _requestTimeline);
-    _responses.addError(error, stackTrace);
+    _responses.addErrorIfNotClosed(error);
     _timeoutTimer?.cancel();
     _responses.close();
     _requestSubscription?.cancel();
@@ -492,5 +490,13 @@ class ClientCall<Q, R> implements Response {
     try {
       await _terminate();
     } catch (_) {}
+  }
+}
+
+extension<T> on StreamController<T> {
+  void addErrorIfNotClosed(Object error, [StackTrace? stackTrace]) {
+    if (!isClosed) {
+      addError(error, stackTrace);
+    }
   }
 }
