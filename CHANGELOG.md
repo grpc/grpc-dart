@@ -10,6 +10,7 @@
 * Expose client IP address to server 
 * Add a `channelShutdownHandler` argument to `ClientChannel` and the subclasses.
   This callback can be used to react to channel shutdown or termination.
+* Export the `Code` protobuf enum from the `grpc.dart` library.
 
 ## 3.1.0
 
