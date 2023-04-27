@@ -38,7 +38,8 @@ export 'src/client/options.dart'
 export 'src/client/transport/http2_credentials.dart'
     show BadCertificateHandler, allowBadCertificates, ChannelCredentials;
 
-/// Status detail types
+/// Status detail types and error codes
+export 'src/generated/google/rpc/code.pbenum.dart';
 export 'src/generated/google/rpc/error_details.pb.dart';
 export 'src/server/call.dart' show ServiceCall;
 export 'src/server/interceptor.dart' show Interceptor;
