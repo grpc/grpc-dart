@@ -290,6 +290,14 @@ const ListLogsRequest$json = const {
       '10': 'parent'
     },
     const {
+      '1': 'resource_names',
+      '3': 8,
+      '4': 3,
+      '5': 9,
+      '8': const {},
+      '10': 'resourceNames'
+    },
+    const {
       '1': 'page_size',
       '3': 2,
       '4': 1,
@@ -305,20 +313,12 @@ const ListLogsRequest$json = const {
       '8': const {},
       '10': 'pageToken'
     },
-    const {
-      '1': 'resource_names',
-      '3': 8,
-      '4': 3,
-      '5': 9,
-      '8': const {},
-      '10': 'resourceNames'
-    },
   ],
 };
 
 /// Descriptor for `ListLogsRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List listLogsRequestDescriptor = $convert.base64Decode(
-    'Cg9MaXN0TG9nc1JlcXVlc3QSOgoGcGFyZW50GAEgASgJQiLgQQL6QRwSGmxvZ2dpbmcuZ29vZ2xlYXBpcy5jb20vTG9nUgZwYXJlbnQSIAoJcGFnZV9zaXplGAIgASgFQgPgQQFSCHBhZ2VTaXplEiIKCnBhZ2VfdG9rZW4YAyABKAlCA+BBAVIJcGFnZVRva2VuEkkKDnJlc291cmNlX25hbWVzGAggAygJQiLgQQH6QRwSGmxvZ2dpbmcuZ29vZ2xlYXBpcy5jb20vTG9nUg1yZXNvdXJjZU5hbWVz');
+    'Cg9MaXN0TG9nc1JlcXVlc3QSOgoGcGFyZW50GAEgASgJQiLgQQL6QRwSGmxvZ2dpbmcuZ29vZ2xlYXBpcy5jb20vTG9nUgZwYXJlbnQSSQoOcmVzb3VyY2VfbmFtZXMYCCADKAlCIuBBAfpBHBIabG9nZ2luZy5nb29nbGVhcGlzLmNvbS9Mb2dSDXJlc291cmNlTmFtZXMSIAoJcGFnZV9zaXplGAIgASgFQgPgQQFSCHBhZ2VTaXplEiIKCnBhZ2VfdG9rZW4YAyABKAlCA+BBAVIJcGFnZVRva2Vu');
 @$core.Deprecated('Use listLogsResponseDescriptor instead')
 const ListLogsResponse$json = const {
   '1': 'ListLogsResponse',

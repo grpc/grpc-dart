@@ -37,8 +37,8 @@ class TailLogEntriesResponse_SuppressionInfo_Reason extends $pb.ProtobufEnum {
   ];
 
   static final $core
-          .Map<$core.int, TailLogEntriesResponse_SuppressionInfo_Reason>
-      _byValue = $pb.ProtobufEnum.initByValue(values);
+      .Map<$core.int, TailLogEntriesResponse_SuppressionInfo_Reason> _byValue =
+      $pb.ProtobufEnum.initByValue(values);
   static TailLogEntriesResponse_SuppressionInfo_Reason? valueOf(
           $core.int value) =>
       _byValue[value];
