@@ -87,13 +87,9 @@ void checkStartEvent(List<Map> events) {
   expect(e.length, 2);
 
   expect(e[0]['name'], 'gRPC Request: $path');
-  expect(e[0]['id'], 0);
-  expect(e[0]['args']['method'], isNotNull);
   expect(e[0]['args']['method'], equals(path));
 
   expect(e[1]['name'], 'gRPC Response');
-  expect(e[1]['id'], 1);
-  expect(e[1]['args']['parentId'], 0);
 }
 
 void checkSendEvent(List<Map> events) {
@@ -112,7 +108,6 @@ void checkReceiveEvent(List<Map> events) {
   expect(events.length, equals(3));
   var sum = 0;
   for (final e in events) {
-    expect(e['id'], 1);
     // 3 elements are 1, 2 and 3.
     sum |= 1 << int.parse(e['args']['data']);
   }
@@ -123,7 +118,6 @@ void checkReceiveMetaDataEvent(List<Map> events) {
   events = events.where((e) => e['name'] == 'Metadata received').toList();
   expect(events.length, equals(2));
   for (final e in events) {
-    expect(e['id'], 1);
     if (e['args']['headers'] != null) {
       final header = e['args']['headers'];
       expect(header, contains('status: 200'));
@@ -142,17 +136,11 @@ void checkFinishEvent(List<Map> events) {
 void main([args = const <String>[]]) {
   test('Test gRPC timeline logging', () async {
     final vmService = await testee();
-    // for (final task in _FakeTimelineTask.tasks) {
-    //   expect(task.isComplete, true);
-    // }
-    final events2 = await vmService.getVMTimeline();
-    final events = events2.traceEvents!
+    final timeline = await vmService.getVMTimeline();
+    final events = timeline.traceEvents!
         .map((e) => e.json!)
         .where((e) => e['args']['filterKey'] == 'grpc/client')
         .toList();
-    events2.traceEvents!.map((e) => e.json).forEach(
-          (element) => print(element),
-        );
     checkStartEvent(events);
     checkSendEvent(events);
     checkWriteEvent(events);

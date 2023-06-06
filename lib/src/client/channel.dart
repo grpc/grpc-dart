@@ -104,7 +104,6 @@ abstract class ClientChannelBase implements ClientChannel {
   @override
   ClientCall<Q, R> createCall<Q, R>(
       ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
-    print('Create call $clientTimelineFilterKey');
     final call = ClientCall(
         method,
         requests,
