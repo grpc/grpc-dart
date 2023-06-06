@@ -93,4 +93,5 @@ jobs:
       - name: Run tests
         run: dart test --platform ${{ matrix.platform }} --exclude-tags vmservice
       - name: Run vmservice test
+        if: ${{ matrix.platform != 'chrome' }}
         run: dart run --enable-vm-service --timeline-streams=Dart test/timeline_test.dart 
