@@ -14,6 +14,7 @@
 // limitations under the License.
 
 @TestOn('vm')
+@Tags(['vmservice'])
 import 'dart:async';
 import 'dart:developer' as dev;
 
@@ -147,5 +148,6 @@ void main([args = const <String>[]]) {
     checkReceiveEvent(events);
     checkReceiveMetaDataEvent(events);
     checkFinishEvent(events);
+    vmService.dispose();
   });
 }
