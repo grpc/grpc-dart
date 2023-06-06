@@ -148,6 +148,6 @@ void main([args = const <String>[]]) {
     checkReceiveEvent(events);
     checkReceiveMetaDataEvent(events);
     checkFinishEvent(events);
-    vmService.dispose();
+    await vmService.dispose();
   });
 }
