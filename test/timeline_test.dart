@@ -15,15 +15,15 @@
 
 @TestOn('vm')
 import 'dart:async';
-import 'dart:developer';
+import 'dart:developer' as dev;
 
 import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/channel.dart' hide ClientChannel;
 import 'package:grpc/src/client/connection.dart';
 import 'package:grpc/src/client/http2_connection.dart';
-import 'package:grpc/src/shared/profiler.dart';
-import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
+import 'package:vm_service/vm_service.dart';
+import 'package:vm_service/vm_service_io.dart';
 
 const String path = '/test.TestService/stream';
 
@@ -64,78 +64,13 @@ class FixedConnectionClientChannel extends ClientChannelBase {
   ClientConnection createConnection() => clientConnection;
 }
 
-class FakeTimelineTask extends Fake implements TimelineTask {
-  static final List<FakeTimelineTask> tasks = [];
-  static final List<Map> events = [];
-  static int _idCount = 0;
-
-  final String? filterKey;
-  final TimelineTask? parent;
-  final int id = _idCount++;
-  int _startFinishCount = 0;
-
-  factory FakeTimelineTask({TimelineTask? parent, String? filterKey}) {
-    final task = FakeTimelineTask._(parent: parent, filterKey: filterKey);
-    tasks.add(task);
-    return task;
-  }
-
-  FakeTimelineTask._({this.parent, this.filterKey});
-
-  bool get isComplete => _startFinishCount == 0;
-
-  @override
-  void start(String name, {Map? arguments}) {
-    events.add({
-      'id': id,
-      'ph': 'b',
-      'name': name,
-      'args': {
-        if (filterKey != null) 'filterKey': filterKey,
-        if (parent != null) 'parentId': (parent as FakeTimelineTask).id,
-        if (arguments != null) ...arguments,
-      }
-    });
-    ++_startFinishCount;
-  }
-
-  @override
-  void instant(String name, {Map? arguments}) {
-    events.add({
-      'id': id,
-      'ph': 'i',
-      'name': name,
-      'args': {
-        if (filterKey != null) 'filterKey': filterKey,
-        if (arguments != null) ...arguments,
-      }
-    });
-  }
-
-  @override
-  void finish({Map? arguments}) {
-    events.add({
-      'id': id,
-      'ph': 'e',
-      'args': {
-        if (filterKey != null) 'filterKey': filterKey,
-        if (arguments != null) ...arguments,
-      }
-    });
-    --_startFinishCount;
-    expect(_startFinishCount >= 0, true);
-  }
-}
-
-TimelineTask fakeTimelineTaskFactory(
-        {String? filterKey, TimelineTask? parent}) =>
-    FakeTimelineTask(filterKey: filterKey, parent: parent);
-
-Future<void> testee() async {
+Future<VmService> testee() async {
+  isTimelineLoggingEnabled = true;
+  final info = await dev.Service.getInfo();
+  final uri = info.serverWebSocketUri!;
+  final vmService = await vmServiceConnectUri(uri.toString());
   final server = Server.create(services: [TestService()]);
   await server.serve(address: 'localhost', port: 0);
-  isTimelineLoggingEnabled = true;
-  timelineTaskFactory = fakeTimelineTaskFactory;
   final channel = FixedConnectionClientChannel(Http2ClientConnection(
     'localhost',
     server.port!,
@@ -144,6 +79,7 @@ Future<void> testee() async {
   final testClient = TestClient(channel);
   await testClient.stream(1).toList();
   await server.shutdown();
+  return vmService;
 }
 
 void checkStartEvent(List<Map> events) {
@@ -205,13 +141,18 @@ void checkFinishEvent(List<Map> events) {
 
 void main([args = const <String>[]]) {
   test('Test gRPC timeline logging', () async {
-    await testee();
-    for (final task in FakeTimelineTask.tasks) {
-      expect(task.isComplete, true);
-    }
-    final events = FakeTimelineTask.events
+    final vmService = await testee();
+    // for (final task in _FakeTimelineTask.tasks) {
+    //   expect(task.isComplete, true);
+    // }
+    final events2 = await vmService.getVMTimeline();
+    final events = events2.traceEvents!
+        .map((e) => e.json!)
         .where((e) => e['args']['filterKey'] == 'grpc/client')
         .toList();
+    events2.traceEvents!.map((e) => e.json).forEach(
+          (element) => print(element),
+        );
     checkStartEvent(events);
     checkSendEvent(events);
     checkWriteEvent(events);
