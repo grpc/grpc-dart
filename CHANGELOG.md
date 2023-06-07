@@ -11,6 +11,7 @@
 * Add a `channelShutdownHandler` argument to `ClientChannel` and the subclasses.
   This callback can be used to react to channel shutdown or termination.
 * Export the `Code` protobuf enum from the `grpc.dart` library.
+* Require Dart 3.0.0 or greater.
 
 ## 3.1.0
 
