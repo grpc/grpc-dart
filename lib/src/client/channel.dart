@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:developer';
 
 import '../shared/profiler.dart';
 import '../shared/status.dart';
@@ -109,7 +110,7 @@ abstract class ClientChannelBase implements ClientChannel {
         requests,
         options,
         isTimelineLoggingEnabled
-            ? timelineTaskFactory(filterKey: clientTimelineFilterKey)
+            ? TimelineTask(filterKey: clientTimelineFilterKey)
             : null);
     getConnection().then((connection) {
       if (call.isCancelled) return;
