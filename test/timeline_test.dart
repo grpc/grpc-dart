@@ -15,6 +15,8 @@
 
 @TestOn('vm')
 @Tags(['vmservice'])
+@Skip(
+    'Run only as `dart run --enable-vm-service --timeline-streams=Dart test/timeline_test.dart`')
 import 'dart:async';
 import 'dart:developer' as dev;
 
