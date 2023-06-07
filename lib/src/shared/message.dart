@@ -41,7 +41,7 @@ class GrpcData extends GrpcMessage {
   String toString() => 'gRPC Data (${data.length} bytes)';
 }
 
-class GrpcMessageSink extends Sink<GrpcMessage> {
+class GrpcMessageSink implements Sink<GrpcMessage> {
   late final GrpcMessage message;
   bool _messageReceived = false;
 

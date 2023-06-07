@@ -13,17 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:developer';
-
-typedef TimelineTaskFactory = TimelineTask Function(
-    {String? filterKey, TimelineTask? parent});
-
-TimelineTaskFactory timelineTaskFactory = _defaultTimelineTaskFactory;
-
-TimelineTask _defaultTimelineTaskFactory(
-        {String? filterKey, TimelineTask? parent}) =>
-    TimelineTask(filterKey: filterKey, parent: parent);
-
 const String clientTimelineFilterKey = 'grpc/client';
 
 /// Enable logging requests and response for clients.
