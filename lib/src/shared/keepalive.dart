@@ -66,6 +66,8 @@ class KeepAliveOptions {
               http2MinRecvPingIntervalWithoutDataMs,
           http2MaxPingStrikes: http2MaxPingStrikes,
         );
+
+  bool get sendPings => keepaliveTime != null;
 }
 
 enum KeepAliveState {
@@ -90,128 +92,114 @@ enum KeepAliveState {
 }
 
 class KeepAliveManager {
-  KeepAliveState state;
+  KeepAliveState _state;
 
-  final KeepAliveOptions options;
-  final KeepAlivePinger keepAlivePinger;
+  final KeepAliveOptions _options;
+
+  final Stopwatch _stopwatch;
+
   Timer? shutdownFuture;
-
-  Stopwatch stopwatch;
-
   Timer? pingFuture;
 
-  bool get keepAliveDuringTransportIdle => options.keepalivePermitWithoutCalls;
+  bool get _keepAliveDuringTransportIdle =>
+      _options.keepalivePermitWithoutCalls;
 
-  Duration get keepAliveTimeout => options.keepaliveTimeout;
-  Duration get keepAliveTime =>
-      options.keepaliveTime ?? Duration(days: 365); //infinite
+  Duration get _keepAliveTime => _options.keepaliveTime!;
+  final void Function() onPingTimeout;
+  final void Function() ping;
 
-  KeepAliveManager(
-    TransportConnection? transport,
-    this.options, [
-    KeepAlivePinger? pinger,
-  ])  : stopwatch = clock.stopwatch()..start(),
-        keepAlivePinger = pinger ?? KeepAlivePinger(transport),
-        state = KeepAliveState.idle;
+  KeepAliveManager({
+    required KeepAliveOptions options,
+    required this.ping,
+    required this.onPingTimeout,
+  })  : _options = options,
+        _stopwatch = clock.stopwatch()..start(),
+        _state = KeepAliveState.idle;
 
   void onTransportStarted() {
-    if (keepAliveDuringTransportIdle) {
+    if (_keepAliveDuringTransportIdle) {
       onTransportActive();
     }
   }
 
   void onDataReceived() {
-    stopwatch.reset();
-    stopwatch.start();
+    _stopwatch.reset();
+    _stopwatch.start();
     // We do not cancel the ping future here. This avoids constantly scheduling and cancellation in
     // a busy transport. Instead, we update the status here and reschedule later. So we actually
     // keep one sendPing task always in flight when there're active rpcs.
-    if (state == KeepAliveState.pingScheduled) {
-      state = KeepAliveState.pingDelayed;
-    } else if (state == KeepAliveState.pingSent ||
-        state == KeepAliveState.idleAndPingSent) {
+    if (_state == KeepAliveState.pingScheduled) {
+      _state = KeepAliveState.pingDelayed;
+    } else if (_state == KeepAliveState.pingSent ||
+        _state == KeepAliveState.idleAndPingSent) {
       // Ping acked or effectively ping acked. Cancel shutdown, and then if not idle,
       // schedule a new keep-alive ping.
       shutdownFuture?.cancel();
-      if (state == KeepAliveState.idleAndPingSent) {
+      if (_state == KeepAliveState.idleAndPingSent) {
         // not to schedule new pings until onTransportActive
-        state = KeepAliveState.idle;
+        _state = KeepAliveState.idle;
         return;
       }
       // schedule a new ping
-      state = KeepAliveState.pingScheduled;
+      _state = KeepAliveState.pingScheduled;
       assert(pingFuture == null);
-      pingFuture = Timer(keepAliveTime, sendPing);
+      pingFuture = Timer(_keepAliveTime, sendPing);
     }
   }
 
   void shutdown() {
-    var shouldShutdown = false;
-    if (state != KeepAliveState.disconnected) {
+    if (_state != KeepAliveState.disconnected) {
       // We haven't received a ping response within the timeout. The connection is likely gone
       // already. Shutdown the transport and fail all existing rpcs.
-      state = KeepAliveState.disconnected;
-      shouldShutdown = true;
-    }
-    if (shouldShutdown) {
-      keepAlivePinger.onPingTimeout();
+      _state = KeepAliveState.disconnected;
+      onPingTimeout();
     }
   }
 
   void sendPing() {
     pingFuture = null;
-    if (state == KeepAliveState.pingScheduled) {
-      state = KeepAliveState.pingSent;
+    if (_state == KeepAliveState.pingScheduled) {
+      _state = KeepAliveState.pingSent;
       // Schedule a shutdown. It fires if we don't receive the ping response within the timeout.
-      shutdownFuture = Timer(keepAliveTimeout, shutdown);
-      keepAlivePinger.ping();
-    } else if (state == KeepAliveState.pingDelayed) {
+      shutdownFuture = Timer(_options.keepaliveTimeout, shutdown);
+      ping();
+    } else if (_state == KeepAliveState.pingDelayed) {
       // We have received some data. Reschedule the ping with the new time.
-      pingFuture = Timer(keepAliveTime - stopwatch.elapsed, sendPing);
-      state = KeepAliveState.pingScheduled;
+      pingFuture = Timer(_keepAliveTime - _stopwatch.elapsed, sendPing);
+      _state = KeepAliveState.pingScheduled;
     }
   }
 
   void onTransportActive() {
-    if (state == KeepAliveState.idle) {
+    if (_state == KeepAliveState.idle) {
       // When the transport goes active, we do not reset the nextKeepaliveTime. This allows us to
       // quickly check whether the connection is still working.
-      state = KeepAliveState.pingScheduled;
-      pingFuture ??= Timer(keepAliveTime - stopwatch.elapsed, sendPing);
-    } else if (state == KeepAliveState.idleAndPingSent) {
-      state = KeepAliveState.pingSent;
+      _state = KeepAliveState.pingScheduled;
+      pingFuture ??= Timer(_keepAliveTime - _stopwatch.elapsed, sendPing);
+    } else if (_state == KeepAliveState.idleAndPingSent) {
+      _state = KeepAliveState.pingSent;
     } // Other states are possible when keepAliveDuringTransportIdle == true
   }
 
   void onTransportIdle() {
-    if (keepAliveDuringTransportIdle) {
+    if (_keepAliveDuringTransportIdle) {
       return;
     }
-    if (state == KeepAliveState.pingScheduled ||
-        state == KeepAliveState.pingDelayed) {
-      state = KeepAliveState.idle;
+    if (_state == KeepAliveState.pingScheduled ||
+        _state == KeepAliveState.pingDelayed) {
+      _state = KeepAliveState.idle;
     }
-    if (state == KeepAliveState.pingSent) {
-      state = KeepAliveState.idleAndPingSent;
+    if (_state == KeepAliveState.pingSent) {
+      _state = KeepAliveState.idleAndPingSent;
     }
   }
 
   void onTransportTermination() {
-    if (state != KeepAliveState.disconnected) {
-      state = KeepAliveState.disconnected;
+    if (_state != KeepAliveState.disconnected) {
+      _state = KeepAliveState.disconnected;
       shutdownFuture?.cancel();
       pingFuture?.cancel();
       pingFuture = null;
     }
   }
-}
-
-class KeepAlivePinger {
-  final TransportConnection? transport;
-
-  KeepAlivePinger(this.transport);
-
-  void ping() => transport?.ping();
-
-  void onPingTimeout() => transport?.terminate(); //TODO: or finish?
 }
