@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:clock/clock.dart';
 import 'package:http2/http2.dart';
+import 'package:meta/meta.dart';
 
 class KeepAliveOptions {
   final int? _keepaliveTimeMs;
@@ -98,21 +99,26 @@ class KeepAliveManager {
 
   final Stopwatch _stopwatch;
 
+  @visibleForTesting
   Timer? shutdownFuture;
+
+  @visibleForTesting
   Timer? pingFuture;
 
   bool get _keepAliveDuringTransportIdle =>
       _options.keepalivePermitWithoutCalls;
 
   Duration get _keepAliveTime => _options.keepaliveTime!;
-  final void Function() onPingTimeout;
-  final void Function() ping;
+  final void Function() _onPingTimeout;
+  final void Function() _ping;
 
   KeepAliveManager({
     required KeepAliveOptions options,
-    required this.ping,
-    required this.onPingTimeout,
-  })  : _options = options,
+    required void Function() ping,
+    required void Function() onPingTimeout,
+  })  : _ping = ping,
+        _onPingTimeout = onPingTimeout,
+        _options = options,
         _stopwatch = clock.stopwatch()..start(),
         _state = KeepAliveState.idle;
 
@@ -147,12 +153,12 @@ class KeepAliveManager {
     }
   }
 
-  void shutdown() {
+  void _shutdown() {
     if (_state != KeepAliveState.disconnected) {
       // We haven't received a ping response within the timeout. The connection is likely gone
       // already. Shutdown the transport and fail all existing rpcs.
       _state = KeepAliveState.disconnected;
-      onPingTimeout();
+      _onPingTimeout();
     }
   }
 
@@ -161,8 +167,8 @@ class KeepAliveManager {
     if (_state == KeepAliveState.pingScheduled) {
       _state = KeepAliveState.pingSent;
       // Schedule a shutdown. It fires if we don't receive the ping response within the timeout.
-      shutdownFuture = Timer(_options.keepaliveTimeout, shutdown);
-      ping();
+      shutdownFuture = Timer(_options.keepaliveTimeout, _shutdown);
+      _ping();
     } else if (_state == KeepAliveState.pingDelayed) {
       // We have received some data. Reschedule the ping with the new time.
       pingFuture = Timer(_keepAliveTime - _stopwatch.elapsed, sendPing);

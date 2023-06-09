@@ -207,13 +207,14 @@ class Http2ClientConnection implements connection.ClientConnection {
     if (_state == ConnectionState.shutdown) return;
     _setShutdownState();
     await _transportConnection?.finish();
-    _keepAliveManager?.shutdown();
+    _keepAliveManager?.onTransportTermination();
   }
 
   @override
   Future<void> terminate() async {
     _setShutdownState();
     await _transportConnection?.terminate();
+    _keepAliveManager?.onTransportTermination();
   }
 
   void _setShutdownState() {
@@ -221,7 +222,6 @@ class Http2ClientConnection implements connection.ClientConnection {
     _cancelTimer();
     _pendingCalls.forEach(_shutdownCall);
     _pendingCalls.clear();
-    _keepAliveManager?.onTransportTermination();
   }
 
   void _setState(ConnectionState state) {
@@ -235,6 +235,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     _transportConnection
         ?.finish()
         .catchError((_) {}); // TODO(jakobr): Log error.
+    _keepAliveManager?.onTransportTermination();
     _disconnect();
     _setState(ConnectionState.idle);
   }
@@ -284,9 +285,9 @@ class Http2ClientConnection implements connection.ClientConnection {
   }
 
   void _disconnect() {
+    _transportConnection = null;
     _keepAliveManager?.onTransportTermination();
     _keepAliveManager = null;
-    _transportConnection = null;
   }
 
   void _abandonConnection() {
