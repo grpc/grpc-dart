@@ -16,6 +16,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:grpc/src/client/options.dart';
+import 'package:grpc/src/shared/keepalive.dart';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
@@ -88,12 +90,14 @@ class ConnectionServer {
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
   final GrpcErrorHandler? _errorHandler;
+  final KeepAlive _keepAlive;
 
   final _connections = <ServerTransportConnection>[];
 
   /// Create a server for the given [services].
   ConnectionServer(
-    List<Service> services, [
+    List<Service> services,
+    this._keepAlive, [
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
@@ -166,7 +170,8 @@ class Server extends ConnectionServer {
   /// Create a server for the given [services].
   @Deprecated('use Server.create() instead')
   Server(
-    super.services, [
+    super.services,
+    super.keepAlive, [
     super.interceptors,
     super.codecRegistry,
     super.errorHandler,
@@ -175,10 +180,11 @@ class Server extends ConnectionServer {
   /// Create a server for the given [services].
   Server.create({
     required List<Service> services,
+    KeepAlive keepAlive = const KeepAlive.server(),
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
-  }) : super(services, interceptors, codecRegistry, errorHandler);
+  }) : super(services, keepAlive, interceptors, codecRegistry, errorHandler);
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
