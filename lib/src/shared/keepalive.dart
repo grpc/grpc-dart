@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:clock/clock.dart';
 import 'package:http2/http2.dart';
 
-class KeepAlive {
+class KeepAliveOptions {
   final int? _keepaliveTimeMs;
   final int _keepaliveTimeoutMs;
   final bool keepalivePermitWithoutCalls;
@@ -17,7 +17,7 @@ class KeepAlive {
 
   Duration get keepaliveTimeout => Duration(milliseconds: _keepaliveTimeoutMs);
 
-  const KeepAlive._({
+  const KeepAliveOptions._({
     int? keepaliveTimeMs,
     int keepaliveTimeoutMs = 20000,
     this.keepalivePermitWithoutCalls = false,
@@ -33,7 +33,7 @@ class KeepAlive {
             ? (keepaliveTimeMs < 10 ? 10 : keepaliveTimeMs)
             : null;
 
-  const KeepAlive.client({
+  const KeepAliveOptions.client({
     int? keepaliveTimeMs,
     int keepaliveTimeoutMs = 20000,
     bool keepalivePermitWithoutCalls = false,
@@ -50,7 +50,7 @@ class KeepAlive {
           http2MaxPingStrikes: http2MaxPingStrikes,
         );
 
-  const KeepAlive.server({
+  const KeepAliveOptions.server({
     int? keepaliveTimeMs = 7200000,
     int keepaliveTimeoutMs = 20000,
     bool keepalivePermitWithoutCalls = false,
@@ -92,7 +92,7 @@ enum KeepAliveState {
 class KeepAliveManager {
   KeepAliveState state;
 
-  final KeepAlive options;
+  final KeepAliveOptions options;
   final KeepAlivePinger keepAlivePinger;
   Timer? shutdownFuture;
 

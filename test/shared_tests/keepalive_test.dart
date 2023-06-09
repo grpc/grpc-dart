@@ -12,9 +12,9 @@ void main() {
 
   var transportOpen = true;
 
-  void init([KeepAlive? opt]) {
+  void initKeepAliveManager([KeepAliveOptions? opt]) {
     final options = opt ??
-        KeepAlive.client(
+        KeepAliveOptions.client(
           keepaliveTimeMs: 1000,
           keepaliveTimeoutMs: 2000,
           keepalivePermitWithoutCalls: false,
@@ -28,8 +28,9 @@ void main() {
     transportOpen = true;
   }
 
+  setUp(() => initKeepAliveManager());
+
   test('sendKeepAlivePings', () {
-    init();
     FakeAsync().run((async) {
       async.elapse(Duration(milliseconds: 1));
       // Transport becomes active. We should schedule keepalive pings.
@@ -49,7 +50,6 @@ void main() {
   });
 
   test('keepAlivePingDelayedByIncomingData', () {
-    init();
     FakeAsync().run((async) {
       // Transport becomes active. We should schedule keepalive pings.
       keepAliveManager.onTransportActive();
@@ -65,7 +65,6 @@ void main() {
   });
 
   test('clienttransport.ping()_pingTimeout', () {
-    init();
     FakeAsync().run((async) {
       pinger.onPingTimeout();
       expect(transportOpen, false);
@@ -78,7 +77,6 @@ void main() {
   });
 
   test('onTransportTerminationCancelsShutdownFuture', () {
-    init();
     FakeAsync().run((async) {
       // Transport becomes active. We should schedule keepalive pings.
       keepAliveManager.onTransportActive();
@@ -91,7 +89,6 @@ void main() {
     });
   });
   test('keepAlivePingTimesOut', () {
-    init();
     FakeAsync().run((async) {
       // Transport becomes active. We should schedule keepalive pings.
       keepAliveManager.onTransportActive();
@@ -111,7 +108,6 @@ void main() {
     });
   });
   test('transportGoesIdle', () {
-    init();
     FakeAsync().run((async) {
       // Transport becomes active. We should schedule keepalive pings.
       keepAliveManager.onTransportActive();
@@ -133,10 +129,9 @@ void main() {
     });
   });
   test('transportGoesIdle_doesntCauseIdleWhenEnabled', () {
-    init();
     FakeAsync().run((async) {
       keepAliveManager.onTransportTermination();
-      init(KeepAlive.client(
+      initKeepAliveManager(KeepAliveOptions.client(
         keepaliveTimeMs: 1000,
         keepaliveTimeoutMs: 2000,
         keepalivePermitWithoutCalls: true,
@@ -161,7 +156,6 @@ void main() {
     });
   });
   test('transportGoesIdleAfterPingSent', () {
-    init();
     FakeAsync().run((async) {
       // Transport becomes active. We should schedule keepalive pings.
       keepAliveManager.onTransportActive();
@@ -183,7 +177,6 @@ void main() {
     });
   });
   test('transportGoesIdleBeforePingSent', () {
-    init();
     FakeAsync().run((async) {
       // Transport becomes active. We should schedule keepalive pings.
       keepAliveManager.onTransportActive();
@@ -202,7 +195,6 @@ void main() {
     });
   });
   test('transportShutsdownAfterPingScheduled', () {
-    init();
     FakeAsync().run((async) {
       // Ping will be scheduled.
       keepAliveManager.onTransportActive();
@@ -214,7 +206,6 @@ void main() {
     });
   });
   test('transportShutsdownAfterPingSent', () {
-    init();
     FakeAsync().run((async) {
       keepAliveManager.onTransportActive();
       // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.
@@ -229,7 +220,6 @@ void main() {
     });
   });
   test('pingSentThenIdleThenActiveThenAck', () {
-    init();
     FakeAsync().run((async) {
       keepAliveManager.onTransportActive();
       // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.

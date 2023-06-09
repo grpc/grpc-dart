@@ -58,7 +58,7 @@ class ChannelOptions {
   final Duration? connectTimeout;
   final BackoffStrategy backoffStrategy;
   final String userAgent;
-  final KeepAlive keepAlive;
+  final KeepAliveOptions keepAlive;
 
   const ChannelOptions({
     this.credentials = const ChannelCredentials.secure(),
@@ -68,6 +68,6 @@ class ChannelOptions {
     this.connectTimeout,
     this.connectionTimeout = defaultConnectionTimeOut,
     this.codecRegistry,
-    this.keepAlive = const KeepAlive.client(),
+    this.keepAlive = const KeepAliveOptions.client(),
   });
 }
