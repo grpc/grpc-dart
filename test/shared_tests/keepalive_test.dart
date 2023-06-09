@@ -8,7 +8,7 @@ import '../src/client_utils.mocks.dart';
 void main() {
   late KeepAliveManager keepAliveManager;
   late MockClientTransportConnection transport;
-  late ClientKeepAlivePinger pinger;
+  late KeepAlivePinger pinger;
 
   var transportOpen = true;
 
@@ -23,7 +23,7 @@ void main() {
     when(transport.ping()).thenAnswer((_) async => transportOpen = true);
     when(transport.terminate()).thenAnswer((_) async => transportOpen = false);
 
-    pinger = ClientKeepAlivePinger(transport);
+    pinger = KeepAlivePinger(transport);
     keepAliveManager = KeepAliveManager(transport, options, pinger);
     transportOpen = true;
   }

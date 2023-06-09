@@ -16,7 +16,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:grpc/src/client/options.dart';
 import 'package:grpc/src/shared/keepalive.dart';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';

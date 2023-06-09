@@ -107,11 +107,11 @@ class KeepAliveManager {
       options.keepaliveTime ?? Duration(days: 365); //infinite
 
   KeepAliveManager(
-    ClientTransportConnection transport,
+    TransportConnection? transport,
     this.options, [
     KeepAlivePinger? pinger,
   ])  : stopwatch = clock.stopwatch()..start(),
-        keepAlivePinger = pinger ?? ClientKeepAlivePinger(transport),
+        keepAlivePinger = pinger ?? KeepAlivePinger(transport),
         state = KeepAliveState.idle;
 
   void onTransportStarted() {
@@ -159,21 +159,16 @@ class KeepAliveManager {
   }
 
   void sendPing() {
-    var shouldSendPing = false;
     pingFuture = null;
     if (state == KeepAliveState.pingScheduled) {
-      shouldSendPing = true;
       state = KeepAliveState.pingSent;
       // Schedule a shutdown. It fires if we don't receive the ping response within the timeout.
       shutdownFuture = Timer(keepAliveTimeout, shutdown);
+      keepAlivePinger.ping();
     } else if (state == KeepAliveState.pingDelayed) {
       // We have received some data. Reschedule the ping with the new time.
       pingFuture = Timer(keepAliveTime - stopwatch.elapsed, sendPing);
       state = KeepAliveState.pingScheduled;
-    }
-    if (shouldSendPing) {
-      // Send the ping.
-      keepAlivePinger.ping();
     }
   }
 
@@ -211,23 +206,12 @@ class KeepAliveManager {
   }
 }
 
-abstract class KeepAlivePinger {
-  /// Sends out a keep-alive ping.
-  void ping();
+class KeepAlivePinger {
+  final TransportConnection? transport;
 
-  /// Callback when Ping Ack was not received in KEEPALIVE_TIMEOUT. Should
-  /// shutdown the transport.
-  void onPingTimeout();
-}
+  KeepAlivePinger(this.transport);
 
-class ClientKeepAlivePinger implements KeepAlivePinger {
-  final ClientTransportConnection transport;
+  void ping() => transport?.ping();
 
-  ClientKeepAlivePinger(this.transport);
-
-  @override
-  void ping() => transport.ping();
-
-  @override
-  void onPingTimeout() => transport.terminate(); //TODO: or finish?
+  void onPingTimeout() => transport?.terminate(); //TODO: or finish?
 }
