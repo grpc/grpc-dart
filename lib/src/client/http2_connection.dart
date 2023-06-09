@@ -285,7 +285,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     _transportConnection = null;
     _keepAliveManager?.onTransportTermination();
 
-    if (_state == ConnectionState.idle && _state == ConnectionState.shutdown) {
+    if (_state == ConnectionState.idle || _state == ConnectionState.shutdown) {
       // All good.
       return;
     }
