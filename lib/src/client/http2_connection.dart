@@ -20,6 +20,7 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
+import '../shared/keepalive.dart';
 import '../shared/timeout.dart';
 import 'call.dart';
 import 'client_transport_connector.dart';
@@ -57,11 +58,18 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   Duration? _currentReconnectDelay;
 
+  KeepAliveManager? _keepAliveManager;
+
   Http2ClientConnection(Object host, int port, this.options)
       : _transportConnector = _SocketTransportConnector(host, port, options);
 
   Http2ClientConnection.fromClientTransportConnector(
-      this._transportConnector, this.options);
+      this._transportConnector, this.options) {
+    if (options.keepAlive.keepaliveTime != null) {
+      _keepAliveManager =
+          KeepAliveManager(_transportConnection, options.keepAlive);
+    }
+  }
 
   ChannelCredentials get credentials => options.credentials;
 
@@ -105,6 +113,7 @@ class Http2ClientConnection implements connection.ClientConnection {
         ..start();
       transport.onActiveStateChanged = _handleActiveStateChanged;
       _setState(ConnectionState.ready);
+      _keepAliveManager?.onTransportStarted();
 
       if (_hasPendingCalls()) {
         // Take all pending calls out, and reschedule.
@@ -209,6 +218,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     _cancelTimer();
     _pendingCalls.forEach(_shutdownCall);
     _pendingCalls.clear();
+    _keepAliveManager?.onTransportTermination();
   }
 
   void _setState(ConnectionState state) {
@@ -223,6 +233,7 @@ class Http2ClientConnection implements connection.ClientConnection {
         ?.finish()
         .catchError((_) {}); // TODO(jakobr): Log error.
     _transportConnection = null;
+    _keepAliveManager?.onTransportTermination();
     _setState(ConnectionState.idle);
   }
 
@@ -249,6 +260,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   void _handleConnectionFailure(error) {
     _transportConnection = null;
+    _keepAliveManager?.onTransportTermination();
     if (_state == ConnectionState.shutdown || _state == ConnectionState.idle) {
       return;
     }
@@ -258,6 +270,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       _failCall(call, error);
     }
     _pendingCalls.clear();
+    _keepAliveManager?.onTransportIdle();
     _setState(ConnectionState.idle);
   }
 
@@ -270,6 +283,7 @@ class Http2ClientConnection implements connection.ClientConnection {
   void _abandonConnection() {
     _cancelTimer();
     _transportConnection = null;
+    _keepAliveManager?.onTransportTermination();
 
     if (_state == ConnectionState.idle && _state == ConnectionState.shutdown) {
       // All good.
@@ -279,6 +293,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     // We were not planning to close the socket.
     if (!_hasPendingCalls()) {
       // No pending calls. Just hop to idle, and wait for a new RPC.
+      _keepAliveManager?.onTransportIdle();
       _setState(ConnectionState.idle);
       return;
     }
