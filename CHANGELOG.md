@@ -1,4 +1,4 @@
-## 3.2.0-dev
+## 3.2.0
 
 * `ChannelOptions` now exposes `connectTimeout`, which is used on the 
   socket connect. This is used to specify the maximum allowed time to wait
