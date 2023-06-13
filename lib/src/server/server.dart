@@ -90,6 +90,7 @@ class ConnectionServer {
   final CodecRegistry? _codecRegistry;
   final GrpcErrorHandler? _errorHandler;
   final KeepAliveOptions _keepAlive;
+  final List<ServerHandler> _handlers = [];
 
   final _connections = <ServerTransportConnection>[];
 
@@ -116,15 +117,19 @@ class ConnectionServer {
     InternetAddress? remoteAddress,
   }) async {
     _connections.add(connection);
-    ServerHandler? handler;
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
     connection.incomingStreams.listen((stream) {
-      handler = serveStream_(
+      final keepAliveManager = ServerKeepAliveManager(
+        options: _keepAlive,
+        goAwayAfterMaxPings: () async => await connection.finish(),
+      );
+      _handlers.add(serveStream_(
         stream: stream,
         clientCertificate: clientCertificate,
         remoteAddress: remoteAddress,
-      );
+        keepAliveManager: keepAliveManager,
+      ));
     }, onError: (error, stackTrace) {
       if (error is Error) {
         Zone.current.handleUncaughtError(error, stackTrace);
@@ -134,7 +139,9 @@ class ConnectionServer {
       // half-closed tcp streams.
       // Half-closed  streams seems to not be fully supported by package:http2.
       // https://github.com/dart-lang/http2/issues/42
-      handler?.cancel();
+      for (var handler in _handlers) {
+        handler.cancel();
+      }
       _connections.remove(connection);
     });
   }
@@ -144,6 +151,7 @@ class ConnectionServer {
     required ServerTransportStream stream,
     X509Certificate? clientCertificate,
     InternetAddress? remoteAddress,
+    ServerKeepAliveManager? keepAliveManager,
   }) {
     return ServerHandler(
       stream: stream,
@@ -155,6 +163,8 @@ class ConnectionServer {
       // ignore: unnecessary_cast
       remoteAddress: remoteAddress as io_bits.InternetAddress?,
       errorHandler: _errorHandler,
+      keepAliveManager: keepAliveManager ??
+          ServerKeepAliveManager(options: KeepAliveOptions.server()),
     )..handle();
   }
 }
@@ -267,11 +277,11 @@ class Server extends ConnectionServer {
 
   @override
   @visibleForTesting
-  ServerHandler serveStream_({
-    required ServerTransportStream stream,
-    X509Certificate? clientCertificate,
-    InternetAddress? remoteAddress,
-  }) {
+  ServerHandler serveStream_(
+      {required ServerTransportStream stream,
+      X509Certificate? clientCertificate,
+      InternetAddress? remoteAddress,
+      ServerKeepAliveManager? keepAliveManager}) {
     return ServerHandler(
       stream: stream,
       serviceLookup: lookupService,
@@ -282,6 +292,8 @@ class Server extends ConnectionServer {
       // ignore: unnecessary_cast
       remoteAddress: remoteAddress as io_bits.InternetAddress?,
       errorHandler: _errorHandler,
+      keepAliveManager: keepAliveManager ??
+          ServerKeepAliveManager(options: KeepAliveOptions.server()),
     )..handle();
   }
 

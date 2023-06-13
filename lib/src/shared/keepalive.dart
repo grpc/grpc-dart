@@ -1,15 +1,13 @@
 import 'dart:async';
 
 import 'package:clock/clock.dart';
-import 'package:http2/http2.dart';
 import 'package:meta/meta.dart';
 
 class KeepAliveOptions {
   final int? _keepaliveTimeMs;
   final int _keepaliveTimeoutMs;
   final bool keepalivePermitWithoutCalls;
-  final int _http2MaxPingsWithoutData;
-  final int? _http2MinRecvPingIntervalWithoutDataMs;
+  final int? _http2MinRecvPingIntervalWithoutData;
   final int? _http2MaxPingStrikes;
 
   Duration? get keepaliveTime => _keepaliveTimeMs != null
@@ -17,18 +15,18 @@ class KeepAliveOptions {
       : null;
 
   Duration get keepaliveTimeout => Duration(milliseconds: _keepaliveTimeoutMs);
+  Duration get minRecvPingIntervalWithoutData =>
+      Duration(milliseconds: _http2MinRecvPingIntervalWithoutData!);
 
   const KeepAliveOptions._({
     int? keepaliveTimeMs,
     int keepaliveTimeoutMs = 20000,
     this.keepalivePermitWithoutCalls = false,
-    int http2MaxPingsWithoutData = 2,
     int? http2MinRecvPingIntervalWithoutDataMs,
     int? http2MaxPingStrikes,
   })  : _http2MaxPingStrikes = http2MaxPingStrikes,
-        _http2MinRecvPingIntervalWithoutDataMs =
+        _http2MinRecvPingIntervalWithoutData =
             http2MinRecvPingIntervalWithoutDataMs,
-        _http2MaxPingsWithoutData = http2MaxPingsWithoutData,
         _keepaliveTimeoutMs = keepaliveTimeoutMs,
         _keepaliveTimeMs = keepaliveTimeMs != null
             ? (keepaliveTimeMs < 10 ? 10 : keepaliveTimeMs)
@@ -38,14 +36,12 @@ class KeepAliveOptions {
     int? keepaliveTimeMs,
     int keepaliveTimeoutMs = 20000,
     bool keepalivePermitWithoutCalls = false,
-    int http2MaxPingsWithoutData = 2,
     int? http2MinRecvPingIntervalWithoutDataMs,
     int? http2MaxPingStrikes,
   }) : this._(
           keepaliveTimeMs: keepaliveTimeMs,
           keepaliveTimeoutMs: keepaliveTimeoutMs,
           keepalivePermitWithoutCalls: keepalivePermitWithoutCalls,
-          http2MaxPingsWithoutData: http2MaxPingsWithoutData,
           http2MinRecvPingIntervalWithoutDataMs:
               http2MinRecvPingIntervalWithoutDataMs,
           http2MaxPingStrikes: http2MaxPingStrikes,
@@ -55,14 +51,12 @@ class KeepAliveOptions {
     int? keepaliveTimeMs = 7200000,
     int keepaliveTimeoutMs = 20000,
     bool keepalivePermitWithoutCalls = false,
-    int http2MaxPingsWithoutData = 2,
-    int? http2MinRecvPingIntervalWithoutDataMs = 300000,
-    int? http2MaxPingStrikes = 2,
+    int http2MinRecvPingIntervalWithoutDataMs = 300000,
+    int http2MaxPingStrikes = 2,
   }) : this._(
           keepaliveTimeMs: keepaliveTimeMs,
           keepaliveTimeoutMs: keepaliveTimeoutMs,
           keepalivePermitWithoutCalls: keepalivePermitWithoutCalls,
-          http2MaxPingsWithoutData: http2MaxPingsWithoutData,
           http2MinRecvPingIntervalWithoutDataMs:
               http2MinRecvPingIntervalWithoutDataMs,
           http2MaxPingStrikes: http2MaxPingStrikes,
@@ -206,6 +200,50 @@ class KeepAliveManager {
       shutdownFuture?.cancel();
       pingFuture?.cancel();
       pingFuture = null;
+    }
+  }
+}
+
+class ServerKeepAliveManager {
+  final Future<void> Function()? _goAwayAfterMaxPings;
+  final KeepAliveOptions _options;
+
+  int _badPings = 0;
+  DateTime? _timeOfLastReceivedPing;
+
+  ServerKeepAliveManager({
+    Future<void> Function()? goAwayAfterMaxPings,
+    required KeepAliveOptions options,
+  })  : _goAwayAfterMaxPings = goAwayAfterMaxPings,
+        _options = options;
+
+  void onNonPingReceived() {
+    if (enforcesMaxPings) {
+      _timeOfLastReceivedPing = null;
+    }
+  }
+
+  Future<void> onPingReceived() async {
+    if (enforcesMaxPings) {
+      final now = DateTime.now();
+      _timeOfLastReceivedPing = now;
+      if (_timeOfLastReceivedPing != null &&
+          _timeOfLastReceivedPing!.difference(now) >
+              _options.minRecvPingIntervalWithoutData) {
+        _badPings++;
+      }
+      if (_badPings > _options._http2MaxPingStrikes!) {
+        await _goAwayAfterMaxPings?.call();
+      }
+    }
+  }
+
+  bool get enforcesMaxPings => _options._http2MaxPingStrikes! > 0;
+
+  void onDataReceived() {
+    if (enforcesMaxPings) {
+      _badPings = 0;
+      _timeOfLastReceivedPing = null;
     }
   }
 }

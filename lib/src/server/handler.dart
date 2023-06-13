@@ -16,6 +16,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:grpc/src/shared/keepalive.dart';
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
@@ -66,6 +67,7 @@ class ServerHandler extends ServiceCall {
 
   final X509Certificate? _clientCertificate;
   final InternetAddress? _remoteAddress;
+  final ServerKeepAliveManager _keepAliveManager;
 
   ServerHandler({
     required ServerTransportStream stream,
@@ -75,13 +77,16 @@ class ServerHandler extends ServiceCall {
     X509Certificate? clientCertificate,
     InternetAddress? remoteAddress,
     GrpcErrorHandler? errorHandler,
+    ServerKeepAliveManager? keepAliveManager,
   })  : _stream = stream,
         _serviceLookup = serviceLookup,
         _interceptors = interceptors,
         _codecRegistry = codecRegistry,
         _clientCertificate = clientCertificate,
         _remoteAddress = remoteAddress,
-        _errorHandler = errorHandler;
+        _errorHandler = errorHandler,
+        _keepAliveManager = keepAliveManager ??
+            ServerKeepAliveManager(options: KeepAliveOptions.server());
 
   @override
   DateTime? get deadline => _deadline;
@@ -135,6 +140,7 @@ class ServerHandler extends ServiceCall {
   // -- Idle state, incoming data --
 
   void _onDataIdle(GrpcMessage headerMessage) async {
+    _keepAliveManager.onDataReceived();
     if (headerMessage is! GrpcMetadata) {
       _sendError(GrpcError.unimplemented('Expected header frame'));
       _sinkIncoming();
@@ -275,6 +281,7 @@ class ServerHandler extends ServiceCall {
       return;
     }
 
+    _keepAliveManager.onDataReceived();
     final data = message;
     Object? request;
     try {
