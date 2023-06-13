@@ -1,6 +1,7 @@
 ## 3.2.0-wip
 
 * Add const constructor to `GrpcError` fixing #606.
+
 ## 3.2.0
 
 * `ChannelOptions` now exposes `connectTimeout`, which is used on the 
