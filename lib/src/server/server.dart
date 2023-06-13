@@ -119,22 +119,25 @@ class ConnectionServer {
     _connections.add(connection);
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
+    final onDataReceivedController = StreamController<void>();
+    ServerKeepAliveManager(
+      options: _keepAlive,
+      goAwayAfterMaxPings: () async => await connection.finish(),
+      pingStream: connection.onPingReceived,
+      dataStream: onDataReceivedController.stream,
+    ).handle();
     connection.incomingStreams.listen((stream) {
-      final keepAliveManager = ServerKeepAliveManager(
-        options: _keepAlive,
-        goAwayAfterMaxPings: () async => await connection.finish(),
-      );
       _handlers.add(serveStream_(
         stream: stream,
         clientCertificate: clientCertificate,
         remoteAddress: remoteAddress,
-        keepAliveManager: keepAliveManager,
+        onDataReceived: onDataReceivedController.sink,
       ));
     }, onError: (error, stackTrace) {
       if (error is Error) {
         Zone.current.handleUncaughtError(error, stackTrace);
       }
-    }, onDone: () {
+    }, onDone: () async {
       // TODO(sigurdm): This is not correct behavior in the presence of
       // half-closed tcp streams.
       // Half-closed  streams seems to not be fully supported by package:http2.
@@ -143,6 +146,7 @@ class ConnectionServer {
         handler.cancel();
       }
       _connections.remove(connection);
+      await onDataReceivedController.close();
     });
   }
 
@@ -151,21 +155,20 @@ class ConnectionServer {
     required ServerTransportStream stream,
     X509Certificate? clientCertificate,
     InternetAddress? remoteAddress,
-    ServerKeepAliveManager? keepAliveManager,
+    Sink<void>? onDataReceived,
   }) {
     return ServerHandler(
-      stream: stream,
-      serviceLookup: lookupService,
-      interceptors: _interceptors,
-      codecRegistry: _codecRegistry,
-      // ignore: unnecessary_cast
-      clientCertificate: clientCertificate as io_bits.X509Certificate?,
-      // ignore: unnecessary_cast
-      remoteAddress: remoteAddress as io_bits.InternetAddress?,
-      errorHandler: _errorHandler,
-      keepAliveManager: keepAliveManager ??
-          ServerKeepAliveManager(options: KeepAliveOptions.server()),
-    )..handle();
+        stream: stream,
+        serviceLookup: lookupService,
+        interceptors: _interceptors,
+        codecRegistry: _codecRegistry,
+        // ignore: unnecessary_cast
+        clientCertificate: clientCertificate as io_bits.X509Certificate?,
+        // ignore: unnecessary_cast
+        remoteAddress: remoteAddress as io_bits.InternetAddress?,
+        errorHandler: _errorHandler,
+        onDataReceived: onDataReceived)
+      ..handle();
   }
 }
 
@@ -277,11 +280,12 @@ class Server extends ConnectionServer {
 
   @override
   @visibleForTesting
-  ServerHandler serveStream_(
-      {required ServerTransportStream stream,
-      X509Certificate? clientCertificate,
-      InternetAddress? remoteAddress,
-      ServerKeepAliveManager? keepAliveManager}) {
+  ServerHandler serveStream_({
+    required ServerTransportStream stream,
+    X509Certificate? clientCertificate,
+    InternetAddress? remoteAddress,
+    Sink<void>? onDataReceived,
+  }) {
     return ServerHandler(
       stream: stream,
       serviceLookup: lookupService,
@@ -292,8 +296,7 @@ class Server extends ConnectionServer {
       // ignore: unnecessary_cast
       remoteAddress: remoteAddress as io_bits.InternetAddress?,
       errorHandler: _errorHandler,
-      keepAliveManager: keepAliveManager ??
-          ServerKeepAliveManager(options: KeepAliveOptions.server()),
+      onDataReceived: onDataReceived,
     )..handle();
   }
 

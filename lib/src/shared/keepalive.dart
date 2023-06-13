@@ -207,6 +207,8 @@ class KeepAliveManager {
 class ServerKeepAliveManager {
   final Future<void> Function()? _goAwayAfterMaxPings;
   final KeepAliveOptions _options;
+  final Stream<void> _pingStream;
+  final Stream<void> _dataStream;
 
   int _badPings = 0;
   DateTime? _timeOfLastReceivedPing;
@@ -214,17 +216,22 @@ class ServerKeepAliveManager {
   ServerKeepAliveManager({
     Future<void> Function()? goAwayAfterMaxPings,
     required KeepAliveOptions options,
+    required Stream<void> pingStream,
+    required Stream<void> dataStream,
   })  : _goAwayAfterMaxPings = goAwayAfterMaxPings,
-        _options = options;
+        _options = options,
+        _pingStream = pingStream,
+        _dataStream = dataStream;
 
-  void onNonPingReceived() {
-    if (enforcesMaxPings) {
-      _timeOfLastReceivedPing = null;
-    }
+  void handle() {
+    _pingStream.listen((_) => _onPingReceived());
+    _dataStream.listen((_) => _onDataReceived());
   }
 
-  Future<void> onPingReceived() async {
-    if (enforcesMaxPings) {
+  bool get _enforcesMaxPings => _options._http2MaxPingStrikes! > 0;
+
+  Future<void> _onPingReceived() async {
+    if (_enforcesMaxPings) {
       final now = DateTime.now();
       _timeOfLastReceivedPing = now;
       if (_timeOfLastReceivedPing != null &&
@@ -238,10 +245,8 @@ class ServerKeepAliveManager {
     }
   }
 
-  bool get enforcesMaxPings => _options._http2MaxPingStrikes! > 0;
-
-  void onDataReceived() {
-    if (enforcesMaxPings) {
+  void _onDataReceived() {
+    if (_enforcesMaxPings) {
       _badPings = 0;
       _timeOfLastReceivedPing = null;
     }
