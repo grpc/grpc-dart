@@ -211,7 +211,7 @@ class ServerKeepAliveManager {
   final Stream<void> _dataStream;
 
   int _badPings = 0;
-  DateTime? _timeOfLastReceivedPing;
+  Stopwatch? _timeOfLastReceivedPing;
 
   ServerKeepAliveManager({
     Future<void> Function()? goAwayAfterMaxPings,
@@ -232,16 +232,17 @@ class ServerKeepAliveManager {
 
   Future<void> _onPingReceived() async {
     if (_enforcesMaxPings) {
-      final now = DateTime.now();
-      _timeOfLastReceivedPing = now;
       if (_timeOfLastReceivedPing != null &&
-          _timeOfLastReceivedPing!.difference(now) >
+          _timeOfLastReceivedPing!.elapsed >
               _options.minRecvPingIntervalWithoutData) {
         _badPings++;
       }
-      if (_badPings > _options._http2MaxPingStrikes!) {
+      if (_badPings + 1 > _options._http2MaxPingStrikes!) {
         await _goAwayAfterMaxPings?.call();
       }
+      (_timeOfLastReceivedPing ??= clock.stopwatch())
+        ..reset()
+        ..start();
     }
   }
 

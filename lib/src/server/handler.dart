@@ -16,7 +16,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:grpc/src/shared/keepalive.dart';
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
