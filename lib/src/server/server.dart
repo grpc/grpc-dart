@@ -164,6 +164,15 @@ class Server extends ConnectionServer {
   SecureServerSocket? _secureServer;
 
   /// Create a server for the given [services].
+  @Deprecated('use Server.create() instead')
+  Server(
+    super.services, [
+    super.interceptors,
+    super.codecRegistry,
+    super.errorHandler,
+  ]);
+
+  /// Create a server for the given [services].
   Server.create({
     required List<Service> services,
     List<Interceptor> interceptors = const <Interceptor>[],
@@ -269,6 +278,12 @@ class Server extends ConnectionServer {
       remoteAddress: remoteAddress as io_bits.InternetAddress?,
       errorHandler: _errorHandler,
     )..handle();
+  }
+
+  @Deprecated(
+      'This is internal functionality, and will be removed in next major version.')
+  void serveStream(ServerTransportStream stream) {
+    serveStream_(stream: stream);
   }
 
   Future<void> shutdown() async {
