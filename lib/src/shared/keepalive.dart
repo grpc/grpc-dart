@@ -122,7 +122,7 @@ class ClientKeepAlive {
     }
   }
 
-  void onDataReceived() {
+  void onFrameReceived() {
     _stopwatch.reset();
     _stopwatch.start();
     // We do not cancel the ping future here. This avoids constantly scheduling and cancellation in

@@ -55,7 +55,7 @@ void main() {
         // Ping succeeds. Reschedule another ping.
 
         async.elapse(Duration(milliseconds: 100));
-        keepAliveManager.onDataReceived();
+        keepAliveManager.onFrameReceived();
         // Shutdown task has been cancelled.
         // Next ping should be exactly 1000 milliseconds later.
         async.elapse(Duration(milliseconds: 1000));
@@ -70,7 +70,7 @@ void main() {
 
         // We receive some data. We may need to delay the ping.
         async.elapse(Duration(milliseconds: 990));
-        keepAliveManager.onDataReceived();
+        keepAliveManager.onFrameReceived();
         async.elapse(Duration(milliseconds: 20));
 
         // We didn't send the ping.
@@ -116,7 +116,7 @@ void main() {
         verify(pinger.onPingTimeout()).called(1);
 
         // We receive the ping response too late.
-        keepAliveManager.onDataReceived();
+        keepAliveManager.onFrameReceived();
         // No more ping should be scheduled.
         expect(keepAliveManager.pingFuture, isNull);
       });
@@ -182,7 +182,7 @@ void main() {
         // Transport becomes idle. No more ping should be scheduled after we receive a ping response.
         keepAliveManager.onTransportIdle();
         async.elapse(Duration(milliseconds: 100));
-        keepAliveManager.onDataReceived();
+        keepAliveManager.onFrameReceived();
         expect(keepAliveManager.shutdownFuture?.isActive, false);
         expect(keepAliveManager.pingFuture, isNull);
         // Transport becomes active again. Another ping is scheduled.
@@ -198,7 +198,7 @@ void main() {
         expect(pingFuture, isNotNull);
 
         // Data is received, and we go to ping delayed
-        keepAliveManager.onDataReceived();
+        keepAliveManager.onFrameReceived();
 
         // Transport becomes idle while the 1st ping is still scheduled
         keepAliveManager.onTransportIdle();
@@ -247,7 +247,7 @@ void main() {
 
         keepAliveManager.onTransportActive();
 
-        keepAliveManager.onDataReceived();
+        keepAliveManager.onFrameReceived();
 
         // another ping scheduled
         expect(keepAliveManager.pingFuture, isNotNull);

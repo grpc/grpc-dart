@@ -107,8 +107,10 @@ class Http2ClientConnection implements connection.ClientConnection {
         _keepAliveManager = ClientKeepAlive(
           options: options.keepAlive,
           ping: () => transport.ping(),
-          onPingTimeout: () => shutdown(), // TODO(mosum): Or terminate?
+          onPingTimeout: () => shutdown(),
         );
+        transport.onFrameReceived
+            .listen((_) => _keepAliveManager?.onFrameReceived());
       }
       _connectionLifeTimer
         ..reset()
