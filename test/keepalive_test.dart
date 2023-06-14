@@ -119,15 +119,6 @@ class FakeHttp2ClientConnection extends Http2ClientConnection {
     newConnectionCounter++;
     return super.connectTransport();
   }
-
-  @override
-  set keepAliveManager(ClientKeepAlive? value) {
-    super.keepAliveManager = FakeClientKeepAlive(
-      options: super.options.keepAlive,
-      ping: value!.ping,
-      onPingTimeout: value.onPingTimeout,
-    );
-  }
 }
 
 /// A wrapper around a [FakeHttp2ClientConnection]
