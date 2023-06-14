@@ -5,12 +5,10 @@ import 'package:grpc/src/client/connection.dart';
 import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/shared/keepalive.dart';
 import 'package:http2/transport.dart';
-import 'package:mockito/annotations.dart';
 import 'package:test/test.dart';
 
 import 'src/generated/echo.pbgrpc.dart';
 
-@GenerateNiceMocks([MockSpec<Http2ClientConnection>()])
 void main() {
   late Server server;
   late EchoServiceClient fakeClient;
