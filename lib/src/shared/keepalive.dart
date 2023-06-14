@@ -18,49 +18,29 @@ class KeepAliveOptions {
   Duration get minRecvPingIntervalWithoutData =>
       Duration(milliseconds: _http2MinRecvPingIntervalWithoutData!);
 
-  const KeepAliveOptions._({
+  const KeepAliveOptions.client({
     int? keepaliveTimeMs,
     int keepaliveTimeoutMs = 20000,
     this.keepalivePermitWithoutCalls = false,
     int? http2MinRecvPingIntervalWithoutDataMs,
     int? http2MaxPingStrikes,
-  })  : _http2MaxPingStrikes = http2MaxPingStrikes,
+  })  : _keepaliveTimeMs = keepaliveTimeMs,
+        _keepaliveTimeoutMs = keepaliveTimeoutMs,
         _http2MinRecvPingIntervalWithoutData =
             http2MinRecvPingIntervalWithoutDataMs,
-        _keepaliveTimeoutMs = keepaliveTimeoutMs,
-        _keepaliveTimeMs = keepaliveTimeMs != null
-            ? (keepaliveTimeMs < 10 ? 10 : keepaliveTimeMs)
-            : null;
-
-  const KeepAliveOptions.client({
-    int? keepaliveTimeMs,
-    int keepaliveTimeoutMs = 20000,
-    bool keepalivePermitWithoutCalls = false,
-    int? http2MinRecvPingIntervalWithoutDataMs,
-    int? http2MaxPingStrikes,
-  }) : this._(
-          keepaliveTimeMs: keepaliveTimeMs,
-          keepaliveTimeoutMs: keepaliveTimeoutMs,
-          keepalivePermitWithoutCalls: keepalivePermitWithoutCalls,
-          http2MinRecvPingIntervalWithoutDataMs:
-              http2MinRecvPingIntervalWithoutDataMs,
-          http2MaxPingStrikes: http2MaxPingStrikes,
-        );
+        _http2MaxPingStrikes = http2MaxPingStrikes;
 
   const KeepAliveOptions.server({
     int? keepaliveTimeMs = 7200000,
     int keepaliveTimeoutMs = 20000,
-    bool keepalivePermitWithoutCalls = false,
+    this.keepalivePermitWithoutCalls = false,
     int http2MinRecvPingIntervalWithoutDataMs = 300000,
     int http2MaxPingStrikes = 2,
-  }) : this._(
-          keepaliveTimeMs: keepaliveTimeMs,
-          keepaliveTimeoutMs: keepaliveTimeoutMs,
-          keepalivePermitWithoutCalls: keepalivePermitWithoutCalls,
-          http2MinRecvPingIntervalWithoutDataMs:
-              http2MinRecvPingIntervalWithoutDataMs,
-          http2MaxPingStrikes: http2MaxPingStrikes,
-        );
+  })  : _keepaliveTimeMs = keepaliveTimeMs,
+        _keepaliveTimeoutMs = keepaliveTimeoutMs,
+        _http2MinRecvPingIntervalWithoutData =
+            http2MinRecvPingIntervalWithoutDataMs,
+        _http2MaxPingStrikes = http2MaxPingStrikes;
 
   bool get sendPings => keepaliveTime != null;
 }
@@ -102,7 +82,7 @@ class ClientKeepAlive {
   bool get _keepAliveDuringTransportIdle =>
       _options.keepalivePermitWithoutCalls;
 
-  Duration get _keepAliveTime => _options.keepaliveTime!;
+  Duration get _keepAliveTime => _options.keepaliveTime ?? Duration(days: 365);
   final void Function() onPingTimeout;
   final void Function() ping;
 

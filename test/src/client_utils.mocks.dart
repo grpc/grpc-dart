@@ -118,10 +118,10 @@ class MockClientTransportConnection extends _i1.Mock
         returnValue: _i3.Future<dynamic>.value(),
       ) as _i3.Future<dynamic>);
   @override
-  _i3.Future<dynamic> terminate() => (super.noSuchMethod(
+  _i3.Future<dynamic> terminate([int? errorCode]) => (super.noSuchMethod(
         Invocation.method(
           #terminate,
-          [],
+          [errorCode],
         ),
         returnValue: _i3.Future<dynamic>.value(),
       ) as _i3.Future<dynamic>);

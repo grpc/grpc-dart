@@ -122,7 +122,8 @@ class ConnectionServer {
     final onDataReceivedController = StreamController<void>();
     ServerKeepAlive(
       options: _keepAliveOptions,
-      goAwayAfterMaxPings: () async => await connection.terminate(),
+      goAwayAfterMaxPings: () async =>
+          await connection.terminate(ErrorCode.ENHANCE_YOUR_CALM),
       pingStream: connection.onPingReceived,
       dataStream: onDataReceivedController.stream,
     ).handle();
