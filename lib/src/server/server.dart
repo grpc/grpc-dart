@@ -89,7 +89,7 @@ class ConnectionServer {
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
   final GrpcErrorHandler? _errorHandler;
-  final KeepAliveOptions _keepAlive;
+  final KeepAliveOptions _keepAliveOptions;
   final List<ServerHandler> _handlers = [];
 
   final _connections = <ServerTransportConnection>[];
@@ -97,7 +97,7 @@ class ConnectionServer {
   /// Create a server for the given [services].
   ConnectionServer(
     List<Service> services,
-    this._keepAlive, [
+    this._keepAliveOptions, [
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
@@ -120,9 +120,9 @@ class ConnectionServer {
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
     final onDataReceivedController = StreamController<void>();
-    ServerKeepAliveManager(
-      options: _keepAlive,
-      goAwayAfterMaxPings: () async => await connection.finish(),
+    ServerKeepAlive(
+      options: _keepAliveOptions,
+      goAwayAfterMaxPings: () async => await connection.terminate(),
       pingStream: connection.onPingReceived,
       dataStream: onDataReceivedController.stream,
     ).handle();
@@ -192,11 +192,12 @@ class Server extends ConnectionServer {
   /// Create a server for the given [services].
   Server.create({
     required List<Service> services,
-    KeepAliveOptions keepAlive = const KeepAliveOptions.server(),
+    KeepAliveOptions keepAliveOptions = const KeepAliveOptions.server(),
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
-  }) : super(services, keepAlive, interceptors, codecRegistry, errorHandler);
+  }) : super(services, keepAliveOptions, interceptors, codecRegistry,
+            errorHandler);
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.

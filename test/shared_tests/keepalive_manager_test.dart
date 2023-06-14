@@ -6,7 +6,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'keepalive_test.mocks.dart';
+import 'keepalive_manager_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<Pinger>()])
 abstract class Pinger {
@@ -15,7 +15,7 @@ abstract class Pinger {
 }
 
 void main() {
-  late KeepAliveManager keepAliveManager;
+  late ClientKeepAlive keepAliveManager;
 
   final pinger = MockPinger();
 
@@ -33,7 +33,7 @@ void main() {
     when(pinger.ping()).thenAnswer((_) async => transportOpen = true);
     when(pinger.onPingTimeout()).thenAnswer((_) async => transportOpen = false);
 
-    keepAliveManager = KeepAliveManager(
+    keepAliveManager = ClientKeepAlive(
       options: options,
       ping: pinger.ping,
       onPingTimeout: pinger.onPingTimeout,
@@ -264,7 +264,7 @@ void main() {
       final http2maxPingStrikes = 10;
 
       var goAway = false;
-      ServerKeepAliveManager(
+      ServerKeepAlive(
         options: KeepAliveOptions.server(
           http2MaxPingStrikes: http2maxPingStrikes,
           http2MinRecvPingIntervalWithoutDataMs: 5,

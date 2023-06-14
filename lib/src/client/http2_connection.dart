@@ -58,7 +58,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   Duration? _currentReconnectDelay;
 
-  KeepAliveManager? _keepAliveManager;
+  ClientKeepAlive? _keepAliveManager;
 
   Http2ClientConnection(Object host, int port, this.options)
       : _transportConnector = _SocketTransportConnector(host, port, options);
@@ -104,7 +104,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       _currentReconnectDelay = null;
       _transportConnection = transport;
       if (options.keepAlive.sendPings) {
-        _keepAliveManager = KeepAliveManager(
+        _keepAliveManager = ClientKeepAlive(
           options: options.keepAlive,
           ping: () => transport.ping(),
           onPingTimeout: () => shutdown(), // TODO(mosum): Or terminate?

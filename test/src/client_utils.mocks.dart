@@ -72,6 +72,11 @@ class MockClientTransportConnection extends _i1.Mock
         returnValue: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
   @override
+  _i3.Stream<void> get onPingReceived => (super.noSuchMethod(
+        Invocation.getter(#onPingReceived),
+        returnValue: _i3.Stream<void>.empty(),
+      ) as _i3.Stream<void>);
+  @override
   _i2.ClientTransportStream makeRequest(
     List<_i4.Header>? headers, {
     bool? endStream = false,

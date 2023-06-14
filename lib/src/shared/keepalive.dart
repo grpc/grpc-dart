@@ -65,7 +65,7 @@ class KeepAliveOptions {
   bool get sendPings => keepaliveTime != null;
 }
 
-enum KeepAliveState {
+enum _KeepAliveState {
   /// Transport has no active rpcs. We don't need to do any keepalives.
   idle,
 
@@ -86,8 +86,8 @@ enum KeepAliveState {
   disconnected;
 }
 
-class KeepAliveManager {
-  KeepAliveState _state;
+class ClientKeepAlive {
+  _KeepAliveState _state;
 
   final KeepAliveOptions _options;
 
@@ -106,7 +106,7 @@ class KeepAliveManager {
   final void Function() _onPingTimeout;
   final void Function() _ping;
 
-  KeepAliveManager({
+  ClientKeepAlive({
     required KeepAliveOptions options,
     required void Function() ping,
     required void Function() onPingTimeout,
@@ -114,7 +114,7 @@ class KeepAliveManager {
         _onPingTimeout = onPingTimeout,
         _options = options,
         _stopwatch = clock.stopwatch()..start(),
-        _state = KeepAliveState.idle;
+        _state = _KeepAliveState.idle;
 
   void onTransportStarted() {
     if (_keepAliveDuringTransportIdle) {
@@ -128,56 +128,56 @@ class KeepAliveManager {
     // We do not cancel the ping future here. This avoids constantly scheduling and cancellation in
     // a busy transport. Instead, we update the status here and reschedule later. So we actually
     // keep one sendPing task always in flight when there're active rpcs.
-    if (_state == KeepAliveState.pingScheduled) {
-      _state = KeepAliveState.pingDelayed;
-    } else if (_state == KeepAliveState.pingSent ||
-        _state == KeepAliveState.idleAndPingSent) {
+    if (_state == _KeepAliveState.pingScheduled) {
+      _state = _KeepAliveState.pingDelayed;
+    } else if (_state == _KeepAliveState.pingSent ||
+        _state == _KeepAliveState.idleAndPingSent) {
       // Ping acked or effectively ping acked. Cancel shutdown, and then if not idle,
       // schedule a new keep-alive ping.
       shutdownFuture?.cancel();
-      if (_state == KeepAliveState.idleAndPingSent) {
+      if (_state == _KeepAliveState.idleAndPingSent) {
         // not to schedule new pings until onTransportActive
-        _state = KeepAliveState.idle;
+        _state = _KeepAliveState.idle;
         return;
       }
       // schedule a new ping
-      _state = KeepAliveState.pingScheduled;
+      _state = _KeepAliveState.pingScheduled;
       assert(pingFuture == null);
-      pingFuture = Timer(_keepAliveTime, sendPing);
+      pingFuture = Timer(_keepAliveTime, _sendPing);
     }
   }
 
   void _shutdown() {
-    if (_state != KeepAliveState.disconnected) {
+    if (_state != _KeepAliveState.disconnected) {
       // We haven't received a ping response within the timeout. The connection is likely gone
       // already. Shutdown the transport and fail all existing rpcs.
-      _state = KeepAliveState.disconnected;
+      _state = _KeepAliveState.disconnected;
       _onPingTimeout();
     }
   }
 
-  void sendPing() {
+  void _sendPing() {
     pingFuture = null;
-    if (_state == KeepAliveState.pingScheduled) {
-      _state = KeepAliveState.pingSent;
+    if (_state == _KeepAliveState.pingScheduled) {
+      _state = _KeepAliveState.pingSent;
       // Schedule a shutdown. It fires if we don't receive the ping response within the timeout.
       shutdownFuture = Timer(_options.keepaliveTimeout, _shutdown);
       _ping();
-    } else if (_state == KeepAliveState.pingDelayed) {
+    } else if (_state == _KeepAliveState.pingDelayed) {
       // We have received some data. Reschedule the ping with the new time.
-      pingFuture = Timer(_keepAliveTime - _stopwatch.elapsed, sendPing);
-      _state = KeepAliveState.pingScheduled;
+      pingFuture = Timer(_keepAliveTime - _stopwatch.elapsed, _sendPing);
+      _state = _KeepAliveState.pingScheduled;
     }
   }
 
   void onTransportActive() {
-    if (_state == KeepAliveState.idle) {
+    if (_state == _KeepAliveState.idle) {
       // When the transport goes active, we do not reset the nextKeepaliveTime. This allows us to
       // quickly check whether the connection is still working.
-      _state = KeepAliveState.pingScheduled;
-      pingFuture ??= Timer(_keepAliveTime - _stopwatch.elapsed, sendPing);
-    } else if (_state == KeepAliveState.idleAndPingSent) {
-      _state = KeepAliveState.pingSent;
+      _state = _KeepAliveState.pingScheduled;
+      pingFuture ??= Timer(_keepAliveTime - _stopwatch.elapsed, _sendPing);
+    } else if (_state == _KeepAliveState.idleAndPingSent) {
+      _state = _KeepAliveState.pingSent;
     } // Other states are possible when keepAliveDuringTransportIdle == true
   }
 
@@ -185,18 +185,18 @@ class KeepAliveManager {
     if (_keepAliveDuringTransportIdle) {
       return;
     }
-    if (_state == KeepAliveState.pingScheduled ||
-        _state == KeepAliveState.pingDelayed) {
-      _state = KeepAliveState.idle;
+    if (_state == _KeepAliveState.pingScheduled ||
+        _state == _KeepAliveState.pingDelayed) {
+      _state = _KeepAliveState.idle;
     }
-    if (_state == KeepAliveState.pingSent) {
-      _state = KeepAliveState.idleAndPingSent;
+    if (_state == _KeepAliveState.pingSent) {
+      _state = _KeepAliveState.idleAndPingSent;
     }
   }
 
   void onTransportTermination() {
-    if (_state != KeepAliveState.disconnected) {
-      _state = KeepAliveState.disconnected;
+    if (_state != _KeepAliveState.disconnected) {
+      _state = _KeepAliveState.disconnected;
       shutdownFuture?.cancel();
       pingFuture?.cancel();
       pingFuture = null;
@@ -204,7 +204,7 @@ class KeepAliveManager {
   }
 }
 
-class ServerKeepAliveManager {
+class ServerKeepAlive {
   final Future<void> Function()? _goAwayAfterMaxPings;
   final KeepAliveOptions _options;
   final Stream<void> _pingStream;
@@ -213,7 +213,7 @@ class ServerKeepAliveManager {
   int _badPings = 0;
   Stopwatch? _timeOfLastReceivedPing;
 
-  ServerKeepAliveManager({
+  ServerKeepAlive({
     Future<void> Function()? goAwayAfterMaxPings,
     required KeepAliveOptions options,
     required Stream<void> pingStream,
@@ -232,17 +232,17 @@ class ServerKeepAliveManager {
 
   Future<void> _onPingReceived() async {
     if (_enforcesMaxPings) {
-      if (_timeOfLastReceivedPing != null &&
-          _timeOfLastReceivedPing!.elapsed >
-              _options.minRecvPingIntervalWithoutData) {
+      if (_timeOfLastReceivedPing == null) {
+        _timeOfLastReceivedPing = clock.stopwatch()
+          ..reset()
+          ..start();
+      } else if (_timeOfLastReceivedPing!.elapsed >
+          _options.minRecvPingIntervalWithoutData) {
         _badPings++;
       }
       if (_badPings + 1 > _options._http2MaxPingStrikes!) {
         await _goAwayAfterMaxPings?.call();
       }
-      (_timeOfLastReceivedPing ??= clock.stopwatch())
-        ..reset()
-        ..start();
     }
   }
 
