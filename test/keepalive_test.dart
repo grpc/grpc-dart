@@ -5,14 +5,18 @@ import 'package:grpc/src/client/connection.dart';
 import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/shared/keepalive.dart';
 import 'package:http2/transport.dart';
+import 'package:mockito/annotations.dart';
 import 'package:test/test.dart';
 
 import 'src/generated/echo.pbgrpc.dart';
 
+@GenerateNiceMocks([MockSpec<Http2ClientConnection>()])
 void main() {
-  late EchoServiceClient client;
   late Server server;
-  late FakeClientChannel channel;
+  late EchoServiceClient fakeClient;
+  late FakeClientChannel fakeChannel;
+  late EchoServiceClient unresponsiveClient;
+  late ClientChannel unresponsiveChannel;
 
   setUp(() async {
     final serverOptions = KeepAliveOptions.server(
@@ -21,6 +25,7 @@ void main() {
     );
     final clientOptions = KeepAliveOptions.client(
       keepaliveTimeMs: 10,
+      keepaliveTimeoutMs: 30,
       keepalivePermitWithoutCalls: true,
     );
 
@@ -29,7 +34,7 @@ void main() {
       keepAliveOptions: serverOptions,
     );
     await server.serve(address: 'localhost', port: 8081);
-    channel = FakeClientChannel(
+    fakeChannel = FakeClientChannel(
       'localhost',
       port: server.port!,
       options: ChannelOptions(
@@ -37,31 +42,49 @@ void main() {
         keepAlive: clientOptions,
       ),
     );
-    client = EchoServiceClient(channel);
+    fakeClient = EchoServiceClient(fakeChannel);
+
+    unresponsiveChannel = UnresponsiveClientChannel(
+      'localhost',
+      port: server.port!,
+      options: ChannelOptions(
+        credentials: ChannelCredentials.insecure(),
+        keepAlive: clientOptions,
+      ),
+    );
+    unresponsiveClient = EchoServiceClient(unresponsiveChannel);
   });
 
   tearDown(() async {
-    await channel.terminate();
+    await fakeChannel.terminate();
     await server.shutdown();
   });
 
   test('Server terminates connection after too many pings without data',
       () async {
-    await client.echo(EchoRequest());
+    await fakeClient.echo(EchoRequest());
     await Future.delayed(Duration(milliseconds: 200));
-    await client.echo(EchoRequest());
+    await fakeClient.echo(EchoRequest());
     // Check that the server closed the connection, the next request then has
     // to build a new one.
-    expect(channel.newConnectionCounter, 2);
+    expect(fakeChannel.newConnectionCounter, 2);
   });
 
   test('Server doesnt terminate connection after pings, as data is sent',
       () async {
     final timer = Timer.periodic(
-        Duration(milliseconds: 40), (timer) => client.echo(EchoRequest()));
+        Duration(milliseconds: 40), (timer) => fakeClient.echo(EchoRequest()));
     await Future.delayed(Duration(milliseconds: 200), () => timer.cancel());
     // Check that the server never closed the connection
-    expect(channel.newConnectionCounter, 1);
+    expect(fakeChannel.newConnectionCounter, 1);
+  });
+
+  test('Server doesnt ack the ping, making the client shutdown the connection',
+      () async {
+    await unresponsiveClient.echo(EchoRequest());
+    await Future.delayed(Duration(milliseconds: 200));
+    await expectLater(
+        unresponsiveClient.echo(EchoRequest()), throwsA(isA<GrpcError>()));
   });
 }
 
@@ -95,6 +118,56 @@ class FakeHttp2ClientConnection extends Http2ClientConnection {
   Future<ClientTransportConnection> connectTransport() {
     newConnectionCounter++;
     return super.connectTransport();
+  }
+
+  @override
+  set keepAliveManager(ClientKeepAlive? value) {
+    super.keepAliveManager = FakeClientKeepAlive(
+      options: super.options.keepAlive,
+      ping: value!.ping,
+      onPingTimeout: value.onPingTimeout,
+    );
+  }
+}
+
+/// A wrapper around a [FakeHttp2ClientConnection]
+class UnresponsiveClientChannel extends ClientChannel {
+  UnresponsiveClientChannel(
+    super.host, {
+    super.port = 443,
+    super.options = const ChannelOptions(),
+    super.channelShutdownHandler,
+  });
+
+  @override
+  ClientConnection createConnection() =>
+      UnresponsiveHttp2ClientConnection(host, port, options);
+}
+
+class UnresponsiveHttp2ClientConnection extends Http2ClientConnection {
+  UnresponsiveHttp2ClientConnection(super.host, super.port, super.options);
+
+  @override
+  set keepAliveManager(ClientKeepAlive? value) {
+    if (value != null) {
+      super.keepAliveManager = FakeClientKeepAlive(
+        options: super.options.keepAlive,
+        ping: value.ping,
+        onPingTimeout: value.onPingTimeout,
+      );
+    }
+  }
+}
+
+class FakeClientKeepAlive extends ClientKeepAlive {
+  FakeClientKeepAlive(
+      {required super.options,
+      required super.ping,
+      required super.onPingTimeout});
+
+  @override
+  void onFrameReceived() {
+    // Do nothing here, to simulate a server not responding to pings.
   }
 }
 

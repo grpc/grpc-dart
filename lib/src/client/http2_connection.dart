@@ -60,6 +60,12 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   ClientKeepAlive? _keepAliveManager;
 
+  ClientKeepAlive? get keepAliveManager => _keepAliveManager;
+
+  set keepAliveManager(ClientKeepAlive? value) {
+    _keepAliveManager = value;
+  }
+
   Http2ClientConnection(Object host, int port, this.options)
       : _transportConnector = _SocketTransportConnector(host, port, options);
 
@@ -104,13 +110,13 @@ class Http2ClientConnection implements connection.ClientConnection {
       _currentReconnectDelay = null;
       _transportConnection = transport;
       if (options.keepAlive.sendPings) {
-        _keepAliveManager = ClientKeepAlive(
+        keepAliveManager = ClientKeepAlive(
           options: options.keepAlive,
           ping: () => transport.ping(),
           onPingTimeout: () => shutdown(),
         );
         transport.onFrameReceived
-            .listen((_) => _keepAliveManager?.onFrameReceived());
+            .listen((_) => keepAliveManager?.onFrameReceived());
       }
       _connectionLifeTimer
         ..reset()
@@ -137,7 +143,7 @@ class Http2ClientConnection implements connection.ClientConnection {
         _connectionLifeTimer.elapsed > options.connectionTimeout;
     if (shouldRefresh) {
       _transportConnection!.finish();
-      _keepAliveManager?.onTransportTermination();
+      keepAliveManager?.onTransportTermination();
     }
     if (!isHealthy || shouldRefresh) {
       _abandonConnection();
@@ -209,14 +215,14 @@ class Http2ClientConnection implements connection.ClientConnection {
     if (_state == ConnectionState.shutdown) return;
     _setShutdownState();
     await _transportConnection?.finish();
-    _keepAliveManager?.onTransportTermination();
+    keepAliveManager?.onTransportTermination();
   }
 
   @override
   Future<void> terminate() async {
     _setShutdownState();
     await _transportConnection?.terminate();
-    _keepAliveManager?.onTransportTermination();
+    keepAliveManager?.onTransportTermination();
   }
 
   void _setShutdownState() {
@@ -237,7 +243,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     _transportConnection
         ?.finish()
         .catchError((_) {}); // TODO(jakobr): Log error.
-    _keepAliveManager?.onTransportTermination();
+    keepAliveManager?.onTransportTermination();
     _disconnect();
     _setState(ConnectionState.idle);
   }
@@ -250,12 +256,12 @@ class Http2ClientConnection implements connection.ClientConnection {
   void _handleActiveStateChanged(bool isActive) {
     if (isActive) {
       _cancelTimer();
-      _keepAliveManager?.onTransportActive();
+      keepAliveManager?.onTransportActive();
     } else {
       if (options.idleTimeout != null) {
         _timer ??= Timer(options.idleTimeout!, _handleIdleTimeout);
       }
-      _keepAliveManager?.onTransportIdle();
+      keepAliveManager?.onTransportIdle();
     }
   }
 
@@ -276,7 +282,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       _failCall(call, error);
     }
     _pendingCalls.clear();
-    _keepAliveManager?.onTransportIdle();
+    keepAliveManager?.onTransportIdle();
     _setState(ConnectionState.idle);
   }
 
@@ -288,8 +294,8 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   void _disconnect() {
     _transportConnection = null;
-    _keepAliveManager?.onTransportTermination();
-    _keepAliveManager = null;
+    keepAliveManager?.onTransportTermination();
+    keepAliveManager = null;
   }
 
   void _abandonConnection() {
@@ -304,7 +310,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     // We were not planning to close the socket.
     if (!_hasPendingCalls()) {
       // No pending calls. Just hop to idle, and wait for a new RPC.
-      _keepAliveManager?.onTransportIdle();
+      keepAliveManager?.onTransportIdle();
       _setState(ConnectionState.idle);
       return;
     }

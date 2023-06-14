@@ -77,6 +77,11 @@ class MockClientTransportConnection extends _i1.Mock
         returnValue: _i3.Stream<void>.empty(),
       ) as _i3.Stream<void>);
   @override
+  _i3.Stream<void> get onFrameReceived => (super.noSuchMethod(
+        Invocation.getter(#onFrameReceived),
+        returnValue: _i3.Stream<void>.empty(),
+      ) as _i3.Stream<void>);
+  @override
   _i2.ClientTransportStream makeRequest(
     List<_i4.Header>? headers, {
     bool? endStream = false,
