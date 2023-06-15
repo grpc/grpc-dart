@@ -227,7 +227,7 @@ class ServerKeepAlive {
     }
   }
 
-  bool get _enforcesMaxBadPings => options.maxBadPings! > 0;
+  bool get _enforcesMaxBadPings => (options.maxBadPings ?? 0) > 0;
 
   Future<void> _onPingReceived() async {
     if (_enforcesMaxBadPings) {

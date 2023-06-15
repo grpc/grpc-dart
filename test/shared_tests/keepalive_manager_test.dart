@@ -293,6 +293,37 @@ void main() {
       pingStream.close();
       dataStream.close();
     });
+    test(
+        'Sending too many pings without data doesn`t kill connection if the server doesn`t care',
+        () async {
+      final pingStream = StreamController();
+      final dataStream = StreamController();
+
+      var goAway = false;
+      ServerKeepAlive(
+        options: ServerKeepAliveOptions(
+          maxBadPings: null,
+          minIntervalBetweenPingsWithoutDataMs: 5,
+        ),
+        pingNotifier: pingStream.stream,
+        dataNotifier: dataStream.stream,
+        tooManyBadPings: () async => goAway = true,
+      ).handle();
+
+      // Send good ping
+      pingStream.sink.add(null);
+      await Future.delayed(Duration(milliseconds: 10));
+
+      // Send a lot of bad pings, that's still ok.
+      for (var i = 0; i < 50; i++) {
+        pingStream.sink.add(null);
+      }
+      await Future.delayed(Duration(milliseconds: 10));
+      expect(goAway, false);
+
+      pingStream.close();
+      dataStream.close();
+    });
 
     test('Sending many pings with data doesn`t kill connection', () async {
       final pingStream = StreamController();
