@@ -1,4 +1,4 @@
-## 3.2.0-dev
+## 3.2.0
 
 * `ChannelOptions` now exposes `connectTimeout`, which is used on the 
   socket connect. This is used to specify the maximum allowed time to wait
@@ -11,6 +11,7 @@
 * Add a `channelShutdownHandler` argument to `ClientChannel` and the subclasses.
   This callback can be used to react to channel shutdown or termination.
 * Export the `Code` protobuf enum from the `grpc.dart` library.
+* Require Dart 3.0.0 or greater.
 
 ## 3.1.0
 

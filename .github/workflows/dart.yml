@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: [dev, 2.17.0]
+        sdk: [stable, dev]
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
       - uses: dart-lang/setup-dart@d6a63dab3335f427404425de0fbfed4686d93c4f
@@ -60,7 +60,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        sdk: [dev, 2.17.0]
+        sdk: [stable, dev]
         platform: [vm, chrome]
         exclude:
           # We only run Chrome tests on Linux. No need to run them
@@ -92,3 +92,6 @@ jobs:
         run: dart pub get
       - name: Run tests
         run: dart test --platform ${{ matrix.platform }}
+      - name: Run vmservice test
+        if: ${{ matrix.platform != 'chrome' }}
+        run: dart run --enable-vm-service --timeline-streams=Dart test/timeline_test.dart 

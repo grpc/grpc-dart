@@ -38,7 +38,7 @@ class GrpcWebDecoder extends Converter<ByteBuffer, GrpcMessage> {
   }
 }
 
-class _GrpcWebConversionSink extends ChunkedConversionSink<ByteBuffer> {
+class _GrpcWebConversionSink implements ChunkedConversionSink<ByteBuffer> {
   static const int frameTypeData = 0x00;
   static const int frameTypeTrailers = 0x80;
 

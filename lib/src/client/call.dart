@@ -369,8 +369,10 @@ class ClientCall<Q, R> implements Response {
       if (!_headers.isCompleted) {
         _headerMetadata = data.metadata;
         if (_requestTimeline != null) {
-          _responseTimeline = timelineTaskFactory(
-              parent: _requestTimeline, filterKey: clientTimelineFilterKey);
+          _responseTimeline = TimelineTask(
+            parent: _requestTimeline,
+            filterKey: clientTimelineFilterKey,
+          );
         }
         _responseTimeline?.start('gRPC Response');
         _responseTimeline?.instant('Metadata received', arguments: {

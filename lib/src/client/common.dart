@@ -76,7 +76,7 @@ class ResponseStream<R> extends StreamView<R> with _ResponseMixin<dynamic, R> {
   ResponseFuture<R> get single => ResponseFuture(_call);
 }
 
-abstract class _ResponseMixin<Q, R> implements Response {
+mixin _ResponseMixin<Q, R> implements Response {
   ClientCall<Q, R> get _call;
 
   @override

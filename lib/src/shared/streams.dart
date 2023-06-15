@@ -59,7 +59,8 @@ class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
   }
 }
 
-class _GrpcMessageConversionSink extends ChunkedConversionSink<StreamMessage> {
+class _GrpcMessageConversionSink
+    implements ChunkedConversionSink<StreamMessage> {
   final Sink<GrpcMessage> _out;
   final bool _forResponse;
 
