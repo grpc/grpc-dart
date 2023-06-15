@@ -15,35 +15,35 @@ abstract class Pinger {
 }
 
 void main() {
-  late ClientKeepAlive keepAliveManager;
+  group('ClientKeepAliveManager', () {
+    late ClientKeepAlive keepAliveManager;
 
-  final pinger = MockPinger();
+    final pinger = MockPinger();
 
-  var transportOpen = true;
+    var transportOpen = true;
 
-  void initKeepAliveManager([ClientKeepAliveOptions? opt]) {
-    reset(pinger);
-    final options = opt ??
-        ClientKeepAliveOptions(
-          keepaliveTimeMs: 1000,
-          keepaliveTimeoutMs: 2000,
-          keepalivePermitWithoutCalls: false,
-        );
+    void initKeepAliveManager([ClientKeepAliveOptions? opt]) {
+      reset(pinger);
+      final options = opt ??
+          ClientKeepAliveOptions(
+            keepaliveTimeMs: 1000,
+            keepaliveTimeoutMs: 2000,
+            keepalivePermitWithoutCalls: false,
+          );
 
-    when(pinger.ping()).thenAnswer((_) async => transportOpen = true);
-    when(pinger.onPingTimeout()).thenAnswer((_) async => transportOpen = false);
+      when(pinger.ping()).thenAnswer((_) async => transportOpen = true);
+      when(pinger.onPingTimeout())
+          .thenAnswer((_) async => transportOpen = false);
 
-    keepAliveManager = ClientKeepAlive(
-      options: options,
-      ping: pinger.ping,
-      onPingTimeout: pinger.onPingTimeout,
-    );
-    transportOpen = true;
-  }
+      keepAliveManager = ClientKeepAlive(
+        options: options,
+        ping: pinger.ping,
+        onPingTimeout: pinger.onPingTimeout,
+      );
+      transportOpen = true;
+    }
 
-  setUp(() => initKeepAliveManager());
-
-  group('KeepAliveManager', () {
+    setUp(() => initKeepAliveManager());
     test('sendKeepAlivePings', () {
       FakeAsync().run((async) {
         async.elapse(Duration(milliseconds: 1));
@@ -258,22 +258,37 @@ void main() {
   });
 
   group('ServerKeepAliveManager', () {
+    late StreamController pingStream;
+    late StreamController dataStream;
+    late int maxBadPings;
+
+    var goAway = false;
+
+    void initServer([ServerKeepAliveOptions? options]) => ServerKeepAlive(
+          options: options ??
+              ServerKeepAliveOptions(
+                maxBadPings: maxBadPings,
+                minIntervalBetweenPingsWithoutDataMs: 5,
+              ),
+          pingNotifier: pingStream.stream,
+          dataNotifier: dataStream.stream,
+          tooManyBadPings: () async => goAway = true,
+        ).handle();
+
+    setUp(() {
+      pingStream = StreamController();
+      dataStream = StreamController();
+      maxBadPings = 10;
+      goAway = false;
+    });
+
+    tearDown(() {
+      pingStream.close();
+      dataStream.close();
+    });
+
     test('Sending too many pings without data kills connection', () async {
-      final pingStream = StreamController();
-      final dataStream = StreamController();
-      final maxBadPings = 10;
-
-      var goAway = false;
-      ServerKeepAlive(
-        options: ServerKeepAliveOptions(
-          maxBadPings: maxBadPings,
-          minIntervalBetweenPingsWithoutDataMs: 5,
-        ),
-        pingNotifier: pingStream.stream,
-        dataNotifier: dataStream.stream,
-        tooManyBadPings: () async => goAway = true,
-      ).handle();
-
+      initServer();
       // Send good ping
       pingStream.sink.add(null);
       await Future.delayed(Duration(milliseconds: 10));
@@ -289,27 +304,14 @@ void main() {
       pingStream.sink.add(null);
       await Future.delayed(Duration(milliseconds: 10));
       expect(goAway, true);
-
-      pingStream.close();
-      dataStream.close();
     });
     test(
         'Sending too many pings without data doesn`t kill connection if the server doesn`t care',
         () async {
-      final pingStream = StreamController();
-      final dataStream = StreamController();
-
-      var goAway = false;
-      ServerKeepAlive(
-        options: ServerKeepAliveOptions(
-          maxBadPings: null,
-          minIntervalBetweenPingsWithoutDataMs: 5,
-        ),
-        pingNotifier: pingStream.stream,
-        dataNotifier: dataStream.stream,
-        tooManyBadPings: () async => goAway = true,
-      ).handle();
-
+      initServer(ServerKeepAliveOptions(
+        maxBadPings: null,
+        minIntervalBetweenPingsWithoutDataMs: 5,
+      ));
       // Send good ping
       pingStream.sink.add(null);
       await Future.delayed(Duration(milliseconds: 10));
@@ -320,26 +322,10 @@ void main() {
       }
       await Future.delayed(Duration(milliseconds: 10));
       expect(goAway, false);
-
-      pingStream.close();
-      dataStream.close();
     });
 
     test('Sending many pings with data doesn`t kill connection', () async {
-      final pingStream = StreamController();
-      final dataStream = StreamController();
-      final maxBadPings = 10;
-
-      var goAway = false;
-      ServerKeepAlive(
-        options: ServerKeepAliveOptions(
-          maxBadPings: maxBadPings,
-          minIntervalBetweenPingsWithoutDataMs: 5,
-        ),
-        pingNotifier: pingStream.stream,
-        dataNotifier: dataStream.stream,
-        tooManyBadPings: () async => goAway = true,
-      ).handle();
+      initServer();
 
       // Send good ping
       pingStream.sink.add(null);
@@ -371,9 +357,6 @@ void main() {
       pingStream.sink.add(null);
       await Future.delayed(Duration(milliseconds: 10));
       expect(goAway, true);
-
-      pingStream.close();
-      dataStream.close();
     });
   });
 }
