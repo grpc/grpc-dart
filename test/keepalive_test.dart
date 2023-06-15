@@ -17,11 +17,11 @@ void main() {
   late ClientChannel unresponsiveChannel;
 
   setUp(() async {
-    final serverOptions = KeepAliveOptions.server(
-      http2MaxPingStrikes: 5,
-      http2MinRecvPingIntervalWithoutDataMs: 10,
+    final serverOptions = ServerKeepAliveOptions(
+      maxBadPings: 5,
+      minIntervalBetweenPingsWithoutDataMs: 10,
     );
-    final clientOptions = KeepAliveOptions.client(
+    final clientOptions = ClientKeepAliveOptions(
       keepaliveTimeMs: 10,
       keepaliveTimeoutMs: 30,
       keepalivePermitWithoutCalls: true,

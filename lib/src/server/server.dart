@@ -89,7 +89,7 @@ class ConnectionServer {
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
   final GrpcErrorHandler? _errorHandler;
-  final KeepAliveOptions _keepAliveOptions;
+  final ServerKeepAliveOptions _keepAliveOptions;
   final List<ServerHandler> _handlers = [];
 
   final _connections = <ServerTransportConnection>[];
@@ -193,7 +193,7 @@ class Server extends ConnectionServer {
   /// Create a server for the given [services].
   Server.create({
     required List<Service> services,
-    KeepAliveOptions keepAliveOptions = const KeepAliveOptions.server(),
+    ServerKeepAliveOptions keepAliveOptions = const ServerKeepAliveOptions(),
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,

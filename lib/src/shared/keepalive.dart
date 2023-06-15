@@ -3,46 +3,36 @@ import 'dart:async';
 import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 
-class KeepAliveOptions {
-  final int? _keepaliveTimeMs;
-  final int _keepaliveTimeoutMs;
+class ClientKeepAliveOptions {
+  /// How often a ping should be sent
+  final int? keepaliveTimeMs;
+  final int keepaliveTimeoutMs;
   final bool keepalivePermitWithoutCalls;
-  final int? _http2MinRecvPingIntervalWithoutData;
-  final int? _http2MaxPingStrikes;
 
-  Duration? get keepaliveTime => _keepaliveTimeMs != null
-      ? Duration(milliseconds: _keepaliveTimeMs!)
-      : null;
+  Duration? get keepaliveTime =>
+      keepaliveTimeMs != null ? Duration(milliseconds: keepaliveTimeMs!) : null;
 
-  Duration get keepaliveTimeout => Duration(milliseconds: _keepaliveTimeoutMs);
-  Duration get minRecvPingIntervalWithoutData =>
-      Duration(milliseconds: _http2MinRecvPingIntervalWithoutData!);
+  Duration get keepaliveTimeout => Duration(milliseconds: keepaliveTimeoutMs);
 
-  const KeepAliveOptions.client({
-    int? keepaliveTimeMs,
-    int keepaliveTimeoutMs = 20000,
+  const ClientKeepAliveOptions({
+    this.keepaliveTimeMs,
+    this.keepaliveTimeoutMs = 20000,
     this.keepalivePermitWithoutCalls = false,
-    int? http2MinRecvPingIntervalWithoutDataMs,
-    int? http2MaxPingStrikes,
-  })  : _keepaliveTimeMs = keepaliveTimeMs,
-        _keepaliveTimeoutMs = keepaliveTimeoutMs,
-        _http2MinRecvPingIntervalWithoutData =
-            http2MinRecvPingIntervalWithoutDataMs,
-        _http2MaxPingStrikes = http2MaxPingStrikes;
-
-  const KeepAliveOptions.server({
-    int? keepaliveTimeMs = 7200000,
-    int keepaliveTimeoutMs = 20000,
-    this.keepalivePermitWithoutCalls = false,
-    int http2MinRecvPingIntervalWithoutDataMs = 300000,
-    int http2MaxPingStrikes = 2,
-  })  : _keepaliveTimeMs = keepaliveTimeMs,
-        _keepaliveTimeoutMs = keepaliveTimeoutMs,
-        _http2MinRecvPingIntervalWithoutData =
-            http2MinRecvPingIntervalWithoutDataMs,
-        _http2MaxPingStrikes = http2MaxPingStrikes;
-
+  });
   bool get sendPings => keepaliveTime != null;
+}
+
+class ServerKeepAliveOptions {
+  final int? maxBadPings;
+  final int? minIntervalBetweenPingsWithoutDataMs;
+
+  Duration get minIntervalBetweenPingsWithoutData =>
+      Duration(milliseconds: minIntervalBetweenPingsWithoutDataMs!);
+
+  const ServerKeepAliveOptions({
+    this.minIntervalBetweenPingsWithoutDataMs = 300000,
+    this.maxBadPings = 2,
+  });
 }
 
 enum _KeepAliveState {
@@ -69,7 +59,7 @@ enum _KeepAliveState {
 class ClientKeepAlive {
   _KeepAliveState _state;
 
-  final KeepAliveOptions _options;
+  final ClientKeepAliveOptions _options;
 
   final Stopwatch _stopwatch;
 
@@ -87,7 +77,7 @@ class ClientKeepAlive {
   final void Function() ping;
 
   ClientKeepAlive({
-    required KeepAliveOptions options,
+    required ClientKeepAliveOptions options,
     required this.ping,
     required this.onPingTimeout,
   })  : _options = options,
@@ -184,7 +174,7 @@ class ClientKeepAlive {
 
 class ServerKeepAlive {
   final Future<void> Function()? _goAwayAfterMaxPings;
-  final KeepAliveOptions _options;
+  final ServerKeepAliveOptions _options;
   final Stream<void> _pingStream;
   final Stream<void> _dataStream;
 
@@ -193,7 +183,7 @@ class ServerKeepAlive {
 
   ServerKeepAlive({
     Future<void> Function()? goAwayAfterMaxPings,
-    required KeepAliveOptions options,
+    required ServerKeepAliveOptions options,
     required Stream<void> pingStream,
     required Stream<void> dataStream,
   })  : _goAwayAfterMaxPings = goAwayAfterMaxPings,
@@ -206,7 +196,7 @@ class ServerKeepAlive {
     _dataStream.listen((_) => _onDataReceived());
   }
 
-  bool get _enforcesMaxPings => _options._http2MaxPingStrikes! > 0;
+  bool get _enforcesMaxPings => _options.maxBadPings! > 0;
 
   Future<void> _onPingReceived() async {
     if (_enforcesMaxPings) {
@@ -215,10 +205,10 @@ class ServerKeepAlive {
           ..reset()
           ..start();
       } else if (_timeOfLastReceivedPing!.elapsed >
-          _options.minRecvPingIntervalWithoutData) {
+          _options.minIntervalBetweenPingsWithoutData) {
         _badPings++;
       }
-      if (_badPings + 1 > _options._http2MaxPingStrikes!) {
+      if (_badPings > _options.maxBadPings!) {
         await _goAwayAfterMaxPings?.call();
       }
     }

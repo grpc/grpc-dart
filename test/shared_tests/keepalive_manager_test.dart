@@ -21,10 +21,10 @@ void main() {
 
   var transportOpen = true;
 
-  void initKeepAliveManager([KeepAliveOptions? opt]) {
+  void initKeepAliveManager([ClientKeepAliveOptions? opt]) {
     reset(pinger);
     final options = opt ??
-        KeepAliveOptions.client(
+        ClientKeepAliveOptions(
           keepaliveTimeMs: 1000,
           keepaliveTimeoutMs: 2000,
           keepalivePermitWithoutCalls: false,
@@ -145,7 +145,7 @@ void main() {
     test('transportGoesIdle_doesntCauseIdleWhenEnabled', () {
       FakeAsync().run((async) {
         keepAliveManager.onTransportTermination();
-        initKeepAliveManager(KeepAliveOptions.client(
+        initKeepAliveManager(ClientKeepAliveOptions(
           keepaliveTimeMs: 1000,
           keepaliveTimeoutMs: 2000,
           keepalivePermitWithoutCalls: true,
@@ -261,27 +261,86 @@ void main() {
     test('Sending too many pings without data kills connection', () async {
       final pingStream = StreamController();
       final dataStream = StreamController();
-      final http2maxPingStrikes = 10;
+      final maxBadPings = 10;
 
       var goAway = false;
       ServerKeepAlive(
-        options: KeepAliveOptions.server(
-          http2MaxPingStrikes: http2maxPingStrikes,
-          http2MinRecvPingIntervalWithoutDataMs: 5,
+        options: ServerKeepAliveOptions(
+          maxBadPings: maxBadPings,
+          minIntervalBetweenPingsWithoutDataMs: 5,
         ),
         pingStream: pingStream.stream,
         dataStream: dataStream.stream,
         goAwayAfterMaxPings: () async => goAway = true,
       ).handle();
 
-      for (var i = 0; i < http2maxPingStrikes; i++) {
+      // Send good ping
+      pingStream.sink.add(null);
+      await Future.delayed(Duration(milliseconds: 10));
+
+      // Send [maxBadPings] bad pings, that's still ok
+      for (var i = 0; i < maxBadPings; i++) {
         pingStream.sink.add(null);
-        await Future.delayed(Duration(milliseconds: 10));
-        expect(goAway, false);
       }
+      await Future.delayed(Duration(milliseconds: 10));
+      expect(goAway, false);
+
+      // Send another bad ping; that's one too many!
       pingStream.sink.add(null);
       await Future.delayed(Duration(milliseconds: 10));
       expect(goAway, true);
+
+      pingStream.close();
+      dataStream.close();
+    });
+
+    test('Sending many pings with data doesn`t kill connection', () async {
+      final pingStream = StreamController();
+      final dataStream = StreamController();
+      final maxBadPings = 10;
+
+      var goAway = false;
+      ServerKeepAlive(
+        options: ServerKeepAliveOptions(
+          maxBadPings: maxBadPings,
+          minIntervalBetweenPingsWithoutDataMs: 5,
+        ),
+        pingStream: pingStream.stream,
+        dataStream: dataStream.stream,
+        goAwayAfterMaxPings: () async => goAway = true,
+      ).handle();
+
+      // Send good ping
+      pingStream.sink.add(null);
+      await Future.delayed(Duration(milliseconds: 10));
+
+      // Send [maxBadPings] bad pings, that's still ok
+      for (var i = 0; i < maxBadPings; i++) {
+        pingStream.sink.add(null);
+      }
+      await Future.delayed(Duration(milliseconds: 10));
+      expect(goAway, false);
+
+      // Sending data resets the bad ping count
+      dataStream.add(null);
+      await Future.delayed(Duration(milliseconds: 10));
+
+      // Send good ping
+      pingStream.sink.add(null);
+      await Future.delayed(Duration(milliseconds: 10));
+
+      // Send [maxBadPings] bad pings, that's still ok
+      for (var i = 0; i < maxBadPings; i++) {
+        pingStream.sink.add(null);
+      }
+      await Future.delayed(Duration(milliseconds: 10));
+      expect(goAway, false);
+
+      // Send another bad ping; that's one too many!
+      pingStream.sink.add(null);
+      await Future.delayed(Duration(milliseconds: 10));
+      expect(goAway, true);
+
       pingStream.close();
       dataStream.close();
     });

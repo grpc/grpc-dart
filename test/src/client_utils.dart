@@ -79,7 +79,7 @@ class FakeChannelOptions implements ChannelOptions {
   CodecRegistry codecRegistry = CodecRegistry.empty();
 
   @override
-  KeepAliveOptions get keepAlive => const KeepAliveOptions.client();
+  ClientKeepAliveOptions get keepAlive => const ClientKeepAliveOptions();
 }
 
 class FakeChannel extends ClientChannel {

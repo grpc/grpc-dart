@@ -137,7 +137,7 @@ class ConnectionServerHarness extends _Harness {
   @override
   ConnectionServer createServer() => ConnectionServer(
         <Service>[service],
-        KeepAliveOptions.server(),
+        ServerKeepAliveOptions(),
         <Interceptor>[interceptor],
       );
 

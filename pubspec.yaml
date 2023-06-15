@@ -17,7 +17,9 @@ dependencies:
   meta: ^1.3.0
   http: ^0.13.0
   http2:
-    path: ../http2clean
+    git:
+      url: git@github.com:dart-lang/http2.git
+      ref: exposePings
   protobuf: ^2.0.0
   clock: ^1.1.1
 
