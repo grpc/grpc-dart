@@ -3,10 +3,17 @@ import 'dart:async';
 import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 
+/// Options to configure a gRPC client for sending keepalive signals.
 class ClientKeepAliveOptions {
-  /// How often a ping should be sent
+  /// How often a ping should be sent to keep the connection alive.
   final int? keepaliveTimeMs;
+
+  /// How long the connection should wait before shutting down after no response
+  /// to a ping.
   final int keepaliveTimeoutMs;
+
+  /// If a connection with no active calls should be kept alive by sending
+  /// pings.
   final bool keepalivePermitWithoutCalls;
 
   Duration? get keepaliveTime =>
@@ -22,6 +29,7 @@ class ClientKeepAliveOptions {
   bool get sendPings => keepaliveTime != null;
 }
 
+/// Options to configure a gRPC server for receiving keepalive signals.
 class ServerKeepAliveOptions {
   final int? maxBadPings;
   final int? minIntervalBetweenPingsWithoutDataMs;
@@ -35,7 +43,7 @@ class ServerKeepAliveOptions {
   });
 }
 
-enum _KeepAliveState {
+enum _ClientKeepAliveState {
   /// Transport has no active rpcs. We don't need to do any keepalives.
   idle,
 
@@ -56,10 +64,12 @@ enum _KeepAliveState {
   disconnected;
 }
 
+/// A keep alive "manager", deciding when to send pings or shutdown based on the
+/// [ClientKeepAliveOptions].
 class ClientKeepAlive {
-  _KeepAliveState _state;
+  _ClientKeepAliveState _state;
 
-  final ClientKeepAliveOptions _options;
+  final ClientKeepAliveOptions options;
 
   final Stopwatch _stopwatch;
 
@@ -69,20 +79,18 @@ class ClientKeepAlive {
   @visibleForTesting
   Timer? pingFuture;
 
-  bool get _keepAliveDuringTransportIdle =>
-      _options.keepalivePermitWithoutCalls;
+  bool get _keepAliveDuringTransportIdle => options.keepalivePermitWithoutCalls;
 
-  Duration get _keepAliveTime => _options.keepaliveTime ?? Duration(days: 365);
+  Duration get _keepAliveTime => options.keepaliveTime ?? Duration(days: 365);
   final void Function() onPingTimeout;
   final void Function() ping;
 
   ClientKeepAlive({
-    required ClientKeepAliveOptions options,
+    required this.options,
     required this.ping,
     required this.onPingTimeout,
-  })  : _options = options,
-        _stopwatch = clock.stopwatch()..start(),
-        _state = _KeepAliveState.idle;
+  })  : _stopwatch = clock.stopwatch()..start(),
+        _state = _ClientKeepAliveState.idle;
 
   void onTransportStarted() {
     if (_keepAliveDuringTransportIdle) {
@@ -90,81 +98,93 @@ class ClientKeepAlive {
     }
   }
 
+  /// If we receive any kind of frame from the server, that means the connection
+  /// is still open, so we reset the ping timer.
   void onFrameReceived() {
     _stopwatch.reset();
     _stopwatch.start();
-    // We do not cancel the ping future here. This avoids constantly scheduling and cancellation in
-    // a busy transport. Instead, we update the status here and reschedule later. So we actually
-    // keep one sendPing task always in flight when there're active rpcs.
-    if (_state == _KeepAliveState.pingScheduled) {
-      _state = _KeepAliveState.pingDelayed;
-    } else if (_state == _KeepAliveState.pingSent ||
-        _state == _KeepAliveState.idleAndPingSent) {
-      // Ping acked or effectively ping acked. Cancel shutdown, and then if not idle,
-      // schedule a new keep-alive ping.
+    // We do not cancel the ping future here. This avoids constantly scheduling
+    // and cancellation in a busy transport. Instead, we update the status here
+    // and reschedule later. So we actually keep one sendPing task always in
+    // flight when there're active rpcs.
+    if (_state == _ClientKeepAliveState.pingScheduled) {
+      _state = _ClientKeepAliveState.pingDelayed;
+    } else if (_state == _ClientKeepAliveState.pingSent ||
+        _state == _ClientKeepAliveState.idleAndPingSent) {
+      // Ping acked or effectively ping acked. Cancel shutdown, and then if not
+      // idle, schedule a new keep-alive ping.
       shutdownFuture?.cancel();
-      if (_state == _KeepAliveState.idleAndPingSent) {
+      if (_state == _ClientKeepAliveState.idleAndPingSent) {
         // not to schedule new pings until onTransportActive
-        _state = _KeepAliveState.idle;
+        _state = _ClientKeepAliveState.idle;
         return;
       }
       // schedule a new ping
-      _state = _KeepAliveState.pingScheduled;
+      _state = _ClientKeepAliveState.pingScheduled;
       assert(pingFuture == null);
       pingFuture = Timer(_keepAliveTime, _sendPing);
     }
   }
 
   void _shutdown() {
-    if (_state != _KeepAliveState.disconnected) {
-      // We haven't received a ping response within the timeout. The connection is likely gone
-      // already. Shutdown the transport and fail all existing rpcs.
-      _state = _KeepAliveState.disconnected;
+    if (_state != _ClientKeepAliveState.disconnected) {
+      // We haven't received a ping response within the timeout. The connection
+      //is likely gone already. Shutdown the transport and fail all existing
+      //rpcs.
+      _state = _ClientKeepAliveState.disconnected;
       onPingTimeout();
     }
   }
 
   void _sendPing() {
     pingFuture = null;
-    if (_state == _KeepAliveState.pingScheduled) {
-      _state = _KeepAliveState.pingSent;
-      // Schedule a shutdown. It fires if we don't receive the ping response within the timeout.
-      shutdownFuture = Timer(_options.keepaliveTimeout, _shutdown);
+    if (_state == _ClientKeepAliveState.pingScheduled) {
+      _state = _ClientKeepAliveState.pingSent;
+      // Schedule a shutdown. It fires if we don't receive the ping response
+      // within the timeout.
+      shutdownFuture = Timer(options.keepaliveTimeout, _shutdown);
       ping();
-    } else if (_state == _KeepAliveState.pingDelayed) {
+    } else if (_state == _ClientKeepAliveState.pingDelayed) {
       // We have received some data. Reschedule the ping with the new time.
       pingFuture = Timer(_keepAliveTime - _stopwatch.elapsed, _sendPing);
-      _state = _KeepAliveState.pingScheduled;
+      _state = _ClientKeepAliveState.pingScheduled;
     }
   }
 
+  /// When the transport becomes active, we start sending pings every
+  /// [_keepAliveTime].
   void onTransportActive() {
-    if (_state == _KeepAliveState.idle) {
-      // When the transport goes active, we do not reset the nextKeepaliveTime. This allows us to
-      // quickly check whether the connection is still working.
-      _state = _KeepAliveState.pingScheduled;
+    if (_state == _ClientKeepAliveState.idle) {
+      // When the transport goes active, we do not reset the nextKeepaliveTime.
+      // This allows us to quickly check whether the connection is still
+      // working.
+      _state = _ClientKeepAliveState.pingScheduled;
       pingFuture ??= Timer(_keepAliveTime - _stopwatch.elapsed, _sendPing);
-    } else if (_state == _KeepAliveState.idleAndPingSent) {
-      _state = _KeepAliveState.pingSent;
+    } else if (_state == _ClientKeepAliveState.idleAndPingSent) {
+      _state = _ClientKeepAliveState.pingSent;
     } // Other states are possible when keepAliveDuringTransportIdle == true
   }
 
+  /// If the transport has become idle and [_keepAliveDuringTransportIdle] is
+  /// set, nothing changes, we still send pings and shutdown on no response.
+  ///
+  /// Otherwise, we stop sending pings.
   void onTransportIdle() {
     if (_keepAliveDuringTransportIdle) {
       return;
     }
-    if (_state == _KeepAliveState.pingScheduled ||
-        _state == _KeepAliveState.pingDelayed) {
-      _state = _KeepAliveState.idle;
+    if (_state == _ClientKeepAliveState.pingScheduled ||
+        _state == _ClientKeepAliveState.pingDelayed) {
+      _state = _ClientKeepAliveState.idle;
     }
-    if (_state == _KeepAliveState.pingSent) {
-      _state = _KeepAliveState.idleAndPingSent;
+    if (_state == _ClientKeepAliveState.pingSent) {
+      _state = _ClientKeepAliveState.idleAndPingSent;
     }
   }
 
   void onTransportTermination() {
-    if (_state != _KeepAliveState.disconnected) {
-      _state = _KeepAliveState.disconnected;
+    if (_state != _ClientKeepAliveState.disconnected) {
+      _state = _ClientKeepAliveState.disconnected;
       shutdownFuture?.cancel();
       pingFuture?.cancel();
       pingFuture = null;
@@ -172,50 +192,61 @@ class ClientKeepAlive {
   }
 }
 
+/// A keep alive "manager", deciding what do to when receiving pings from a
+/// client trying to keep the connection alive, based on the set
+/// [ServerKeepAliveOptions].
 class ServerKeepAlive {
-  final Future<void> Function()? _goAwayAfterMaxPings;
-  final ServerKeepAliveOptions _options;
-  final Stream<void> _pingStream;
-  final Stream<void> _dataStream;
+  /// What to do after receiving too many bad pings, probably shut down the
+  /// connection to not be DDoSed.
+  final Future<void> Function()? tooManyBadPings;
+
+  final ServerKeepAliveOptions options;
+
+  /// A stream of events for every time the server gets pinged.
+  final Stream<void> pingNotifier;
+
+  /// A stream of events for every time the server receives data.
+  final Stream<void> dataNotifier;
 
   int _badPings = 0;
   Stopwatch? _timeOfLastReceivedPing;
 
   ServerKeepAlive({
-    Future<void> Function()? goAwayAfterMaxPings,
-    required ServerKeepAliveOptions options,
-    required Stream<void> pingStream,
-    required Stream<void> dataStream,
-  })  : _goAwayAfterMaxPings = goAwayAfterMaxPings,
-        _options = options,
-        _pingStream = pingStream,
-        _dataStream = dataStream;
+    this.tooManyBadPings,
+    required this.options,
+    required this.pingNotifier,
+    required this.dataNotifier,
+  });
 
   void handle() {
-    _pingStream.listen((_) => _onPingReceived());
-    _dataStream.listen((_) => _onDataReceived());
+    // If we don't care about bad pings, there is not point in listening to
+    // events.
+    if (_enforcesMaxBadPings) {
+      pingNotifier.listen((_) => _onPingReceived());
+      dataNotifier.listen((_) => _onDataReceived());
+    }
   }
 
-  bool get _enforcesMaxPings => _options.maxBadPings! > 0;
+  bool get _enforcesMaxBadPings => options.maxBadPings! > 0;
 
   Future<void> _onPingReceived() async {
-    if (_enforcesMaxPings) {
+    if (_enforcesMaxBadPings) {
       if (_timeOfLastReceivedPing == null) {
         _timeOfLastReceivedPing = clock.stopwatch()
           ..reset()
           ..start();
       } else if (_timeOfLastReceivedPing!.elapsed >
-          _options.minIntervalBetweenPingsWithoutData) {
+          options.minIntervalBetweenPingsWithoutData) {
         _badPings++;
       }
-      if (_badPings > _options.maxBadPings!) {
-        await _goAwayAfterMaxPings?.call();
+      if (_badPings > options.maxBadPings!) {
+        await tooManyBadPings?.call();
       }
     }
   }
 
   void _onDataReceived() {
-    if (_enforcesMaxPings) {
+    if (_enforcesMaxBadPings) {
       _badPings = 0;
       _timeOfLastReceivedPing = null;
     }

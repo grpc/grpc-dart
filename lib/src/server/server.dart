@@ -122,10 +122,10 @@ class ConnectionServer {
     final onDataReceivedController = StreamController<void>();
     ServerKeepAlive(
       options: _keepAliveOptions,
-      goAwayAfterMaxPings: () async =>
+      tooManyBadPings: () async =>
           await connection.terminate(ErrorCode.ENHANCE_YOUR_CALM),
-      pingStream: connection.onPingReceived,
-      dataStream: onDataReceivedController.stream,
+      pingNotifier: connection.onPingReceived,
+      dataNotifier: onDataReceivedController.stream,
     ).handle();
     connection.incomingStreams.listen((stream) {
       _handlers.add(serveStream_(

@@ -269,9 +269,9 @@ void main() {
           maxBadPings: maxBadPings,
           minIntervalBetweenPingsWithoutDataMs: 5,
         ),
-        pingStream: pingStream.stream,
-        dataStream: dataStream.stream,
-        goAwayAfterMaxPings: () async => goAway = true,
+        pingNotifier: pingStream.stream,
+        dataNotifier: dataStream.stream,
+        tooManyBadPings: () async => goAway = true,
       ).handle();
 
       // Send good ping
@@ -305,9 +305,9 @@ void main() {
           maxBadPings: maxBadPings,
           minIntervalBetweenPingsWithoutDataMs: 5,
         ),
-        pingStream: pingStream.stream,
-        dataStream: dataStream.stream,
-        goAwayAfterMaxPings: () async => goAway = true,
+        pingNotifier: pingStream.stream,
+        dataNotifier: dataStream.stream,
+        tooManyBadPings: () async => goAway = true,
       ).handle();
 
       // Send good ping
