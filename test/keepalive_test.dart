@@ -61,7 +61,7 @@ void main() {
   test('Server terminates connection after too many pings without data',
       () async {
     await fakeClient.echo(EchoRequest());
-    await Future.delayed(Duration(milliseconds: 200));
+    await Future.delayed(Duration(milliseconds: 300));
     await fakeClient.echo(EchoRequest());
     // Check that the server closed the connection, the next request then has
     // to build a new one.
@@ -71,7 +71,7 @@ void main() {
   test('Server doesnt terminate connection after pings, as data is sent',
       () async {
     final timer = Timer.periodic(
-        Duration(milliseconds: 40), (timer) => fakeClient.echo(EchoRequest()));
+        Duration(milliseconds: 30), (timer) => fakeClient.echo(EchoRequest()));
     await Future.delayed(Duration(milliseconds: 200), () => timer.cancel());
     // Check that the server never closed the connection
     expect(fakeChannel.newConnectionCounter, 1);

@@ -58,13 +58,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   Duration? _currentReconnectDelay;
 
-  ClientKeepAlive? _keepAliveManager;
-
-  ClientKeepAlive? get keepAliveManager => _keepAliveManager;
-
-  set keepAliveManager(ClientKeepAlive? value) {
-    _keepAliveManager = value;
-  }
+  ClientKeepAlive? keepAliveManager;
 
   Http2ClientConnection(Object host, int port, this.options)
       : _transportConnector = _SocketTransportConnector(host, port, options);
