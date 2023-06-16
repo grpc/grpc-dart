@@ -1,3 +1,7 @@
+## 3.2.1
+
+* `package:http` now supports more versions: `>=0.13.0 <2.0.0`. 
+
 ## 3.2.0
 
 * `ChannelOptions` now exposes `connectTimeout`, which is used on the 
