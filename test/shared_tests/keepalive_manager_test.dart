@@ -124,7 +124,7 @@ void main() {
         expect(keepAliveManager.state is Disconnected, true);
       });
     });
-    test('transportGoesIdle', () {
+    test('transportGoesIdle 2', () {
       FakeAsync().run((async) {
         // Transport becomes active. We should schedule keepalive pings.
         keepAliveManager.onTransportActive();

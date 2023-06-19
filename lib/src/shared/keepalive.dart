@@ -42,11 +42,11 @@ sealed class ClientKeepAliveState {
 
 /// Transport has no active rpcs. We don't need to do any keepalives.
 final class Idle extends ClientKeepAliveState {
-  final Stopwatch stopwatch;
   final Timer? pingTimer;
+  final Stopwatch timeSinceFrame;
 
   Idle([this.pingTimer, Stopwatch? stopwatch])
-      : stopwatch = stopwatch ?? clock.stopwatch()
+      : timeSinceFrame = stopwatch ?? clock.stopwatch()
           ..start();
 
   @override
@@ -58,17 +58,19 @@ final class Idle extends ClientKeepAliveState {
         // This allows us to quickly check whether the connection is still
         // working.
         final timer = Timer(
-          keepAlive._keepAliveTime - stopwatch.elapsed,
+          keepAlive.keepAliveTime - timeSinceFrame.elapsed,
           keepAlive.sendPing,
         );
-        return PingScheduled(pingTimer ?? timer, stopwatch);
+        return PingScheduled(pingTimer ?? timer, timeSinceFrame);
       default:
         return null;
     }
   }
 
   @override
-  void disconnect() => pingTimer?.cancel();
+  void disconnect() {
+    pingTimer?.cancel();
+  }
 }
 
 /// We have scheduled a ping to be sent in the future. We may decide to delay
@@ -98,7 +100,9 @@ final class PingScheduled extends ClientKeepAliveState {
         // within the timeout.
         keepAlive.ping();
         return ShutdownScheduled(
-            Timer(keepAlive.options.timeout, keepAlive._shutdown));
+          Timer(keepAlive.options.timeout, keepAlive._shutdown),
+          false,
+        );
       default:
         return null;
     }
@@ -111,24 +115,22 @@ final class PingScheduled extends ClientKeepAliveState {
 /// We need to delay the scheduled keepalive ping.
 final class PingDelayed extends ClientKeepAliveState {
   final Timer pingTimer;
-  final Stopwatch stopwatch;
+  final Stopwatch timeSinceFrame;
 
-  PingDelayed(this.pingTimer, [Stopwatch? stopwatch])
-      : stopwatch = stopwatch ?? clock.stopwatch()
-          ..start();
+  PingDelayed(this.pingTimer) : timeSinceFrame = clock.stopwatch()..start();
 
   @override
   ClientKeepAliveState? onEvent(
       ClientKeepAliveEvent event, ClientKeepAlive keepAlive) {
     switch (event) {
       case OnTransportIdle():
-        return Idle(pingTimer, stopwatch);
+        return Idle(pingTimer, timeSinceFrame);
       case SendPing():
         final pingTimer = Timer(
-          keepAlive._keepAliveTime - stopwatch.elapsed,
+          keepAlive.keepAliveTime - timeSinceFrame.elapsed,
           keepAlive.sendPing,
         );
-        return PingScheduled(pingTimer, stopwatch);
+        return PingScheduled(pingTimer, timeSinceFrame);
       default:
         return null;
     }
@@ -140,10 +142,10 @@ final class PingDelayed extends ClientKeepAliveState {
 
 /// The ping has been sent out. Waiting for a ping response.
 final class ShutdownScheduled extends ClientKeepAliveState {
-  bool isNotIdle = true;
+  final bool isIdle;
   final Timer shutdownTimer;
 
-  ShutdownScheduled(this.shutdownTimer);
+  ShutdownScheduled(this.shutdownTimer, this.isIdle);
 
   @override
   ClientKeepAliveState? onEvent(
@@ -154,15 +156,13 @@ final class ShutdownScheduled extends ClientKeepAliveState {
         // idle, schedule a new keep-alive ping.
         shutdownTimer.cancel();
         // schedule a new ping
-        return isNotIdle
-            ? PingScheduled(Timer(keepAlive._keepAliveTime, keepAlive.sendPing))
-            : Idle();
+        return isIdle
+            ? Idle()
+            : PingScheduled(Timer(keepAlive.keepAliveTime, keepAlive.sendPing));
       case OnTransportIdle():
-        isNotIdle = false;
-        return null;
+        return ShutdownScheduled(shutdownTimer, true);
       case OnTransportActive():
-        isNotIdle = true;
-        return null;
+        return ShutdownScheduled(shutdownTimer, false);
       default:
         return null;
     }
@@ -196,13 +196,13 @@ final class SendPing extends ClientKeepAliveEvent {}
 /// A keep alive "manager", deciding when to send pings or shutdown based on the
 /// [ClientKeepAliveOptions].
 class ClientKeepAlive {
-  ClientKeepAliveState state = Idle(null);
+  ClientKeepAliveState state = Idle();
 
   final ClientKeepAliveOptions options;
 
   bool get _keepAliveDuringTransportIdle => options.permitWithoutCalls;
 
-  Duration get _keepAliveTime => options.pingInterval ?? Duration(days: 365);
+  Duration get keepAliveTime => options.pingInterval ?? Duration(days: 365);
 
   final void Function() onPingTimeout;
   final void Function() ping;
@@ -236,7 +236,7 @@ class ClientKeepAlive {
   void sendPing() => setState(SendPing());
 
   /// When the transport becomes active, we start sending pings every
-  /// [_keepAliveTime].
+  /// [keepAliveTime].
   void onTransportActive() => setState(OnTransportActive());
 
   /// If the transport has become idle and [_keepAliveDuringTransportIdle] is
