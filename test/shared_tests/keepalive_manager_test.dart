@@ -99,7 +99,7 @@ void main() {
         keepAliveManager.onTransportTermination();
 
         // Shutdown task has been cancelled.
-        expect(keepAliveManager.shutdownTimer?.isActive, false);
+        expect(keepAliveManager.shutdownTimer?.isActive ?? false, false);
       });
     });
     test('keepAlivePingTimesOut', () {
@@ -183,7 +183,7 @@ void main() {
         keepAliveManager.onTransportIdle();
         async.elapse(Duration(milliseconds: 100));
         keepAliveManager.onFrameReceived();
-        expect(keepAliveManager.shutdownTimer?.isActive, false);
+        expect(keepAliveManager.shutdownTimer?.isActive ?? false, false);
         expect(keepAliveManager.pingTimer, isNull);
         // Transport becomes active again. Another ping is scheduled.
         keepAliveManager.onTransportActive();
@@ -230,7 +230,7 @@ void main() {
         // Transport is shutting down.
         keepAliveManager.onTransportTermination();
         // Shutdown task has been cancelled.
-        expect(keepAliveManager.shutdownTimer?.isActive, false);
+        expect(keepAliveManager.shutdownTimer?.isActive ?? false, false);
       });
     });
     test('pingSentThenIdleThenActiveThenAck', () {

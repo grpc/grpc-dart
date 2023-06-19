@@ -126,6 +126,7 @@ class ClientKeepAlive {
       // Ping acked or effectively ping acked. Cancel shutdown, and then if not
       // idle, schedule a new keep-alive ping.
       shutdownTimer?.cancel();
+      shutdownTimer = null;
       if (_state == _ClientKeepAliveState.idleAndPingSent) {
         // not to schedule new pings until onTransportActive
         _state = _ClientKeepAliveState.idle;
@@ -198,6 +199,7 @@ class ClientKeepAlive {
     if (_state != _ClientKeepAliveState.disconnected) {
       _state = _ClientKeepAliveState.disconnected;
       shutdownTimer?.cancel();
+      shutdownTimer = null;
       pingTimer?.cancel();
       pingTimer = null;
     }
