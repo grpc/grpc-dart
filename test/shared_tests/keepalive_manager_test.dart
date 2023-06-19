@@ -99,47 +99,53 @@ void main() {
         keepAliveManager.onTransportTermination();
 
         // Shutdown task has been cancelled.
-        expect(keepAliveManager.shutdownTimer?.isActive ?? false, false);
+        expect(keepAliveManager.state is Disconnected, true);
       });
     });
     test('keepAlivePingTimesOut', () {
       FakeAsync().run((async) {
         // Transport becomes active. We should schedule keepalive pings.
         keepAliveManager.onTransportActive();
+        expect(keepAliveManager.state is PingScheduled, true);
 
         // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.
         async.elapse(Duration(milliseconds: 1001));
         verify(pinger.ping()).called(1);
+        expect(keepAliveManager.state is ShutdownScheduled, true);
 
         // We do not receive the ping response. Shutdown runnable runs.
         async.elapse(Duration(milliseconds: 2000));
         verify(pinger.onPingTimeout()).called(1);
+        expect(keepAliveManager.state is Disconnected, true);
 
         // We receive the ping response too late.
         keepAliveManager.onFrameReceived();
         // No more ping should be scheduled.
-        expect(keepAliveManager.pingTimer, isNull);
+        expect(keepAliveManager.state is Disconnected, true);
       });
     });
     test('transportGoesIdle', () {
       FakeAsync().run((async) {
         // Transport becomes active. We should schedule keepalive pings.
         keepAliveManager.onTransportActive();
-        expect(keepAliveManager.pingTimer, isNotNull);
+        expect(keepAliveManager.state is PingScheduled, true);
 
         // Transport becomes idle. Nothing should happen when ping runnable runs.
         keepAliveManager.onTransportIdle();
+        expect(keepAliveManager.state is Idle, true);
         async.elapse(Duration(milliseconds: 1000));
         // Ping was not sent.
         verifyNever(pinger.ping());
         // No new ping got scheduled.
-        expect(keepAliveManager.pingTimer, isNull);
+        expect(keepAliveManager.state is Idle, true);
 
         // But when transport goes back to active
         keepAliveManager.onTransportActive();
+        expect(keepAliveManager.state is PingScheduled, true);
         // Ping is now sent.
         async.elapse(Duration(seconds: 1));
         verify(pinger.ping()).called(1);
+        expect(keepAliveManager.state is ShutdownScheduled, true);
       });
     });
     test('transportGoesIdle_doesntCauseIdleWhenEnabled', () {
@@ -153,7 +159,7 @@ void main() {
         keepAliveManager.onTransportStarted();
 
         // Keepalive scheduling should have started immediately.
-        expect(keepAliveManager.pingTimer, isNotNull);
+        expect(keepAliveManager.state is PingScheduled, true);
 
         keepAliveManager.onTransportActive();
 
@@ -163,9 +169,10 @@ void main() {
         // Ping was sent.
         verify(pinger.ping()).called(1);
         // Shutdown is scheduled.
-        expect(keepAliveManager.shutdownTimer, isNotNull);
+        expect(keepAliveManager.state is ShutdownScheduled, true);
         // Shutdown is triggered.
         async.elapse(Duration(milliseconds: 2000));
+        expect(keepAliveManager.state is Disconnected, true);
         verify(pinger.onPingTimeout()).called(1);
       });
     });
@@ -177,24 +184,24 @@ void main() {
         // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.
         async.elapse(Duration(milliseconds: 1000));
         verify(pinger.ping()).called(1);
-        expect(keepAliveManager.shutdownTimer, isNotNull);
+        expect(keepAliveManager.state is ShutdownScheduled, true);
 
         // Transport becomes idle. No more ping should be scheduled after we receive a ping response.
         keepAliveManager.onTransportIdle();
         async.elapse(Duration(milliseconds: 100));
         keepAliveManager.onFrameReceived();
-        expect(keepAliveManager.shutdownTimer?.isActive ?? false, false);
-        expect(keepAliveManager.pingTimer, isNull);
+        expect(keepAliveManager.state is ShutdownScheduled, false);
+        expect(keepAliveManager.state is Idle, true);
         // Transport becomes active again. Another ping is scheduled.
         keepAliveManager.onTransportActive();
-        expect(keepAliveManager.pingTimer, isNotNull);
+        expect(keepAliveManager.state is PingScheduled, true);
       });
     });
     test('transportGoesIdleBeforePingSent', () {
       FakeAsync().run((async) {
         // Transport becomes active. We should schedule keepalive pings.
         keepAliveManager.onTransportActive();
-        final pingFuture = keepAliveManager.pingTimer;
+        final pingFuture = (keepAliveManager.state as PingScheduled).pingTimer;
         expect(pingFuture, isNotNull);
 
         // Data is received, and we go to ping delayed
@@ -205,18 +212,18 @@ void main() {
 
         // Transport becomes active again, we don't need to reschedule another ping
         keepAliveManager.onTransportActive();
-        expect(keepAliveManager.pingTimer, pingFuture);
+        expect((keepAliveManager.state as PingScheduled).pingTimer, pingFuture);
       });
     });
     test('transportShutsdownAfterPingScheduled', () {
       FakeAsync().run((async) {
         // Ping will be scheduled.
         keepAliveManager.onTransportActive();
-        expect(keepAliveManager.pingTimer, isNotNull);
+        expect(keepAliveManager.state is PingScheduled, true);
         // Transport is shutting down.
         keepAliveManager.onTransportTermination();
         // Ping future should have been cancelled.
-        expect(keepAliveManager.pingTimer, isNull);
+        expect(keepAliveManager.state is Disconnected, true);
       });
     });
     test('transportShutsdownAfterPingSent', () {
@@ -225,12 +232,12 @@ void main() {
         // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.
         async.elapse(Duration(milliseconds: 1000));
         verify(pinger.ping()).called(1);
-        expect(keepAliveManager.shutdownTimer, isNotNull);
+        expect(keepAliveManager.state is ShutdownScheduled, true);
 
         // Transport is shutting down.
         keepAliveManager.onTransportTermination();
         // Shutdown task has been cancelled.
-        expect(keepAliveManager.shutdownTimer?.isActive ?? false, false);
+        expect(keepAliveManager.state is ShutdownScheduled, false);
       });
     });
     test('pingSentThenIdleThenActiveThenAck', () {
@@ -241,7 +248,7 @@ void main() {
         verify(pinger.ping()).called(1);
 
         // shutdown scheduled
-        expect(keepAliveManager.shutdownTimer, isNotNull);
+        expect(keepAliveManager.state is ShutdownScheduled, true);
 
         keepAliveManager.onTransportIdle();
 
@@ -250,7 +257,7 @@ void main() {
         keepAliveManager.onFrameReceived();
 
         // another ping scheduled
-        expect(keepAliveManager.pingTimer, isNotNull);
+        expect(keepAliveManager.state is PingScheduled, true);
         async.elapse(Duration(milliseconds: 1000));
         verify(pinger.ping()).called(1);
       });
