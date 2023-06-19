@@ -19,7 +19,6 @@ dependencies:
   http2:
     git: #TODO: remove before merge
       url: git@github.com:dart-lang/http2.git
-      ref: exposePings
   protobuf: ^2.0.0
   clock: ^1.1.1
 
