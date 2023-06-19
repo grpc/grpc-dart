@@ -3,42 +3,53 @@ import 'dart:async';
 import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 
+/// KeepAlive support for gRPC, see
+/// https://github.com/grpc/grpc/blob/master/doc/keepalive.md.
+
 /// Options to configure a gRPC client for sending keepalive signals.
 class ClientKeepAliveOptions {
   /// How often a ping should be sent to keep the connection alive.
-  final int? keepaliveTimeMs;
+  ///
+  /// `GRPC_ARG_KEEPALIVE_TIME_MS` in the docs.
+  final Duration? pingInterval;
 
   /// How long the connection should wait before shutting down after no response
   /// to a ping.
-  final int keepaliveTimeoutMs;
+  ///
+  /// `GRPC_ARG_KEEPALIVE_TIMEOUT_MS` in the docs.
+  final Duration timeout;
 
   /// If a connection with no active calls should be kept alive by sending
   /// pings.
-  final bool keepalivePermitWithoutCalls;
-
-  Duration? get keepaliveTime =>
-      keepaliveTimeMs != null ? Duration(milliseconds: keepaliveTimeMs!) : null;
-
-  Duration get keepaliveTimeout => Duration(milliseconds: keepaliveTimeoutMs);
+  ///
+  /// `GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS` in the docs.
+  final bool permitWithoutCalls;
 
   const ClientKeepAliveOptions({
-    this.keepaliveTimeMs,
-    this.keepaliveTimeoutMs = 20000,
-    this.keepalivePermitWithoutCalls = false,
+    this.pingInterval,
+    this.timeout = const Duration(milliseconds: 20000),
+    this.permitWithoutCalls = false,
   });
-  bool get sendPings => keepaliveTime != null;
+
+  bool get shouldSendPings => pingInterval != null;
 }
 
 /// Options to configure a gRPC server for receiving keepalive signals.
 class ServerKeepAliveOptions {
+  /// The maximum number of bad pings that the server will tolerate before
+  /// sending an HTTP2 GOAWAY frame and closing the transport.
+  ///
+  /// `GRPC_ARG_HTTP2_MAX_PING_STRIKES` in the docs.
   final int? maxBadPings;
-  final int? minIntervalBetweenPingsWithoutDataMs;
 
-  Duration get minIntervalBetweenPingsWithoutData =>
-      Duration(milliseconds: minIntervalBetweenPingsWithoutDataMs!);
+  /// The minimum time that is expected between receiving successive pings.
+  ///
+  /// `GRPC_ARG_HTTP2_MIN_RECV_PING_INTERVAL_WITHOUT_DATA_MS` in the docs.
+  final Duration minIntervalBetweenPingsWithoutData;
 
   const ServerKeepAliveOptions({
-    this.minIntervalBetweenPingsWithoutDataMs = 300000,
+    this.minIntervalBetweenPingsWithoutData =
+        const Duration(milliseconds: 300000),
     this.maxBadPings = 2,
   });
 }
@@ -74,14 +85,15 @@ class ClientKeepAlive {
   final Stopwatch _stopwatch;
 
   @visibleForTesting
-  Timer? shutdownFuture;
+  Timer? shutdownTimer;
 
   @visibleForTesting
-  Timer? pingFuture;
+  Timer? pingTimer;
 
-  bool get _keepAliveDuringTransportIdle => options.keepalivePermitWithoutCalls;
+  bool get _keepAliveDuringTransportIdle => options.permitWithoutCalls;
 
-  Duration get _keepAliveTime => options.keepaliveTime ?? Duration(days: 365);
+  Duration get _keepAliveTime => options.pingInterval ?? Duration(days: 365);
+
   final void Function() onPingTimeout;
   final void Function() ping;
 
@@ -113,7 +125,7 @@ class ClientKeepAlive {
         _state == _ClientKeepAliveState.idleAndPingSent) {
       // Ping acked or effectively ping acked. Cancel shutdown, and then if not
       // idle, schedule a new keep-alive ping.
-      shutdownFuture?.cancel();
+      shutdownTimer?.cancel();
       if (_state == _ClientKeepAliveState.idleAndPingSent) {
         // not to schedule new pings until onTransportActive
         _state = _ClientKeepAliveState.idle;
@@ -121,8 +133,8 @@ class ClientKeepAlive {
       }
       // schedule a new ping
       _state = _ClientKeepAliveState.pingScheduled;
-      assert(pingFuture == null);
-      pingFuture = Timer(_keepAliveTime, _sendPing);
+      assert(pingTimer == null);
+      pingTimer = Timer(_keepAliveTime, _sendPing);
     }
   }
 
@@ -137,16 +149,16 @@ class ClientKeepAlive {
   }
 
   void _sendPing() {
-    pingFuture = null;
+    pingTimer = null;
     if (_state == _ClientKeepAliveState.pingScheduled) {
       _state = _ClientKeepAliveState.pingSent;
       // Schedule a shutdown. It fires if we don't receive the ping response
       // within the timeout.
-      shutdownFuture = Timer(options.keepaliveTimeout, _shutdown);
+      shutdownTimer = Timer(options.timeout, _shutdown);
       ping();
     } else if (_state == _ClientKeepAliveState.pingDelayed) {
       // We have received some data. Reschedule the ping with the new time.
-      pingFuture = Timer(_keepAliveTime - _stopwatch.elapsed, _sendPing);
+      pingTimer = Timer(_keepAliveTime - _stopwatch.elapsed, _sendPing);
       _state = _ClientKeepAliveState.pingScheduled;
     }
   }
@@ -159,7 +171,7 @@ class ClientKeepAlive {
       // This allows us to quickly check whether the connection is still
       // working.
       _state = _ClientKeepAliveState.pingScheduled;
-      pingFuture ??= Timer(_keepAliveTime - _stopwatch.elapsed, _sendPing);
+      pingTimer ??= Timer(_keepAliveTime - _stopwatch.elapsed, _sendPing);
     } else if (_state == _ClientKeepAliveState.idleAndPingSent) {
       _state = _ClientKeepAliveState.pingSent;
     } // Other states are possible when keepAliveDuringTransportIdle == true
@@ -185,9 +197,9 @@ class ClientKeepAlive {
   void onTransportTermination() {
     if (_state != _ClientKeepAliveState.disconnected) {
       _state = _ClientKeepAliveState.disconnected;
-      shutdownFuture?.cancel();
-      pingFuture?.cancel();
-      pingFuture = null;
+      shutdownTimer?.cancel();
+      pingTimer?.cancel();
+      pingTimer = null;
     }
   }
 }

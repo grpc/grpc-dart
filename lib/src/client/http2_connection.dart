@@ -103,7 +103,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     connectTransport().then<void>((transport) async {
       _currentReconnectDelay = null;
       _transportConnection = transport;
-      if (options.keepAlive.sendPings) {
+      if (options.keepAlive.shouldSendPings) {
         keepAliveManager = ClientKeepAlive(
           options: options.keepAlive,
           ping: () => transport.ping(),

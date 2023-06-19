@@ -26,9 +26,9 @@ void main() {
       reset(pinger);
       final options = opt ??
           ClientKeepAliveOptions(
-            keepaliveTimeMs: 1000,
-            keepaliveTimeoutMs: 2000,
-            keepalivePermitWithoutCalls: false,
+            pingInterval: Duration(milliseconds: 1000),
+            timeout: Duration(milliseconds: 2000),
+            permitWithoutCalls: false,
           );
 
       when(pinger.ping()).thenAnswer((_) async => transportOpen = true);
@@ -99,7 +99,7 @@ void main() {
         keepAliveManager.onTransportTermination();
 
         // Shutdown task has been cancelled.
-        expect(keepAliveManager.shutdownFuture?.isActive, false);
+        expect(keepAliveManager.shutdownTimer?.isActive, false);
       });
     });
     test('keepAlivePingTimesOut', () {
@@ -118,14 +118,14 @@ void main() {
         // We receive the ping response too late.
         keepAliveManager.onFrameReceived();
         // No more ping should be scheduled.
-        expect(keepAliveManager.pingFuture, isNull);
+        expect(keepAliveManager.pingTimer, isNull);
       });
     });
     test('transportGoesIdle', () {
       FakeAsync().run((async) {
         // Transport becomes active. We should schedule keepalive pings.
         keepAliveManager.onTransportActive();
-        expect(keepAliveManager.pingFuture, isNotNull);
+        expect(keepAliveManager.pingTimer, isNotNull);
 
         // Transport becomes idle. Nothing should happen when ping runnable runs.
         keepAliveManager.onTransportIdle();
@@ -133,7 +133,7 @@ void main() {
         // Ping was not sent.
         verifyNever(pinger.ping());
         // No new ping got scheduled.
-        expect(keepAliveManager.pingFuture, isNull);
+        expect(keepAliveManager.pingTimer, isNull);
 
         // But when transport goes back to active
         keepAliveManager.onTransportActive();
@@ -146,14 +146,14 @@ void main() {
       FakeAsync().run((async) {
         keepAliveManager.onTransportTermination();
         initKeepAliveManager(ClientKeepAliveOptions(
-          keepaliveTimeMs: 1000,
-          keepaliveTimeoutMs: 2000,
-          keepalivePermitWithoutCalls: true,
+          pingInterval: Duration(milliseconds: 1000),
+          timeout: Duration(milliseconds: 2000),
+          permitWithoutCalls: true,
         ));
         keepAliveManager.onTransportStarted();
 
         // Keepalive scheduling should have started immediately.
-        expect(keepAliveManager.pingFuture, isNotNull);
+        expect(keepAliveManager.pingTimer, isNotNull);
 
         keepAliveManager.onTransportActive();
 
@@ -163,7 +163,7 @@ void main() {
         // Ping was sent.
         verify(pinger.ping()).called(1);
         // Shutdown is scheduled.
-        expect(keepAliveManager.shutdownFuture, isNotNull);
+        expect(keepAliveManager.shutdownTimer, isNotNull);
         // Shutdown is triggered.
         async.elapse(Duration(milliseconds: 2000));
         verify(pinger.onPingTimeout()).called(1);
@@ -177,24 +177,24 @@ void main() {
         // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.
         async.elapse(Duration(milliseconds: 1000));
         verify(pinger.ping()).called(1);
-        expect(keepAliveManager.shutdownFuture, isNotNull);
+        expect(keepAliveManager.shutdownTimer, isNotNull);
 
         // Transport becomes idle. No more ping should be scheduled after we receive a ping response.
         keepAliveManager.onTransportIdle();
         async.elapse(Duration(milliseconds: 100));
         keepAliveManager.onFrameReceived();
-        expect(keepAliveManager.shutdownFuture?.isActive, false);
-        expect(keepAliveManager.pingFuture, isNull);
+        expect(keepAliveManager.shutdownTimer?.isActive, false);
+        expect(keepAliveManager.pingTimer, isNull);
         // Transport becomes active again. Another ping is scheduled.
         keepAliveManager.onTransportActive();
-        expect(keepAliveManager.pingFuture, isNotNull);
+        expect(keepAliveManager.pingTimer, isNotNull);
       });
     });
     test('transportGoesIdleBeforePingSent', () {
       FakeAsync().run((async) {
         // Transport becomes active. We should schedule keepalive pings.
         keepAliveManager.onTransportActive();
-        final pingFuture = keepAliveManager.pingFuture;
+        final pingFuture = keepAliveManager.pingTimer;
         expect(pingFuture, isNotNull);
 
         // Data is received, and we go to ping delayed
@@ -205,18 +205,18 @@ void main() {
 
         // Transport becomes active again, we don't need to reschedule another ping
         keepAliveManager.onTransportActive();
-        expect(keepAliveManager.pingFuture, pingFuture);
+        expect(keepAliveManager.pingTimer, pingFuture);
       });
     });
     test('transportShutsdownAfterPingScheduled', () {
       FakeAsync().run((async) {
         // Ping will be scheduled.
         keepAliveManager.onTransportActive();
-        expect(keepAliveManager.pingFuture, isNotNull);
+        expect(keepAliveManager.pingTimer, isNotNull);
         // Transport is shutting down.
         keepAliveManager.onTransportTermination();
         // Ping future should have been cancelled.
-        expect(keepAliveManager.pingFuture, isNull);
+        expect(keepAliveManager.pingTimer, isNull);
       });
     });
     test('transportShutsdownAfterPingSent', () {
@@ -225,12 +225,12 @@ void main() {
         // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.
         async.elapse(Duration(milliseconds: 1000));
         verify(pinger.ping()).called(1);
-        expect(keepAliveManager.shutdownFuture, isNotNull);
+        expect(keepAliveManager.shutdownTimer, isNotNull);
 
         // Transport is shutting down.
         keepAliveManager.onTransportTermination();
         // Shutdown task has been cancelled.
-        expect(keepAliveManager.shutdownFuture?.isActive, false);
+        expect(keepAliveManager.shutdownTimer?.isActive, false);
       });
     });
     test('pingSentThenIdleThenActiveThenAck', () {
@@ -241,7 +241,7 @@ void main() {
         verify(pinger.ping()).called(1);
 
         // shutdown scheduled
-        expect(keepAliveManager.shutdownFuture, isNotNull);
+        expect(keepAliveManager.shutdownTimer, isNotNull);
 
         keepAliveManager.onTransportIdle();
 
@@ -250,7 +250,7 @@ void main() {
         keepAliveManager.onFrameReceived();
 
         // another ping scheduled
-        expect(keepAliveManager.pingFuture, isNotNull);
+        expect(keepAliveManager.pingTimer, isNotNull);
         async.elapse(Duration(milliseconds: 1000));
         verify(pinger.ping()).called(1);
       });
@@ -268,7 +268,7 @@ void main() {
           options: options ??
               ServerKeepAliveOptions(
                 maxBadPings: maxBadPings,
-                minIntervalBetweenPingsWithoutDataMs: 5,
+                minIntervalBetweenPingsWithoutData: Duration(milliseconds: 5),
               ),
           pingNotifier: pingStream.stream,
           dataNotifier: dataStream.stream,
@@ -310,7 +310,7 @@ void main() {
         () async {
       initServer(ServerKeepAliveOptions(
         maxBadPings: null,
-        minIntervalBetweenPingsWithoutDataMs: 5,
+        minIntervalBetweenPingsWithoutData: Duration(milliseconds: 5),
       ));
       // Send good ping
       pingStream.sink.add(null);

@@ -19,12 +19,12 @@ void main() {
   setUp(() async {
     final serverOptions = ServerKeepAliveOptions(
       maxBadPings: 5,
-      minIntervalBetweenPingsWithoutDataMs: 10,
+      minIntervalBetweenPingsWithoutData: Duration(milliseconds: 10),
     );
     final clientOptions = ClientKeepAliveOptions(
-      keepaliveTimeMs: 10,
-      keepaliveTimeoutMs: 30,
-      keepalivePermitWithoutCalls: true,
+      pingInterval: Duration(milliseconds: 10),
+      timeout: Duration(milliseconds: 30),
+      permitWithoutCalls: true,
     );
 
     server = Server.create(
