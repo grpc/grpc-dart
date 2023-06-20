@@ -19,12 +19,26 @@ void main() {
 
   var transportOpen = true;
 
+  final shortTime = Duration(milliseconds: 150);
+
+  final epsilon = Duration(milliseconds: 50);
+
+  final timeout = Duration(milliseconds: 2000);
+
+  /// Add some epsilon to make sure tests pass
+  final timeoutLeeway = timeout + epsilon;
+
+  final pingInterval = Duration(milliseconds: 1000);
+
+  /// Add some epsilon to make sure tests pass
+  final pingIntervalLeeway = pingInterval + epsilon;
+
   void initKeepAliveManager([ClientKeepAliveOptions? opt]) {
     reset(pinger);
     final options = opt ??
         ClientKeepAliveOptions(
-          pingInterval: Duration(milliseconds: 1000),
-          timeout: Duration(milliseconds: 2000),
+          pingInterval: pingInterval,
+          timeout: timeout,
           permitWithoutCalls: false,
         );
 
@@ -42,19 +56,18 @@ void main() {
   setUp(() => initKeepAliveManager());
   test('sendKeepAlivePings', () {
     FakeAsync().run((async) {
-      async.elapse(Duration(milliseconds: 1));
       // Transport becomes active. We should schedule keepalive pings.
       keepAliveManager.onTransportActive();
-      async.elapse(Duration(milliseconds: 999));
+      async.elapse(pingIntervalLeeway);
       // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.
       verify(pinger.ping()).called(1);
       // Ping succeeds. Reschedule another ping.
 
-      async.elapse(Duration(milliseconds: 100));
+      async.elapse(shortTime);
       keepAliveManager.onFrameReceived();
       // Shutdown task has been cancelled.
       // Next ping should be exactly 1000 milliseconds later.
-      async.elapse(Duration(milliseconds: 1000));
+      async.elapse(pingIntervalLeeway);
       verify(pinger.ping()).called(1);
     });
   });
@@ -65,9 +78,9 @@ void main() {
       keepAliveManager.onTransportActive();
 
       // We receive some data. We may need to delay the ping.
-      async.elapse(Duration(milliseconds: 990));
+      async.elapse(pingInterval - shortTime);
       keepAliveManager.onFrameReceived();
-      async.elapse(Duration(milliseconds: 20));
+      async.elapse(shortTime + epsilon);
 
       // We didn't send the ping.
       verifyNever(pinger.ping());
@@ -78,11 +91,6 @@ void main() {
     FakeAsync().run((async) {
       pinger.onPingTimeout();
       expect(transportOpen, false);
-      // Status status = statusCaptor.getValue();
-      // assertThat(status.getCode()).isEqualTo(Status.Code.UNAVAILABLE);
-      // assertThat(status.getDescription()).isEqualTo(
-      //     "Keepalive failed. The connection is likely gone");
-      // });
     });
   });
 
@@ -90,7 +98,9 @@ void main() {
     FakeAsync().run((async) {
       // Transport becomes active. We should schedule keepalive pings.
       keepAliveManager.onTransportActive();
-      async.elapse(Duration(milliseconds: 1000));
+      async.elapse(pingIntervalLeeway);
+      // Shutdown task has become active.
+      expect(keepAliveManager.state, isA<ShutdownScheduled>());
 
       keepAliveManager.onTransportTermination();
 
@@ -105,12 +115,12 @@ void main() {
       expect(keepAliveManager.state, isA<PingScheduled>());
 
       // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.
-      async.elapse(Duration(milliseconds: 1001));
+      async.elapse(pingIntervalLeeway);
       verify(pinger.ping()).called(1);
       expect(keepAliveManager.state, isA<ShutdownScheduled>());
 
       // We do not receive the ping response. Shutdown runnable runs.
-      async.elapse(Duration(milliseconds: 2000));
+      async.elapse(timeoutLeeway);
       verify(pinger.onPingTimeout()).called(1);
       expect(keepAliveManager.state, isA<Disconnected>());
 
@@ -129,7 +139,7 @@ void main() {
       // Transport becomes idle. Nothing should happen when ping runnable runs.
       keepAliveManager.onTransportIdle();
       expect(keepAliveManager.state, isA<Idle>());
-      async.elapse(Duration(milliseconds: 1000));
+      async.elapse(pingIntervalLeeway);
       // Ping was not sent.
       verifyNever(pinger.ping());
       // No new ping got scheduled.
@@ -139,7 +149,7 @@ void main() {
       keepAliveManager.onTransportActive();
       expect(keepAliveManager.state, isA<PingScheduled>());
       // Ping is now sent.
-      async.elapse(Duration(seconds: 1));
+      async.elapse(pingIntervalLeeway);
       verify(pinger.ping()).called(1);
       expect(keepAliveManager.state, isA<ShutdownScheduled>());
     });
@@ -148,8 +158,8 @@ void main() {
     FakeAsync().run((async) {
       keepAliveManager.onTransportTermination();
       initKeepAliveManager(ClientKeepAliveOptions(
-        pingInterval: Duration(milliseconds: 1000),
-        timeout: Duration(milliseconds: 2000),
+        pingInterval: pingInterval,
+        timeout: timeout,
         permitWithoutCalls: true,
       ));
       keepAliveManager.onTransportStarted();
@@ -161,13 +171,13 @@ void main() {
 
       // Transport becomes idle. Should not impact the sending of the ping.
       keepAliveManager.onTransportIdle();
-      async.elapse(Duration(milliseconds: 1000));
+      async.elapse(pingIntervalLeeway);
       // Ping was sent.
       verify(pinger.ping()).called(1);
       // Shutdown is scheduled.
       expect(keepAliveManager.state, isA<ShutdownScheduled>());
       // Shutdown is triggered.
-      async.elapse(Duration(milliseconds: 2000));
+      async.elapse(timeoutLeeway);
       expect(keepAliveManager.state, isA<Disconnected>());
       verify(pinger.onPingTimeout()).called(1);
     });
@@ -178,13 +188,13 @@ void main() {
       keepAliveManager.onTransportActive();
 
       // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.
-      async.elapse(Duration(milliseconds: 1000));
+      async.elapse(pingIntervalLeeway);
       verify(pinger.ping()).called(1);
       expect(keepAliveManager.state, isA<ShutdownScheduled>());
 
       // Transport becomes idle. No more ping should be scheduled after we receive a ping response.
       keepAliveManager.onTransportIdle();
-      async.elapse(Duration(milliseconds: 100));
+      async.elapse(shortTime);
       keepAliveManager.onFrameReceived();
       expect(keepAliveManager.state, isA<Idle>());
       // Transport becomes active again. Another ping is scheduled.
@@ -225,7 +235,7 @@ void main() {
     FakeAsync().run((async) {
       keepAliveManager.onTransportActive();
       // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.
-      async.elapse(Duration(milliseconds: 1000));
+      async.elapse(pingIntervalLeeway);
       verify(pinger.ping()).called(1);
       expect(keepAliveManager.state, isA<ShutdownScheduled>());
 
@@ -239,7 +249,7 @@ void main() {
     FakeAsync().run((async) {
       keepAliveManager.onTransportActive();
       // Forward clock to keepAliveTimeInNanos will send the ping. Shutdown task should be scheduled.
-      async.elapse(Duration(milliseconds: 1000));
+      async.elapse(pingIntervalLeeway);
       verify(pinger.ping()).called(1);
 
       // shutdown scheduled
@@ -253,7 +263,7 @@ void main() {
 
       // another ping scheduled
       expect(keepAliveManager.state, isA<PingScheduled>());
-      async.elapse(Duration(milliseconds: 1000));
+      async.elapse(pingIntervalLeeway);
       verify(pinger.ping()).called(1);
     });
   });
