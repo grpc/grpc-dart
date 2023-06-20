@@ -96,11 +96,11 @@ class ConnectionServer {
 
   /// Create a server for the given [services].
   ConnectionServer(
-    List<Service> services,
-    this._keepAliveOptions, [
+    List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
+    this._keepAliveOptions = const ServerKeepAliveOptions(),
   ])  : _codecRegistry = codecRegistry,
         _interceptors = interceptors,
         _errorHandler = errorHandler {
@@ -183,11 +183,11 @@ class Server extends ConnectionServer {
   /// Create a server for the given [services].
   @Deprecated('use Server.create() instead')
   Server(
-    super.services,
-    super.keepAlive, [
+    super.services, [
     super.interceptors,
     super.codecRegistry,
     super.errorHandler,
+    super.keepAlive,
   ]);
 
   /// Create a server for the given [services].
@@ -197,8 +197,13 @@ class Server extends ConnectionServer {
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
-  }) : super(services, keepAliveOptions, interceptors, codecRegistry,
-            errorHandler);
+  }) : super(
+          services,
+          interceptors,
+          codecRegistry,
+          errorHandler,
+          keepAliveOptions,
+        );
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
