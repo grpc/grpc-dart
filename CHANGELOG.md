@@ -1,6 +1,15 @@
-## 3.2.0-wip
+## 3.2.2-wip
 
 * Add const constructor to `GrpcError` fixing #606.
+
+## 3.2.2
+
+* Remove `base` qualifier on `ResponseStream`.
+
+## 3.2.1
+
+* `package:http` now supports more versions: `>=0.13.0 <2.0.0`. 
+* `package:protobuf` new supports more versions: `>=2.0.0 <4.0.0`.
 
 ## 3.2.0
 
