@@ -159,8 +159,10 @@ class ClientKeepAlive {
         case _KeepAliveEvent.onTransportIdle:
           return Idle(current.pingTimer, current.timeSinceFrame);
         case _KeepAliveEvent.sendPing:
-          final pingTimer =
-              Timer(_pingInterval - current.timeSinceFrame.elapsed, sendPing);
+          final pingTimer = Timer(
+            _pingInterval - current.timeSinceFrame.elapsed,
+            sendPing,
+          );
           return PingScheduled(pingTimer, current.timeSinceFrame);
         default:
           return null;
