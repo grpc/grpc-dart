@@ -1,3 +1,12 @@
+## 3.2.2
+
+* Remove `base` qualifier on `ResponseStream`.
+
+## 3.2.1
+
+* `package:http` now supports more versions: `>=0.13.0 <2.0.0`. 
+* `package:protobuf` new supports more versions: `>=2.0.0 <4.0.0`.
+
 ## 3.2.0
 
 * `ChannelOptions` now exposes `connectTimeout`, which is used on the 
