@@ -20,9 +20,9 @@ import 'dart:io';
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
-import '../shared/keepalive.dart';
 import '../shared/timeout.dart';
 import 'call.dart';
+import 'client_keepalive.dart';
 import 'client_transport_connector.dart';
 import 'connection.dart' hide ClientConnection;
 import 'connection.dart' as connection;

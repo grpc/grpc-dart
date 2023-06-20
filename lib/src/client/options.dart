@@ -16,7 +16,7 @@
 import 'dart:math';
 
 import '../shared/codec_registry.dart';
-import '../shared/keepalive.dart';
+import 'client_keepalive.dart';
 import 'transport/http2_credentials.dart';
 
 const defaultIdleTimeout = Duration(minutes: 5);

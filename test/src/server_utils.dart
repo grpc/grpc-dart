@@ -17,7 +17,7 @@ import 'dart:async';
 
 import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/http2_connection.dart';
-import 'package:grpc/src/shared/keepalive.dart';
+import 'package:grpc/src/server/server_keepalive.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';

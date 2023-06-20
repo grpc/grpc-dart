@@ -16,7 +16,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:grpc/src/shared/keepalive.dart';
 import 'package:http2/transport.dart';
 import 'package:meta/meta.dart';
 
@@ -25,6 +24,7 @@ import '../shared/io_bits/io_bits.dart' as io_bits;
 import '../shared/security.dart';
 import 'handler.dart';
 import 'interceptor.dart';
+import 'server_keepalive.dart';
 import 'service.dart';
 
 /// Wrapper around grpc_server_credentials, a way to authenticate a server.
