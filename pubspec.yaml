@@ -18,7 +18,7 @@ dependencies:
   http: '>=0.13.0 <2.0.0'
   http2:
     git: #TODO: remove before merge
-      url: git@github.com:dart-lang/http2.git
+      url: https://github.com/dart-lang/http2.git
   protobuf: '>=2.0.0 <4.0.0'
   clock: ^1.1.1
 
