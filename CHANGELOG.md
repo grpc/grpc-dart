@@ -1,3 +1,7 @@
+## 3.2.3-wip
+
+* Add const constructor to `GrpcError` fixing #606.
+
 ## 3.2.2
 
 * Remove `base` qualifier on `ResponseStream`.
