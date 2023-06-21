@@ -1,5 +1,6 @@
 name: Publish
 permissions:
+  id-token: write
   pull-requests: write
 on:
   pull_request:
