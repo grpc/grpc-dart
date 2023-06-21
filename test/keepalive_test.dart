@@ -56,7 +56,7 @@ void main() {
   });
 
   tearDown(() async {
-    await fakeChannel.terminate();
+    await fakeChannel.shutdown();
     await server.shutdown();
   });
 
@@ -73,8 +73,8 @@ void main() {
   test('Server doesnt terminate connection after pings, as data is sent',
       () async {
     final timer = Timer.periodic(
-        Duration(milliseconds: 30), (timer) => fakeClient.echo(EchoRequest()));
-    await Future.delayed(Duration(milliseconds: 200), () => timer.cancel());
+        Duration(milliseconds: 10), (timer) => fakeClient.echo(EchoRequest()));
+    await Future.delayed(Duration(milliseconds: 300), () => timer.cancel());
     // Check that the server never closed the connection
     expect(fakeChannel.newConnectionCounter, 1);
   });
@@ -90,7 +90,7 @@ void main() {
 
 /// A wrapper around a [FakeHttp2ClientConnection]
 class FakeClientChannel extends ClientChannel {
-  late FakeHttp2ClientConnection fakeHttp2ClientConnection;
+  FakeHttp2ClientConnection? fakeHttp2ClientConnection;
   FakeClientChannel(
     super.host, {
     super.port = 443,
@@ -101,11 +101,11 @@ class FakeClientChannel extends ClientChannel {
   @override
   ClientConnection createConnection() {
     fakeHttp2ClientConnection = FakeHttp2ClientConnection(host, port, options);
-    return fakeHttp2ClientConnection;
+    return fakeHttp2ClientConnection!;
   }
 
   int get newConnectionCounter =>
-      fakeHttp2ClientConnection.newConnectionCounter;
+      fakeHttp2ClientConnection?.newConnectionCounter ?? 0;
 }
 
 /// A [Http2ClientConnection] exposing a counter for new connections
