@@ -5,6 +5,7 @@
 ## 3.2.2
 
 * Remove `base` qualifier on `ResponseStream`.
+* Add support for clients to send KEEPALIVE pings.
 
 ## 3.2.1
 

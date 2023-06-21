@@ -16,6 +16,7 @@
 import 'dart:math';
 
 import '../shared/codec_registry.dart';
+import 'client_keepalive.dart';
 import 'transport/http2_credentials.dart';
 
 const defaultIdleTimeout = Duration(minutes: 5);
@@ -57,6 +58,7 @@ class ChannelOptions {
   final Duration? connectTimeout;
   final BackoffStrategy backoffStrategy;
   final String userAgent;
+  final ClientKeepAliveOptions keepAlive;
 
   const ChannelOptions({
     this.credentials = const ChannelCredentials.secure(),
@@ -66,5 +68,6 @@ class ChannelOptions {
     this.connectTimeout,
     this.connectionTimeout = defaultConnectionTimeOut,
     this.codecRegistry,
+    this.keepAlive = const ClientKeepAliveOptions(),
   });
 }

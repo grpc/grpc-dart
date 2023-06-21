@@ -24,6 +24,7 @@ import '../shared/io_bits/io_bits.dart' as io_bits;
 import '../shared/security.dart';
 import 'handler.dart';
 import 'interceptor.dart';
+import 'server_keepalive.dart';
 import 'service.dart';
 
 /// Wrapper around grpc_server_credentials, a way to authenticate a server.
@@ -88,6 +89,8 @@ class ConnectionServer {
   final List<Interceptor> _interceptors;
   final CodecRegistry? _codecRegistry;
   final GrpcErrorHandler? _errorHandler;
+  final ServerKeepAliveOptions _keepAliveOptions;
+  final List<ServerHandler> _handlers = [];
 
   final _connections = <ServerTransportConnection>[];
 
@@ -97,6 +100,7 @@ class ConnectionServer {
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
+    this._keepAliveOptions = const ServerKeepAliveOptions(),
   ])  : _codecRegistry = codecRegistry,
         _interceptors = interceptors,
         _errorHandler = errorHandler {
@@ -113,26 +117,37 @@ class ConnectionServer {
     InternetAddress? remoteAddress,
   }) async {
     _connections.add(connection);
-    ServerHandler? handler;
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
+    final onDataReceivedController = StreamController<void>();
+    ServerKeepAlive(
+      options: _keepAliveOptions,
+      tooManyBadPings: () async =>
+          await connection.terminate(ErrorCode.ENHANCE_YOUR_CALM),
+      pingNotifier: connection.onPingReceived,
+      dataNotifier: onDataReceivedController.stream,
+    ).handle();
     connection.incomingStreams.listen((stream) {
-      handler = serveStream_(
+      _handlers.add(serveStream_(
         stream: stream,
         clientCertificate: clientCertificate,
         remoteAddress: remoteAddress,
-      );
+        onDataReceived: onDataReceivedController.sink,
+      ));
     }, onError: (error, stackTrace) {
       if (error is Error) {
         Zone.current.handleUncaughtError(error, stackTrace);
       }
-    }, onDone: () {
+    }, onDone: () async {
       // TODO(sigurdm): This is not correct behavior in the presence of
       // half-closed tcp streams.
       // Half-closed  streams seems to not be fully supported by package:http2.
       // https://github.com/dart-lang/http2/issues/42
-      handler?.cancel();
+      for (var handler in _handlers) {
+        handler.cancel();
+      }
       _connections.remove(connection);
+      await onDataReceivedController.close();
     });
   }
 
@@ -141,18 +156,20 @@ class ConnectionServer {
     required ServerTransportStream stream,
     X509Certificate? clientCertificate,
     InternetAddress? remoteAddress,
+    Sink<void>? onDataReceived,
   }) {
     return ServerHandler(
-      stream: stream,
-      serviceLookup: lookupService,
-      interceptors: _interceptors,
-      codecRegistry: _codecRegistry,
-      // ignore: unnecessary_cast
-      clientCertificate: clientCertificate as io_bits.X509Certificate?,
-      // ignore: unnecessary_cast
-      remoteAddress: remoteAddress as io_bits.InternetAddress?,
-      errorHandler: _errorHandler,
-    )..handle();
+        stream: stream,
+        serviceLookup: lookupService,
+        interceptors: _interceptors,
+        codecRegistry: _codecRegistry,
+        // ignore: unnecessary_cast
+        clientCertificate: clientCertificate as io_bits.X509Certificate?,
+        // ignore: unnecessary_cast
+        remoteAddress: remoteAddress as io_bits.InternetAddress?,
+        errorHandler: _errorHandler,
+        onDataReceived: onDataReceived)
+      ..handle();
   }
 }
 
@@ -170,15 +187,23 @@ class Server extends ConnectionServer {
     super.interceptors,
     super.codecRegistry,
     super.errorHandler,
+    super.keepAlive,
   ]);
 
   /// Create a server for the given [services].
   Server.create({
     required List<Service> services,
+    ServerKeepAliveOptions keepAliveOptions = const ServerKeepAliveOptions(),
     List<Interceptor> interceptors = const <Interceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
-  }) : super(services, interceptors, codecRegistry, errorHandler);
+  }) : super(
+          services,
+          interceptors,
+          codecRegistry,
+          errorHandler,
+          keepAliveOptions,
+        );
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
@@ -266,6 +291,7 @@ class Server extends ConnectionServer {
     required ServerTransportStream stream,
     X509Certificate? clientCertificate,
     InternetAddress? remoteAddress,
+    Sink<void>? onDataReceived,
   }) {
     return ServerHandler(
       stream: stream,
@@ -277,6 +303,7 @@ class Server extends ConnectionServer {
       // ignore: unnecessary_cast
       remoteAddress: remoteAddress as io_bits.InternetAddress?,
       errorHandler: _errorHandler,
+      onDataReceived: onDataReceived,
     )..handle();
   }
 

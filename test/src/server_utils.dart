@@ -134,13 +134,25 @@ class ServerHarness extends _Harness {
 
 class ConnectionServerHarness extends _Harness {
   @override
-  ConnectionServer createServer() =>
-      ConnectionServer(<Service>[service], <Interceptor>[interceptor]);
+  ConnectionServer createServer() => ConnectionServer(
+        <Service>[service],
+        <Interceptor>[interceptor],
+      );
 
-  static ServiceMethod<int, int> createMethod(String name,
-      Function methodHandler, bool clientStreaming, bool serverStreaming) {
-    return ServiceMethod<int, int>(name, methodHandler, clientStreaming,
-        serverStreaming, mockDecode, mockEncode);
+  static ServiceMethod<int, int> createMethod(
+    String name,
+    Function methodHandler,
+    bool clientStreaming,
+    bool serverStreaming,
+  ) {
+    return ServiceMethod<int, int>(
+      name,
+      methodHandler,
+      clientStreaming,
+      serverStreaming,
+      mockDecode,
+      mockEncode,
+    );
   }
 }
 
