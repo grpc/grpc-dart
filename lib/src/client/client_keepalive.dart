@@ -35,6 +35,8 @@ class ClientKeepAliveOptions {
 }
 
 sealed class KeepAliveState {
+  KeepAliveState? onEvent(KeepAliveEvent event, ClientKeepAlive manager);
+
   void disconnect();
 }
 
@@ -48,9 +50,23 @@ final class Idle extends KeepAliveState {
           ..start();
 
   @override
-  void disconnect() {
-    pingTimer?.cancel();
+  KeepAliveState? onEvent(KeepAliveEvent event, ClientKeepAlive manager) {
+    switch (event) {
+      case KeepAliveEvent.onTransportActive:
+        // When the transport goes active, we do not reset the nextKeepaliveTime.
+        // This allows us to quickly check whether the connection is still
+        // working.
+        final timer = pingTimer ??
+            Timer(manager._pingInterval - timeSinceFrame.elapsed,
+                manager.sendPing);
+        return PingScheduled(timer, timeSinceFrame);
+      default:
+        return null;
+    }
   }
+
+  @override
+  void disconnect() => pingTimer?.cancel();
 }
 
 /// We have scheduled a ping to be sent in the future. We may decide to delay
@@ -64,6 +80,28 @@ final class PingScheduled extends KeepAliveState {
           ..start();
 
   @override
+  KeepAliveState? onEvent(KeepAliveEvent event, ClientKeepAlive manager) {
+    switch (event) {
+      case KeepAliveEvent.onFrameReceived:
+        // We do not cancel the ping future here. This avoids constantly scheduling
+        // and cancellation in a busy transport. Instead, we update the status here
+        // and reschedule later. So we actually keep one sendPing task always in
+        // flight when there're active rpcs.
+        return PingDelayed(pingTimer);
+      case KeepAliveEvent.onTransportIdle:
+        return Idle(pingTimer, timeSinceFrame);
+      case KeepAliveEvent.sendPing:
+        // Schedule a shutdown. It fires if we don't receive the ping response
+        // within the timeout.
+        manager.ping();
+        final shutdown = Timer(manager._options.timeout, manager._shutdown);
+        return ShutdownScheduled(shutdown, false);
+      default:
+        return null;
+    }
+  }
+
+  @override
   void disconnect() => pingTimer.cancel();
 }
 
@@ -73,6 +111,22 @@ final class PingDelayed extends KeepAliveState {
   final Stopwatch timeSinceFrame;
 
   PingDelayed(this.pingTimer) : timeSinceFrame = clock.stopwatch()..start();
+
+  @override
+  KeepAliveState? onEvent(KeepAliveEvent event, ClientKeepAlive manager) {
+    switch (event) {
+      case KeepAliveEvent.onTransportIdle:
+        return Idle(pingTimer, timeSinceFrame);
+      case KeepAliveEvent.sendPing:
+        final pingTimer = Timer(
+          manager._pingInterval - timeSinceFrame.elapsed,
+          manager.sendPing,
+        );
+        return PingScheduled(pingTimer, timeSinceFrame);
+      default:
+        return null;
+    }
+  }
 
   @override
   void disconnect() => pingTimer.cancel();
@@ -86,15 +140,39 @@ final class ShutdownScheduled extends KeepAliveState {
   ShutdownScheduled(this.shutdownTimer, this.isIdle);
 
   @override
+  KeepAliveState? onEvent(KeepAliveEvent event, ClientKeepAlive manager) {
+    switch (event) {
+      case KeepAliveEvent.onFrameReceived:
+        // Ping acked or effectively ping acked. Cancel shutdown, and then if not
+        // idle, schedule a new keep-alive ping.
+        shutdownTimer.cancel();
+        // schedule a new ping
+        return isIdle
+            ? Idle()
+            : PingScheduled(Timer(manager._pingInterval, manager.sendPing));
+      case KeepAliveEvent.onTransportIdle:
+        return ShutdownScheduled(shutdownTimer, true);
+      case KeepAliveEvent.onTransportActive:
+        return ShutdownScheduled(shutdownTimer, false);
+      default:
+        return null;
+    }
+  }
+
+  @override
   void disconnect() => shutdownTimer.cancel();
 }
 
 final class Disconnected extends KeepAliveState {
   @override
   void disconnect() {}
+
+  @override
+  KeepAliveState? onEvent(KeepAliveEvent event, ClientKeepAlive manager) =>
+      null;
 }
 
-enum _KeepAliveEvent {
+enum KeepAliveEvent {
   onTransportActive,
   onFrameReceived,
   onTransportIdle,
@@ -112,82 +190,12 @@ class ClientKeepAlive {
 
   final ClientKeepAliveOptions _options;
   Duration get _pingInterval => _options.pingInterval ?? Duration(days: 365);
-  final Map<Type, KeepAliveState? Function(KeepAliveState, _KeepAliveEvent)>
-      _stateTransform = {};
 
   ClientKeepAlive({
     required ClientKeepAliveOptions options,
     required this.ping,
     required this.onPingTimeout,
-  }) : _options = options {
-    _addEventHandler<Idle>((state, event) {
-      switch (event) {
-        case _KeepAliveEvent.onTransportActive:
-          // When the transport goes active, we do not reset the nextKeepaliveTime.
-          // This allows us to quickly check whether the connection is still
-          // working.
-          final pingTimer = state.pingTimer ??
-              Timer(_pingInterval - state.timeSinceFrame.elapsed, sendPing);
-          return PingScheduled(pingTimer, state.timeSinceFrame);
-        default:
-          return null;
-      }
-    });
-
-    _addEventHandler<PingScheduled>((state, event) {
-      switch (event) {
-        case _KeepAliveEvent.onFrameReceived:
-          // We do not cancel the ping future here. This avoids constantly scheduling
-          // and cancellation in a busy transport. Instead, we update the status here
-          // and reschedule later. So we actually keep one sendPing task always in
-          // flight when there're active rpcs.
-          return PingDelayed(state.pingTimer);
-        case _KeepAliveEvent.onTransportIdle:
-          return Idle(state.pingTimer, state.timeSinceFrame);
-        case _KeepAliveEvent.sendPing:
-          // Schedule a shutdown. It fires if we don't receive the ping response
-          // within the timeout.
-          ping();
-          return ShutdownScheduled(Timer(_options.timeout, _shutdown), false);
-        default:
-          return null;
-      }
-    });
-
-    _addEventHandler<PingDelayed>((state, event) {
-      switch (event) {
-        case _KeepAliveEvent.onTransportIdle:
-          return Idle(state.pingTimer, state.timeSinceFrame);
-        case _KeepAliveEvent.sendPing:
-          final pingTimer = Timer(
-            _pingInterval - state.timeSinceFrame.elapsed,
-            sendPing,
-          );
-          return PingScheduled(pingTimer, state.timeSinceFrame);
-        default:
-          return null;
-      }
-    });
-
-    _addEventHandler<ShutdownScheduled>((state, event) {
-      switch (event) {
-        case _KeepAliveEvent.onFrameReceived:
-          // Ping acked or effectively ping acked. Cancel shutdown, and then if not
-          // idle, schedule a new keep-alive ping.
-          state.shutdownTimer.cancel();
-          // schedule a new ping
-          return state.isIdle
-              ? Idle()
-              : PingScheduled(Timer(_pingInterval, sendPing));
-        case _KeepAliveEvent.onTransportIdle:
-          return ShutdownScheduled(state.shutdownTimer, true);
-        case _KeepAliveEvent.onTransportActive:
-          return ShutdownScheduled(state.shutdownTimer, false);
-        default:
-          return null;
-      }
-    });
-  }
+  }) : _options = options;
 
   void onTransportStarted() {
     if (_options.permitWithoutCalls) {
@@ -197,13 +205,13 @@ class ClientKeepAlive {
 
   /// If we receive any kind of frame from the server, that means the connection
   /// is still open, so we reset the ping timer.
-  void onFrameReceived() => _setState(_KeepAliveEvent.onFrameReceived);
+  void onFrameReceived() => _setState(KeepAliveEvent.onFrameReceived);
 
-  void sendPing() => _setState(_KeepAliveEvent.sendPing);
+  void sendPing() => _setState(KeepAliveEvent.sendPing);
 
   /// When the transport becomes active, we start sending pings every
   /// [_pingInterval].
-  void onTransportActive() => _setState(_KeepAliveEvent.onTransportActive);
+  void onTransportActive() => _setState(KeepAliveEvent.onTransportActive);
 
   /// If the transport has become idle and [_options.permitWithoutCalls] is
   /// set, nothing changes, we still send pings and shutdown on no response.
@@ -211,7 +219,7 @@ class ClientKeepAlive {
   /// Otherwise, we stop sending pings.
   void onTransportIdle() {
     if (!_options.permitWithoutCalls) {
-      _setState(_KeepAliveEvent.onTransportIdle);
+      _setState(KeepAliveEvent.onTransportIdle);
     }
   }
 
@@ -227,15 +235,8 @@ class ClientKeepAlive {
     state = Disconnected();
   }
 
-  /// State helpers
-
-  void _setState(_KeepAliveEvent event) {
-    final newState = _stateTransform[state.runtimeType]?.call(state, event);
+  void _setState(KeepAliveEvent event) {
+    final newState = state.onEvent(event, this);
     if (newState != null) state = newState;
   }
-
-  void _addEventHandler<T extends KeepAliveState>(
-    KeepAliveState? Function(T state, _KeepAliveEvent event) onEvent,
-  ) =>
-      _stateTransform[T] = (state, event) => onEvent(state as T, event);
 }
