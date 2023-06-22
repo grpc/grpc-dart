@@ -1,6 +1,7 @@
 ## 3.2.3-wip
 
 * Add const constructor to `GrpcError` fixing #606.
+* Make `GrpcError` non-final to allow implementations.
 
 ## 3.2.2
 
