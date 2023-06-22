@@ -1,6 +1,7 @@
 ## 3.2.3-wip
 
 * Add const constructor to `GrpcError` fixing #606.
+* Only send keepalive pings on open connections.
 
 ## 3.2.2
 
