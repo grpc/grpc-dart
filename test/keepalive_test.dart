@@ -78,6 +78,7 @@ void main() {
 
     // Wait for last request to be sent
     await Future.delayed(Duration(milliseconds: 20));
+
     // Check that the server never closed the connection
     expect(fakeChannel.newConnectionCounter, 1);
   });
