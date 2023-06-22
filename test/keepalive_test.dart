@@ -72,11 +72,12 @@ void main() {
 
   test('Server doesnt terminate connection after pings, as data is sent',
       () async {
-    final tick = Duration(milliseconds: 10);
-    final timer =
-        Timer.periodic(tick, (timer) => fakeClient.echo(EchoRequest()));
-    await Future.delayed(Duration(milliseconds: 300), () => timer.cancel());
-    await Future.delayed(tick);
+    final timer = Timer.periodic(
+        Duration(milliseconds: 10), (timer) => fakeClient.echo(EchoRequest()));
+    await Future.delayed(Duration(milliseconds: 200), () => timer.cancel());
+
+    // Wait for last request to be sent
+    await Future.delayed(Duration(milliseconds: 20));
     // Check that the server never closed the connection
     expect(fakeChannel.newConnectionCounter, 1);
   });
