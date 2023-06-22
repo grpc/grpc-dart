@@ -34,23 +34,25 @@ void main() {
     dataStream.close();
   });
 
+  final timeAfterPing = Duration(milliseconds: 10);
+
   test('Sending too many pings without data kills connection', () async {
     FakeAsync().run((async) {
       initServer();
       // Send good ping
       pingStream.sink.add(null);
-      async.elapse(Duration(milliseconds: 10));
+      async.elapse(timeAfterPing);
 
       // Send [maxBadPings] bad pings, that's still ok
       for (var i = 0; i < maxBadPings; i++) {
         pingStream.sink.add(null);
       }
-      async.elapse(Duration(milliseconds: 10));
+      async.elapse(timeAfterPing);
       expect(goAway, false);
 
       // Send another bad ping; that's one too many!
       pingStream.sink.add(null);
-      async.elapse(Duration(milliseconds: 10));
+      async.elapse(timeAfterPing);
       expect(goAway, true);
     });
   });
@@ -64,13 +66,13 @@ void main() {
       ));
       // Send good ping
       pingStream.sink.add(null);
-      async.elapse(Duration(milliseconds: 10));
+      async.elapse(timeAfterPing);
 
       // Send a lot of bad pings, that's still ok.
       for (var i = 0; i < 50; i++) {
         pingStream.sink.add(null);
       }
-      async.elapse(Duration(milliseconds: 10));
+      async.elapse(timeAfterPing);
       expect(goAway, false);
     });
   });
@@ -81,33 +83,33 @@ void main() {
 
       // Send good ping
       pingStream.sink.add(null);
-      async.elapse(Duration(milliseconds: 10));
+      async.elapse(timeAfterPing);
 
       // Send [maxBadPings] bad pings, that's still ok
       for (var i = 0; i < maxBadPings; i++) {
         pingStream.sink.add(null);
       }
-      async.elapse(Duration(milliseconds: 10));
+      async.elapse(timeAfterPing);
       expect(goAway, false);
 
       // Sending data resets the bad ping count
       dataStream.add(null);
-      async.elapse(Duration(milliseconds: 10));
+      async.elapse(timeAfterPing);
 
       // Send good ping
       pingStream.sink.add(null);
-      async.elapse(Duration(milliseconds: 10));
+      async.elapse(timeAfterPing);
 
       // Send [maxBadPings] bad pings, that's still ok
       for (var i = 0; i < maxBadPings; i++) {
         pingStream.sink.add(null);
       }
-      async.elapse(Duration(milliseconds: 10));
+      async.elapse(timeAfterPing);
       expect(goAway, false);
 
       // Send another bad ping; that's one too many!
       pingStream.sink.add(null);
-      async.elapse(Duration(milliseconds: 10));
+      async.elapse(timeAfterPing);
       expect(goAway, true);
     });
   });
