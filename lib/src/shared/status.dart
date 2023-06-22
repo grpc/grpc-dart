@@ -151,7 +151,7 @@ class StatusCode {
   }
 }
 
-final class GrpcError implements Exception {
+class GrpcError implements Exception {
   final int code;
   final String? message;
   final Object? rawResponse;
