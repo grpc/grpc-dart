@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:grpc/src/server/server_keepalive.dart';
 import 'package:test/test.dart';
 
@@ -34,74 +35,80 @@ void main() {
   });
 
   test('Sending too many pings without data kills connection', () async {
-    initServer();
-    // Send good ping
-    pingStream.sink.add(null);
-    await Future.delayed(Duration(milliseconds: 10));
-
-    // Send [maxBadPings] bad pings, that's still ok
-    for (var i = 0; i < maxBadPings; i++) {
+    FakeAsync().run((async) {
+      initServer();
+      // Send good ping
       pingStream.sink.add(null);
-    }
-    await Future.delayed(Duration(milliseconds: 10));
-    expect(goAway, false);
+      async.elapse(Duration(milliseconds: 10));
 
-    // Send another bad ping; that's one too many!
-    pingStream.sink.add(null);
-    await Future.delayed(Duration(milliseconds: 10));
-    expect(goAway, true);
+      // Send [maxBadPings] bad pings, that's still ok
+      for (var i = 0; i < maxBadPings; i++) {
+        pingStream.sink.add(null);
+      }
+      async.elapse(Duration(milliseconds: 10));
+      expect(goAway, false);
+
+      // Send another bad ping; that's one too many!
+      pingStream.sink.add(null);
+      async.elapse(Duration(milliseconds: 10));
+      expect(goAway, true);
+    });
   });
   test(
       'Sending too many pings without data doesn`t kill connection if the server doesn`t care',
       () async {
-    initServer(ServerKeepAliveOptions(
-      maxBadPings: null,
-      minIntervalBetweenPingsWithoutData: Duration(milliseconds: 5),
-    ));
-    // Send good ping
-    pingStream.sink.add(null);
-    await Future.delayed(Duration(milliseconds: 10));
-
-    // Send a lot of bad pings, that's still ok.
-    for (var i = 0; i < 50; i++) {
+    FakeAsync().run((async) {
+      initServer(ServerKeepAliveOptions(
+        maxBadPings: null,
+        minIntervalBetweenPingsWithoutData: Duration(milliseconds: 5),
+      ));
+      // Send good ping
       pingStream.sink.add(null);
-    }
-    await Future.delayed(Duration(milliseconds: 10));
-    expect(goAway, false);
+      async.elapse(Duration(milliseconds: 10));
+
+      // Send a lot of bad pings, that's still ok.
+      for (var i = 0; i < 50; i++) {
+        pingStream.sink.add(null);
+      }
+      async.elapse(Duration(milliseconds: 10));
+      expect(goAway, false);
+    });
   });
 
   test('Sending many pings with data doesn`t kill connection', () async {
-    initServer();
+    FakeAsync().run((async) {
+      initServer();
 
-    // Send good ping
-    pingStream.sink.add(null);
-    await Future.delayed(Duration(milliseconds: 10));
-
-    // Send [maxBadPings] bad pings, that's still ok
-    for (var i = 0; i < maxBadPings; i++) {
+      // Send good ping
       pingStream.sink.add(null);
-    }
-    await Future.delayed(Duration(milliseconds: 10));
-    expect(goAway, false);
+      async.elapse(Duration(milliseconds: 10));
 
-    // Sending data resets the bad ping count
-    dataStream.add(null);
-    await Future.delayed(Duration(milliseconds: 10));
+      // Send [maxBadPings] bad pings, that's still ok
+      for (var i = 0; i < maxBadPings; i++) {
+        pingStream.sink.add(null);
+      }
+      async.elapse(Duration(milliseconds: 10));
+      expect(goAway, false);
 
-    // Send good ping
-    pingStream.sink.add(null);
-    await Future.delayed(Duration(milliseconds: 10));
+      // Sending data resets the bad ping count
+      dataStream.add(null);
+      async.elapse(Duration(milliseconds: 10));
 
-    // Send [maxBadPings] bad pings, that's still ok
-    for (var i = 0; i < maxBadPings; i++) {
+      // Send good ping
       pingStream.sink.add(null);
-    }
-    await Future.delayed(Duration(milliseconds: 10));
-    expect(goAway, false);
+      async.elapse(Duration(milliseconds: 10));
 
-    // Send another bad ping; that's one too many!
-    pingStream.sink.add(null);
-    await Future.delayed(Duration(milliseconds: 10));
-    expect(goAway, true);
+      // Send [maxBadPings] bad pings, that's still ok
+      for (var i = 0; i < maxBadPings; i++) {
+        pingStream.sink.add(null);
+      }
+      async.elapse(Duration(milliseconds: 10));
+      expect(goAway, false);
+
+      // Send another bad ping; that's one too many!
+      pingStream.sink.add(null);
+      async.elapse(Duration(milliseconds: 10));
+      expect(goAway, true);
+    });
   });
 }
