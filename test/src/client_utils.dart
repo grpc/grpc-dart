@@ -18,7 +18,6 @@ import 'dart:convert';
 
 import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/channel.dart' as base;
-import 'package:grpc/src/client/client_keepalive.dart';
 import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:http2/transport.dart';
