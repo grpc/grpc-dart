@@ -90,7 +90,7 @@ class ConnectionServer {
   final CodecRegistry? _codecRegistry;
   final GrpcErrorHandler? _errorHandler;
   final ServerKeepAliveOptions _keepAliveOptions;
-  final List<ServerHandler> _handlers = [];
+  final Map<ServerTransportConnection, List<ServerHandler>> _handlers = {};
 
   final _connections = <ServerTransportConnection>[];
 
@@ -117,6 +117,7 @@ class ConnectionServer {
     InternetAddress? remoteAddress,
   }) async {
     _connections.add(connection);
+    _handlers[connection] = [];
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
     final onDataReceivedController = StreamController<void>();
@@ -128,7 +129,7 @@ class ConnectionServer {
       dataNotifier: onDataReceivedController.stream,
     ).handle();
     connection.incomingStreams.listen((stream) {
-      _handlers.add(serveStream_(
+      _handlers[connection]!.add(serveStream_(
         stream: stream,
         clientCertificate: clientCertificate,
         remoteAddress: remoteAddress,
@@ -143,10 +144,11 @@ class ConnectionServer {
       // half-closed tcp streams.
       // Half-closed  streams seems to not be fully supported by package:http2.
       // https://github.com/dart-lang/http2/issues/42
-      for (var handler in _handlers) {
+      for (var handler in _handlers[connection]!) {
         handler.cancel();
       }
       _connections.remove(connection);
+      _handlers.remove(connection);
       await onDataReceivedController.close();
     });
   }
