@@ -207,7 +207,9 @@ class ClientCall<Q, R> implements Response {
     _terminateWithError(GrpcError.unavailable('Error connecting: $error'));
   }
 
-  void _terminateWithError(GrpcError error) {
+  void _terminateWithError(Object e) {
+    final error =
+        e is GrpcError ? e : GrpcError.unavailable('Error making call: $e');
     _finishTimelineWithError(error, _requestTimeline);
     _responses.addErrorIfNotClosed(error);
     _safeTerminate();
@@ -245,12 +247,8 @@ class ClientCall<Q, R> implements Response {
               (MetadataProvider provider) => provider(metadata,
                   '${connection.scheme}://${connection.authority}${audiencePath(_method)}'))
           .then((_) => _sendRequest(connection, _sanitizeMetadata(metadata)))
-          .catchError(_onMetadataProviderError);
+          .catchError(_terminateWithError);
     }
-  }
-
-  void _onMetadataProviderError(error) {
-    _terminateWithError(GrpcError.internal('Error making call: $error'));
   }
 
   void _sendRequest(ClientConnection connection, Map<String, String> metadata) {
@@ -264,7 +262,7 @@ class ClientCall<Q, R> implements Response {
         callOptions: options,
       );
     } catch (e) {
-      _terminateWithError(GrpcError.unavailable('Error making call: $e'));
+      _terminateWithError(e);
       return;
     }
     _requestTimeline?.instant('Request sent', arguments: {

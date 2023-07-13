@@ -1,3 +1,7 @@
+## 3.2.4-wip
+
+* Forward internal `GrpcError` on when throwing while sending a request.
+
 ## 3.2.3
 
 * Add const constructor to `GrpcError` fixing #606.
