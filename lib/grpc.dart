@@ -21,6 +21,7 @@ export 'src/auth/auth_io.dart'
         ServiceAccountAuthenticator;
 export 'src/client/call.dart' show ClientCall;
 export 'src/client/client.dart' show Client;
+export 'src/client/client_keepalive.dart' show ClientKeepAliveOptions;
 export 'src/client/client_transport_connector.dart'
     show ClientTransportConnector;
 export 'src/client/connection.dart' show ConnectionState;
@@ -50,6 +51,7 @@ export 'src/server/server.dart'
         ServerTlsCredentials,
         ConnectionServer,
         Server;
+export 'src/server/server_keepalive.dart' show ServerKeepAliveOptions;
 export 'src/server/service.dart' show ServiceMethod, Service;
 export 'src/shared/api.dart';
 export 'src/shared/codec.dart' show Codec, IdentityCodec, GzipCodec;

@@ -14,8 +14,7 @@ class ServerKeepAliveOptions {
   final Duration minIntervalBetweenPingsWithoutData;
 
   const ServerKeepAliveOptions({
-    this.minIntervalBetweenPingsWithoutData =
-        const Duration(milliseconds: 300000),
+    this.minIntervalBetweenPingsWithoutData = const Duration(minutes: 5),
     this.maxBadPings = 2,
   });
 }

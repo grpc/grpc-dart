@@ -27,7 +27,7 @@ class ClientKeepAliveOptions {
 
   const ClientKeepAliveOptions({
     this.pingInterval,
-    this.timeout = const Duration(milliseconds: 20000),
+    this.timeout = const Duration(seconds: 20),
     this.permitWithoutCalls = false,
   });
 
@@ -189,7 +189,7 @@ class ClientKeepAlive {
   final void Function() ping;
 
   final ClientKeepAliveOptions _options;
-  Duration get _pingInterval => _options.pingInterval ?? Duration(days: 365);
+  Duration get _pingInterval => _options.pingInterval!;
 
   ClientKeepAlive({
     required ClientKeepAliveOptions options,
@@ -236,7 +236,9 @@ class ClientKeepAlive {
   }
 
   void _setState(KeepAliveEvent event) {
-    final newState = state.onEvent(event, this);
-    if (newState != null) state = newState;
+    if (_options.shouldSendPings) {
+      final newState = state.onEvent(event, this);
+      if (newState != null) state = newState;
+    }
   }
 }
