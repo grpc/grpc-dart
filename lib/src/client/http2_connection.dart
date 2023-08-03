@@ -17,6 +17,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'dart:typed_data';
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
@@ -113,8 +114,10 @@ class Http2ClientConnection implements connection.ClientConnection {
           },
           onPingTimeout: () => shutdown(),
         );
-        transport.onFrameReceived
-            .listen((_) => keepAliveManager?.onFrameReceived());
+        transport.onFrameReceived.listen((_) {
+          print('received a frame');
+          keepAliveManager?.onFrameReceived();
+        });
       }
       _connectionLifeTimer
         ..reset()
@@ -122,12 +125,14 @@ class Http2ClientConnection implements connection.ClientConnection {
       transport.onActiveStateChanged = _handleActiveStateChanged;
       _setState(ConnectionState.ready);
 
+      print(_pendingCalls.length);
       if (_hasPendingCalls()) {
         // Take all pending calls out, and reschedule.
         final pendingCalls = _pendingCalls.toList();
         _pendingCalls.clear();
         pendingCalls.forEach(dispatchCall);
       }
+      print(_state);
     }).catchError(_handleConnectionFailure);
   }
 
@@ -153,6 +158,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     if (_transportConnection != null) {
       _refreshConnectionIfUnhealthy();
     }
+    print('dispatchCall $_state $_transportConnection');
     switch (_state) {
       case ConnectionState.ready:
         _startCall(call);
@@ -185,6 +191,7 @@ class Http2ClientConnection implements connection.ClientConnection {
           (callOptions?.metadata ?? const {})['grpc-accept-encoding'] ??
               options.codecRegistry?.supportedEncodings,
     );
+    print('Making request on ClientConnection with $_state');
     final stream = _transportConnection!.makeRequest(headers);
     return Http2TransportStream(
       stream,
@@ -364,8 +371,52 @@ class _SocketTransportConnector implements ClientTransportConnector {
   @override
   Future<ClientTransportConnection> connect() async {
     final securityContext = _options.credentials.securityContext;
-    _socket =
-        await Socket.connect(_host, _port, timeout: _options.connectTimeout);
+    final proxy = _options.proxy;
+    Stream<List<int>> incoming;
+    StreamSink<List<int>> outgoing;
+    if (proxy.isDirect) {
+      _socket =
+          await Socket.connect(_host, _port, timeout: _options.connectTimeout);
+      incoming = _socket;
+      outgoing = _socket;
+    } else {
+      _socket = await Socket.connect(
+        proxy.host,
+        proxy.port,
+        timeout: _options.connectTimeout,
+      );
+
+      final controller = StreamController<List<int>>.broadcast();
+
+      final subscription = _socket.listen(
+        controller.add,
+        onDone: controller.close,
+        onError: controller.addError,
+      );
+
+      controller.onCancel = subscription.cancel;
+
+      incoming = controller.stream;
+      outgoing = _socket;
+      final headers = {'Host': '$_host:$_port'};
+      if (proxy.isAuthenticated) {
+        // If the proxy configuration contains user information use that
+        // for proxy basic authorization.
+        final authStr = '${proxy.username}:${proxy.password}';
+        final auth = base64Encode(utf8.encode(authStr));
+        headers[HttpHeaders.proxyAuthorizationHeader] = 'Basic $auth';
+      }
+      final completer = Completer<void>();
+      final sub = incoming.listen(
+        (event) => _waitForAck(Uint8List.fromList(event), completer),
+        onError: completer.completeError,
+        cancelOnError: true,
+      );
+      _sendConnect(headers);
+      await completer.future;
+      await sub.cancel();
+    }
+
     // Don't wait for io buffers to fill up before sending requests.
     if (_socket.address.type != InternetAddressType.unix) {
       _socket.setOption(SocketOption.tcpNoDelay, true);
@@ -382,8 +433,31 @@ class _SocketTransportConnector implements ClientTransportConnector {
           context: securityContext,
           onBadCertificate: _validateBadCertificate);
     }
+    return ClientTransportConnection.viaStreams(incoming, outgoing);
+  }
 
-    return ClientTransportConnection.viaSocket(_socket);
+  void _waitForAck(Uint8List event, Completer<void> completer) {
+    final response = ascii.decode(event);
+    final lines = response.split('\r\n');
+    // status line
+    print(response);
+    final statusLine = lines.first;
+    if (statusLine.startsWith('HTTP/1.1 200')) {
+      completer.complete();
+    } else {
+      // completer.completeError(TransportException(statusLine));
+    }
+  }
+
+  void _sendConnect(Map<String, String> headers) {
+    const linebreak = '\r\n';
+    _socket.write('CONNECT $_host:$_port HTTP/1.1');
+    _socket.write(linebreak);
+    headers.forEach((key, value) {
+      _socket.write('$key: $value');
+      _socket.write(linebreak);
+    });
+    _socket.write(linebreak);
   }
 
   @override
