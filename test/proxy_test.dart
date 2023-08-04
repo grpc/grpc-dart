@@ -14,9 +14,9 @@ void main() {
 
   setUp(() async {
     server = Server.create(services: [FakeEchoService()]);
-    await server.serve(address: 'localhost', port: 8081);
+    await server.serve(address: 'localhost', port: 8888);
     var proxy = Proxy.direct();
-    // proxy = Proxy(host: 'localhost', port: 8080);
+    proxy = Proxy(host: 'localhost', port: 8080);
     fakeChannel = ClientChannel(
       'localhost',
       port: server.port!,
@@ -29,33 +29,24 @@ void main() {
   });
 
   tearDown(() async {
-    print('Start teardown');
     await fakeChannel.shutdown();
     await server.shutdown();
   });
 
-  test('Server terminates connection after too many pings without data',
-      () async {
+  test('Sending and receiving over proxy works', () async {
     final echoRequest = EchoRequest(message: 'blablablubb');
-    print('Send request ${echoRequest.message}');
     final echoResponse = await fakeClient.echo(echoRequest);
-    print(echoResponse.message);
+    expect(echoResponse.message, 'blibliblabb');
   });
 }
 
 class FakeEchoService extends EchoServiceBase {
   @override
-  Future<EchoResponse> echo(ServiceCall call, EchoRequest request) async {
-    print('Got request ${request.message}');
-    final echoResponse = EchoResponse(message: 'blibliblabb');
-    print('Send response ${echoResponse.message}');
-    return echoResponse;
-  }
+  Future<EchoResponse> echo(ServiceCall call, EchoRequest request) async =>
+      EchoResponse(message: 'blibliblabb');
 
   @override
   Stream<ServerStreamingEchoResponse> serverStreamingEcho(
-      ServiceCall call, ServerStreamingEchoRequest request) {
-    // TODO: implement serverStreamingEcho
-    throw UnimplementedError();
-  }
+          ServiceCall call, ServerStreamingEchoRequest request) =>
+      throw UnimplementedError();
 }
