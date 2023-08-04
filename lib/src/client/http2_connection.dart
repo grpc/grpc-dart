@@ -368,32 +368,49 @@ class SocketTransportConnector implements ClientTransportConnector {
   @override
   Future<ClientTransportConnection> connect() async {
     final securityContext = _options.credentials.securityContext;
-    Stream<List<int>> incoming;
     if (proxy.isDirect) {
       socket = await initSocket(_host, _port);
-      incoming = socket;
+      final incoming = socket;
+
+      // Don't wait for io buffers to fill up before sending requests.
+      if (socket.address.type != InternetAddressType.unix) {
+        socket.setOption(SocketOption.tcpNoDelay, true);
+      }
+      if (securityContext != null) {
+        // Todo(sigurdm): We want to pass supportedProtocols: ['h2'].
+        // http://dartbug.com/37950
+        socket = await SecureSocket.secure(socket,
+            // This is not really the host, but the authority to verify the TLC
+            // connection against.
+            //
+            // We don't use `this.authority` here, as that includes the port.
+            host: _options.credentials.authority ?? _host,
+            context: securityContext,
+            onBadCertificate: _validateBadCertificate);
+      }
+      return ClientTransportConnection.viaStreams(incoming, socket);
     } else {
       socket = await initSocket(proxy.host, proxy.port);
-      incoming = await connectToProxy();
-    }
+      final incoming = await connectToProxy();
 
-    // Don't wait for io buffers to fill up before sending requests.
-    if (socket.address.type != InternetAddressType.unix) {
-      socket.setOption(SocketOption.tcpNoDelay, true);
+      // Don't wait for io buffers to fill up before sending requests.
+      if (socket.address.type != InternetAddressType.unix) {
+        socket.setOption(SocketOption.tcpNoDelay, true);
+      }
+      if (securityContext != null) {
+        // Todo(sigurdm): We want to pass supportedProtocols: ['h2'].
+        // http://dartbug.com/37950
+        socket = await SecureSocket.secure(socket,
+            // This is not really the host, but the authority to verify the TLC
+            // connection against.
+            //
+            // We don't use `this.authority` here, as that includes the port.
+            host: _options.credentials.authority ?? _host,
+            context: securityContext,
+            onBadCertificate: _validateBadCertificate);
+      }
+      return ClientTransportConnection.viaStreams(incoming, socket);
     }
-    if (securityContext != null) {
-      // Todo(sigurdm): We want to pass supportedProtocols: ['h2'].
-      // http://dartbug.com/37950
-      socket = await SecureSocket.secure(socket,
-          // This is not really the host, but the authority to verify the TLC
-          // connection against.
-          //
-          // We don't use `this.authority` here, as that includes the port.
-          host: _options.credentials.authority ?? _host,
-          context: securityContext,
-          onBadCertificate: _validateBadCertificate);
-    }
-    return ClientTransportConnection.viaStreams(incoming, socket);
   }
 
   Future<Socket> initSocket(Object host, int port) async {
