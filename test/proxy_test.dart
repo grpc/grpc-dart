@@ -15,8 +15,11 @@ void main() {
   setUp(() async {
     server = Server.create(services: [FakeEchoService()]);
     await server.serve(address: 'localhost', port: 8888);
+    // ignore: prefer_final_locals
     var proxy = Proxy.direct();
-    proxy = Proxy(host: 'localhost', port: 8080);
+
+    /// Uncomment this line iff you have proxy running on the port 8080.
+    // proxy = Proxy(host: 'localhost', port: 8080);
     fakeChannel = ClientChannel(
       'localhost',
       port: server.port!,
