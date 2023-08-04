@@ -370,7 +370,6 @@ class SocketTransportConnector implements ClientTransportConnector {
     final securityContext = _options.credentials.securityContext;
     if (proxy.isDirect) {
       socket = await initSocket(_host, _port);
-      final incoming = socket;
 
       // Don't wait for io buffers to fill up before sending requests.
       if (socket.address.type != InternetAddressType.unix) {
@@ -388,7 +387,7 @@ class SocketTransportConnector implements ClientTransportConnector {
             context: securityContext,
             onBadCertificate: _validateBadCertificate);
       }
-      return ClientTransportConnection.viaStreams(incoming, socket);
+      return ClientTransportConnection.viaStreams(socket, socket);
     } else {
       socket = await initSocket(proxy.host, proxy.port);
       final incoming = await connectToProxy();
