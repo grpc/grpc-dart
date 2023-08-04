@@ -20,6 +20,7 @@ void main() {
 
     /// Uncomment this line iff you have proxy running on the port 8080.
     // proxy = Proxy(host: 'localhost', port: 8080);
+
     fakeChannel = ClientChannel(
       'localhost',
       port: server.port!,
