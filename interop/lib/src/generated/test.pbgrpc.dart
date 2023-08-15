@@ -1,19 +1,26 @@
-///
+//
 //  Generated code. Do not modify.
 //  source: test.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
+
+// ignore_for_file: annotate_overrides, camel_case_types, comment_references
+// ignore_for_file: constant_identifier_names, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_final_fields
+// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
 
 import 'dart:async' as $async;
-
 import 'dart:core' as $core;
 
 import 'package:grpc/service_api.dart' as $grpc;
+import 'package:protobuf/protobuf.dart' as $pb;
+
 import 'empty.pb.dart' as $0;
 import 'messages.pb.dart' as $1;
+
 export 'test.pb.dart';
 
+@$pb.GrpcServiceName('grpc.testing.TestService')
 class TestServiceClient extends $grpc.Client {
   static final _$emptyCall = $grpc.ClientMethod<$0.Empty, $0.Empty>(
       '/grpc.testing.TestService/EmptyCall',
@@ -112,6 +119,7 @@ class TestServiceClient extends $grpc.Client {
   }
 }
 
+@$pb.GrpcServiceName('grpc.testing.TestService')
 abstract class TestServiceBase extends $grpc.Service {
   $core.String get $name => 'grpc.testing.TestService';
 
@@ -228,6 +236,7 @@ abstract class TestServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.Empty request);
 }
 
+@$pb.GrpcServiceName('grpc.testing.UnimplementedService')
 class UnimplementedServiceClient extends $grpc.Client {
   static final _$unimplementedCall = $grpc.ClientMethod<$0.Empty, $0.Empty>(
       '/grpc.testing.UnimplementedService/UnimplementedCall',
@@ -245,6 +254,7 @@ class UnimplementedServiceClient extends $grpc.Client {
   }
 }
 
+@$pb.GrpcServiceName('grpc.testing.UnimplementedService')
 abstract class UnimplementedServiceBase extends $grpc.Service {
   $core.String get $name => 'grpc.testing.UnimplementedService';
 
@@ -267,6 +277,7 @@ abstract class UnimplementedServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.Empty request);
 }
 
+@$pb.GrpcServiceName('grpc.testing.ReconnectService')
 class ReconnectServiceClient extends $grpc.Client {
   static final _$start = $grpc.ClientMethod<$1.ReconnectParams, $0.Empty>(
       '/grpc.testing.ReconnectService/Start',
@@ -293,6 +304,7 @@ class ReconnectServiceClient extends $grpc.Client {
   }
 }
 
+@$pb.GrpcServiceName('grpc.testing.ReconnectService')
 abstract class ReconnectServiceBase extends $grpc.Service {
   $core.String get $name => 'grpc.testing.ReconnectService';
 

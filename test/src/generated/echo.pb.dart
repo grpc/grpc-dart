@@ -1,47 +1,44 @@
-///
+//
 //  Generated code. Do not modify.
 //  source: echo.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
+
+// ignore_for_file: annotate_overrides, camel_case_types, comment_references
+// ignore_for_file: constant_identifier_names, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_final_fields
+// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
 
 import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class EchoRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'EchoRequest',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.gateway.testing'),
-      createEmptyInstance: create)
-    ..aOS(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'message')
-    ..hasRequiredFields = false;
-
-  EchoRequest._() : super();
   factory EchoRequest({
     $core.String? message,
   }) {
-    final _result = create();
+    final result = create();
     if (message != null) {
-      _result.message = message;
+      result.message = message;
     }
-    return _result;
+    return result;
   }
+  EchoRequest._() : super();
   factory EchoRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory EchoRequest.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'EchoRequest',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'grpc.gateway.testing'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'message')
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -51,8 +48,10 @@ class EchoRequest extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   EchoRequest copyWith(void Function(EchoRequest) updates) =>
       super.copyWith((message) => updates(message as EchoRequest))
-          as EchoRequest; // ignore: deprecated_member_use
+          as EchoRequest;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static EchoRequest create() => EchoRequest._();
   EchoRequest createEmptyInstance() => create();
@@ -76,38 +75,31 @@ class EchoRequest extends $pb.GeneratedMessage {
 }
 
 class EchoResponse extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'EchoResponse',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.gateway.testing'),
-      createEmptyInstance: create)
-    ..aOS(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'message')
-    ..hasRequiredFields = false;
-
-  EchoResponse._() : super();
   factory EchoResponse({
     $core.String? message,
   }) {
-    final _result = create();
+    final result = create();
     if (message != null) {
-      _result.message = message;
+      result.message = message;
     }
-    return _result;
+    return result;
   }
+  EchoResponse._() : super();
   factory EchoResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory EchoResponse.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'EchoResponse',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'grpc.gateway.testing'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'message')
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -117,8 +109,10 @@ class EchoResponse extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   EchoResponse copyWith(void Function(EchoResponse) updates) =>
       super.copyWith((message) => updates(message as EchoResponse))
-          as EchoResponse; // ignore: deprecated_member_use
+          as EchoResponse;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static EchoResponse create() => EchoResponse._();
   EchoResponse createEmptyInstance() => create();
@@ -143,58 +137,42 @@ class EchoResponse extends $pb.GeneratedMessage {
 }
 
 class ServerStreamingEchoRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'ServerStreamingEchoRequest',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.gateway.testing'),
-      createEmptyInstance: create)
-    ..aOS(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'message')
-    ..a<$core.int>(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'messageCount',
-        $pb.PbFieldType.O3)
-    ..a<$core.int>(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'messageInterval',
-        $pb.PbFieldType.O3)
-    ..hasRequiredFields = false;
-
-  ServerStreamingEchoRequest._() : super();
   factory ServerStreamingEchoRequest({
     $core.String? message,
     $core.int? messageCount,
     $core.int? messageInterval,
   }) {
-    final _result = create();
+    final result = create();
     if (message != null) {
-      _result.message = message;
+      result.message = message;
     }
     if (messageCount != null) {
-      _result.messageCount = messageCount;
+      result.messageCount = messageCount;
     }
     if (messageInterval != null) {
-      _result.messageInterval = messageInterval;
+      result.messageInterval = messageInterval;
     }
-    return _result;
+    return result;
   }
+  ServerStreamingEchoRequest._() : super();
   factory ServerStreamingEchoRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory ServerStreamingEchoRequest.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ServerStreamingEchoRequest',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'grpc.gateway.testing'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'message')
+    ..a<$core.int>(2, _omitFieldNames ? '' : 'messageCount', $pb.PbFieldType.O3)
+    ..a<$core.int>(
+        3, _omitFieldNames ? '' : 'messageInterval', $pb.PbFieldType.O3)
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -207,8 +185,10 @@ class ServerStreamingEchoRequest extends $pb.GeneratedMessage {
           void Function(ServerStreamingEchoRequest) updates) =>
       super.copyWith(
               (message) => updates(message as ServerStreamingEchoRequest))
-          as ServerStreamingEchoRequest; // ignore: deprecated_member_use
+          as ServerStreamingEchoRequest;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static ServerStreamingEchoRequest create() => ServerStreamingEchoRequest._();
   ServerStreamingEchoRequest createEmptyInstance() => create();
@@ -257,38 +237,31 @@ class ServerStreamingEchoRequest extends $pb.GeneratedMessage {
 }
 
 class ServerStreamingEchoResponse extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'ServerStreamingEchoResponse',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.gateway.testing'),
-      createEmptyInstance: create)
-    ..aOS(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'message')
-    ..hasRequiredFields = false;
-
-  ServerStreamingEchoResponse._() : super();
   factory ServerStreamingEchoResponse({
     $core.String? message,
   }) {
-    final _result = create();
+    final result = create();
     if (message != null) {
-      _result.message = message;
+      result.message = message;
     }
-    return _result;
+    return result;
   }
+  ServerStreamingEchoResponse._() : super();
   factory ServerStreamingEchoResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory ServerStreamingEchoResponse.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ServerStreamingEchoResponse',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'grpc.gateway.testing'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'message')
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -301,8 +274,10 @@ class ServerStreamingEchoResponse extends $pb.GeneratedMessage {
           void Function(ServerStreamingEchoResponse) updates) =>
       super.copyWith(
               (message) => updates(message as ServerStreamingEchoResponse))
-          as ServerStreamingEchoResponse; // ignore: deprecated_member_use
+          as ServerStreamingEchoResponse;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static ServerStreamingEchoResponse create() =>
       ServerStreamingEchoResponse._();
@@ -326,3 +301,7 @@ class ServerStreamingEchoResponse extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearMessage() => clearField(1);
 }
+
+const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
+const _omitMessageNames =
+    $core.bool.fromEnvironment('protobuf.omit_message_names');
