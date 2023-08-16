@@ -10,7 +10,7 @@ dependencies:
   fixnum:
   grpc:
     path: ../../
-  protobuf: ^2.0.0
+  protobuf: ^3.0.0
 
 dev_dependencies:
   lints: ^2.0.0

@@ -1,9 +1,13 @@
-///
+//
 //  Generated code. Do not modify.
 //  source: google/logging/type/http_request.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
+
+// ignore_for_file: annotate_overrides, camel_case_types, comment_references
+// ignore_for_file: constant_identifier_names, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_final_fields
+// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
 
 import 'dart:core' as $core;
 
@@ -12,96 +16,10 @@ import 'package:protobuf/protobuf.dart' as $pb;
 
 import '../../protobuf/duration.pb.dart' as $0;
 
+/// A common proto for logging HTTP requests. Only contains semantics
+/// defined by the HTTP specification. Product-specific logging
+/// information MUST be defined in a separate message.
 class HttpRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'HttpRequest',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'google.logging.type'),
-      createEmptyInstance: create)
-    ..aOS(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'requestMethod')
-    ..aOS(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'requestUrl')
-    ..aInt64(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'requestSize')
-    ..a<$core.int>(
-        4,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'status',
-        $pb.PbFieldType.O3)
-    ..aInt64(
-        5,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseSize')
-    ..aOS(
-        6,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'userAgent')
-    ..aOS(
-        7,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'remoteIp')
-    ..aOS(
-        8,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'referer')
-    ..aOB(
-        9,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'cacheHit')
-    ..aOB(
-        10,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'cacheValidatedWithOriginServer')
-    ..aOB(
-        11,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'cacheLookup')
-    ..aInt64(
-        12,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'cacheFillBytes')
-    ..aOS(
-        13,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'serverIp')
-    ..aOM<$0.Duration>(
-        14,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'latency',
-        subBuilder: $0.Duration.create)
-    ..aOS(
-        15,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'protocol')
-    ..hasRequiredFields = false;
-
-  HttpRequest._() : super();
   factory HttpRequest({
     $core.String? requestMethod,
     $core.String? requestUrl,
@@ -119,60 +37,85 @@ class HttpRequest extends $pb.GeneratedMessage {
     $0.Duration? latency,
     $core.String? protocol,
   }) {
-    final _result = create();
+    final result = create();
     if (requestMethod != null) {
-      _result.requestMethod = requestMethod;
+      result.requestMethod = requestMethod;
     }
     if (requestUrl != null) {
-      _result.requestUrl = requestUrl;
+      result.requestUrl = requestUrl;
     }
     if (requestSize != null) {
-      _result.requestSize = requestSize;
+      result.requestSize = requestSize;
     }
     if (status != null) {
-      _result.status = status;
+      result.status = status;
     }
     if (responseSize != null) {
-      _result.responseSize = responseSize;
+      result.responseSize = responseSize;
     }
     if (userAgent != null) {
-      _result.userAgent = userAgent;
+      result.userAgent = userAgent;
     }
     if (remoteIp != null) {
-      _result.remoteIp = remoteIp;
+      result.remoteIp = remoteIp;
     }
     if (referer != null) {
-      _result.referer = referer;
+      result.referer = referer;
     }
     if (cacheHit != null) {
-      _result.cacheHit = cacheHit;
+      result.cacheHit = cacheHit;
     }
     if (cacheValidatedWithOriginServer != null) {
-      _result.cacheValidatedWithOriginServer = cacheValidatedWithOriginServer;
+      result.cacheValidatedWithOriginServer = cacheValidatedWithOriginServer;
     }
     if (cacheLookup != null) {
-      _result.cacheLookup = cacheLookup;
+      result.cacheLookup = cacheLookup;
     }
     if (cacheFillBytes != null) {
-      _result.cacheFillBytes = cacheFillBytes;
+      result.cacheFillBytes = cacheFillBytes;
     }
     if (serverIp != null) {
-      _result.serverIp = serverIp;
+      result.serverIp = serverIp;
     }
     if (latency != null) {
-      _result.latency = latency;
+      result.latency = latency;
     }
     if (protocol != null) {
-      _result.protocol = protocol;
+      result.protocol = protocol;
     }
-    return _result;
+    return result;
   }
+  HttpRequest._() : super();
   factory HttpRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory HttpRequest.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'HttpRequest',
+      package:
+          const $pb.PackageName(_omitMessageNames ? '' : 'google.logging.type'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'requestMethod')
+    ..aOS(2, _omitFieldNames ? '' : 'requestUrl')
+    ..aInt64(3, _omitFieldNames ? '' : 'requestSize')
+    ..a<$core.int>(4, _omitFieldNames ? '' : 'status', $pb.PbFieldType.O3)
+    ..aInt64(5, _omitFieldNames ? '' : 'responseSize')
+    ..aOS(6, _omitFieldNames ? '' : 'userAgent')
+    ..aOS(7, _omitFieldNames ? '' : 'remoteIp')
+    ..aOS(8, _omitFieldNames ? '' : 'referer')
+    ..aOB(9, _omitFieldNames ? '' : 'cacheHit')
+    ..aOB(10, _omitFieldNames ? '' : 'cacheValidatedWithOriginServer')
+    ..aOB(11, _omitFieldNames ? '' : 'cacheLookup')
+    ..aInt64(12, _omitFieldNames ? '' : 'cacheFillBytes')
+    ..aOS(13, _omitFieldNames ? '' : 'serverIp')
+    ..aOM<$0.Duration>(14, _omitFieldNames ? '' : 'latency',
+        subBuilder: $0.Duration.create)
+    ..aOS(15, _omitFieldNames ? '' : 'protocol')
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -182,8 +125,10 @@ class HttpRequest extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   HttpRequest copyWith(void Function(HttpRequest) updates) =>
       super.copyWith((message) => updates(message as HttpRequest))
-          as HttpRequest; // ignore: deprecated_member_use
+          as HttpRequest;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static HttpRequest create() => HttpRequest._();
   HttpRequest createEmptyInstance() => create();
@@ -193,6 +138,7 @@ class HttpRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<HttpRequest>(create);
   static HttpRequest? _defaultInstance;
 
+  /// The request method. Examples: `"GET"`, `"HEAD"`, `"PUT"`, `"POST"`.
   @$pb.TagNumber(1)
   $core.String get requestMethod => $_getSZ(0);
   @$pb.TagNumber(1)
@@ -205,6 +151,9 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearRequestMethod() => clearField(1);
 
+  /// The scheme (http, https), the host name, the path and the query
+  /// portion of the URL that was requested.
+  /// Example: `"http://example.com/some/info?color=red"`.
   @$pb.TagNumber(2)
   $core.String get requestUrl => $_getSZ(1);
   @$pb.TagNumber(2)
@@ -217,6 +166,8 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   void clearRequestUrl() => clearField(2);
 
+  /// The size of the HTTP request message in bytes, including the request
+  /// headers and the request body.
   @$pb.TagNumber(3)
   $fixnum.Int64 get requestSize => $_getI64(2);
   @$pb.TagNumber(3)
@@ -229,6 +180,8 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(3)
   void clearRequestSize() => clearField(3);
 
+  /// The response code indicating the status of response.
+  /// Examples: 200, 404.
   @$pb.TagNumber(4)
   $core.int get status => $_getIZ(3);
   @$pb.TagNumber(4)
@@ -241,6 +194,8 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(4)
   void clearStatus() => clearField(4);
 
+  /// The size of the HTTP response message sent back to the client, in bytes,
+  /// including the response headers and the response body.
   @$pb.TagNumber(5)
   $fixnum.Int64 get responseSize => $_getI64(4);
   @$pb.TagNumber(5)
@@ -253,6 +208,9 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(5)
   void clearResponseSize() => clearField(5);
 
+  /// The user agent sent by the client. Example:
+  /// `"Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; Q312461; .NET
+  /// CLR 1.0.3705)"`.
   @$pb.TagNumber(6)
   $core.String get userAgent => $_getSZ(5);
   @$pb.TagNumber(6)
@@ -265,6 +223,9 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(6)
   void clearUserAgent() => clearField(6);
 
+  /// The IP address (IPv4 or IPv6) of the client that issued the HTTP
+  /// request. This field can include port information. Examples:
+  /// `"192.168.1.1"`, `"10.0.0.1:80"`, `"FE80::0202:B3FF:FE1E:8329"`.
   @$pb.TagNumber(7)
   $core.String get remoteIp => $_getSZ(6);
   @$pb.TagNumber(7)
@@ -277,6 +238,9 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(7)
   void clearRemoteIp() => clearField(7);
 
+  /// The referer URL of the request, as defined in
+  /// [HTTP/1.1 Header Field
+  /// Definitions](https://datatracker.ietf.org/doc/html/rfc2616#section-14.36).
   @$pb.TagNumber(8)
   $core.String get referer => $_getSZ(7);
   @$pb.TagNumber(8)
@@ -289,6 +253,8 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(8)
   void clearReferer() => clearField(8);
 
+  /// Whether or not an entity was served from cache
+  /// (with or without validation).
   @$pb.TagNumber(9)
   $core.bool get cacheHit => $_getBF(8);
   @$pb.TagNumber(9)
@@ -301,6 +267,9 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(9)
   void clearCacheHit() => clearField(9);
 
+  /// Whether or not the response was validated with the origin server before
+  /// being served from cache. This field is only meaningful if `cache_hit` is
+  /// True.
   @$pb.TagNumber(10)
   $core.bool get cacheValidatedWithOriginServer => $_getBF(9);
   @$pb.TagNumber(10)
@@ -313,6 +282,7 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(10)
   void clearCacheValidatedWithOriginServer() => clearField(10);
 
+  /// Whether or not a cache lookup was attempted.
   @$pb.TagNumber(11)
   $core.bool get cacheLookup => $_getBF(10);
   @$pb.TagNumber(11)
@@ -325,6 +295,8 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(11)
   void clearCacheLookup() => clearField(11);
 
+  /// The number of HTTP response bytes inserted into cache. Set only when a
+  /// cache fill was attempted.
   @$pb.TagNumber(12)
   $fixnum.Int64 get cacheFillBytes => $_getI64(11);
   @$pb.TagNumber(12)
@@ -337,6 +309,9 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(12)
   void clearCacheFillBytes() => clearField(12);
 
+  /// The IP address (IPv4 or IPv6) of the origin server that the request was
+  /// sent to. This field can include port information. Examples:
+  /// `"192.168.1.1"`, `"10.0.0.1:80"`, `"FE80::0202:B3FF:FE1E:8329"`.
   @$pb.TagNumber(13)
   $core.String get serverIp => $_getSZ(12);
   @$pb.TagNumber(13)
@@ -349,6 +324,8 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(13)
   void clearServerIp() => clearField(13);
 
+  /// The request processing latency on the server, from the time the request was
+  /// received until the response was sent.
   @$pb.TagNumber(14)
   $0.Duration get latency => $_getN(13);
   @$pb.TagNumber(14)
@@ -363,6 +340,7 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(14)
   $0.Duration ensureLatency() => $_ensure(13);
 
+  /// Protocol used for the request. Examples: "HTTP/1.1", "HTTP/2", "websocket"
   @$pb.TagNumber(15)
   $core.String get protocol => $_getSZ(14);
   @$pb.TagNumber(15)
@@ -375,3 +353,7 @@ class HttpRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(15)
   void clearProtocol() => clearField(15);
 }
+
+const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
+const _omitMessageNames =
+    $core.bool.fromEnvironment('protobuf.omit_message_names');
