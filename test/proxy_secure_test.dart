@@ -26,8 +26,9 @@ void main() {
     // ignore: prefer_final_locals
     var proxy = Proxy.direct();
 
-    /// Uncomment this line iff you have proxy running on the port 8080.
-    // proxy = Proxy(host: 'localhost', port: 8080);
+    /// Run this test iff you have proxy running on the port 8080.
+    proxy = Proxy(host: 'localhost', port: 8080);
+    final proxyCAName = '/CN=mitmproxy/O=mitmproxy';
 
     fakeChannel = ClientChannel(
       'localhost',
@@ -37,10 +38,9 @@ void main() {
           certificates: File('test/data/localhost.crt').readAsBytesSync(),
           authority: 'localhost',
           onBadCertificate: (certificate, host) {
-            print('bad cert for $host issued by ${certificate.issuer}');
-            //Still return true as we allow bad certificates, in case the proxy
-            //wasn't added to our list of trusted authorities.
-            return true;
+            /// Workaround to avoid having to add the proxy to our list of
+            /// trusted CAs.
+            return certificate.issuer == proxyCAName;
           },
         ),
         proxy: proxy,
@@ -54,17 +54,23 @@ void main() {
     await server.shutdown();
   });
 
-  test('Sending and receiving over proxy works', () async {
-    final echoRequest = EchoRequest(message: 'blablablubb');
-    final echoResponse = await fakeClient.echo(echoRequest);
-    expect(echoResponse.message, 'blibliblabb');
-  });
+  test(
+    'Sending and receiving over secure proxy works',
+    () async {
+      final echoRequest = EchoRequest(message: 'blablablubb');
+      final echoResponse = await fakeClient.echo(echoRequest);
+      expect(echoResponse.message, 'blibliblabb');
+    },
+    skip: 'Run this test iff you have proxy running.',
+  );
 }
 
 class FakeEchoService extends EchoServiceBase {
   @override
-  Future<EchoResponse> echo(ServiceCall call, EchoRequest request) async =>
-      EchoResponse(message: 'blibliblabb');
+  Future<EchoResponse> echo(ServiceCall call, EchoRequest request) async {
+    expect(request.message, 'blablablubb');
+    return EchoResponse(message: 'blibliblabb');
+  }
 
   @override
   Stream<ServerStreamingEchoResponse> serverStreamingEcho(
