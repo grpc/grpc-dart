@@ -1,9 +1,13 @@
-///
+//
 //  Generated code. Do not modify.
 //  source: messages.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
+
+// ignore_for_file: annotate_overrides, camel_case_types, comment_references
+// ignore_for_file: constant_identifier_names, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_final_fields
+// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
 
 import 'dart:core' as $core;
 
@@ -13,39 +17,34 @@ import 'messages.pbenum.dart';
 
 export 'messages.pbenum.dart';
 
+/// TODO(dgq): Go back to using well-known types once
+/// https://github.com/grpc/grpc/issues/6980 has been fixed.
+/// import "google/protobuf/wrappers.proto";
 class BoolValue extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'BoolValue',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..aOB(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'value')
-    ..hasRequiredFields = false;
-
-  BoolValue._() : super();
   factory BoolValue({
     $core.bool? value,
   }) {
-    final _result = create();
+    final result = create();
     if (value != null) {
-      _result.value = value;
+      result.value = value;
     }
-    return _result;
+    return result;
   }
+  BoolValue._() : super();
   factory BoolValue.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory BoolValue.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'BoolValue',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..aOB(1, _omitFieldNames ? '' : 'value')
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -54,9 +53,10 @@ class BoolValue extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   BoolValue copyWith(void Function(BoolValue) updates) =>
-      super.copyWith((message) => updates(message as BoolValue))
-          as BoolValue; // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as BoolValue)) as BoolValue;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static BoolValue create() => BoolValue._();
   BoolValue createEmptyInstance() => create();
@@ -66,6 +66,7 @@ class BoolValue extends $pb.GeneratedMessage {
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<BoolValue>(create);
   static BoolValue? _defaultInstance;
 
+  /// The bool value.
   @$pb.TagNumber(1)
   $core.bool get value => $_getBF(0);
   @$pb.TagNumber(1)
@@ -79,53 +80,41 @@ class BoolValue extends $pb.GeneratedMessage {
   void clearValue() => clearField(1);
 }
 
+/// A block of data, to simply increase gRPC message size.
 class Payload extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'Payload',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..e<PayloadType>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'type',
-        $pb.PbFieldType.OE,
-        defaultOrMaker: PayloadType.COMPRESSABLE,
-        valueOf: PayloadType.valueOf,
-        enumValues: PayloadType.values)
-    ..a<$core.List<$core.int>>(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'body',
-        $pb.PbFieldType.OY)
-    ..hasRequiredFields = false;
-
-  Payload._() : super();
   factory Payload({
     PayloadType? type,
     $core.List<$core.int>? body,
   }) {
-    final _result = create();
+    final result = create();
     if (type != null) {
-      _result.type = type;
+      result.type = type;
     }
     if (body != null) {
-      _result.body = body;
+      result.body = body;
     }
-    return _result;
+    return result;
   }
+  Payload._() : super();
   factory Payload.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory Payload.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'Payload',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..e<PayloadType>(1, _omitFieldNames ? '' : 'type', $pb.PbFieldType.OE,
+        defaultOrMaker: PayloadType.COMPRESSABLE,
+        valueOf: PayloadType.valueOf,
+        enumValues: PayloadType.values)
+    ..a<$core.List<$core.int>>(
+        2, _omitFieldNames ? '' : 'body', $pb.PbFieldType.OY)
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -134,9 +123,10 @@ class Payload extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   Payload copyWith(void Function(Payload) updates) =>
-      super.copyWith((message) => updates(message as Payload))
-          as Payload; // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as Payload)) as Payload;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static Payload create() => Payload._();
   Payload createEmptyInstance() => create();
@@ -146,6 +136,8 @@ class Payload extends $pb.GeneratedMessage {
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload>(create);
   static Payload? _defaultInstance;
 
+  /// DEPRECATED, don't use. To be removed shortly.
+  /// The type of data in body.
   @$pb.TagNumber(1)
   PayloadType get type => $_getN(0);
   @$pb.TagNumber(1)
@@ -158,6 +150,7 @@ class Payload extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearType() => clearField(1);
 
+  /// Primary contents of payload.
   @$pb.TagNumber(2)
   $core.List<$core.int> get body => $_getN(1);
   @$pb.TagNumber(2)
@@ -171,49 +164,38 @@ class Payload extends $pb.GeneratedMessage {
   void clearBody() => clearField(2);
 }
 
+/// A protobuf representation for grpc status. This is used by test
+/// clients to specify a status that the server should attempt to return.
 class EchoStatus extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'EchoStatus',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..a<$core.int>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'code',
-        $pb.PbFieldType.O3)
-    ..aOS(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'message')
-    ..hasRequiredFields = false;
-
-  EchoStatus._() : super();
   factory EchoStatus({
     $core.int? code,
     $core.String? message,
   }) {
-    final _result = create();
+    final result = create();
     if (code != null) {
-      _result.code = code;
+      result.code = code;
     }
     if (message != null) {
-      _result.message = message;
+      result.message = message;
     }
-    return _result;
+    return result;
   }
+  EchoStatus._() : super();
   factory EchoStatus.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory EchoStatus.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'EchoStatus',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..a<$core.int>(1, _omitFieldNames ? '' : 'code', $pb.PbFieldType.O3)
+    ..aOS(2, _omitFieldNames ? '' : 'message')
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -222,9 +204,10 @@ class EchoStatus extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   EchoStatus copyWith(void Function(EchoStatus) updates) =>
-      super.copyWith((message) => updates(message as EchoStatus))
-          as EchoStatus; // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as EchoStatus)) as EchoStatus;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static EchoStatus create() => EchoStatus._();
   EchoStatus createEmptyInstance() => create();
@@ -259,68 +242,8 @@ class EchoStatus extends $pb.GeneratedMessage {
   void clearMessage() => clearField(2);
 }
 
+/// Unary request.
 class SimpleRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'SimpleRequest',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..e<PayloadType>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseType',
-        $pb.PbFieldType.OE,
-        defaultOrMaker: PayloadType.COMPRESSABLE,
-        valueOf: PayloadType.valueOf,
-        enumValues: PayloadType.values)
-    ..a<$core.int>(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseSize',
-        $pb.PbFieldType.O3)
-    ..aOM<Payload>(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'payload',
-        subBuilder: Payload.create)
-    ..aOB(
-        4,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'fillUsername')
-    ..aOB(
-        5,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'fillOauthScope')
-    ..aOM<BoolValue>(
-        6,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseCompressed',
-        subBuilder: BoolValue.create)
-    ..aOM<EchoStatus>(
-        7,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseStatus',
-        subBuilder: EchoStatus.create)
-    ..aOM<BoolValue>(
-        8,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'expectCompressed',
-        subBuilder: BoolValue.create)
-    ..hasRequiredFields = false;
-
-  SimpleRequest._() : super();
   factory SimpleRequest({
     PayloadType? responseType,
     $core.int? responseSize,
@@ -331,39 +254,63 @@ class SimpleRequest extends $pb.GeneratedMessage {
     EchoStatus? responseStatus,
     BoolValue? expectCompressed,
   }) {
-    final _result = create();
+    final result = create();
     if (responseType != null) {
-      _result.responseType = responseType;
+      result.responseType = responseType;
     }
     if (responseSize != null) {
-      _result.responseSize = responseSize;
+      result.responseSize = responseSize;
     }
     if (payload != null) {
-      _result.payload = payload;
+      result.payload = payload;
     }
     if (fillUsername != null) {
-      _result.fillUsername = fillUsername;
+      result.fillUsername = fillUsername;
     }
     if (fillOauthScope != null) {
-      _result.fillOauthScope = fillOauthScope;
+      result.fillOauthScope = fillOauthScope;
     }
     if (responseCompressed != null) {
-      _result.responseCompressed = responseCompressed;
+      result.responseCompressed = responseCompressed;
     }
     if (responseStatus != null) {
-      _result.responseStatus = responseStatus;
+      result.responseStatus = responseStatus;
     }
     if (expectCompressed != null) {
-      _result.expectCompressed = expectCompressed;
+      result.expectCompressed = expectCompressed;
     }
-    return _result;
+    return result;
   }
+  SimpleRequest._() : super();
   factory SimpleRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory SimpleRequest.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'SimpleRequest',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..e<PayloadType>(
+        1, _omitFieldNames ? '' : 'responseType', $pb.PbFieldType.OE,
+        defaultOrMaker: PayloadType.COMPRESSABLE,
+        valueOf: PayloadType.valueOf,
+        enumValues: PayloadType.values)
+    ..a<$core.int>(2, _omitFieldNames ? '' : 'responseSize', $pb.PbFieldType.O3)
+    ..aOM<Payload>(3, _omitFieldNames ? '' : 'payload',
+        subBuilder: Payload.create)
+    ..aOB(4, _omitFieldNames ? '' : 'fillUsername')
+    ..aOB(5, _omitFieldNames ? '' : 'fillOauthScope')
+    ..aOM<BoolValue>(6, _omitFieldNames ? '' : 'responseCompressed',
+        subBuilder: BoolValue.create)
+    ..aOM<EchoStatus>(7, _omitFieldNames ? '' : 'responseStatus',
+        subBuilder: EchoStatus.create)
+    ..aOM<BoolValue>(8, _omitFieldNames ? '' : 'expectCompressed',
+        subBuilder: BoolValue.create)
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -373,8 +320,10 @@ class SimpleRequest extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   SimpleRequest copyWith(void Function(SimpleRequest) updates) =>
       super.copyWith((message) => updates(message as SimpleRequest))
-          as SimpleRequest; // ignore: deprecated_member_use
+          as SimpleRequest;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static SimpleRequest create() => SimpleRequest._();
   SimpleRequest createEmptyInstance() => create();
@@ -385,6 +334,9 @@ class SimpleRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<SimpleRequest>(create);
   static SimpleRequest? _defaultInstance;
 
+  /// DEPRECATED, don't use. To be removed shortly.
+  /// Desired payload type in the response from the server.
+  /// If response_type is RANDOM, server randomly chooses one from other formats.
   @$pb.TagNumber(1)
   PayloadType get responseType => $_getN(0);
   @$pb.TagNumber(1)
@@ -397,6 +349,7 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearResponseType() => clearField(1);
 
+  /// Desired payload size in the response from the server.
   @$pb.TagNumber(2)
   $core.int get responseSize => $_getIZ(1);
   @$pb.TagNumber(2)
@@ -409,6 +362,7 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   void clearResponseSize() => clearField(2);
 
+  /// Optional input payload sent along with the request.
   @$pb.TagNumber(3)
   Payload get payload => $_getN(2);
   @$pb.TagNumber(3)
@@ -423,6 +377,7 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(3)
   Payload ensurePayload() => $_ensure(2);
 
+  /// Whether SimpleResponse should include username.
   @$pb.TagNumber(4)
   $core.bool get fillUsername => $_getBF(3);
   @$pb.TagNumber(4)
@@ -435,6 +390,7 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(4)
   void clearFillUsername() => clearField(4);
 
+  /// Whether SimpleResponse should include OAuth scope.
   @$pb.TagNumber(5)
   $core.bool get fillOauthScope => $_getBF(4);
   @$pb.TagNumber(5)
@@ -447,6 +403,10 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(5)
   void clearFillOauthScope() => clearField(5);
 
+  /// Whether to request the server to compress the response. This field is
+  /// "nullable" in order to interoperate seamlessly with clients not able to
+  /// implement the full compression tests by introspecting the call to verify
+  /// the response's compression status.
   @$pb.TagNumber(6)
   BoolValue get responseCompressed => $_getN(5);
   @$pb.TagNumber(6)
@@ -461,6 +421,7 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(6)
   BoolValue ensureResponseCompressed() => $_ensure(5);
 
+  /// Whether server should return a given status
   @$pb.TagNumber(7)
   EchoStatus get responseStatus => $_getN(6);
   @$pb.TagNumber(7)
@@ -475,6 +436,7 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(7)
   EchoStatus ensureResponseStatus() => $_ensure(6);
 
+  /// Whether the server should expect this request to be compressed.
   @$pb.TagNumber(8)
   BoolValue get expectCompressed => $_getN(7);
   @$pb.TagNumber(8)
@@ -490,58 +452,43 @@ class SimpleRequest extends $pb.GeneratedMessage {
   BoolValue ensureExpectCompressed() => $_ensure(7);
 }
 
+/// Unary response, as configured by the request.
 class SimpleResponse extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'SimpleResponse',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..aOM<Payload>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'payload',
-        subBuilder: Payload.create)
-    ..aOS(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'username')
-    ..aOS(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'oauthScope')
-    ..hasRequiredFields = false;
-
-  SimpleResponse._() : super();
   factory SimpleResponse({
     Payload? payload,
     $core.String? username,
     $core.String? oauthScope,
   }) {
-    final _result = create();
+    final result = create();
     if (payload != null) {
-      _result.payload = payload;
+      result.payload = payload;
     }
     if (username != null) {
-      _result.username = username;
+      result.username = username;
     }
     if (oauthScope != null) {
-      _result.oauthScope = oauthScope;
+      result.oauthScope = oauthScope;
     }
-    return _result;
+    return result;
   }
+  SimpleResponse._() : super();
   factory SimpleResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory SimpleResponse.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'SimpleResponse',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..aOM<Payload>(1, _omitFieldNames ? '' : 'payload',
+        subBuilder: Payload.create)
+    ..aOS(2, _omitFieldNames ? '' : 'username')
+    ..aOS(3, _omitFieldNames ? '' : 'oauthScope')
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -551,8 +498,10 @@ class SimpleResponse extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   SimpleResponse copyWith(void Function(SimpleResponse) updates) =>
       super.copyWith((message) => updates(message as SimpleResponse))
-          as SimpleResponse; // ignore: deprecated_member_use
+          as SimpleResponse;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static SimpleResponse create() => SimpleResponse._();
   SimpleResponse createEmptyInstance() => create();
@@ -563,6 +512,7 @@ class SimpleResponse extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<SimpleResponse>(create);
   static SimpleResponse? _defaultInstance;
 
+  /// Payload to increase message size.
   @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
   @$pb.TagNumber(1)
@@ -577,6 +527,8 @@ class SimpleResponse extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   Payload ensurePayload() => $_ensure(0);
 
+  /// The user the request came from, for verifying authentication was
+  /// successful when the client expected it.
   @$pb.TagNumber(2)
   $core.String get username => $_getSZ(1);
   @$pb.TagNumber(2)
@@ -589,6 +541,7 @@ class SimpleResponse extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   void clearUsername() => clearField(2);
 
+  /// OAuth scope.
   @$pb.TagNumber(3)
   $core.String get oauthScope => $_getSZ(2);
   @$pb.TagNumber(3)
@@ -602,50 +555,39 @@ class SimpleResponse extends $pb.GeneratedMessage {
   void clearOauthScope() => clearField(3);
 }
 
+/// Client-streaming request.
 class StreamingInputCallRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'StreamingInputCallRequest',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..aOM<Payload>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'payload',
-        subBuilder: Payload.create)
-    ..aOM<BoolValue>(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'expectCompressed',
-        subBuilder: BoolValue.create)
-    ..hasRequiredFields = false;
-
-  StreamingInputCallRequest._() : super();
   factory StreamingInputCallRequest({
     Payload? payload,
     BoolValue? expectCompressed,
   }) {
-    final _result = create();
+    final result = create();
     if (payload != null) {
-      _result.payload = payload;
+      result.payload = payload;
     }
     if (expectCompressed != null) {
-      _result.expectCompressed = expectCompressed;
+      result.expectCompressed = expectCompressed;
     }
-    return _result;
+    return result;
   }
+  StreamingInputCallRequest._() : super();
   factory StreamingInputCallRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory StreamingInputCallRequest.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'StreamingInputCallRequest',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..aOM<Payload>(1, _omitFieldNames ? '' : 'payload',
+        subBuilder: Payload.create)
+    ..aOM<BoolValue>(2, _omitFieldNames ? '' : 'expectCompressed',
+        subBuilder: BoolValue.create)
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -657,8 +599,10 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
   StreamingInputCallRequest copyWith(
           void Function(StreamingInputCallRequest) updates) =>
       super.copyWith((message) => updates(message as StreamingInputCallRequest))
-          as StreamingInputCallRequest; // ignore: deprecated_member_use
+          as StreamingInputCallRequest;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static StreamingInputCallRequest create() => StreamingInputCallRequest._();
   StreamingInputCallRequest createEmptyInstance() => create();
@@ -669,6 +613,7 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<StreamingInputCallRequest>(create);
   static StreamingInputCallRequest? _defaultInstance;
 
+  /// Optional input payload sent along with the request.
   @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
   @$pb.TagNumber(1)
@@ -683,6 +628,10 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   Payload ensurePayload() => $_ensure(0);
 
+  /// Whether the server should expect this request to be compressed. This field
+  /// is "nullable" in order to interoperate seamlessly with servers not able to
+  /// implement the full compression tests by introspecting the call to verify
+  /// the request's compression status.
   @$pb.TagNumber(2)
   BoolValue get expectCompressed => $_getN(1);
   @$pb.TagNumber(2)
@@ -698,40 +647,33 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
   BoolValue ensureExpectCompressed() => $_ensure(1);
 }
 
+/// Client-streaming response.
 class StreamingInputCallResponse extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'StreamingInputCallResponse',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..a<$core.int>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'aggregatedPayloadSize',
-        $pb.PbFieldType.O3)
-    ..hasRequiredFields = false;
-
-  StreamingInputCallResponse._() : super();
   factory StreamingInputCallResponse({
     $core.int? aggregatedPayloadSize,
   }) {
-    final _result = create();
+    final result = create();
     if (aggregatedPayloadSize != null) {
-      _result.aggregatedPayloadSize = aggregatedPayloadSize;
+      result.aggregatedPayloadSize = aggregatedPayloadSize;
     }
-    return _result;
+    return result;
   }
+  StreamingInputCallResponse._() : super();
   factory StreamingInputCallResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory StreamingInputCallResponse.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'StreamingInputCallResponse',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..a<$core.int>(
+        1, _omitFieldNames ? '' : 'aggregatedPayloadSize', $pb.PbFieldType.O3)
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -744,8 +686,10 @@ class StreamingInputCallResponse extends $pb.GeneratedMessage {
           void Function(StreamingInputCallResponse) updates) =>
       super.copyWith(
               (message) => updates(message as StreamingInputCallResponse))
-          as StreamingInputCallResponse; // ignore: deprecated_member_use
+          as StreamingInputCallResponse;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static StreamingInputCallResponse create() => StreamingInputCallResponse._();
   StreamingInputCallResponse createEmptyInstance() => create();
@@ -756,6 +700,7 @@ class StreamingInputCallResponse extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<StreamingInputCallResponse>(create);
   static StreamingInputCallResponse? _defaultInstance;
 
+  /// Aggregated size of payloads received from the client.
   @$pb.TagNumber(1)
   $core.int get aggregatedPayloadSize => $_getIZ(0);
   @$pb.TagNumber(1)
@@ -769,60 +714,43 @@ class StreamingInputCallResponse extends $pb.GeneratedMessage {
   void clearAggregatedPayloadSize() => clearField(1);
 }
 
+/// Configuration for a particular response.
 class ResponseParameters extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'ResponseParameters',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..a<$core.int>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'size',
-        $pb.PbFieldType.O3)
-    ..a<$core.int>(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'intervalUs',
-        $pb.PbFieldType.O3)
-    ..aOM<BoolValue>(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'compressed',
-        subBuilder: BoolValue.create)
-    ..hasRequiredFields = false;
-
-  ResponseParameters._() : super();
   factory ResponseParameters({
     $core.int? size,
     $core.int? intervalUs,
     BoolValue? compressed,
   }) {
-    final _result = create();
+    final result = create();
     if (size != null) {
-      _result.size = size;
+      result.size = size;
     }
     if (intervalUs != null) {
-      _result.intervalUs = intervalUs;
+      result.intervalUs = intervalUs;
     }
     if (compressed != null) {
-      _result.compressed = compressed;
+      result.compressed = compressed;
     }
-    return _result;
+    return result;
   }
+  ResponseParameters._() : super();
   factory ResponseParameters.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory ResponseParameters.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ResponseParameters',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..a<$core.int>(1, _omitFieldNames ? '' : 'size', $pb.PbFieldType.O3)
+    ..a<$core.int>(2, _omitFieldNames ? '' : 'intervalUs', $pb.PbFieldType.O3)
+    ..aOM<BoolValue>(3, _omitFieldNames ? '' : 'compressed',
+        subBuilder: BoolValue.create)
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -832,8 +760,10 @@ class ResponseParameters extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   ResponseParameters copyWith(void Function(ResponseParameters) updates) =>
       super.copyWith((message) => updates(message as ResponseParameters))
-          as ResponseParameters; // ignore: deprecated_member_use
+          as ResponseParameters;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static ResponseParameters create() => ResponseParameters._();
   ResponseParameters createEmptyInstance() => create();
@@ -844,6 +774,7 @@ class ResponseParameters extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<ResponseParameters>(create);
   static ResponseParameters? _defaultInstance;
 
+  /// Desired payload sizes in responses from the server.
   @$pb.TagNumber(1)
   $core.int get size => $_getIZ(0);
   @$pb.TagNumber(1)
@@ -856,6 +787,8 @@ class ResponseParameters extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearSize() => clearField(1);
 
+  /// Desired interval between consecutive responses in the response stream in
+  /// microseconds.
   @$pb.TagNumber(2)
   $core.int get intervalUs => $_getIZ(1);
   @$pb.TagNumber(2)
@@ -868,6 +801,10 @@ class ResponseParameters extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   void clearIntervalUs() => clearField(2);
 
+  /// Whether to request the server to compress the response. This field is
+  /// "nullable" in order to interoperate seamlessly with clients not able to
+  /// implement the full compression tests by introspecting the call to verify
+  /// the response's compression status.
   @$pb.TagNumber(3)
   BoolValue get compressed => $_getN(2);
   @$pb.TagNumber(3)
@@ -883,74 +820,55 @@ class ResponseParameters extends $pb.GeneratedMessage {
   BoolValue ensureCompressed() => $_ensure(2);
 }
 
+/// Server-streaming request.
 class StreamingOutputCallRequest extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'StreamingOutputCallRequest',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..e<PayloadType>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseType',
-        $pb.PbFieldType.OE,
-        defaultOrMaker: PayloadType.COMPRESSABLE,
-        valueOf: PayloadType.valueOf,
-        enumValues: PayloadType.values)
-    ..pc<ResponseParameters>(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseParameters',
-        $pb.PbFieldType.PM,
-        subBuilder: ResponseParameters.create)
-    ..aOM<Payload>(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'payload',
-        subBuilder: Payload.create)
-    ..aOM<EchoStatus>(
-        7,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'responseStatus',
-        subBuilder: EchoStatus.create)
-    ..hasRequiredFields = false;
-
-  StreamingOutputCallRequest._() : super();
   factory StreamingOutputCallRequest({
     PayloadType? responseType,
     $core.Iterable<ResponseParameters>? responseParameters,
     Payload? payload,
     EchoStatus? responseStatus,
   }) {
-    final _result = create();
+    final result = create();
     if (responseType != null) {
-      _result.responseType = responseType;
+      result.responseType = responseType;
     }
     if (responseParameters != null) {
-      _result.responseParameters.addAll(responseParameters);
+      result.responseParameters.addAll(responseParameters);
     }
     if (payload != null) {
-      _result.payload = payload;
+      result.payload = payload;
     }
     if (responseStatus != null) {
-      _result.responseStatus = responseStatus;
+      result.responseStatus = responseStatus;
     }
-    return _result;
+    return result;
   }
+  StreamingOutputCallRequest._() : super();
   factory StreamingOutputCallRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory StreamingOutputCallRequest.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'StreamingOutputCallRequest',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..e<PayloadType>(
+        1, _omitFieldNames ? '' : 'responseType', $pb.PbFieldType.OE,
+        defaultOrMaker: PayloadType.COMPRESSABLE,
+        valueOf: PayloadType.valueOf,
+        enumValues: PayloadType.values)
+    ..pc<ResponseParameters>(
+        2, _omitFieldNames ? '' : 'responseParameters', $pb.PbFieldType.PM,
+        subBuilder: ResponseParameters.create)
+    ..aOM<Payload>(3, _omitFieldNames ? '' : 'payload',
+        subBuilder: Payload.create)
+    ..aOM<EchoStatus>(7, _omitFieldNames ? '' : 'responseStatus',
+        subBuilder: EchoStatus.create)
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -963,8 +881,10 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
           void Function(StreamingOutputCallRequest) updates) =>
       super.copyWith(
               (message) => updates(message as StreamingOutputCallRequest))
-          as StreamingOutputCallRequest; // ignore: deprecated_member_use
+          as StreamingOutputCallRequest;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static StreamingOutputCallRequest create() => StreamingOutputCallRequest._();
   StreamingOutputCallRequest createEmptyInstance() => create();
@@ -975,6 +895,11 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<StreamingOutputCallRequest>(create);
   static StreamingOutputCallRequest? _defaultInstance;
 
+  /// DEPRECATED, don't use. To be removed shortly.
+  /// Desired payload type in the response from the server.
+  /// If response_type is RANDOM, the payload from each response in the stream
+  /// might be of different types. This is to simulate a mixed type of payload
+  /// stream.
   @$pb.TagNumber(1)
   PayloadType get responseType => $_getN(0);
   @$pb.TagNumber(1)
@@ -987,9 +912,11 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearResponseType() => clearField(1);
 
+  /// Configuration for each expected response message.
   @$pb.TagNumber(2)
   $core.List<ResponseParameters> get responseParameters => $_getList(1);
 
+  /// Optional input payload sent along with the request.
   @$pb.TagNumber(3)
   Payload get payload => $_getN(2);
   @$pb.TagNumber(3)
@@ -1004,6 +931,7 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(3)
   Payload ensurePayload() => $_ensure(2);
 
+  /// Whether server should return a given status.
   @$pb.TagNumber(7)
   EchoStatus get responseStatus => $_getN(3);
   @$pb.TagNumber(7)
@@ -1019,40 +947,33 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
   EchoStatus ensureResponseStatus() => $_ensure(3);
 }
 
+/// Server-streaming response, as configured by the request and parameters.
 class StreamingOutputCallResponse extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'StreamingOutputCallResponse',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..aOM<Payload>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'payload',
-        subBuilder: Payload.create)
-    ..hasRequiredFields = false;
-
-  StreamingOutputCallResponse._() : super();
   factory StreamingOutputCallResponse({
     Payload? payload,
   }) {
-    final _result = create();
+    final result = create();
     if (payload != null) {
-      _result.payload = payload;
+      result.payload = payload;
     }
-    return _result;
+    return result;
   }
+  StreamingOutputCallResponse._() : super();
   factory StreamingOutputCallResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory StreamingOutputCallResponse.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'StreamingOutputCallResponse',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..aOM<Payload>(1, _omitFieldNames ? '' : 'payload',
+        subBuilder: Payload.create)
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1065,8 +986,10 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
           void Function(StreamingOutputCallResponse) updates) =>
       super.copyWith(
               (message) => updates(message as StreamingOutputCallResponse))
-          as StreamingOutputCallResponse; // ignore: deprecated_member_use
+          as StreamingOutputCallResponse;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static StreamingOutputCallResponse create() =>
       StreamingOutputCallResponse._();
@@ -1078,6 +1001,7 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<StreamingOutputCallResponse>(create);
   static StreamingOutputCallResponse? _defaultInstance;
 
+  /// Payload to increase response size.
   @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
   @$pb.TagNumber(1)
@@ -1093,40 +1017,34 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
   Payload ensurePayload() => $_ensure(0);
 }
 
+/// For reconnect interop test only.
+/// Client tells server what reconnection parameters it used.
 class ReconnectParams extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'ReconnectParams',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..a<$core.int>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'maxReconnectBackoffMs',
-        $pb.PbFieldType.O3)
-    ..hasRequiredFields = false;
-
-  ReconnectParams._() : super();
   factory ReconnectParams({
     $core.int? maxReconnectBackoffMs,
   }) {
-    final _result = create();
+    final result = create();
     if (maxReconnectBackoffMs != null) {
-      _result.maxReconnectBackoffMs = maxReconnectBackoffMs;
+      result.maxReconnectBackoffMs = maxReconnectBackoffMs;
     }
-    return _result;
+    return result;
   }
+  ReconnectParams._() : super();
   factory ReconnectParams.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory ReconnectParams.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ReconnectParams',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..a<$core.int>(
+        1, _omitFieldNames ? '' : 'maxReconnectBackoffMs', $pb.PbFieldType.O3)
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1136,8 +1054,10 @@ class ReconnectParams extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   ReconnectParams copyWith(void Function(ReconnectParams) updates) =>
       super.copyWith((message) => updates(message as ReconnectParams))
-          as ReconnectParams; // ignore: deprecated_member_use
+          as ReconnectParams;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static ReconnectParams create() => ReconnectParams._();
   ReconnectParams createEmptyInstance() => create();
@@ -1161,49 +1081,39 @@ class ReconnectParams extends $pb.GeneratedMessage {
   void clearMaxReconnectBackoffMs() => clearField(1);
 }
 
+/// For reconnect interop test only.
+/// Server tells client whether its reconnects are following the spec and the
+/// reconnect backoffs it saw.
 class ReconnectInfo extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'ReconnectInfo',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'grpc.testing'),
-      createEmptyInstance: create)
-    ..aOB(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'passed')
-    ..p<$core.int>(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'backoffMs',
-        $pb.PbFieldType.K3)
-    ..hasRequiredFields = false;
-
-  ReconnectInfo._() : super();
   factory ReconnectInfo({
     $core.bool? passed,
     $core.Iterable<$core.int>? backoffMs,
   }) {
-    final _result = create();
+    final result = create();
     if (passed != null) {
-      _result.passed = passed;
+      result.passed = passed;
     }
     if (backoffMs != null) {
-      _result.backoffMs.addAll(backoffMs);
+      result.backoffMs.addAll(backoffMs);
     }
-    return _result;
+    return result;
   }
+  ReconnectInfo._() : super();
   factory ReconnectInfo.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
   factory ReconnectInfo.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'ReconnectInfo',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
+      createEmptyInstance: create)
+    ..aOB(1, _omitFieldNames ? '' : 'passed')
+    ..p<$core.int>(2, _omitFieldNames ? '' : 'backoffMs', $pb.PbFieldType.K3)
+    ..hasRequiredFields = false;
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
@@ -1213,8 +1123,10 @@ class ReconnectInfo extends $pb.GeneratedMessage {
       'Will be removed in next major version')
   ReconnectInfo copyWith(void Function(ReconnectInfo) updates) =>
       super.copyWith((message) => updates(message as ReconnectInfo))
-          as ReconnectInfo; // ignore: deprecated_member_use
+          as ReconnectInfo;
+
   $pb.BuilderInfo get info_ => _i;
+
   @$core.pragma('dart2js:noInline')
   static ReconnectInfo create() => ReconnectInfo._();
   ReconnectInfo createEmptyInstance() => create();
@@ -1240,3 +1152,7 @@ class ReconnectInfo extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   $core.List<$core.int> get backoffMs => $_getList(1);
 }
+
+const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
+const _omitMessageNames =
+    $core.bool.fromEnvironment('protobuf.omit_message_names');

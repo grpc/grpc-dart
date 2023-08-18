@@ -1,52 +1,36 @@
-///
+//
 //  Generated code. Do not modify.
 //  source: google/api/launch_stage.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
-// ignore_for_file: UNDEFINED_SHOWN_NAME
+// ignore_for_file: annotate_overrides, camel_case_types, comment_references
+// ignore_for_file: constant_identifier_names, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_final_fields
+// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+
 import 'dart:core' as $core;
+
 import 'package:protobuf/protobuf.dart' as $pb;
 
+/// The launch stage as defined by [Google Cloud Platform
+/// Launch Stages](https://cloud.google.com/terms/launch-stages).
 class LaunchStage extends $pb.ProtobufEnum {
-  static const LaunchStage LAUNCH_STAGE_UNSPECIFIED = LaunchStage._(
-      0,
-      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-          ? ''
-          : 'LAUNCH_STAGE_UNSPECIFIED');
-  static const LaunchStage UNIMPLEMENTED = LaunchStage._(
-      6,
-      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-          ? ''
-          : 'UNIMPLEMENTED');
-  static const LaunchStage PRELAUNCH = LaunchStage._(
-      7,
-      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-          ? ''
-          : 'PRELAUNCH');
-  static const LaunchStage EARLY_ACCESS = LaunchStage._(
-      1,
-      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-          ? ''
-          : 'EARLY_ACCESS');
-  static const LaunchStage ALPHA = LaunchStage._(
-      2,
-      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-          ? ''
-          : 'ALPHA');
-  static const LaunchStage BETA = LaunchStage._(
-      3,
-      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-          ? ''
-          : 'BETA');
-  static const LaunchStage GA = LaunchStage._(4,
-      const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'GA');
-  static const LaunchStage DEPRECATED = LaunchStage._(
-      5,
-      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-          ? ''
-          : 'DEPRECATED');
+  static const LaunchStage LAUNCH_STAGE_UNSPECIFIED =
+      LaunchStage._(0, _omitEnumNames ? '' : 'LAUNCH_STAGE_UNSPECIFIED');
+  static const LaunchStage UNIMPLEMENTED =
+      LaunchStage._(6, _omitEnumNames ? '' : 'UNIMPLEMENTED');
+  static const LaunchStage PRELAUNCH =
+      LaunchStage._(7, _omitEnumNames ? '' : 'PRELAUNCH');
+  static const LaunchStage EARLY_ACCESS =
+      LaunchStage._(1, _omitEnumNames ? '' : 'EARLY_ACCESS');
+  static const LaunchStage ALPHA =
+      LaunchStage._(2, _omitEnumNames ? '' : 'ALPHA');
+  static const LaunchStage BETA =
+      LaunchStage._(3, _omitEnumNames ? '' : 'BETA');
+  static const LaunchStage GA = LaunchStage._(4, _omitEnumNames ? '' : 'GA');
+  static const LaunchStage DEPRECATED =
+      LaunchStage._(5, _omitEnumNames ? '' : 'DEPRECATED');
 
   static const $core.List<LaunchStage> values = <LaunchStage>[
     LAUNCH_STAGE_UNSPECIFIED,
@@ -65,3 +49,5 @@ class LaunchStage extends $pb.ProtobufEnum {
 
   const LaunchStage._($core.int v, $core.String n) : super(v, n);
 }
+
+const _omitEnumNames = $core.bool.fromEnvironment('protobuf.omit_enum_names');
