@@ -1,6 +1,7 @@
 ## 3.2.4-wip
 
 * Forward internal `GrpcError` on when throwing while sending a request.
+* Remove canceled `ServerHandler`s from tracking list.
 
 ## 3.2.3
 
