@@ -129,12 +129,15 @@ class ConnectionServer {
       dataNotifier: onDataReceivedController.stream,
     ).handle();
     connection.incomingStreams.listen((stream) {
-      _handlers[connection]!.add(serveStream_(
+      final connectionStreams = _handlers[connection]!;
+      final handler = serveStream_(
         stream: stream,
         clientCertificate: clientCertificate,
         remoteAddress: remoteAddress,
         onDataReceived: onDataReceivedController.sink,
-      ));
+      );
+      handler.onCanceled.listen((_) => connectionStreams.remove(handler));
+      connectionStreams.add(handler);
     }, onError: (error, stackTrace) {
       if (error is Error) {
         Zone.current.handleUncaughtError(error, stackTrace);

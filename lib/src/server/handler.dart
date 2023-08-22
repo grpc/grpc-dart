@@ -70,6 +70,10 @@ class ServerHandler extends ServiceCall {
   /// Emits a ping everytime data is received
   final Sink<void>? onDataReceived;
 
+  final StreamController<void> _onCanceledController = StreamController();
+
+  Stream get onCanceled => _onCanceledController.stream;
+
   ServerHandler({
     required ServerTransportStream stream,
     required ServiceLookup serviceLookup,
@@ -92,6 +96,11 @@ class ServerHandler extends ServiceCall {
 
   @override
   bool get isCanceled => _isCanceled;
+
+  set isCanceled(bool value) {
+    _isCanceled = value;
+    _onCanceledController.add(null);
+  }
 
   @override
   bool get isTimedOut => _isTimedOut;
@@ -247,9 +256,9 @@ class ServerHandler extends ServiceCall {
   }
 
   void _onTimedOut() {
-    if (_isCanceled) return;
+    if (isCanceled) return;
     _isTimedOut = true;
-    _isCanceled = true;
+    isCanceled = true;
     final error = GrpcError.deadlineExceeded('Deadline exceeded');
     _sendError(error);
     if (!_requests!.isClosed) {
@@ -408,7 +417,7 @@ class ServerHandler extends ServiceCall {
     // Exception from the incoming stream. Most likely a cancel request from the
     // client, so we treat it as such.
     _timeoutTimer?.cancel();
-    _isCanceled = true;
+    isCanceled = true;
     if (_requests != null && !_requests!.isClosed) {
       _requests!.addError(GrpcError.cancelled('Cancelled'));
     }
@@ -455,7 +464,7 @@ class ServerHandler extends ServiceCall {
   }
 
   void cancel() {
-    _isCanceled = true;
+    isCanceled = true;
     _timeoutTimer?.cancel();
     _cancelResponseSubscription();
   }
