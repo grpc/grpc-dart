@@ -5,14 +5,14 @@ import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/client/proxy.dart';
 import 'package:http2/http2.dart';
 
-Future<void> main() async {
+Future<void> main(List<String> args) async {
   final serverPort = 5678;
-  final proxyPort = 8080;
+  final proxyPort = int.tryParse(args.first);
 
-  var proxy = Proxy.direct();
-  proxy = Proxy(host: 'localhost', port: proxyPort);
+  final proxy =
+      proxyPort != null ? Proxy(host: 'localhost', port: proxyPort) : null;
 
-  final port = proxy.isDirect ? serverPort : proxyPort;
+  final port = proxyPort ?? serverPort;
 
   final connector = SocketTransportConnector(
     'localhost',
@@ -21,7 +21,7 @@ Future<void> main() async {
   );
   await connector.initSocket('localhost', port);
   final incoming =
-      proxy.isDirect ? connector.socket : await connector.connectToProxy();
+      proxy == null ? connector.socket : await connector.connectToProxy(proxy);
 
   final uri = Uri.parse('http://localhost:8080');
 

@@ -23,11 +23,7 @@ void main() {
         privateKey: File('test/data/localhost.key').readAsBytesSync(),
       ),
     );
-    // ignore: prefer_final_locals
-    var proxy = Proxy.direct();
-
-    /// Run this test iff you have proxy running on the port 8080.
-    proxy = Proxy(host: 'localhost', port: 8080);
+    final proxy = Proxy(host: 'localhost', port: 8080);
     final proxyCAName = '/CN=mitmproxy/O=mitmproxy';
 
     fakeChannel = ClientChannel(
@@ -61,7 +57,7 @@ void main() {
       final echoResponse = await fakeClient.echo(echoRequest);
       expect(echoResponse.message, 'blibliblabb');
     },
-    skip: 'Run this test iff you have proxy running.',
+    skip: 'Run this test iff you have a proxy running.',
   );
 }
 

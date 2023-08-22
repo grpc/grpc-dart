@@ -15,11 +15,8 @@ void main() {
   setUp(() async {
     server = Server.create(services: [FakeEchoService()]);
     await server.serve(address: 'localhost', port: 8888);
-    // ignore: prefer_final_locals
-    var proxy = Proxy.direct();
 
-    /// Uncomment this line iff you have proxy running on the port 8080.
-    // proxy = Proxy(host: 'localhost', port: 8080);
+    final proxy = Proxy(host: 'localhost', port: 8080);
 
     fakeChannel = ClientChannel(
       'localhost',
@@ -37,11 +34,15 @@ void main() {
     await server.shutdown();
   });
 
-  test('Sending and receiving over proxy works', () async {
-    final echoRequest = EchoRequest(message: 'blablablubb');
-    final echoResponse = await fakeClient.echo(echoRequest);
-    expect(echoResponse.message, 'blibliblabb');
-  });
+  test(
+    'Sending and receiving over proxy works',
+    () async {
+      final echoRequest = EchoRequest(message: 'blablablubb');
+      final echoResponse = await fakeClient.echo(echoRequest);
+      expect(echoResponse.message, 'blibliblabb');
+    },
+    skip: 'Run this test iff you have a proxy running.',
+  );
 }
 
 class FakeEchoService extends EchoServiceBase {

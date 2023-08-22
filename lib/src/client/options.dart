@@ -60,7 +60,7 @@ class ChannelOptions {
   final BackoffStrategy backoffStrategy;
   final String userAgent;
   final ClientKeepAliveOptions keepAlive;
-  final Proxy proxy;
+  final Proxy? proxy;
 
   const ChannelOptions({
     this.credentials = const ChannelCredentials.secure(),
@@ -71,6 +71,6 @@ class ChannelOptions {
     this.connectionTimeout = defaultConnectionTimeOut,
     this.codecRegistry,
     this.keepAlive = const ClientKeepAliveOptions(),
-    this.proxy = const Proxy.direct(),
+    this.proxy,
   });
 }

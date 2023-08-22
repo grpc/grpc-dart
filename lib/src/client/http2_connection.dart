@@ -360,9 +360,9 @@ class SocketTransportConnector implements ClientTransportConnector {
   final ChannelOptions _options;
   late Socket socket;
 
-  Proxy get proxy => _options.proxy;
-  Object get host => proxy.isDirect ? _host : proxy.host;
-  int get port => proxy.isDirect ? _port : proxy.port;
+  Proxy? get proxy => _options.proxy;
+  Object get host => proxy == null ? _host : proxy!.host;
+  int get port => proxy == null ? _port : proxy!.port;
 
   SocketTransportConnector(this._host, this._port, this._options)
       : assert(_host is InternetAddress || _host is String);
@@ -370,14 +370,7 @@ class SocketTransportConnector implements ClientTransportConnector {
   @override
   Future<ClientTransportConnection> connect() async {
     final securityContext = _options.credentials.securityContext;
-    socket = await initSocket(host, port);
-
-    Stream<List<int>> incoming;
-    if (proxy.isDirect) {
-      incoming = socket;
-    } else {
-      incoming = await connectToProxy();
-    }
+    var incoming = await connectImpl(proxy);
 
     // Don't wait for io buffers to fill up before sending requests.
     if (socket.address.type != InternetAddressType.unix) {
@@ -399,6 +392,14 @@ class SocketTransportConnector implements ClientTransportConnector {
       incoming = socket;
     }
     return ClientTransportConnection.viaStreams(incoming, socket);
+  }
+
+  Future<Stream<List<int>>> connectImpl(Proxy? proxy) async {
+    socket = await initSocket(host, port);
+    if (proxy == null) {
+      return socket;
+    }
+    return await connectToProxy(proxy);
   }
 
   Future<Socket> initSocket(Object host, int port) async {
@@ -457,7 +458,7 @@ class SocketTransportConnector implements ClientTransportConnector {
     return validator(certificate, authority);
   }
 
-  Future<Stream<List<int>>> connectToProxy() async {
+  Future<Stream<List<int>>> connectToProxy(Proxy proxy) async {
     final headers = {'Host': '$_host:$_port'};
     if (proxy.isAuthenticated) {
       // If the proxy configuration contains user information use that
@@ -472,12 +473,13 @@ class SocketTransportConnector implements ClientTransportConnector {
     /// established.
     final intermediate = StreamController<List<int>>();
 
+    /// Route events after the successfull connect to the `intermediate`.
     socket.listen(
       (event) {
         if (completer.isCompleted) {
           intermediate.sink.add(event);
         } else {
-          waitFor(event, completer);
+          _waitForResponse(event, completer);
         }
       },
       onDone: intermediate.close,
@@ -489,16 +491,16 @@ class SocketTransportConnector implements ClientTransportConnector {
     return intermediate.stream;
   }
 
-  void waitFor(Uint8List event, Completer<void> completer) {
-    final response = ascii.decode(event);
-    final lines = response.split('\r\n');
-    // status line
-    final statusLine = lines.first;
-    if (statusLine.startsWith('HTTP/1.1 200')) {
+  /// Wait for the response to the `CONNECT` request, which should be an
+  /// acknowledgement with a 200 status code.
+  void _waitForResponse(Uint8List chunk, Completer<void> completer) {
+    final response = ascii.decode(chunk);
+    print(response);
+    if (response.startsWith('HTTP/1.1 200')) {
       completer.complete();
     } else {
       throw TransportException(
-          'Error establishing proxy connection: $statusLine');
+          'Error establishing proxy connection: $response');
     }
   }
 }

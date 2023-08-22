@@ -82,7 +82,7 @@ class FakeChannelOptions implements ChannelOptions {
   ClientKeepAliveOptions get keepAlive => const ClientKeepAliveOptions();
 
   @override
-  Proxy get proxy => const Proxy.direct();
+  Proxy? get proxy => null;
 }
 
 class FakeChannel extends ClientChannel {
