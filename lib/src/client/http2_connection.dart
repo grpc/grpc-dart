@@ -16,7 +16,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:grpc/src/client/proxy.dart';
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
@@ -61,7 +63,7 @@ class Http2ClientConnection implements connection.ClientConnection {
   ClientKeepAlive? keepAliveManager;
 
   Http2ClientConnection(Object host, int port, this.options)
-      : _transportConnector = _SocketTransportConnector(host, port, options);
+      : _transportConnector = SocketTransportConnector(host, port, options);
 
   Http2ClientConnection.fromClientTransportConnector(
       this._transportConnector, this.options);
@@ -351,39 +353,68 @@ class Http2ClientConnection implements connection.ClientConnection {
   }
 }
 
-class _SocketTransportConnector implements ClientTransportConnector {
+class SocketTransportConnector implements ClientTransportConnector {
   /// Either [InternetAddress] or [String].
   final Object _host;
   final int _port;
   final ChannelOptions _options;
-  late Socket _socket; // ignore: close_sinks
+  late Socket socket;
 
-  _SocketTransportConnector(this._host, this._port, this._options)
+  Proxy? get proxy => _options.proxy;
+  Object get host => proxy == null ? _host : proxy!.host;
+  int get port => proxy == null ? _port : proxy!.port;
+
+  SocketTransportConnector(this._host, this._port, this._options)
       : assert(_host is InternetAddress || _host is String);
 
   @override
   Future<ClientTransportConnection> connect() async {
     final securityContext = _options.credentials.securityContext;
-    _socket =
-        await Socket.connect(_host, _port, timeout: _options.connectTimeout);
+    var incoming = await connectImpl(proxy);
+
     // Don't wait for io buffers to fill up before sending requests.
-    if (_socket.address.type != InternetAddressType.unix) {
-      _socket.setOption(SocketOption.tcpNoDelay, true);
+    if (socket.address.type != InternetAddressType.unix) {
+      socket.setOption(SocketOption.tcpNoDelay, true);
     }
     if (securityContext != null) {
       // Todo(sigurdm): We want to pass supportedProtocols: ['h2'].
       // http://dartbug.com/37950
-      _socket = await SecureSocket.secure(_socket,
-          // This is not really the host, but the authority to verify the TLC
-          // connection against.
-          //
-          // We don't use `this.authority` here, as that includes the port.
-          host: _options.credentials.authority ?? _host,
-          context: securityContext,
-          onBadCertificate: _validateBadCertificate);
+      socket = await SecureSocket.secure(
+        socket,
+        // This is not really the host, but the authority to verify the TLC
+        // connection against.
+        //
+        // We don't use `this.authority` here, as that includes the port.
+        host: _options.credentials.authority ?? host,
+        context: securityContext,
+        onBadCertificate: _validateBadCertificate,
+      );
+      incoming = socket;
     }
+    return ClientTransportConnection.viaStreams(incoming, socket);
+  }
 
-    return ClientTransportConnection.viaSocket(_socket);
+  Future<Stream<List<int>>> connectImpl(Proxy? proxy) async {
+    socket = await initSocket(host, port);
+    if (proxy == null) {
+      return socket;
+    }
+    return await connectToProxy(proxy);
+  }
+
+  Future<Socket> initSocket(Object host, int port) async {
+    return await Socket.connect(host, port, timeout: _options.connectTimeout);
+  }
+
+  void _sendConnect(Map<String, String> headers) {
+    const linebreak = '\r\n';
+    socket.write('CONNECT $_host:$_port HTTP/1.1');
+    socket.write(linebreak);
+    headers.forEach((key, value) {
+      socket.write('$key: $value');
+      socket.write(linebreak);
+    });
+    socket.write(linebreak);
   }
 
   @override
@@ -409,14 +440,14 @@ class _SocketTransportConnector implements ClientTransportConnector {
 
   @override
   Future get done {
-    ArgumentError.checkNotNull(_socket);
-    return _socket.done;
+    ArgumentError.checkNotNull(socket);
+    return socket.done;
   }
 
   @override
   void shutdown() {
-    ArgumentError.checkNotNull(_socket);
-    _socket.destroy();
+    ArgumentError.checkNotNull(socket);
+    socket.destroy();
   }
 
   bool _validateBadCertificate(X509Certificate certificate) {
@@ -425,6 +456,52 @@ class _SocketTransportConnector implements ClientTransportConnector {
 
     if (validator == null) return false;
     return validator(certificate, authority);
+  }
+
+  Future<Stream<List<int>>> connectToProxy(Proxy proxy) async {
+    final headers = {'Host': '$_host:$_port'};
+    if (proxy.isAuthenticated) {
+      // If the proxy configuration contains user information use that
+      // for proxy basic authorization.
+      final authStr = '${proxy.username}:${proxy.password}';
+      final auth = base64Encode(utf8.encode(authStr));
+      headers[HttpHeaders.proxyAuthorizationHeader] = 'Basic $auth';
+    }
+    final completer = Completer<void>();
+
+    /// Routes the events through after connection to the proxy has been
+    /// established.
+    final intermediate = StreamController<List<int>>();
+
+    /// Route events after the successfull connect to the `intermediate`.
+    socket.listen(
+      (event) {
+        if (completer.isCompleted) {
+          intermediate.sink.add(event);
+        } else {
+          _waitForResponse(event, completer);
+        }
+      },
+      onDone: intermediate.close,
+      onError: intermediate.addError,
+    );
+
+    _sendConnect(headers);
+    await completer.future;
+    return intermediate.stream;
+  }
+
+  /// Wait for the response to the `CONNECT` request, which should be an
+  /// acknowledgement with a 200 status code.
+  void _waitForResponse(Uint8List chunk, Completer<void> completer) {
+    final response = ascii.decode(chunk);
+    print(response);
+    if (response.startsWith('HTTP/1.1 200')) {
+      completer.complete();
+    } else {
+      throw TransportException(
+          'Error establishing proxy connection: $response');
+    }
   }
 }
 
