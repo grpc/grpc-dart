@@ -1,6 +1,7 @@
 ## 3.2.4-wip
 
 * Forward internal `GrpcError` on when throwing while sending a request.
+* Add support for proxies, see [#33](https://github.com/grpc/grpc-dart/issues/33).
 
 ## 3.2.3
 
