@@ -60,7 +60,6 @@ class ServerHandler extends ServiceCall {
   Map<String, String>? _customTrailers = {};
 
   DateTime? _deadline;
-  bool _isCanceled = false;
   bool _isTimedOut = false;
   Timer? _timeoutTimer;
 
@@ -70,9 +69,15 @@ class ServerHandler extends ServiceCall {
   /// Emits a ping everytime data is received
   final Sink<void>? onDataReceived;
 
-  final StreamController<void> _onCanceledController = StreamController();
+  final Completer<void> _isCanceledCompleter = Completer<void>();
 
-  Stream get onCanceled => _onCanceledController.stream;
+  Future<void> get onCanceled => _isCanceledCompleter.future;
+
+  set isCanceled(bool value) {
+    if (!isCanceled) {
+      _isCanceledCompleter.complete();
+    }
+  }
 
   ServerHandler({
     required ServerTransportStream stream,
@@ -95,12 +100,7 @@ class ServerHandler extends ServiceCall {
   DateTime? get deadline => _deadline;
 
   @override
-  bool get isCanceled => _isCanceled;
-
-  set isCanceled(bool value) {
-    _isCanceled = value;
-    _onCanceledController.add(null);
-  }
+  bool get isCanceled => _isCanceledCompleter.isCompleted;
 
   @override
   bool get isTimedOut => _isTimedOut;
