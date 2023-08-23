@@ -60,7 +60,7 @@ void main() {
 
   test('Handlers get removed from map after stream is done.', () async {
     final request = ServerStreamingEchoRequest(
-      messageCount: 2,
+      messageCount: 5,
       messageInterval: 5,
     );
     final stream1 = EchoServiceClient(channel)
