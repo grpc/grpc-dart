@@ -58,7 +58,7 @@ void main() {
     await server.shutdown();
   });
 
-  test('Test', () async {
+  test('Handlers get removed from map after stream is done.', () async {
     final request = ServerStreamingEchoRequest(
       messageCount: 2,
       messageInterval: 5,
