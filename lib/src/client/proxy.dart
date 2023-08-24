@@ -1,3 +1,4 @@
+/// Proxy data class with optional authentication.
 class Proxy {
   final String host;
   final int port;
