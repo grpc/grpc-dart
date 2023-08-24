@@ -2,7 +2,6 @@
 import 'dart:async';
 
 import 'package:grpc/grpc.dart';
-import 'package:grpc/src/client/proxy.dart';
 import 'package:test/test.dart';
 
 import 'src/generated/echo.pbgrpc.dart';
