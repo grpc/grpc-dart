@@ -60,7 +60,6 @@ class ServerHandler extends ServiceCall {
   Map<String, String>? _customTrailers = {};
 
   DateTime? _deadline;
-  bool _isCanceled = false;
   bool _isTimedOut = false;
   Timer? _timeoutTimer;
 
@@ -69,6 +68,16 @@ class ServerHandler extends ServiceCall {
 
   /// Emits a ping everytime data is received
   final Sink<void>? onDataReceived;
+
+  final Completer<void> _isCanceledCompleter = Completer<void>();
+
+  Future<void> get onCanceled => _isCanceledCompleter.future;
+
+  set isCanceled(bool value) {
+    if (!isCanceled) {
+      _isCanceledCompleter.complete();
+    }
+  }
 
   ServerHandler({
     required ServerTransportStream stream,
@@ -91,7 +100,7 @@ class ServerHandler extends ServiceCall {
   DateTime? get deadline => _deadline;
 
   @override
-  bool get isCanceled => _isCanceled;
+  bool get isCanceled => _isCanceledCompleter.isCompleted;
 
   @override
   bool get isTimedOut => _isTimedOut;
@@ -247,9 +256,9 @@ class ServerHandler extends ServiceCall {
   }
 
   void _onTimedOut() {
-    if (_isCanceled) return;
+    if (isCanceled) return;
     _isTimedOut = true;
-    _isCanceled = true;
+    isCanceled = true;
     final error = GrpcError.deadlineExceeded('Deadline exceeded');
     _sendError(error);
     if (!_requests!.isClosed) {
@@ -408,7 +417,7 @@ class ServerHandler extends ServiceCall {
     // Exception from the incoming stream. Most likely a cancel request from the
     // client, so we treat it as such.
     _timeoutTimer?.cancel();
-    _isCanceled = true;
+    isCanceled = true;
     if (_requests != null && !_requests!.isClosed) {
       _requests!.addError(GrpcError.cancelled('Cancelled'));
     }
@@ -455,7 +464,7 @@ class ServerHandler extends ServiceCall {
   }
 
   void cancel() {
-    _isCanceled = true;
+    isCanceled = true;
     _timeoutTimer?.cancel();
     _cancelResponseSubscription();
   }
