@@ -36,6 +36,7 @@ export 'src/client/options.dart'
         BackoffStrategy,
         defaultBackoffStrategy,
         ChannelOptions;
+export 'src/client/proxy.dart' show Proxy;
 export 'src/client/transport/http2_credentials.dart'
     show BadCertificateHandler, allowBadCertificates, ChannelCredentials;
 

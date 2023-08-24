@@ -18,7 +18,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:grpc/src/client/proxy.dart';
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
@@ -29,6 +28,7 @@ import 'client_transport_connector.dart';
 import 'connection.dart' hide ClientConnection;
 import 'connection.dart' as connection;
 import 'options.dart';
+import 'proxy.dart';
 import 'transport/http2_credentials.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
