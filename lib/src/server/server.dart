@@ -241,28 +241,33 @@ class Server extends ConnectionServer {
     bool requireClientCertificate = false,
   }) async {
     // TODO(dart-lang/grpc-dart#9): Handle HTTP/1.1 upgrade to h2c, if allowed.
-    Stream<Socket>? server;
+    Stream<Socket> server;
     final securityContext = security?.securityContext;
     if (securityContext != null) {
-      _secureServer = await SecureServerSocket.bind(
-          address ?? InternetAddress.anyIPv4, port ?? 443, securityContext,
-          backlog: backlog,
-          shared: shared,
-          v6Only: v6Only,
-          requestClientCertificate: requestClientCertificate,
-          requireClientCertificate: requireClientCertificate);
-      server = _secureServer;
+      final __secureServer = await SecureServerSocket.bind(
+        address ?? InternetAddress.anyIPv4,
+        port ?? 443,
+        securityContext,
+        backlog: backlog,
+        shared: shared,
+        v6Only: v6Only,
+        requestClientCertificate: requestClientCertificate,
+        requireClientCertificate: requireClientCertificate,
+      );
+      _secureServer = __secureServer;
+      server = __secureServer;
     } else {
-      _insecureServer = await ServerSocket.bind(
+      final __insecureServer = await ServerSocket.bind(
         address ?? InternetAddress.anyIPv4,
         port ?? 80,
         backlog: backlog,
         shared: shared,
         v6Only: v6Only,
       );
-      server = _insecureServer;
+      _insecureServer = __insecureServer;
+      server = __insecureServer;
     }
-    server!.listen((socket) {
+    server.listen((socket) {
       // Don't wait for io buffers to fill up before sending requests.
       if (socket.address.type != InternetAddressType.unix) {
         socket.setOption(SocketOption.tcpNoDelay, true);
@@ -279,10 +284,19 @@ class Server extends ConnectionServer {
         settings: http2ServerSettings,
       );
 
+      InternetAddress? remoteAddress;
+      try {
+        // Using a try-catch control flow as dart:io Sockets don't expose their
+        // connectivity state.
+        remoteAddress = socket.remoteAddress;
+      } on Exception catch (_) {
+        remoteAddress = null;
+      }
+
       serveConnection(
         connection: connection,
         clientCertificate: clientCertificate,
-        remoteAddress: socket.remoteAddress,
+        remoteAddress: remoteAddress,
       );
     }, onError: (error, stackTrace) {
       if (error is Error) {
@@ -320,14 +334,11 @@ class Server extends ConnectionServer {
   }
 
   Future<void> shutdown() async {
-    final done = _connections.map((connection) => connection.finish()).toList();
-    if (_insecureServer != null) {
-      done.add(_insecureServer!.close());
-    }
-    if (_secureServer != null) {
-      done.add(_secureServer!.close());
-    }
-    await Future.wait(done);
+    await Future.wait([
+      ..._connections.map((connection) => connection.finish()),
+      if (_insecureServer != null) _insecureServer!.close(),
+      if (_secureServer != null) _secureServer!.close(),
+    ]);
     _insecureServer = null;
     _secureServer = null;
   }
