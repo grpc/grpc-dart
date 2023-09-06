@@ -3,6 +3,7 @@
 * Forward internal `GrpcError` on when throwing while sending a request.
 * Add support for proxies, see [#33](https://github.com/grpc/grpc-dart/issues/33).
 * Remove canceled `ServerHandler`s from tracking list.
+* Fix regression on fetching the remote address of a closed socket.
 
 ## 3.2.3
 
