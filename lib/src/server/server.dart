@@ -244,7 +244,7 @@ class Server extends ConnectionServer {
     Stream<Socket> server;
     final securityContext = security?.securityContext;
     if (securityContext != null) {
-      final __secureServer = await SecureServerSocket.bind(
+      final _server = await SecureServerSocket.bind(
         address ?? InternetAddress.anyIPv4,
         port ?? 443,
         securityContext,
@@ -254,18 +254,18 @@ class Server extends ConnectionServer {
         requestClientCertificate: requestClientCertificate,
         requireClientCertificate: requireClientCertificate,
       );
-      _secureServer = __secureServer;
-      server = __secureServer;
+      _secureServer = _server;
+      server = _server;
     } else {
-      final __insecureServer = await ServerSocket.bind(
+      final _server = await ServerSocket.bind(
         address ?? InternetAddress.anyIPv4,
         port ?? 80,
         backlog: backlog,
         shared: shared,
         v6Only: v6Only,
       );
-      _insecureServer = __insecureServer;
-      server = __insecureServer;
+      _insecureServer = _server;
+      server = _server;
     }
     server.listen((socket) {
       // Don't wait for io buffers to fill up before sending requests.
@@ -284,19 +284,10 @@ class Server extends ConnectionServer {
         settings: http2ServerSettings,
       );
 
-      InternetAddress? remoteAddress;
-      try {
-        // Using a try-catch control flow as dart:io Sockets don't expose their
-        // connectivity state.
-        remoteAddress = socket.remoteAddress;
-      } on Exception catch (_) {
-        remoteAddress = null;
-      }
-
       serveConnection(
         connection: connection,
         clientCertificate: clientCertificate,
-        remoteAddress: remoteAddress,
+        remoteAddress: socket.remoteAddressOrNull,
       );
     }, onError: (error, stackTrace) {
       if (error is Error) {
@@ -335,11 +326,23 @@ class Server extends ConnectionServer {
 
   Future<void> shutdown() async {
     await Future.wait([
-      ..._connections.map((connection) => connection.finish()),
+      for (var connection in _connections) connection.finish(),
       if (_insecureServer != null) _insecureServer!.close(),
       if (_secureServer != null) _secureServer!.close(),
     ]);
     _insecureServer = null;
     _secureServer = null;
+  }
+}
+
+extension on Socket {
+  InternetAddress? get remoteAddressOrNull {
+    try {
+      // Using a try-catch control flow as dart:io Sockets don't expose their
+      // connectivity state.
+      return remoteAddress;
+    } on Exception catch (_) {
+      return null;
+    }
   }
 }
