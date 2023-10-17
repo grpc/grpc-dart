@@ -115,9 +115,12 @@ class Http2ClientConnection implements connection.ClientConnection {
           },
           onPingTimeout: () => shutdown(),
         );
+        transport.onFrameReceived
+            .listen((_) => keepAliveManager?.onFrameReceived());
+      } else {
+        // Listen to the stream to not cause memory leaks.
+        transport.onFrameReceived.listen(null).cancel().ignore();
       }
-      transport.onFrameReceived
-          .listen((_) => keepAliveManager?.onFrameReceived());
       _connectionLifeTimer
         ..reset()
         ..start();

@@ -28,7 +28,8 @@ import 'package:test/test.dart';
 import 'client_utils.mocks.dart';
 import 'utils.dart';
 
-@GenerateMocks([ClientTransportConnection, ClientTransportStream])
+@GenerateNiceMocks(
+    [MockSpec<ClientTransportConnection>(), MockSpec<ClientTransportStream>()])
 class FakeConnection extends Http2ClientConnection {
   final ClientTransportConnection transport;
 
