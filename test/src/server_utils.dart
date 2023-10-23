@@ -122,7 +122,7 @@ class ServerHarness extends _Harness {
   @override
   ConnectionServer createServer() => Server.create(
         services: <Service>[service],
-        interceptors: <Interceptor>[interceptor],
+        interceptors: <Interceptor>[interceptor.call],
       );
 
   static ServiceMethod<int, int> createMethod(String name,
@@ -136,7 +136,7 @@ class ConnectionServerHarness extends _Harness {
   @override
   ConnectionServer createServer() => ConnectionServer(
         <Service>[service],
-        <Interceptor>[interceptor],
+        <Interceptor>[interceptor.call],
       );
 
   static ServiceMethod<int, int> createMethod(

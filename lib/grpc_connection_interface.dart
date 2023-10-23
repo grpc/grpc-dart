@@ -15,6 +15,7 @@
 
 /// Exports an interface suitable for defining an alternate implementation of
 /// [ClientChannel].
+library;
 
 export 'src/client/call.dart' show CallOptions, ClientCall;
 export 'src/client/channel.dart' show ClientChannelBase;
