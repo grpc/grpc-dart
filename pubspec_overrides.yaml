@@ -1,0 +1,3 @@
+dependency_overrides:
+  http2:
+    path: ../http2
