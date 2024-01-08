@@ -115,7 +115,8 @@ class Http2ClientConnection implements connection.ClientConnection {
           },
           onPingTimeout: () => shutdown(),
         );
-        transport.frameReceived = keepAliveManager?.onFrameReceived;
+        transport.onFrameReceived
+            .listen((_) => keepAliveManager?.onFrameReceived());
       }
       _connectionLifeTimer
         ..reset()

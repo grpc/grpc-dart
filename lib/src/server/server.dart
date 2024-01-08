@@ -117,21 +117,25 @@ class ConnectionServer {
     required ServerTransportConnection connection,
     X509Certificate? clientCertificate,
     InternetAddress? remoteAddress,
-    required ServerKeepAlive serverKeepAlive,
   }) async {
     _connections.add(connection);
     handlers[connection] = [];
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
-
-    serverKeepAlive.tooManyBadPings =
-        () async => await connection.terminate(ErrorCode.ENHANCE_YOUR_CALM);
+    final onDataReceivedController = StreamController<void>();
+    ServerKeepAlive(
+      options: _keepAliveOptions,
+      tooManyBadPings: () async =>
+          await connection.terminate(ErrorCode.ENHANCE_YOUR_CALM),
+      pingNotifier: connection.onPingReceived,
+      dataNotifier: onDataReceivedController.stream,
+    ).handle();
     connection.incomingStreams.listen((stream) {
       final handler = serveStream_(
         stream: stream,
         clientCertificate: clientCertificate,
         remoteAddress: remoteAddress,
-        onDataReceived: serverKeepAlive.onDataReceived,
+        onDataReceived: onDataReceivedController.sink,
       );
       handler.onCanceled.then((_) => handlers[connection]?.remove(handler));
       handlers[connection]!.add(handler);
@@ -149,6 +153,7 @@ class ConnectionServer {
       }
       _connections.remove(connection);
       handlers.remove(connection);
+      await onDataReceivedController.close();
     });
   }
 
@@ -157,7 +162,7 @@ class ConnectionServer {
     required ServerTransportStream stream,
     X509Certificate? clientCertificate,
     InternetAddress? remoteAddress,
-    void Function()? onDataReceived,
+    Sink<void>? onDataReceived,
   }) {
     return ServerHandler(
         stream: stream,
@@ -274,22 +279,17 @@ class Server extends ConnectionServer {
         clientCertificate = socket.peerCertificate;
       }
 
-      final serverKeepAlive = ServerKeepAlive(options: _keepAliveOptions);
       final connection = ServerTransportConnection.viaSocket(
         socket,
         settings: http2ServerSettings,
-        pingReceived: serverKeepAlive.onPingReceived,
       );
-      connection.pingReceived = serverKeepAlive.onPingReceived;
 
       serveConnection(
         connection: connection,
         clientCertificate: clientCertificate,
         remoteAddress: socket.remoteAddressOrNull,
-        serverKeepAlive: serverKeepAlive,
       );
     }, onError: (error, stackTrace) {
-      print('error');
       if (error is Error) {
         Zone.current.handleUncaughtError(error, stackTrace);
       }
@@ -302,7 +302,7 @@ class Server extends ConnectionServer {
     required ServerTransportStream stream,
     X509Certificate? clientCertificate,
     InternetAddress? remoteAddress,
-    void Function()? onDataReceived,
+    Sink<void>? onDataReceived,
   }) {
     return ServerHandler(
       stream: stream,

@@ -66,8 +66,8 @@ class ServerHandler extends ServiceCall {
   final X509Certificate? _clientCertificate;
   final InternetAddress? _remoteAddress;
 
-  /// Callback everytime data is received
-  final void Function()? onDataReceived;
+  /// Emits a ping everytime data is received
+  final Sink<void>? onDataReceived;
 
   final Completer<void> _isCanceledCompleter = Completer<void>();
 
@@ -148,7 +148,7 @@ class ServerHandler extends ServiceCall {
   // -- Idle state, incoming data --
 
   void _onDataIdle(GrpcMessage headerMessage) async {
-    onDataReceived?.call();
+    onDataReceived?.add(null);
     if (headerMessage is! GrpcMetadata) {
       _sendError(GrpcError.unimplemented('Expected header frame'));
       _sinkIncoming();
@@ -289,7 +289,7 @@ class ServerHandler extends ServiceCall {
       return;
     }
 
-    onDataReceived?.call();
+    onDataReceived?.add(null);
     final data = message;
     Object? request;
     try {
