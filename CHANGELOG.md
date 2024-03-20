@@ -1,3 +1,7 @@
+## latest master
+
+* Set compressed flag correctly for grpc-encoding = identity. Fixes [#669](https://github.com/grpc/grpc-dart/issues/669)
+
 ## 3.2.4
 
 * Forward internal `GrpcError` on when throwing while sending a request.
