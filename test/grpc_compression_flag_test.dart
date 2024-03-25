@@ -6,7 +6,7 @@ void main() {
   group('GRPC Compression Flag', () {
     test('compression flag 0 with null codec', () {
       final rawPayload = <int>[1, 2, 3, 4];
-      final Codec? codec;
+      final Codec? codec = null;
       final data = frame(rawPayload, codec);
       expect(data[0], 0);
     });
