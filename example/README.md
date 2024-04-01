@@ -1,7 +1,7 @@
 Four code examples are available:
 
 1. [helloworld](https://github.com/grpc/grpc-dart/tree/master/example/helloworld):
-   A demonstration of using the Dart gRPC library to perform unary RPs.
+   A demonstration of using the Dart gRPC library to perform unary RPCs.
 
 1. [googleapis](https://github.com/grpc/grpc-dart/tree/master/example/googleapis):
    A demonstration of using the Dart gRPC library to communicate with Google APIs.
