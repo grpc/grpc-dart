@@ -3,7 +3,8 @@ description: Dart implementation of gRPC, a high performance, open-source univer
 version: 3.2.4
 
 repository: https://github.com/grpc/grpc-dart
-
+environment:
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   archive: ^3.4.10
