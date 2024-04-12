@@ -25,7 +25,11 @@ class GrpcWebClientChannel extends ClientChannelBase {
   final String prefixPath;
 
   GrpcWebClientChannel.xhr(this.uri,
-      {this.prefixPath = '', super.channelShutdownHandler});
+      {this.prefixPath = '', super.channelShutdownHandler})
+      : assert(
+            prefixPath.isEmpty ||
+                prefixPath.isNotEmpty && !prefixPath.endsWith('/'),
+            'prefixPath must be empty or does not start and end with /');
 
   @override
   ClientConnection createConnection() {

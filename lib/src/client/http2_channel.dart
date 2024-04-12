@@ -30,18 +30,23 @@ class ClientChannel extends ClientChannelBase {
   /// case it can be a Unix Domain Socket address.
   final Object host;
   final int port;
+  final String prefixPath;
   final ChannelOptions options;
 
   ClientChannel(
     this.host, {
     this.port = 443,
+    this.prefixPath = '',
     this.options = const ChannelOptions(),
     super.channelShutdownHandler,
-  });
+  }) : assert(
+            prefixPath.isEmpty ||
+                prefixPath.isNotEmpty && !prefixPath.endsWith('/'),
+            'prefixPath must be empty or does not start and end with /');
 
   @override
   ClientConnection createConnection() =>
-      Http2ClientConnection(host, port, options);
+      Http2ClientConnection(host, port, options, prefixPath: '/$prefixPath');
 }
 
 class ClientTransportConnectorChannel extends ClientChannelBase {

@@ -180,12 +180,7 @@ class XhrClientConnection implements ClientConnection {
       metadata['X-Grpc-Web'] = '1';
     }
 
-    if (prefixPath.isNotEmpty && prefixPath.endsWith('/')) {
-      throw ArgumentError.value(
-          prefixPath, 'prefixPath', 'must not end with a slash');
-    }
-
-    var requestUri = uri.resolve('$prefixPath$path');
+    var requestUri = uri.resolve(prefixPath + path);
     if (callOptions is WebCallOptions &&
         callOptions.bypassCorsPreflight == true) {
       requestUri = cors.moveHttpHeadersToQueryParam(metadata, requestUri);

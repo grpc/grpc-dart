@@ -62,11 +62,15 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   ClientKeepAlive? keepAliveManager;
 
-  Http2ClientConnection(Object host, int port, this.options)
+  final String prefixPath;
+
+  Http2ClientConnection(Object host, int port, this.options,
+      {this.prefixPath = ''})
       : _transportConnector = SocketTransportConnector(host, port, options);
 
   Http2ClientConnection.fromClientTransportConnector(
-      this._transportConnector, this.options);
+      this._transportConnector, this.options,
+      {this.prefixPath = ''});
 
   ChannelCredentials get credentials => options.credentials;
 
@@ -178,7 +182,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     final headers = createCallHeaders(
       credentials.isSecure,
       _transportConnector.authority,
-      path,
+      prefixPath + path,
       timeout,
       metadata,
       compressionCodec,
