@@ -12,7 +12,7 @@ dependencies:
   crypto: ^3.0.3
   fixnum: ^1.1.0
   googleapis_auth: ^1.6.0
-  meta: ^1.14.0
+  meta: ">=1.11.0 <2.0.0"
   http: '>=0.13.0 <2.0.0'
   http2: ^2.3.0
   protobuf: '>=2.0.0 <4.0.0'
