@@ -21,10 +21,17 @@ import 'transport/xhr_transport.dart';
 class GrpcWebClientChannel extends ClientChannelBase {
   final Uri uri;
 
-  GrpcWebClientChannel.xhr(this.uri, {super.channelShutdownHandler});
+  /// The path to prefix to the URI when making requests. Omit '/' at start and end.
+  final String prefixPath;
+
+  GrpcWebClientChannel.xhr(this.uri,
+      {this.prefixPath = '', super.channelShutdownHandler});
 
   @override
   ClientConnection createConnection() {
-    return XhrClientConnection(uri);
+    return XhrClientConnection(
+      uri,
+      prefixPath: prefixPath,
+    );
   }
 }

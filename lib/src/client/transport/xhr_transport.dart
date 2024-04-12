@@ -146,10 +146,11 @@ class XhrTransportStream implements GrpcTransportStream {
 
 class XhrClientConnection implements ClientConnection {
   final Uri uri;
+  final String prefixPath;
 
   final _requests = <XhrTransportStream>{};
 
-  XhrClientConnection(this.uri);
+  XhrClientConnection(this.uri, {this.prefixPath = ''});
 
   @override
   String get authority => uri.authority;
@@ -179,7 +180,12 @@ class XhrClientConnection implements ClientConnection {
       metadata['X-Grpc-Web'] = '1';
     }
 
-    var requestUri = uri.resolve(path);
+    if (prefixPath.isNotEmpty && prefixPath.endsWith('/')) {
+      throw ArgumentError.value(
+          prefixPath, 'prefixPath', 'must not end with a slash');
+    }
+
+    var requestUri = uri.resolve('$prefixPath$path');
     if (callOptions is WebCallOptions &&
         callOptions.bypassCorsPreflight == true) {
       requestUri = cors.moveHttpHeadersToQueryParam(metadata, requestUri);
