@@ -68,14 +68,19 @@ Future<int> main(List<String> args) async {
       help: 'The server host to claim to be connecting to, for use in TLS and '
           'HTTP/2 :authority header. If unspecified, the value of '
           '--server_host will be used.');
-  argumentParser.addOption(_serverPortArgument, help: 'The server port to connect to. For example, "8080".');
+  argumentParser.addOption(_serverPortArgument,
+      help: 'The server port to connect to. For example, "8080".');
   argumentParser.addOption(_testCaseArgument,
-      help: 'The name of the test case to execute. For example, "empty_unary".');
+      help:
+          'The name of the test case to execute. For example, "empty_unary".');
   argumentParser.addOption(_useTLSArgument,
-      defaultsTo: 'false', help: 'Whether to use a plaintext or encrypted connection.');
+      defaultsTo: 'false',
+      help: 'Whether to use a plaintext or encrypted connection.');
   argumentParser.addOption(_useTestCAArgument,
-      defaultsTo: 'false', help: 'Whether to replace platform root CAs with ca.pem as the CA root.');
-  argumentParser.addOption(_defaultServiceAccountArgument, help: 'Email of the GCE default service account.');
+      defaultsTo: 'false',
+      help: 'Whether to replace platform root CAs with ca.pem as the CA root.');
+  argumentParser.addOption(_defaultServiceAccountArgument,
+      help: 'Email of the GCE default service account.');
   argumentParser.addOption(_oauthScopeArgument,
       help: 'OAuth scope. For example, '
           '"https://www.googleapis.com/auth/xapi.zoo".');
@@ -87,11 +92,14 @@ Future<int> main(List<String> args) async {
   late Tester testClient;
   try {
     testClient = Tester(
-        serverHost: arguments[_serverHostArgument] ?? (throw 'Must specify --$_serverHostArgument'),
+        serverHost: arguments[_serverHostArgument] ??
+            (throw 'Must specify --$_serverHostArgument'),
         serverHostOverride: arguments[_serverHostOverrideArgument],
-        serverPort: int.tryParse(arguments[_serverPortArgument] ?? (throw 'Must specify --$_serverPortArgument')) ??
+        serverPort: int.tryParse(arguments[_serverPortArgument] ??
+                (throw 'Must specify --$_serverPortArgument')) ??
             (throw 'Invalid port "${arguments[_serverPortArgument]}"'),
-        testCase: arguments[_testCaseArgument] ?? (throw 'Must specify --$_testCaseArgument'),
+        testCase: arguments[_testCaseArgument] ??
+            (throw 'Must specify --$_testCaseArgument'),
         useTls: arguments[_useTLSArgument] == 'true',
         useTestCA: arguments[_useTestCAArgument] == 'true',
         defaultServiceAccount: arguments[_defaultServiceAccountArgument],
