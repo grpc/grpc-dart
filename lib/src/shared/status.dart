@@ -13,15 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: prefer_relative_imports
+
 import 'dart:convert';
 
+import 'package:grpc/src/generated/google/protobuf/any.pb.dart';
+import 'package:grpc/src/generated/google/rpc/code.pb.dart';
+import 'package:grpc/src/generated/google/rpc/error_details.pb.dart';
+import 'package:grpc/src/generated/google/rpc/status.pb.dart';
 import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
 
-import '../generated/google/protobuf/any.pb.dart';
-import '../generated/google/rpc/code.pbenum.dart';
-import '../generated/google/rpc/error_details.pb.dart';
-import '../generated/google/rpc/status.pb.dart';
 import 'io_bits/io_bits.dart' show HttpStatus;
 
 class StatusCode {
