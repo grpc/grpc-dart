@@ -62,7 +62,7 @@ void main() {
   test('Server terminates connection after too many pings without data',
       () async {
     await fakeClient.echo(EchoRequest());
-    await Future.delayed(minIntervalBetweenPings * 10);
+    await Future.delayed(timeout * 20);
     await fakeClient.echo(EchoRequest());
     // Check that the server closed the connection, the next request then has
     // to build a new one.
