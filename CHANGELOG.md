@@ -1,6 +1,7 @@
 ## 3.2.5
 
 * Set compressed flag correctly for grpc-encoding = identity. Fixes [#669](https://github.com/grpc/grpc-dart/issues/669) (https://github.com/grpc/grpc-dart/pull/693)
+* Remove generated status codes.
 
 ## 3.2.4
 
