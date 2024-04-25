@@ -170,7 +170,7 @@ class ServerHandler extends ServiceCall {
       final acceptedEncodings =
           clientMetadata!['grpc-accept-encoding']?.split(',') ?? [];
       _callEncodingCodec = acceptedEncodings
-          .map(_codecRegistry!.lookup)
+          .map(_codecRegistry.lookup)
           .firstWhere((c) => c != null, orElse: () => null);
     }
 
