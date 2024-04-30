@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:archive/archive.dart';
+import 'dart:io';
 
 abstract class Codec {
   /// Returns the message encoding that this compressor uses.
@@ -58,11 +58,11 @@ class GzipCodec implements Codec {
 
   @override
   List<int> compress(List<int> data) {
-    return GZipEncoder().encode(data)!;
+    return gzip.encode(data);
   }
 
   @override
   List<int> decompress(List<int> data) {
-    return GZipDecoder().decodeBytes(data);
+    return gzip.decode(data);
   }
 }
