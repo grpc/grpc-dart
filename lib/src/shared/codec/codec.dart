@@ -1,4 +1,4 @@
-// Copyright (c) 2024, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2020, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:grpc/src/shared/codec/codec.dart';
-import 'package:grpc/src/shared/codec_registry.dart';
-import 'package:test/test.dart';
-
-void main() {
-  test('CodecRegistry register adds new encodings', () {
-    final registry = CodecRegistry();
-    expect(registry.supportedEncodings, 'identity');
-  });
-
-  test('CodecRegistry lookup', () {
-    final registry = CodecRegistry();
-    expect(registry.lookup('identity'), const IdentityCodec());
-  });
-}
+export 'codec_all.dart';
+export 'codec_io.dart'
+    if (dart.library.js_interop) 'codec_web.dart'; // package:web implementation

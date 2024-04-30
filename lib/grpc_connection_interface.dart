@@ -25,7 +25,7 @@ export 'src/client/options.dart' show ChannelOptions;
 export 'src/client/transport/transport.dart'
     show GrpcTransportStream, ErrorHandler;
 
-export 'src/shared/codec.dart';
+export 'src/shared/codec/codec.dart';
 export 'src/shared/codec_registry.dart';
 export 'src/shared/message.dart' show frame, GrpcMessage, grpcDecompressor;
 export 'src/shared/status.dart' show GrpcError;

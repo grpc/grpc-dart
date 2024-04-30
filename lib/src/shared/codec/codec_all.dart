@@ -1,4 +1,4 @@
-// Copyright (c) 2020, the gRPC project authors. Please see the AUTHORS file
+// Copyright (c) 2024, the gRPC project authors. Please see the AUTHORS file
 // for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,8 +12,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-import 'dart:io';
 
 abstract class Codec {
   /// Returns the message encoding that this compressor uses.
@@ -46,23 +44,5 @@ class IdentityCodec implements Codec {
   @override
   List<int> decompress(List<int> data) {
     return data;
-  }
-}
-
-/// A gzip compressor and decompressor.
-class GzipCodec implements Codec {
-  const GzipCodec();
-
-  @override
-  final encodingName = 'gzip';
-
-  @override
-  List<int> compress(List<int> data) {
-    return gzip.encode(data);
-  }
-
-  @override
-  List<int> decompress(List<int> data) {
-    return gzip.decode(data);
   }
 }
