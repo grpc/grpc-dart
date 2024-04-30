@@ -1,3 +1,5 @@
+@TestOn('vm')
+
 import 'package:grpc/src/shared/codec.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:test/test.dart';
