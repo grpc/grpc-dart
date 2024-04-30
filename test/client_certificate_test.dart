@@ -1,3 +1,7 @@
+// Copyright (c) 2024, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 // TODO(dartbug.com/26057) currently Mac OS X seems to have some issues with
 // client certificates so we disable the test.
 @TestOn('vm && !mac-os')

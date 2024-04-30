@@ -1,3 +1,7 @@
+// Copyright (c) 2024, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:fake_async/fake_async.dart';
 import 'package:grpc/src/client/client_keepalive.dart';
 import 'package:mockito/annotations.dart';
