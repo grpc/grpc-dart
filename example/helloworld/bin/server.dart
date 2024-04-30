@@ -13,10 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Dart implementation of the gRPC helloworld.Greeter server.
 import 'package:grpc/grpc.dart';
 import 'package:helloworld/src/generated/helloworld.pbgrpc.dart';
 
+/// Dart implementation of the gRPC helloworld.Greeter server.
 class GreeterService extends GreeterServiceBase {
   @override
   Future<HelloReply> sayHello(ServiceCall call, HelloRequest request) async {
