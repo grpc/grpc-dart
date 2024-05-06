@@ -55,7 +55,7 @@ export 'src/server/server.dart'
 export 'src/server/server_keepalive.dart' show ServerKeepAliveOptions;
 export 'src/server/service.dart' show ServiceMethod, Service;
 export 'src/shared/api.dart';
-export 'src/shared/codec.dart' show Codec, IdentityCodec, GzipCodec;
+export 'src/shared/codec/codec.dart' show Codec, IdentityCodec, GzipCodec;
 export 'src/shared/codec_registry.dart';
 export 'src/shared/message.dart'
     show GrpcMessage, GrpcMetadata, GrpcData, grpcDecompressor;

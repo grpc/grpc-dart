@@ -18,7 +18,7 @@ import 'dart:convert';
 
 import 'package:http2/transport.dart';
 
-import '../shared/codec.dart';
+import '../shared/codec/codec.dart';
 import '../shared/codec_registry.dart';
 import '../shared/io_bits/io_bits.dart' show InternetAddress, X509Certificate;
 import '../shared/message.dart';

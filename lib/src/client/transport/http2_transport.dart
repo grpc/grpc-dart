@@ -17,7 +17,7 @@ import 'dart:async';
 
 import 'package:http2/transport.dart';
 
-import '../../shared/codec.dart';
+import '../../shared/codec/codec.dart';
 import '../../shared/codec_registry.dart';
 import '../../shared/message.dart';
 import '../../shared/streams.dart';
