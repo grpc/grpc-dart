@@ -13,6 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'codec_all.dart';
-export 'codec_io.dart'
-    if (dart.library.js_interop) 'codec_web.dart'; // package:web implementation
+export 'codec/codec_all.dart';
+export 'codec/codec_io.dart'
+    if (dart.library.js_interop) 'codec/codec_web.dart'; // package:web implementation
