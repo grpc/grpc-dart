@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'codec/codec.dart';
+import 'codec.dart';
 
 /// Encloses classes related to the compression and decompression of messages.
 class CodecRegistry {

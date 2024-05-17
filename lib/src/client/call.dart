@@ -16,7 +16,7 @@
 import 'dart:async';
 import 'dart:developer';
 
-import '../shared/codec/codec.dart';
+import '../shared/codec.dart';
 import '../shared/message.dart';
 import '../shared/profiler.dart';
 import '../shared/status.dart';

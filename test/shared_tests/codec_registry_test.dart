@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:grpc/src/shared/codec/codec.dart';
+import 'package:grpc/src/shared/codec.dart';
 import 'package:grpc/src/shared/codec_registry.dart';
 import 'package:test/test.dart';
 
