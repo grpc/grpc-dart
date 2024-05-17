@@ -16,7 +16,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'codec/codec.dart';
+import 'codec.dart';
 import 'codec_registry.dart';
 import 'status.dart';
 

@@ -20,7 +20,7 @@ import 'dart:typed_data';
 
 import 'package:http2/transport.dart';
 
-import '../shared/codec/codec.dart';
+import '../shared/codec.dart';
 import '../shared/timeout.dart';
 import 'call.dart';
 import 'client_keepalive.dart';
