@@ -16,6 +16,8 @@
 // TODO(dartbug.com/26057) currently Mac OS X seems to have some issues with
 // client certificates so we disable the test.
 @TestOn('vm && !mac-os')
+library;
+
 import 'dart:async';
 import 'dart:io';
 

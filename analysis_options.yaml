@@ -17,5 +17,4 @@ linter:
     - prefer_final_locals
     - prefer_single_quotes
     - test_types_in_equals
-    - use_super_parameters
     - prefer_relative_imports

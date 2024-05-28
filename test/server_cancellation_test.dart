@@ -14,6 +14,8 @@
 // limitations under the License.
 
 @TestOn('vm')
+library;
+
 import 'package:grpc/grpc.dart';
 import 'package:test/test.dart';
 

@@ -14,6 +14,8 @@
 // limitations under the License.
 
 @TestOn('browser')
+library;
+
 import 'dart:async';
 import 'dart:math' as math;
 

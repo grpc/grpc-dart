@@ -14,6 +14,8 @@
 // limitations under the License.
 
 @TestOn('vm')
+library;
+
 import 'dart:async';
 
 import 'package:grpc/grpc.dart' as grpc;
