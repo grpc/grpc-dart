@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 @TestOn('browser')
+library;
 
 import 'package:grpc/grpc_or_grpcweb.dart';
 import 'package:grpc/grpc_web.dart';

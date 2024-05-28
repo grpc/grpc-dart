@@ -14,6 +14,7 @@
 // limitations under the License.
 
 @TestOn('vm')
+library;
 
 import 'package:grpc/src/shared/codec.dart';
 import 'package:grpc/src/shared/message.dart';
