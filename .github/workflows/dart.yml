@@ -93,5 +93,5 @@ jobs:
       - name: Run tests
         run: dart test --platform ${{ matrix.platform }}
       - name: Run vmservice test
-        if: ${{ matrix.platform != 'chrome' && false }} #Disable until https://github.com/grpc/grpc-dart/issues/697 is resolved
+        if: ${{ matrix.platform != 'chrome' }}
         run: dart run --enable-vm-service --timeline-streams=Dart test/timeline_test.dart 

@@ -18,6 +18,7 @@ library;
 
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/client_keepalive.dart';
 import 'package:grpc/src/client/connection.dart';
@@ -32,19 +33,27 @@ void main() {
   late EchoServiceClient fakeClient;
   late FakeClientChannel fakeChannel;
   late EchoServiceClient unresponsiveClient;
-  late ClientChannel unresponsiveChannel;
+
+  final pingInterval = Duration(milliseconds: 10);
+  final timeout = Duration(milliseconds: 30);
+  final minIntervalBetweenPings = Duration(milliseconds: 10);
+  final maxBadPings = 5;
 
   setUp(() async {
     final serverOptions = ServerKeepAliveOptions(
-      maxBadPings: 5,
-      minIntervalBetweenPingsWithoutData: Duration(milliseconds: 10),
+      maxBadPings: maxBadPings,
+      minIntervalBetweenPingsWithoutData: minIntervalBetweenPings,
     );
     final clientOptions = ClientKeepAliveOptions(
-      pingInterval: Duration(milliseconds: 10),
-      timeout: Duration(milliseconds: 30),
+      pingInterval: pingInterval,
+      timeout: timeout,
       permitWithoutCalls: true,
     );
 
+    final channelOptions = ChannelOptions(
+      credentials: ChannelCredentials.insecure(),
+      keepAlive: clientOptions,
+    );
     server = Server.create(
       services: [FakeEchoService()],
       keepAliveOptions: serverOptions,
@@ -53,22 +62,15 @@ void main() {
     fakeChannel = FakeClientChannel(
       'localhost',
       port: server.port!,
-      options: ChannelOptions(
-        credentials: ChannelCredentials.insecure(),
-        keepAlive: clientOptions,
-      ),
+      options: channelOptions,
     );
     fakeClient = EchoServiceClient(fakeChannel);
 
-    unresponsiveChannel = UnresponsiveClientChannel(
+    unresponsiveClient = EchoServiceClient(UnresponsiveClientChannel(
       'localhost',
       port: server.port!,
-      options: ChannelOptions(
-        credentials: ChannelCredentials.insecure(),
-        keepAlive: clientOptions,
-      ),
-    );
-    unresponsiveClient = EchoServiceClient(unresponsiveChannel);
+      options: channelOptions,
+    ));
   });
 
   tearDown(() async {
@@ -76,36 +78,54 @@ void main() {
     await server.shutdown();
   });
 
+  final fakeAsync = FakeAsync();
+
   test('Server terminates connection after too many pings without data',
       () async {
-    await fakeClient.echo(EchoRequest());
-    await Future.delayed(Duration(milliseconds: 300));
-    await fakeClient.echo(EchoRequest());
-    // Check that the server closed the connection, the next request then has
-    // to build a new one.
-    expect(fakeChannel.newConnectionCounter, 2);
+    await fakeAsync.run((async) async {
+      await fakeClient.echo(EchoRequest());
+      async.elapse(pingInterval * maxBadPings);
+      await fakeClient.echo(EchoRequest());
+      // Check that the server closed the connection, the next request then has
+      // to build a new one.
+      expect(fakeChannel.newConnectionCounter, 2);
+    });
   });
 
-  test('Server doesnt terminate connection after pings, as data is sent',
-      () async {
-    final timer = Timer.periodic(
-        Duration(milliseconds: 10), (timer) => fakeClient.echo(EchoRequest()));
-    await Future.delayed(Duration(milliseconds: 200), () => timer.cancel());
+  test(
+      'Server doesnt terminate connection after pings, as data is sent',
+      () async => fakeAsync
+        ..run((async) async {
+          // Send data often enough
+          var counter = 0;
+          Timer.periodic(
+            minIntervalBetweenPings ~/ 2,
+            (timer) {
+              fakeClient.echo(EchoRequest());
+              if (counter++ > 3) timer.cancel();
+            },
+          );
+          async.flushTimers();
 
-    // Wait for last request to be sent
-    await Future.delayed(Duration(milliseconds: 20));
+          // Wait for last request to be sent
+          async.elapse(Duration(milliseconds: 20));
 
-    // Check that the server never closed the connection
-    expect(fakeChannel.newConnectionCounter, 1);
-  });
+          // Check that the server never closed the connection
+          expect(fakeChannel.newConnectionCounter, 1);
+        }));
 
-  test('Server doesnt ack the ping, making the client shutdown the connection',
-      () async {
-    await unresponsiveClient.echo(EchoRequest());
-    await Future.delayed(Duration(milliseconds: 200));
-    await expectLater(
-        unresponsiveClient.echo(EchoRequest()), throwsA(isA<GrpcError>()));
-  });
+  test(
+      'Server doesnt ack the ping, making the client shutdown the connection',
+      () async => fakeAsync.run((async) {
+            unresponsiveClient.echo(EchoRequest());
+            async.flushMicrotasks();
+            async.elapseBlocking(timeout * 10);
+            expectLater(
+              unresponsiveClient.echo(EchoRequest()),
+              throwsA(isA<GrpcError>()),
+            );
+            async.flushMicrotasks();
+          }));
 }
 
 /// A wrapper around a [FakeHttp2ClientConnection]
@@ -189,8 +209,6 @@ class FakeEchoService extends EchoServiceBase {
 
   @override
   Stream<ServerStreamingEchoResponse> serverStreamingEcho(
-      ServiceCall call, ServerStreamingEchoRequest request) {
-    // TODO: implement serverStreamingEcho
-    throw UnimplementedError();
-  }
+          ServiceCall call, ServerStreamingEchoRequest request) =>
+      throw UnsupportedError('Not needed for testing');
 }
