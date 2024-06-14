@@ -184,9 +184,9 @@ class ServerHandler extends ServiceCall {
     _service = service!;
     _descriptor = descriptor;
 
-    final error = await _applyInterceptors();
+    final (error, trace) = await _applyInterceptors();
     if (error != null) {
-      _sendError(error);
+      _sendError(error, trace);
       _sinkIncoming();
       return;
     }
@@ -194,31 +194,31 @@ class ServerHandler extends ServiceCall {
     _startStreamingRequest();
   }
 
-  GrpcError? _onMetadata() {
+  (GrpcError?, StackTrace?) _onMetadata() {
     try {
       _service.$onMetadata(this);
-    } on GrpcError catch (error) {
-      return error;
-    } catch (error) {
+    } on GrpcError catch (error, trace) {
+      return (error, trace);
+    } catch (error, trace) {
       final grpcError = GrpcError.internal(error.toString());
-      return grpcError;
+      return (grpcError, trace);
     }
-    return null;
+    return (null, null);
   }
 
-  Future<GrpcError?> _applyInterceptors() async {
+  Future<(GrpcError?, StackTrace?)> _applyInterceptors() async {
     try {
       for (final interceptor in _interceptors) {
         final error = await interceptor(this, _descriptor);
         if (error != null) {
-          return error;
+          return (error, null);
         }
       }
-    } catch (error) {
+    } catch (error, trace) {
       final grpcError = GrpcError.internal(error.toString());
-      return grpcError;
+      return (grpcError, trace);
     }
-    return null;
+    return (null, null);
   }
 
   void _startStreamingRequest() {
@@ -226,14 +226,14 @@ class ServerHandler extends ServiceCall {
     _requests = requests;
     _incomingSubscription!.onData(_onDataActive);
 
-    final error = _onMetadata();
+    final (error, trace) = _onMetadata();
     if (error != null) {
       if (!requests.isClosed) {
         requests
           ..addError(error)
           ..close();
       }
-      _sendError(error);
+      _sendError(error, trace);
       _onDone();
       _stream.terminate();
       return;
