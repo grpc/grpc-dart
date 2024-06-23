@@ -132,6 +132,16 @@ class _GrpcWebConversionSink implements ChunkedConversionSink<ByteBuffer> {
   void add(ByteBuffer chunk) {
     _chunkOffset = 0;
     final chunkData = chunk.asUint8List();
+    // in flutter web, when a hot-restart is requested, the code can get stuck
+    // in the following loop if there is an active streaming call. the
+    // switch statement is invoked but doesn't match any of the cases. this
+    // presumably has something to do how enums work across isolates.
+    // possibly related to https://github.com/dart-lang/sdk/issues/35626.
+    //
+    // in any case, adding a default handler to the switch statement
+    // causes this loop to end in that case, allowing the old isolate
+    // to shut down and the hot-restart to work properly.
+    processingLoop:
     while (_chunkOffset < chunk.lengthInBytes) {
       switch (_state) {
         case _GrpcWebParseState.init:
@@ -143,6 +153,9 @@ class _GrpcWebConversionSink implements ChunkedConversionSink<ByteBuffer> {
         case _GrpcWebParseState.message:
           _parseMessage(chunkData);
           break;
+        default:
+          // only expected to be hit when hot-restarting, see above
+          break processingLoop;
       }
     }
     _chunkOffset = 0;
