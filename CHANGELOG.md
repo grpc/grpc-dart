@@ -4,6 +4,7 @@
 * Remove generated status codes.
 * Remove dependency on `package:archive`.
 * Move `codec.dart`.
+* Work around hang during Flutter hot restart by adding default case handler in _GrpcWebConversionSink.add.
 
 ## 3.2.4
 
