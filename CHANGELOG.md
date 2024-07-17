@@ -1,3 +1,7 @@
+## 4.0.2
+
+* Internal optimization to client code.
+
 ## 4.0.1
 
 * Fix header and trailing not completing if the call is terminated. Fixes [#727](https://github.com/grpc/grpc-dart/issues/727)
@@ -31,19 +35,19 @@
 
 ## 3.2.1
 
-* `package:http` now supports more versions: `>=0.13.0 <2.0.0`. 
+* `package:http` now supports more versions: `>=0.13.0 <2.0.0`.
 * `package:protobuf` new supports more versions: `>=2.0.0 <4.0.0`.
 
 ## 3.2.0
 
-* `ChannelOptions` now exposes `connectTimeout`, which is used on the 
+* `ChannelOptions` now exposes `connectTimeout`, which is used on the
   socket connect. This is used to specify the maximum allowed time to wait
   for a connection to be established. If `connectTime` is longer than the system
   level timeout duration, a timeout may occur sooner than specified in
   `connectTimeout`. On timeout, a `SocketException` is thrown.
 * Require Dart 2.17 or greater.
 * Fix issue [#51](https://github.com/grpc/grpc-dart/issues/51), add support for custom error handling.
-* Expose client IP address to server 
+* Expose client IP address to server
 * Add a `channelShutdownHandler` argument to `ClientChannel` and the subclasses.
   This callback can be used to react to channel shutdown or termination.
 * Export the `Code` protobuf enum from the `grpc.dart` library.
