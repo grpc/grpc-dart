@@ -46,12 +46,14 @@ class XhrTransportStream implements GrpcTransportStream {
   @override
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
 
-  XhrTransportStream(this._request, {required ErrorHandler onError, required onDone})
+  XhrTransportStream(this._request,
+      {required ErrorHandler onError, required onDone})
       : _onError = onError,
         _onDone = onDone {
-    _outgoingMessages.stream
-        .map(frame)
-        .listen((data) => _request.send(Int8List.fromList(data).toJS), cancelOnError: true, onError: _onError);
+    _outgoingMessages.stream.map(frame).listen(
+        (data) => _request.send(Int8List.fromList(data).toJS),
+        cancelOnError: true,
+        onError: _onError);
 
     _request.onReadyStateChange.listen((_) {
       if (_incomingProcessor.isClosed) {
@@ -72,7 +74,8 @@ class XhrTransportStream implements GrpcTransportStream {
       if (_incomingProcessor.isClosed) {
         return;
       }
-      _onError(GrpcError.unavailable('XhrConnection connection-error'), StackTrace.current);
+      _onError(GrpcError.unavailable('XhrConnection connection-error'),
+          StackTrace.current);
       terminate();
     });
 
@@ -81,7 +84,9 @@ class XhrTransportStream implements GrpcTransportStream {
         return;
       }
       final responseText = _request.responseText;
-      final bytes = Uint8List.fromList(responseText.substring(_requestBytesRead).codeUnits).buffer;
+      final bytes = Uint8List.fromList(
+              responseText.substring(_requestBytesRead).codeUnits)
+          .buffer;
       _requestBytesRead = responseText.length;
       _incomingProcessor.add(bytes);
     });
@@ -89,12 +94,14 @@ class XhrTransportStream implements GrpcTransportStream {
     _incomingProcessor.stream
         .transform(GrpcWebDecoder())
         .transform(grpcDecompressor())
-        .listen(_incomingMessages.add, onError: _onError, onDone: _incomingMessages.close);
+        .listen(_incomingMessages.add,
+            onError: _onError, onDone: _incomingMessages.close);
   }
 
   bool _validateResponseState() {
     try {
-      validateHttpStatusAndContentType(_request.status, _parseHeaders(_request.getAllResponseHeaders()),
+      validateHttpStatusAndContentType(
+          _request.status, _parseHeaders(_request.getAllResponseHeaders()),
           rawResponse: _request.responseText);
       return true;
     } catch (e, st) {
@@ -108,7 +115,8 @@ class XhrTransportStream implements GrpcTransportStream {
     if (!_validateResponseState()) {
       return;
     }
-    _incomingMessages.add(GrpcMetadata(_parseHeaders(_request.getAllResponseHeaders())));
+    _incomingMessages
+        .add(GrpcMetadata(_parseHeaders(_request.getAllResponseHeaders())));
   }
 
   void _onRequestDone() {
@@ -116,7 +124,11 @@ class XhrTransportStream implements GrpcTransportStream {
       return;
     }
     if (_request.status != 200) {
-      _onError(GrpcError.unavailable('Request failed with status: ${_request.status}', null, _request.responseText),
+      _onError(
+          GrpcError.unavailable(
+              'Request failed with status: ${_request.status}',
+              null,
+              _request.responseText),
           StackTrace.current);
       return;
     }
@@ -162,7 +174,8 @@ class XhrClientConnection implements ClientConnection {
   @override
   String get scheme => uri.scheme;
 
-  void _initializeRequest(XMLHttpRequest request, Map<String, String> metadata) {
+  void _initializeRequest(
+      XMLHttpRequest request, Map<String, String> metadata) {
     metadata.forEach((key, value) {
       request.setRequestHeader(key, value);
     });
@@ -175,7 +188,8 @@ class XhrClientConnection implements ClientConnection {
   XMLHttpRequest createHttpRequest() => XMLHttpRequest();
 
   @override
-  GrpcTransportStream makeRequest(String path, Duration? timeout, Map<String, String> metadata, ErrorHandler onError,
+  GrpcTransportStream makeRequest(String path, Duration? timeout,
+      Map<String, String> metadata, ErrorHandler onError,
       {CallOptions? callOptions}) {
     // gRPC-web headers.
     if (_getContentTypeHeader(metadata) == null) {
@@ -185,7 +199,8 @@ class XhrClientConnection implements ClientConnection {
     }
 
     var requestUri = uri.resolve(path);
-    if (callOptions is WebCallOptions && callOptions.bypassCorsPreflight == true) {
+    if (callOptions is WebCallOptions &&
+        callOptions.bypassCorsPreflight == true) {
       requestUri = cors.moveHttpHeadersToQueryParam(metadata, requestUri);
     }
 
@@ -197,7 +212,8 @@ class XhrClientConnection implements ClientConnection {
     // Must set headers after calling open().
     _initializeRequest(request, metadata);
 
-    final transportStream = XhrTransportStream(request, onError: onError, onDone: _removeStream);
+    final transportStream =
+        XhrTransportStream(request, onError: onError, onDone: _removeStream);
     _requests.add(transportStream);
     return transportStream;
   }
