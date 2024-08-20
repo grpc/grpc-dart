@@ -1,3 +1,7 @@
+## 4.0.1
+
+* Update xhr transport to migrate off legacy JS/HTML apis.
+
 ## 4.0.0
 
 * Set compressed flag correctly for grpc-encoding = identity. Fixes [#669](https://github.com/grpc/grpc-dart/issues/669) (https://github.com/grpc/grpc-dart/pull/693)
