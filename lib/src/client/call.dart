@@ -484,12 +484,10 @@ class ClientCall<Q, R> implements Response {
       futures.add(_responseSubscription!.cancel());
     }
     if (!_headers.isCompleted) {
-      _headers.completeError(
-          GrpcError.unimplemented('Request terminated before headers'));
+      _headers.complete({});
     }
     if (!_trailers.isCompleted) {
-      _trailers.completeError(
-          GrpcError.unimplemented('Request terminated before trailers'));
+      _trailers.complete({});
     }
     await Future.wait(futures);
   }

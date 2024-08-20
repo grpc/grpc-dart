@@ -46,13 +46,33 @@ void main() {
   });
 
   test(
-    'Terminating a call correctly complete headers and trailers futures',
+    'Cancelling a call correctly complete headers future',
     () async {
       final clientCall = harness.client.unary(dummyValue);
-      clientCall.catchError((error) {
-        expect(error.codeName, equals('CANCELLED'));
-        return dummyValue;
-      });
+
+      Future.delayed(
+        Duration(milliseconds: cancelDurationMillis),
+      ).then((_) => clientCall.cancel());
+
+      expect(await clientCall.headers, isEmpty);
+
+      await expectLater(
+        clientCall,
+        throwsA(
+          isA<GrpcError>().having(
+            (e) => e.codeName,
+            'Test codename',
+            contains('CANCELLED'),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Cancelling a call correctly complete trailers futures',
+    () async {
+      final clientCall = harness.client.unary(dummyValue);
 
       Future.delayed(
         Duration(milliseconds: cancelDurationMillis),
@@ -60,39 +80,21 @@ void main() {
         clientCall.cancel();
       });
 
-      await expectLater(
-        clientCall.headers,
-        throwsA(
-          isA<GrpcError>()
-              .having(
-                (e) => e.codeName,
-                'Test codename',
-                contains('UNIMPLEMENTED'),
-              )
-              .having(
-                (e) => e.message,
-                'Test message',
-                contains('headers'),
-              ),
-        ),
+      expect(
+        await clientCall.trailers,
+        isEmpty,
       );
+
       await expectLater(
-        clientCall.trailers,
+        clientCall,
         throwsA(
-          isA<GrpcError>()
-              .having(
-                (e) => e.codeName,
-                'Test codename',
-                contains('UNIMPLEMENTED'),
-              )
-              .having(
-                (e) => e.message,
-                'Test message',
-                contains('trailers'),
-              ),
+          isA<GrpcError>().having(
+            (e) => e.codeName,
+            'Test codename',
+            contains('CANCELLED'),
+          ),
         ),
       );
     },
-    timeout: Timeout(Duration(milliseconds: cancelDurationMillis * 2)),
   );
 }
