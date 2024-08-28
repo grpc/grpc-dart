@@ -483,6 +483,12 @@ class ClientCall<Q, R> implements Response {
     if (_responseSubscription != null) {
       futures.add(_responseSubscription!.cancel());
     }
+    if (!_headers.isCompleted) {
+      _headers.complete({});
+    }
+    if (!_trailers.isCompleted) {
+      _trailers.complete({});
+    }
     await Future.wait(futures);
   }
 

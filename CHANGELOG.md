@@ -1,3 +1,7 @@
+## 4.0.1
+
+* Fix header and trailing not completing if the call is terminated. Fixes [#727](https://github.com/grpc/grpc-dart/issues/727)
+
 ## 4.0.0
 
 * Set compressed flag correctly for grpc-encoding = identity. Fixes [#669](https://github.com/grpc/grpc-dart/issues/669) (https://github.com/grpc/grpc-dart/pull/693)
