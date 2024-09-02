@@ -92,24 +92,13 @@ void main() {
 
   test('Server doesnt terminate connection after pings, as data is sent',
       () async {
-    try {
-      //DONOTSUBMIT
-      final timer = Timer.periodic(
-        pingInterval,
-        (_) => fakeClient.echo(EchoRequest()),
-      );
-      await Future.delayed(timeout * 2, () => timer.cancel());
-
-      // Wait fro some time for the requests to be sent and processed
-      await Future.delayed(timeout);
-
-      // Check that the server never closed the connection
-      expect(fakeChannel.newConnectionCounter, 1);
-    } catch (e, s) {
-      print(e);
-      print(s);
-      fail('Stacktrace: $s');
+    for (var i = 0; i < 10; i++) {
+      await fakeClient.echo(EchoRequest());
+      await Future.delayed(timeout * 0.2);
     }
+
+    // Check that the server never closed the connection
+    expect(fakeChannel.newConnectionCounter, 1);
   });
 
   test('Server doesnt ack the ping, making the client shutdown the connection',
