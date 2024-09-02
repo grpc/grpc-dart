@@ -1,3 +1,7 @@
+## 4.0.2-wip
+
+* Small fixes, such as ports in testing and enabling `timeline_test.dart`.
+
 ## 4.0.1
 
 * Fix header and trailing not completing if the call is terminated. Fixes [#727](https://github.com/grpc/grpc-dart/issues/727)
