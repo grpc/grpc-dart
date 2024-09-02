@@ -33,13 +33,13 @@ void main() {
     server = Server.create(services: [FakeEchoService()]);
     await server.serve(
       address: 'localhost',
-      port: 8888,
+      port: 0,
       security: ServerTlsCredentials(
         certificate: File('test/data/localhost.crt').readAsBytesSync(),
         privateKey: File('test/data/localhost.key').readAsBytesSync(),
       ),
     );
-    final proxy = Proxy(host: 'localhost', port: 8080);
+    final proxy = Proxy(host: 'localhost', port: 0);
     final proxyCAName = '/CN=mitmproxy/O=mitmproxy';
 
     fakeChannel = ClientChannel(
