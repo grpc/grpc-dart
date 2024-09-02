@@ -352,6 +352,7 @@ class GrpcError implements Exception {
 /// This list comes from `error_details.proto`. If any new error detail types are
 /// added to the protbuf definition, this function should be updated accordingly to
 /// support them.
+@visibleForTesting
 GeneratedMessage parseErrorDetailsFromAny(Any any) {
   switch (any.typeUrl) {
     case 'type.googleapis.com/google.rpc.RetryInfo':

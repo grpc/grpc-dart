@@ -98,7 +98,7 @@ void main() {
     );
     await Future.delayed(timeout * 2, () => timer.cancel());
 
-    // Wait for last request to be sent
+    // Wait fro some time for the requests to be sent and processed
     await Future.delayed(timeout);
 
     // Check that the server never closed the connection
