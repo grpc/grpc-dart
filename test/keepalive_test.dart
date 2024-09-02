@@ -49,7 +49,7 @@ void main() {
       services: [FakeEchoService()],
       keepAliveOptions: serverOptions,
     );
-    await server.serve(address: 'localhost', port: 8081);
+    await server.serve(address: 'localhost', port: 0);
     fakeChannel = FakeClientChannel(
       'localhost',
       port: server.port!,
