@@ -32,7 +32,7 @@ void main() {
   late EchoServiceClient fakeClient;
   late FakeClientChannel fakeChannel;
   late EchoServiceClient unresponsiveClient;
-  late ClientChannel unresponsiveChannel;
+  late FakeClientChannel unresponsiveChannel;
 
   final pingInterval = Duration(milliseconds: 10);
   final timeout = Duration(milliseconds: 30);
@@ -101,14 +101,18 @@ void main() {
     expect(fakeChannel.newConnectionCounter, 1);
   });
 
-  test('Server doesnt ack the ping, making the client shutdown the connection',
+  test('Server doesnt ack the ping, making the client shutdown the transport',
       () async {
+    //Send a first request, get a connection
     await unresponsiveClient.echo(EchoRequest());
+    expect(unresponsiveChannel.newConnectionCounter, 1);
+
+    //Ping is not being acked on time
     await Future.delayed(timeout * 2);
-    await expectLater(
-      unresponsiveClient.echo(EchoRequest()),
-      throwsA(isA<GrpcError>()),
-    );
+
+    //A second request gets a new connection
+    await unresponsiveClient.echo(EchoRequest());
+    expect(unresponsiveChannel.newConnectionCounter, 2);
   });
 }
 
@@ -146,7 +150,7 @@ class FakeHttp2ClientConnection extends Http2ClientConnection {
 }
 
 /// A wrapper around a [FakeHttp2ClientConnection]
-class UnresponsiveClientChannel extends ClientChannel {
+class UnresponsiveClientChannel extends FakeClientChannel {
   UnresponsiveClientChannel(
     super.host, {
     super.port,
@@ -155,11 +159,14 @@ class UnresponsiveClientChannel extends ClientChannel {
   });
 
   @override
-  ClientConnection createConnection() =>
-      UnresponsiveHttp2ClientConnection(host, port, options);
+  ClientConnection createConnection() {
+    fakeHttp2ClientConnection =
+        UnresponsiveHttp2ClientConnection(host, port, options);
+    return fakeHttp2ClientConnection!;
+  }
 }
 
-class UnresponsiveHttp2ClientConnection extends Http2ClientConnection {
+class UnresponsiveHttp2ClientConnection extends FakeHttp2ClientConnection {
   UnresponsiveHttp2ClientConnection(super.host, super.port, super.options);
 
   @override
