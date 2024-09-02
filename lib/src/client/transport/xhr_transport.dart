@@ -59,14 +59,12 @@ class XhrTransportStream implements GrpcTransportStream {
       if (_incomingProcessor.isClosed) {
         return;
       }
-      switch (_request.readyState) {
-        case 2:
-          _onHeadersReceived();
-          break;
-        case 4:
-          _onRequestDone();
-          _close();
-          break;
+      // TODO: dart-lang/web#285 use 'if' for now
+      if (_request.readyState == XMLHttpRequest.HEADERS_RECEIVED) {
+        _onHeadersReceived();
+      } else if (_request.readyState == XMLHttpRequest.DONE) {
+        _onRequestDone();
+        _close();
       }
     });
 
