@@ -108,7 +108,7 @@ void main() {
     } catch (e, s) {
       print(e);
       print(s);
-      rethrow;
+      fail('Stacktrace: $s');
     }
   });
 
