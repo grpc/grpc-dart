@@ -473,7 +473,7 @@ GrpcError? grpcErrorDetailsFromTrailers(Map<String, String> trailers) {
 }
 
 Map<String, String> toCustomTrailers(Map<String, String> trailers) {
-  return Map.from(trailers)
+  return Map.of(trailers)
     ..remove(':status')
     ..remove('content-type')
     ..remove('grpc-status')
