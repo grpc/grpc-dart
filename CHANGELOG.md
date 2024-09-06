@@ -2,6 +2,8 @@
 
 * Internal optimization to client code.
 * Small fixes, such as ports in testing and enabling `timeline_test.dart`.
+* When the keep alive manager runs into a timeout, it will finish the transport instead of closing
+  the connection, as defined in the gRPC spec.
 
 ## 4.0.1
 
