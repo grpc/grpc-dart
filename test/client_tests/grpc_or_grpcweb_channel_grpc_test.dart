@@ -20,7 +20,7 @@ import 'package:grpc/grpc_or_grpcweb.dart';
 import 'package:test/test.dart';
 
 const host = 'example.com';
-const port = 8080;
+const port = 0;
 
 void main() {
   test('Channel on non-web uses gRPC ClientChannel with correct params', () {

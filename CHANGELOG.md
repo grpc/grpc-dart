@@ -1,6 +1,7 @@
-## 4.0.2
+## 4.0.2-wip
 
 * Internal optimization to client code.
+* Small fixes, such as ports in testing and enabling `timeline_test.dart`.
 
 ## 4.0.1
 
