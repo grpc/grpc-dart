@@ -153,6 +153,7 @@ class _GrpcWebConversionSink implements ChunkedConversionSink<ByteBuffer> {
         case _GrpcWebParseState.message:
           _parseMessage(chunkData);
           break;
+        // ignore: unreachable_switch_default
         default:
           // only expected to be hit when hot-restarting, see above
           break processingLoop;
