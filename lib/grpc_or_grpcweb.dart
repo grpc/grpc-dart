@@ -14,7 +14,7 @@
 // limitations under the License.
 
 import 'src/client/grpc_or_grpcweb_channel_grpc.dart'
-    if (dart.library.html) 'src/client/grpc_or_grpcweb_channel_web.dart';
+    if (dart.library.js_interop) 'src/client/grpc_or_grpcweb_channel_web.dart';
 import 'src/client/http2_channel.dart';
 import 'src/client/options.dart';
 

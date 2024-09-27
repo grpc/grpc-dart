@@ -4,6 +4,7 @@
 * Small fixes, such as ports in testing and enabling `timeline_test.dart`.
 * When the keep alive manager runs into a timeout, it will finish the transport instead of closing
   the connection, as defined in the gRPC spec.
+* Update xhr transport to migrate off legacy JS/HTML apis.
 
 ## 4.0.1
 
