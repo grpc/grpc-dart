@@ -13,10 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/call.dart';
 import 'package:test/test.dart';
 
+import '../src/client_utils.dart';
+
 void main() {
+  const dummyValue = 0;
+  const cancelDurationMillis = 300;
+
+  late ClientHarness harness;
+
+  setUp(() {
+    harness = ClientHarness()..setUp();
+  });
+
+  tearDown(() {
+    harness.tearDown();
+  });
+
   test('WebCallOptions mergeWith CallOptions returns WebCallOptions', () {
     final options =
         WebCallOptions(bypassCorsPreflight: true, withCredentials: true);
@@ -28,4 +44,57 @@ void main() {
     expect(mergedOptions.bypassCorsPreflight, true);
     expect(mergedOptions.withCredentials, true);
   });
+
+  test(
+    'Cancelling a call correctly complete headers future',
+    () async {
+      final clientCall = harness.client.unary(dummyValue);
+
+      Future.delayed(
+        Duration(milliseconds: cancelDurationMillis),
+      ).then((_) => clientCall.cancel());
+
+      expect(await clientCall.headers, isEmpty);
+
+      await expectLater(
+        clientCall,
+        throwsA(
+          isA<GrpcError>().having(
+            (e) => e.codeName,
+            'Test codename',
+            contains('CANCELLED'),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Cancelling a call correctly complete trailers futures',
+    () async {
+      final clientCall = harness.client.unary(dummyValue);
+
+      Future.delayed(
+        Duration(milliseconds: cancelDurationMillis),
+      ).then((_) {
+        clientCall.cancel();
+      });
+
+      expect(
+        await clientCall.trailers,
+        isEmpty,
+      );
+
+      await expectLater(
+        clientCall,
+        throwsA(
+          isA<GrpcError>().having(
+            (e) => e.codeName,
+            'Test codename',
+            contains('CANCELLED'),
+          ),
+        ),
+      );
+    },
+  );
 }

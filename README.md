@@ -8,7 +8,7 @@ The [Dart](https://www.dart.dev/) implementation of
 ## Learn more
 
 - [Quick Start](https://grpc.io/docs/languages/dart/quickstart) - get an app running in minutes
-- [Examples](example)
+- [Examples](https://github.com/grpc/grpc-dart/tree/master/example)
 - [API reference](https://grpc.io/docs/languages/dart/api)
 
 For complete documentation, see [Dart gRPC](https://grpc.io/docs/languages/dart).

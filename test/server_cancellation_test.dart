@@ -47,7 +47,7 @@ void main() {
     server = Server.create(
       services: [EchoService()],
     );
-    await server.serve(address: 'localhost', port: 8081);
+    await server.serve(address: 'localhost', port: 0);
     channel = ClientChannel(
       'localhost',
       port: server.port!,

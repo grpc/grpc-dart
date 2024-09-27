@@ -65,7 +65,7 @@ class MockHttpRequest extends Mock implements HttpRequest {
 class MockXhrClientConnection extends XhrClientConnection {
   MockXhrClientConnection({int? code})
       : _statusCode = code ?? 200,
-        super(Uri.parse('test:8080'));
+        super(Uri.parse('test:0'));
 
   late MockHttpRequest latestRequest;
   final int _statusCode;

@@ -20,7 +20,7 @@ import 'package:grpc/src/client/http2_connection.dart';
 import 'package:http2/http2.dart';
 
 Future<void> main(List<String> args) async {
-  final serverPort = 5678;
+  final serverPort = 0;
   final proxyPort = int.tryParse(args.first);
 
   final proxy =
@@ -37,7 +37,7 @@ Future<void> main(List<String> args) async {
   final incoming =
       proxy == null ? connector.socket : await connector.connectToProxy(proxy);
 
-  final uri = Uri.parse('http://localhost:8080');
+  final uri = Uri.parse('http://localhost:0');
 
   final transport =
       ClientTransportConnection.viaStreams(incoming, connector.socket);

@@ -20,7 +20,7 @@ import 'package:grpc/grpc_web.dart';
 import 'package:test/test.dart';
 
 const host = 'example.com';
-const port = 8080;
+const port = 0;
 
 void main() {
   test('Channel on web uses GrpcWebClientChannel with correct URI', () {
