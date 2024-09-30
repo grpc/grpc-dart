@@ -60,7 +60,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        sdk: [3.2.0, dev]
+        sdk: [3.5.0, dev]
         platform: [vm, chrome]
         exclude:
           # We only run Chrome tests on Linux. No need to run them
