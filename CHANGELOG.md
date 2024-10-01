@@ -4,6 +4,7 @@
 * Small fixes, such as ports in testing and enabling `timeline_test.dart`.
 * When the keep alive manager runs into a timeout, it will finish the transport instead of closing
   the connection, as defined in the gRPC spec.
+* Upgrade to `package:lints` version 5.0.0 and Dart SDK version 3.5.0.
 
 ## 4.0.1
 
