@@ -51,7 +51,7 @@ class XhrTransportStream implements GrpcTransportStream {
       : _onError = onError,
         _onDone = onDone {
     _outgoingMessages.stream.map(frame).listen(
-        (data) => _request.send(Int8List.fromList(data).toJS),
+        (data) => _request.send(Uint8List.fromList(data).toJS),
         cancelOnError: true,
         onError: _onError);
 
