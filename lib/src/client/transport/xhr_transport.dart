@@ -161,9 +161,7 @@ class XhrClientConnection implements ClientConnection {
 
   void _initializeRequest(
       XMLHttpRequest request, Map<String, String> metadata) {
-    metadata.forEach((key, value) {
-      request.setRequestHeader(key, value);
-    });
+    metadata.forEach(request.setRequestHeader);
     // Overriding the mimetype allows us to stream and parse the data
     request.overrideMimeType('text/plain; charset=x-user-defined');
     request.responseType = 'text';
