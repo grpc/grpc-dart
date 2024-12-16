@@ -59,12 +59,14 @@ class XhrTransportStream implements GrpcTransportStream {
       if (_incomingProcessor.isClosed) {
         return;
       }
-      // TODO: dart-lang/web#285 use 'if' for now
-      if (_request.readyState == XMLHttpRequest.HEADERS_RECEIVED) {
-        _onHeadersReceived();
-      } else if (_request.readyState == XMLHttpRequest.DONE) {
-        _onRequestDone();
-        _close();
+      switch (_request.readyState) {
+        case XMLHttpRequest.HEADERS_RECEIVED:
+          _onHeadersReceived();
+          break;
+        case XMLHttpRequest.DONE:
+          _onRequestDone();
+          _close();
+          break;
       }
     });
 
@@ -99,7 +101,7 @@ class XhrTransportStream implements GrpcTransportStream {
   bool _validateResponseState() {
     try {
       validateHttpStatusAndContentType(
-          _request.status, _parseHeaders(_request.getAllResponseHeaders()),
+          _request.status, _request.responseHeaders,
           rawResponse: _request.responseText);
       return true;
     } catch (e, st) {
@@ -113,8 +115,7 @@ class XhrTransportStream implements GrpcTransportStream {
     if (!_validateResponseState()) {
       return;
     }
-    _incomingMessages
-        .add(GrpcMetadata(_parseHeaders(_request.getAllResponseHeaders())));
+    _incomingMessages.add(GrpcMetadata(_request.responseHeaders));
   }
 
   void _onRequestDone() {
@@ -136,20 +137,6 @@ class XhrTransportStream implements GrpcTransportStream {
     _incomingProcessor.close();
     _outgoingMessages.close();
     _onDone(this);
-  }
-
-  Map<String, String> _parseHeaders(String rawHeaders) {
-    final headers = <String, String>{};
-    final lines = rawHeaders.split('\r\n');
-    for (var line in lines) {
-      final index = line.indexOf(': ');
-      if (index != -1) {
-        final key = line.substring(0, index);
-        final value = line.substring(index + 2);
-        headers[key] = value;
-      }
-    }
-    return headers;
   }
 
   @override
