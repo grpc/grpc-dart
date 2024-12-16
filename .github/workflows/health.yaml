@@ -5,9 +5,9 @@ on:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 jobs:
   health:
-    uses: dart-lang/ecosystem/.github/workflows/health.yaml@519ab2527c7522a1fe7294f33f1ec69b2a49b0e5
+    uses: dart-lang/ecosystem/.github/workflows/health.yaml@ef3d79a5da20da2e19e01d70cb9e8c1360311085
     with:
       checks: "changelog,do-not-submit,breaking,coverage,leaking"
-      ignore_coverage: "example,interop"
+      ignore_coverage: "example/**,interop/**"
     permissions:
       pull-requests: write
