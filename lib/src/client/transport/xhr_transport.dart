@@ -146,6 +146,104 @@ class XhrTransportStream implements GrpcTransportStream {
   }
 }
 
+// XMLHttpRequest is an extension type and can't be extended or implemented.
+// This interface is used to allow for mocking XMLHttpRequest in tests of
+// XhrClientConnection.
+@visibleForTesting
+abstract interface class IXMLHttpRequest {
+  Stream<Event> get onReadyStateChange;
+  Stream<ProgressEvent> get onProgress;
+  Stream<ProgressEvent> get onError;
+  int get readyState;
+  JSAny? get response;
+  String get responseText;
+  Map<String, String> get responseHeaders;
+  int get status;
+
+  set responseType(String responseType);
+  set withCredentials(bool withCredentials);
+
+  void open(
+    String method,
+    String url, [
+    // external default is true
+    bool async = true,
+    String? username,
+    String? password,
+  ]);
+  void overrideMimeType(String mimeType);
+  void send([JSAny? body]);
+  void setRequestHeader(String header, String value);
+
+  // This method should only be used in production code.
+  XMLHttpRequest toXMLHttpRequest();
+}
+
+// IXMLHttpRequest that delegates to a real XMLHttpRequest.
+class XMLHttpRequestImpl implements IXMLHttpRequest {
+  final XMLHttpRequest _xhr = XMLHttpRequest();
+
+  XMLHttpRequestImpl();
+
+  @override
+  Stream<Event> get onReadyStateChange => _xhr.onReadyStateChange;
+  @override
+  Stream<ProgressEvent> get onProgress => _xhr.onProgress;
+  @override
+  Stream<ProgressEvent> get onError => _xhr.onError;
+  @override
+  int get readyState => _xhr.readyState;
+  @override
+  Map<String, String> get responseHeaders => _xhr.responseHeaders;
+  @override
+  JSAny? get response => _xhr.response;
+  @override
+  String get responseText => _xhr.responseText;
+  @override
+  int get status => _xhr.status;
+
+  @override
+  set responseType(String responseType) {
+    _xhr.responseType = responseType;
+  }
+
+  @override
+  set withCredentials(bool withCredentials) {
+    _xhr.withCredentials = withCredentials;
+  }
+
+  @override
+  void open(
+    String method,
+    String url, [
+    bool async = true,
+    String? username,
+    String? password,
+  ]) {
+    _xhr.open(method, url, async, username, password);
+  }
+
+  @override
+  void overrideMimeType(String mimeType) {
+    _xhr.overrideMimeType(mimeType);
+  }
+
+  @override
+  void setRequestHeader(String header, String value) {
+    _xhr.setRequestHeader(header, value);
+  }
+
+  @override
+  void send([JSAny? body]) {
+    _xhr.send(body);
+  }
+
+  @override
+  XMLHttpRequest toXMLHttpRequest() {
+    return _xhr;
+  }
+}
+
 class XhrClientConnection implements ClientConnection {
   final Uri uri;
 
@@ -160,7 +258,7 @@ class XhrClientConnection implements ClientConnection {
   String get scheme => uri.scheme;
 
   void _initializeRequest(
-      XMLHttpRequest request, Map<String, String> metadata) {
+      IXMLHttpRequest request, Map<String, String> metadata) {
     metadata.forEach(request.setRequestHeader);
     // Overriding the mimetype allows us to stream and parse the data
     request.overrideMimeType('text/plain; charset=x-user-defined');
@@ -168,7 +266,7 @@ class XhrClientConnection implements ClientConnection {
   }
 
   @visibleForTesting
-  XMLHttpRequest createHttpRequest() => XMLHttpRequest();
+  IXMLHttpRequest createHttpRequest() => XMLHttpRequestImpl();
 
   @override
   GrpcTransportStream makeRequest(String path, Duration? timeout,
@@ -196,9 +294,15 @@ class XhrClientConnection implements ClientConnection {
     _initializeRequest(request, metadata);
 
     final transportStream =
-        XhrTransportStream(request, onError: onError, onDone: _removeStream);
+        _createXhrTransportStream(request, onError, _removeStream);
     _requests.add(transportStream);
     return transportStream;
+  }
+
+  XhrTransportStream _createXhrTransportStream(IXMLHttpRequest request,
+      ErrorHandler onError, void Function(XhrTransportStream stream) onDone) {
+    return XhrTransportStream(request.toXMLHttpRequest(),
+        onError: onError, onDone: onDone);
   }
 
   void _removeStream(XhrTransportStream stream) {

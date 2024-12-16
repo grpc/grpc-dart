@@ -16,7 +16,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html';
+import 'dart:js_interop';
 
 import 'package:async/async.dart';
 import 'package:grpc/src/client/call.dart';
@@ -26,12 +26,13 @@ import 'package:grpc/src/shared/status.dart';
 import 'package:mockito/mockito.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:test/test.dart';
+import 'package:web/web.dart';
 
 final readyStateChangeEvent =
-    Event('readystatechange', canBubble: false, cancelable: false);
+    Event('readystatechange', EventInit(bubbles: false, cancelable: false));
 final progressEvent = ProgressEvent('onloadstart');
 
-class MockHttpRequest extends Mock implements HttpRequest {
+class MockHttpRequest extends Mock implements IXMLHttpRequest {
   MockHttpRequest({int? code}) : status = code ?? 200;
   // ignore: close_sinks
   StreamController<Event> readyStateChangeController =
@@ -52,6 +53,10 @@ class MockHttpRequest extends Mock implements HttpRequest {
   @override
   final int status;
 
+  // Some test code expects to call this
+  set readyState(int state);
+  set responseText(String text);
+
   @override
   int get readyState =>
       super.noSuchMethod(Invocation.getter(#readyState), returnValue: -1);
@@ -71,7 +76,7 @@ class MockXhrClientConnection extends XhrClientConnection {
   final int _statusCode;
 
   @override
-  HttpRequest createHttpRequest() {
+  IXMLHttpRequest createHttpRequest() {
     final request = MockHttpRequest(code: _statusCode);
     latestRequest = request;
     return request;
@@ -208,8 +213,7 @@ void main() {
     await stream.terminate();
 
     final expectedData = frame(data);
-    expect(verify(connection.latestRequest.send(captureAny)).captured.single,
-        expectedData);
+    verify(connection.latestRequest.send(expectedData.toJSBox));
   });
 
   test('Stream handles headers properly', () async {
@@ -226,15 +230,15 @@ void main() {
 
     when(transport.latestRequest.responseHeaders).thenReturn(responseHeaders);
     when(transport.latestRequest.response)
-        .thenReturn(String.fromCharCodes(frame(<int>[])));
+        .thenReturn(String.fromCharCodes(frame(<int>[])).toJS);
 
     // Set expectation for request readyState and generate two readyStateChange
     // events, so that incomingMessages stream completes.
-    final readyStates = [HttpRequest.HEADERS_RECEIVED, HttpRequest.DONE];
-    when(transport.latestRequest.readyState)
-        .thenAnswer((_) => readyStates.removeAt(0));
+    final readyStates = [XMLHttpRequest.HEADERS_RECEIVED, XMLHttpRequest.DONE];
+    transport.latestRequest.readyState = readyStates[0];
     transport.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
+    transport.latestRequest.readyState = readyStates[1];
     transport.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
 
@@ -267,16 +271,15 @@ void main() {
     final encodedString = String.fromCharCodes(encodedTrailers);
 
     when(connection.latestRequest.responseHeaders).thenReturn(requestHeaders);
-    when(connection.latestRequest.response).thenReturn(encodedString);
+    when(connection.latestRequest.response).thenReturn(encodedString.toJS);
 
     // Set expectation for request readyState and generate events so that
     // incomingMessages stream completes.
-    final readyStates = [HttpRequest.HEADERS_RECEIVED, HttpRequest.DONE];
-    when(connection.latestRequest.readyState)
-        .thenAnswer((_) => readyStates.removeAt(0));
+    connection.latestRequest.readyState = XMLHttpRequest.HEADERS_RECEIVED;
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
     connection.latestRequest.progressController.add(progressEvent);
+    connection.latestRequest.readyState = XMLHttpRequest.DONE;
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
 
@@ -303,16 +306,14 @@ void main() {
     final encodedString = String.fromCharCodes(encoded);
 
     when(connection.latestRequest.responseHeaders).thenReturn(requestHeaders);
-    when(connection.latestRequest.response).thenReturn(encodedString);
-
+    when(connection.latestRequest.response).thenReturn(encodedString.toJS);
     // Set expectation for request readyState and generate events so that
     // incomingMessages stream completes.
-    final readyStates = [HttpRequest.HEADERS_RECEIVED, HttpRequest.DONE];
-    when(connection.latestRequest.readyState)
-        .thenAnswer((_) => readyStates.removeAt(0));
+    connection.latestRequest.readyState = XMLHttpRequest.HEADERS_RECEIVED;
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
     connection.latestRequest.progressController.add(progressEvent);
+    connection.latestRequest.readyState = XMLHttpRequest.DONE;
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
 
@@ -338,16 +339,15 @@ void main() {
     final data = List<int>.filled(10, 224);
     when(connection.latestRequest.responseHeaders).thenReturn(requestHeaders);
     when(connection.latestRequest.response)
-        .thenReturn(String.fromCharCodes(frame(data)));
+        .thenReturn(String.fromCharCodes(frame(data)).toJS);
 
     // Set expectation for request readyState and generate events, so that
     // incomingMessages stream completes.
-    final readyStates = [HttpRequest.HEADERS_RECEIVED, HttpRequest.DONE];
-    when(connection.latestRequest.readyState)
-        .thenAnswer((_) => readyStates.removeAt(0));
+    connection.latestRequest.readyState = XMLHttpRequest.HEADERS_RECEIVED;
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
     connection.latestRequest.progressController.add(progressEvent);
+    connection.latestRequest.readyState = XMLHttpRequest.DONE;
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
 
@@ -369,8 +369,8 @@ void main() {
     const errorDetails = 'error details';
     when(connection.latestRequest.responseHeaders)
         .thenReturn({'content-type': 'application/grpc+proto'});
-    when(connection.latestRequest.readyState).thenReturn(HttpRequest.DONE);
-    when(connection.latestRequest.responseText).thenReturn(errorDetails);
+    connection.latestRequest.readyState = XMLHttpRequest.DONE;
+    connection.latestRequest.responseText = errorDetails;
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
     await errorReceived.future;
@@ -398,7 +398,7 @@ void main() {
 
     when(connection.latestRequest.responseHeaders).thenReturn(metadata);
     when(connection.latestRequest.readyState)
-        .thenReturn(HttpRequest.HEADERS_RECEIVED);
+        .thenReturn(XMLHttpRequest.HEADERS_RECEIVED);
 
     // At first invocation the response should be the the first message, after
     // that first + last messages.
@@ -406,12 +406,12 @@ void main() {
     when(connection.latestRequest.response).thenAnswer((_) {
       if (first) {
         first = false;
-        return encodedStrings[0];
+        return encodedStrings[0].toJS;
       }
-      return encodedStrings[0] + encodedStrings[1];
+      return (encodedStrings[0] + encodedStrings[1]).toJS;
     });
 
-    final readyStates = [HttpRequest.HEADERS_RECEIVED, HttpRequest.DONE];
+    final readyStates = [XMLHttpRequest.HEADERS_RECEIVED, XMLHttpRequest.DONE];
     when(connection.latestRequest.readyState)
         .thenAnswer((_) => readyStates.removeAt(0));
 
