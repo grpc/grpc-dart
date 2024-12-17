@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'dart:html' show HttpStatus;
+export 'package:web/web.dart' show HttpStatus;
 
 /// Unavailable on the web
 class InternetAddress {}
