@@ -14,10 +14,11 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:html';
+import 'dart:js_interop';
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
+import 'package:web/web.dart';
 
 import '../../client/call.dart';
 import '../../shared/message.dart';
@@ -30,7 +31,7 @@ import 'web_streams.dart';
 const _contentTypeKey = 'Content-Type';
 
 class XhrTransportStream implements GrpcTransportStream {
-  final HttpRequest _request;
+  final XMLHttpRequest _request;
   final ErrorHandler _onError;
   final Function(XhrTransportStream stream) _onDone;
   bool _headersReceived = false;
@@ -49,19 +50,20 @@ class XhrTransportStream implements GrpcTransportStream {
       {required ErrorHandler onError, required onDone})
       : _onError = onError,
         _onDone = onDone {
-    _outgoingMessages.stream
-        .map(frame)
-        .listen((data) => _request.send(data), cancelOnError: true);
+    _outgoingMessages.stream.map(frame).listen(
+        (data) => _request.send(Uint8List.fromList(data).toJS),
+        cancelOnError: true,
+        onError: _onError);
 
-    _request.onReadyStateChange.listen((data) {
+    _request.onReadyStateChange.listen((_) {
       if (_incomingProcessor.isClosed) {
         return;
       }
       switch (_request.readyState) {
-        case HttpRequest.HEADERS_RECEIVED:
+        case XMLHttpRequest.HEADERS_RECEIVED:
           _onHeadersReceived();
           break;
-        case HttpRequest.DONE:
+        case XMLHttpRequest.DONE:
           _onRequestDone();
           _close();
           break;
@@ -81,13 +83,11 @@ class XhrTransportStream implements GrpcTransportStream {
       if (_incomingProcessor.isClosed) {
         return;
       }
-      // Use response over responseText as most browsers don't support
-      // using responseText during an onProgress event.
-      final responseString = _request.response as String;
+      final responseText = _request.responseText;
       final bytes = Uint8List.fromList(
-              responseString.substring(_requestBytesRead).codeUnits)
+              responseText.substring(_requestBytesRead).codeUnits)
           .buffer;
-      _requestBytesRead = responseString.length;
+      _requestBytesRead = responseText.length;
       _incomingProcessor.add(bytes);
     });
 
@@ -122,9 +122,11 @@ class XhrTransportStream implements GrpcTransportStream {
     if (!_headersReceived && !_validateResponseState()) {
       return;
     }
-    if (_request.response == null) {
+    if (_request.status != 200) {
       _onError(
-          GrpcError.unavailable('XhrConnection request null response', null,
+          GrpcError.unavailable(
+              'Request failed with status: ${_request.status}',
+              null,
               _request.responseText),
           StackTrace.current);
       return;
@@ -153,20 +155,20 @@ class XhrClientConnection implements ClientConnection {
 
   @override
   String get authority => uri.authority;
+
   @override
   String get scheme => uri.scheme;
 
-  void _initializeRequest(HttpRequest request, Map<String, String> metadata) {
-    for (final header in metadata.keys) {
-      request.setRequestHeader(header, metadata[header]!);
-    }
+  void _initializeRequest(
+      XMLHttpRequest request, Map<String, String> metadata) {
+    metadata.forEach(request.setRequestHeader);
     // Overriding the mimetype allows us to stream and parse the data
     request.overrideMimeType('text/plain; charset=x-user-defined');
     request.responseType = 'text';
   }
 
   @visibleForTesting
-  HttpRequest createHttpRequest() => HttpRequest();
+  XMLHttpRequest createHttpRequest() => XMLHttpRequest();
 
   @override
   GrpcTransportStream makeRequest(String path, Duration? timeout,
