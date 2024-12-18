@@ -31,7 +31,7 @@ import 'web_streams.dart';
 const _contentTypeKey = 'Content-Type';
 
 class XhrTransportStream implements GrpcTransportStream {
-  final XMLHttpRequest _request;
+  final IXMLHttpRequest _request;
   final ErrorHandler _onError;
   final Function(XhrTransportStream stream) _onDone;
   bool _headersReceived = false;
@@ -163,6 +163,7 @@ abstract interface class IXMLHttpRequest {
   set responseType(String responseType);
   set withCredentials(bool withCredentials);
 
+  void abort();
   void open(
     String method,
     String url, [
@@ -210,6 +211,11 @@ class XMLHttpRequestImpl implements IXMLHttpRequest {
   @override
   set withCredentials(bool withCredentials) {
     _xhr.withCredentials = withCredentials;
+  }
+
+  @override
+  void abort() {
+    _xhr.abort();
   }
 
   @override
@@ -301,8 +307,7 @@ class XhrClientConnection implements ClientConnection {
 
   XhrTransportStream _createXhrTransportStream(IXMLHttpRequest request,
       ErrorHandler onError, void Function(XhrTransportStream stream) onDone) {
-    return XhrTransportStream(request.toXMLHttpRequest(),
-        onError: onError, onDone: onDone);
+    return XhrTransportStream(request, onError: onError, onDone: onDone);
   }
 
   void _removeStream(XhrTransportStream stream) {
