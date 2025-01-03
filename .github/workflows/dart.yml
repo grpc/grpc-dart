@@ -3,11 +3,10 @@ name: Dart
 on:
   # Run CI on pushes to the master branch, and on PRs against master.
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
-  schedule:
-    - cron: "0 0 * * 0"
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   # Check code formatting and static analysis on a single OS (linux)
