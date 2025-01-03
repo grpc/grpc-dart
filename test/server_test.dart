@@ -304,7 +304,7 @@ void main() {
       }
 
       GrpcError? interceptor(call, method) {
-        if (method.identifier == 'Unary') {
+        if (method.name == 'Unary') {
           return null;
         }
         return GrpcError.unauthenticated('Request is unauthenticated');
@@ -326,7 +326,7 @@ void main() {
 
     group('returns error if interceptor blocks request', () {
       GrpcError? interceptor(call, method) {
-        if (method.identifier == 'Unary') {
+        if (method.name == 'Unary') {
           return GrpcError.unauthenticated('Request is unauthenticated');
         }
         return null;
