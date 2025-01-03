@@ -325,7 +325,7 @@ void main() {
     });
 
     group('returns error if interceptor blocks request', () {
-      GrpcError? interceptor(ServiceCall call, ServiceMethod method) {
+      GrpcError? interceptor(call, method) {
         if (method.name == 'Unary') {
           return GrpcError.unauthenticated('Request is unauthenticated');
         }
