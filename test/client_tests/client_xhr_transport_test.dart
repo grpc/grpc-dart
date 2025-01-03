@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 @TestOn('browser')
+library;
 
 import 'dart:async';
 import 'dart:html';
@@ -64,7 +65,7 @@ class MockHttpRequest extends Mock implements HttpRequest {
 class MockXhrClientConnection extends XhrClientConnection {
   MockXhrClientConnection({int? code})
       : _statusCode = code ?? 200,
-        super(Uri.parse('test:8080'));
+        super(Uri.parse('test:0'));
 
   late MockHttpRequest latestRequest;
   final int _statusCode;

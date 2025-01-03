@@ -58,7 +58,7 @@ class ChannelCredentials {
     if (!isSecure) return null;
     if (_certificateBytes != null) {
       return createSecurityContext(false)
-        ..setTrustedCertificatesBytes(_certificateBytes!,
+        ..setTrustedCertificatesBytes(_certificateBytes,
             password: _certificatePassword);
     }
     final context = SecurityContext(withTrustedRoots: true);

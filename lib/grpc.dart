@@ -13,6 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore: dangling_library_doc_comments
+/// Status detail types and error codes
+export 'package:grpc/src/generated/google/rpc/error_details.pb.dart';
+
 export 'src/auth/auth.dart' show BaseAuthenticator;
 export 'src/auth/auth_io.dart'
     show
@@ -39,10 +43,6 @@ export 'src/client/options.dart'
 export 'src/client/proxy.dart' show Proxy;
 export 'src/client/transport/http2_credentials.dart'
     show BadCertificateHandler, allowBadCertificates, ChannelCredentials;
-
-/// Status detail types and error codes
-export 'src/generated/google/rpc/code.pbenum.dart';
-export 'src/generated/google/rpc/error_details.pb.dart';
 export 'src/server/call.dart' show ServiceCall;
 export 'src/server/interceptor.dart' show Interceptor;
 export 'src/server/server.dart'
