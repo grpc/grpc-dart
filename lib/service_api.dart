@@ -16,7 +16,7 @@
 /// Exports the minimum api to define server and client stubs.
 ///
 /// Mainly intended to be imported by generated code.
-library service_api;
+library;
 
 export 'src/client/call.dart' show CallOptions, MetadataProvider;
 export 'src/client/channel.dart' show ClientChannel;
