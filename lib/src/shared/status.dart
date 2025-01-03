@@ -13,16 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// ignore_for_file: prefer_relative_imports
-
 import 'dart:convert';
 
-import 'package:grpc/src/generated/google/protobuf/any.pb.dart';
-import 'package:grpc/src/generated/google/rpc/error_details.pb.dart';
-import 'package:grpc/src/generated/google/rpc/status.pb.dart';
 import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
 
+import '../generated/google/protobuf/any.pb.dart';
+import '../generated/google/rpc/code.pbenum.dart';
+import '../generated/google/rpc/error_details.pb.dart';
+import '../generated/google/rpc/status.pb.dart';
 import 'io_bits/io_bits.dart' show HttpStatus;
 
 class StatusCode {
@@ -150,28 +149,6 @@ class StatusCode {
   static int fromHttpStatus(int status) {
     return _httpStatusToGrpcStatus[status] ?? StatusCode.unknown;
   }
-
-  /// Creates a string from a gRPC status code.
-  static String? name(int status) => switch (status) {
-        ok => 'OK',
-        cancelled => 'CANCELLED',
-        unknown => 'UNKNOWN',
-        invalidArgument => 'INVALID_ARGUMENT',
-        deadlineExceeded => 'DEADLINE_EXCEEDED',
-        notFound => 'NOT_FOUND',
-        alreadyExists => 'ALREADY_EXISTS',
-        permissionDenied => 'PERMISSION_DENIED',
-        resourceExhausted => 'RESOURCE_EXHAUSTED',
-        failedPrecondition => 'FAILED_PRECONDITION',
-        aborted => 'ABORTED',
-        outOfRange => 'OUT_OF_RANGE',
-        unimplemented => 'UNIMPLEMENTED',
-        internal => 'INTERNAL',
-        unavailable => 'UNAVAILABLE',
-        dataLoss => 'DATA_LOSS',
-        unauthenticated => 'UNAUTHENTICATED',
-        int() => null,
-      };
 }
 
 class GrpcError implements Exception {
@@ -329,8 +306,7 @@ class GrpcError implements Exception {
         code = StatusCode.unauthenticated;
 
   /// Given a status code, return the name
-  String get codeName =>
-      StatusCode.name(code) ?? StatusCode.name(StatusCode.unknown)!;
+  String get codeName => (Code.valueOf(code) ?? Code.UNKNOWN).name;
 
   @override
   bool operator ==(other) {
@@ -352,7 +328,6 @@ class GrpcError implements Exception {
 /// This list comes from `error_details.proto`. If any new error detail types are
 /// added to the protbuf definition, this function should be updated accordingly to
 /// support them.
-@visibleForTesting
 GeneratedMessage parseErrorDetailsFromAny(Any any) {
   switch (any.typeUrl) {
     case 'type.googleapis.com/google.rpc.RetryInfo':
@@ -474,7 +449,7 @@ GrpcError? grpcErrorDetailsFromTrailers(Map<String, String> trailers) {
 }
 
 Map<String, String> toCustomTrailers(Map<String, String> trailers) {
-  return Map.of(trailers)
+  return Map.from(trailers)
     ..remove(':status')
     ..remove('content-type')
     ..remove('grpc-status')

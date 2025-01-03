@@ -16,8 +16,6 @@
 @TestOn('vm')
 @Skip(
     'Run only as `dart run --enable-vm-service --timeline-streams=Dart test/timeline_test.dart`')
-library;
-
 import 'dart:async';
 import 'dart:developer' as dev;
 

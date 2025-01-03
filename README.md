@@ -1,14 +1,14 @@
 The [Dart](https://www.dart.dev/) implementation of
 [gRPC](https://grpc.io/): A high performance, open source, general RPC framework that puts mobile and HTTP/2 first.
 
-[![Dart](https://github.com/grpc/grpc-dart/actions/workflows/dart.yml/badge.svg)](https://github.com/grpc/grpc-dart/actions/workflows/dart.yml)
+[![CI status](https://github.com/grpc/grpc-dart/workflows/Dart/badge.svg)](https://github.com/grpc/grpc-dart/actions?query=workflow%3A%22Dart%22+branch%3Amaster)
 [![pub package](https://img.shields.io/pub/v/grpc.svg)](https://pub.dev/packages/grpc)
 
 
 ## Learn more
 
 - [Quick Start](https://grpc.io/docs/languages/dart/quickstart) - get an app running in minutes
-- [Examples](https://github.com/grpc/grpc-dart/tree/master/example)
+- [Examples](example)
 - [API reference](https://grpc.io/docs/languages/dart/api)
 
 For complete documentation, see [Dart gRPC](https://grpc.io/docs/languages/dart).

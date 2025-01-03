@@ -14,8 +14,6 @@
 // limitations under the License.
 
 @TestOn('vm')
-library;
-
 import 'package:grpc/grpc.dart';
 import 'package:test/test.dart';
 
@@ -47,7 +45,7 @@ void main() {
     server = Server.create(
       services: [EchoService()],
     );
-    await server.serve(address: 'localhost', port: 0);
+    await server.serve(address: 'localhost', port: 8081);
     channel = ClientChannel(
       'localhost',
       port: server.port!,

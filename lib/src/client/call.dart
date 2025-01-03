@@ -86,9 +86,9 @@ class CallOptions {
 
   CallOptions mergedWith(CallOptions? other) {
     if (other == null) return this;
-    final mergedMetadata = Map.of(metadata)..addAll(other.metadata);
+    final mergedMetadata = Map.from(metadata)..addAll(other.metadata);
     final mergedTimeout = other.timeout ?? timeout;
-    final mergedProviders = List.of(metadataProviders)
+    final mergedProviders = List.from(metadataProviders)
       ..addAll(other.metadataProviders);
     final mergedCompression = other.compression ?? compression;
     return CallOptions._(
@@ -146,9 +146,9 @@ class WebCallOptions extends CallOptions {
   CallOptions mergedWith(CallOptions? other) {
     if (other == null) return this;
 
-    final mergedMetadata = Map.of(metadata)..addAll(other.metadata);
+    final mergedMetadata = Map.from(metadata)..addAll(other.metadata);
     final mergedTimeout = other.timeout ?? timeout;
-    final mergedProviders = List.of(metadataProviders)
+    final mergedProviders = List.from(metadataProviders)
       ..addAll(other.metadataProviders);
 
     if (other is! WebCallOptions) {
@@ -241,7 +241,7 @@ class ClientCall<Q, R> implements Response {
     if (options.metadataProviders.isEmpty) {
       _sendRequest(connection, _sanitizeMetadata(options.metadata));
     } else {
-      final metadata = Map<String, String>.of(options.metadata);
+      final metadata = Map<String, String>.from(options.metadata);
       Future.forEach(
               options.metadataProviders,
               (MetadataProvider provider) => provider(metadata,
@@ -482,12 +482,6 @@ class ClientCall<Q, R> implements Response {
     }
     if (_responseSubscription != null) {
       futures.add(_responseSubscription!.cancel());
-    }
-    if (!_headers.isCompleted) {
-      _headers.complete({});
-    }
-    if (!_trailers.isCompleted) {
-      _trailers.complete({});
     }
     await Future.wait(futures);
   }

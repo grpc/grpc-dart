@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 @TestOn('vm')
-library;
 
 import 'dart:async';
 
@@ -304,7 +303,7 @@ void main() {
       }
 
       GrpcError? interceptor(call, method) {
-        if (method.name == 'Unary') {
+        if (method.identifier == 'Unary') {
           return null;
         }
         return GrpcError.unauthenticated('Request is unauthenticated');
@@ -325,8 +324,8 @@ void main() {
     });
 
     group('returns error if interceptor blocks request', () {
-      GrpcError? interceptor(ServiceCall call, ServiceMethod method) {
-        if (method.name == 'Unary') {
+      GrpcError? interceptor(call, method) {
+        if (method.identifier == 'Unary') {
           return GrpcError.unauthenticated('Request is unauthenticated');
         }
         return null;
