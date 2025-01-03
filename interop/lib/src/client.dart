@@ -208,7 +208,7 @@ class Tester {
     final receivedBytes = response.payload.body.length;
     if (receivedBytes != 314159) {
       throw 'Response payload mismatch. Expected 314159 bytes, '
-          'got ${receivedBytes}.';
+          'got $receivedBytes.';
     }
   }
 
@@ -869,7 +869,7 @@ class Tester {
     final receivedBytes = response.payload.body.length;
     if (receivedBytes != 314159) {
       throw 'Response payload mismatch. Expected 314159 bytes, '
-          'got ${receivedBytes}.';
+          'got $receivedBytes.';
     }
     return response;
   }

@@ -69,7 +69,7 @@ class _CredentialsRefreshingAuthenticator extends HttpBasedAuthenticator {
     await super.authenticate(metadata, uri);
     if (_quotaProject != null) {
       // https://cloud.google.com/apis/docs/system-parameters#definitions
-      metadata['X-Goog-User-Project'] = _quotaProject!;
+      metadata['X-Goog-User-Project'] = _quotaProject;
     }
   }
 
