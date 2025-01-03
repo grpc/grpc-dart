@@ -13,18 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:grpc/src/shared/codec.dart';
-import 'package:grpc/src/shared/codec_registry.dart';
-import 'package:test/test.dart';
+import 'codec_all.dart';
 
-void main() {
-  test('CodecRegistry register adds new encodings', () {
-    final registry = CodecRegistry();
-    expect(registry.supportedEncodings, 'identity');
-  });
+/// A gzip compressor and decompressor.
+class GzipCodec implements Codec {
+  const GzipCodec();
 
-  test('CodecRegistry lookup', () {
-    final registry = CodecRegistry();
-    expect(registry.lookup('identity'), const IdentityCodec());
-  });
+  @override
+  final encodingName = 'gzip';
+
+  @override
+  List<int> compress(List<int> data) {
+    throw UnsupportedError('Gzip is not supported for grpc web');
+  }
+
+  @override
+  List<int> decompress(List<int> data) {
+    throw UnsupportedError('Gzip is not supported for grpc web');
+  }
 }
