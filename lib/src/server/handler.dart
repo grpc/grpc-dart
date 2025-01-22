@@ -309,7 +309,7 @@ class ServerHandler extends ServiceCall {
 
   // -- Active state, outgoing response data --
 
-  void _onResponse(response) {
+  void _onResponse(dynamic response) {
     try {
       final bytes = _descriptor.serialize(response);
       if (!_headersSent) {
@@ -333,7 +333,7 @@ class ServerHandler extends ServiceCall {
     sendTrailers();
   }
 
-  void _onResponseError(error, trace) {
+  void _onResponseError(Object error, StackTrace trace) {
     if (error is GrpcError) {
       _sendError(error, trace);
     } else {
@@ -413,7 +413,7 @@ class ServerHandler extends ServiceCall {
 
   // -- All states, incoming error / stream closed --
 
-  void _onError(error) {
+  void _onError(Object error) {
     // Exception from the incoming stream. Most likely a cancel request from the
     // client, so we treat it as such.
     _timeoutTimer?.cancel();

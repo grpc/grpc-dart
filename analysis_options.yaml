@@ -1,23 +1,22 @@
-# https://dart.dev/guides/language/analysis-options
 include: package:lints/recommended.yaml
 
 analyzer:
   errors:
-    # These should be fixed or ignored in the proto generator
+    # These should be fixed or ignored in the proto generator.
     implementation_imports: ignore
     no_leading_underscores_for_local_identifiers: ignore
+    unintended_html_in_doc_comment: ignore
 
 linter:
   rules:
-    #true
-    always_declare_return_types: true
-    cancel_subscriptions: true
-    close_sinks: true
-    directives_ordering: true
-    omit_local_variable_types: true
-    prefer_final_locals: true
-    prefer_single_quotes: true
-    test_types_in_equals: true
-    prefer_relative_imports: true
-    #false
-    unintended_html_in_doc_comment: false
+    - always_declare_return_types
+    - cancel_subscriptions
+    - close_sinks
+    - directives_ordering
+    - omit_local_variable_types
+    - prefer_final_locals
+    - prefer_relative_imports
+    - prefer_single_quotes
+    # Enable once 3.7 is stable.
+    # - strict_top_level_inference
+    - test_types_in_equals

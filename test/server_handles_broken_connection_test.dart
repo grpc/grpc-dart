@@ -77,7 +77,7 @@ class ClientData {
       {required this.address, required this.port, required this.sendPort});
 }
 
-void client(clientData) async {
+void client(ClientData clientData) async {
   final channel = grpc.ClientChannel(
     clientData.address,
     port: clientData.port,
@@ -107,7 +107,7 @@ Future<void> main() async {
     ]);
     await server.serve(address: address, port: 0);
     final receivePort = ReceivePort();
-    Isolate.spawn(
+    Isolate.spawn<ClientData>(
         client,
         ClientData(
             address: address,
