@@ -25,7 +25,7 @@ it should raise analysis issues as you edit; alternatively validate from the
 Terminal:
 
 ```
-dartanalyzer lib test
+dart analyze
 ```
 
 All analysis warnings and errors must be fixed; hints should be considered.
@@ -33,8 +33,7 @@ All analysis warnings and errors must be fixed; hints should be considered.
 ## Running tests
 
 ```
-pub get
-pub run test
+dart test
 ```
 
 gRPC-web tests require [`envoy`](

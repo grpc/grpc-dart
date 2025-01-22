@@ -13,8 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// ignore: dangling_library_doc_comments
-/// Status detail types and error codes
+/// Status detail types and error codes.
+library;
+
 export 'package:grpc/src/generated/google/rpc/error_details.pb.dart';
 
 export 'src/auth/auth.dart' show BaseAuthenticator;
