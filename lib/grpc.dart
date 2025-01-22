@@ -13,9 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Status detail types and error codes.
-library;
-
 export 'package:grpc/src/generated/google/rpc/error_details.pb.dart';
 
 export 'src/auth/auth.dart' show BaseAuthenticator;
