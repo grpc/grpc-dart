@@ -25,7 +25,7 @@ it should raise analysis issues as you edit; alternatively validate from the
 Terminal:
 
 ```
-dartanalyzer lib test
+dart analyze
 ```
 
 All analysis warnings and errors must be fixed; hints should be considered.
@@ -33,8 +33,7 @@ All analysis warnings and errors must be fixed; hints should be considered.
 ## Running tests
 
 ```
-pub get
-pub run test
+dart test
 ```
 
 gRPC-web tests require [`envoy`](
@@ -69,4 +68,4 @@ early on.
 so.
 
 ## Updating protobuf definitions
-Sometimes we might need to update the generated dart files from the protos included in `lib/src/protos`. To do this, run the script `tool/regenerate.sh` from the project root and it will update the generated dart files in `lib/src/geneerated`.
+Sometimes we might need to update the generated dart files from the protos included in `lib/src/protos`. To do this, run the script `tool/regenerate.sh` from the project root and it will update the generated dart files in `lib/src/generated`.

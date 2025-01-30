@@ -271,7 +271,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     return _pendingCalls.isNotEmpty;
   }
 
-  void _handleConnectionFailure(error) {
+  void _handleConnectionFailure(Object error) {
     _disconnect();
     if (_state == ConnectionState.shutdown || _state == ConnectionState.idle) {
       return;

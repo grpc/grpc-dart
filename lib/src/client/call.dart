@@ -203,7 +203,7 @@ class ClientCall<Q, R> implements Response {
     }
   }
 
-  void onConnectionError(error) {
+  void onConnectionError(Object error) {
     _terminateWithError(GrpcError.unavailable('Error connecting: $error'));
   }
 
@@ -398,7 +398,7 @@ class ClientCall<Q, R> implements Response {
 
   /// Handler for response errors. Forward the error to the [_responses] stream,
   /// wrapped if necessary.
-  void _onResponseError(error, StackTrace stackTrace) {
+  void _onResponseError(Object error, StackTrace stackTrace) {
     if (error is GrpcError) {
       _responseError(error, stackTrace);
       return;
@@ -436,7 +436,7 @@ class ClientCall<Q, R> implements Response {
   /// Error handler for the requests stream. Something went wrong while trying
   /// to send the request to the server. Abort the request, and forward the
   /// error to the user code on the [_responses] stream.
-  void _onRequestError(error, StackTrace stackTrace) {
+  void _onRequestError(Object error, StackTrace stackTrace) {
     if (error is! GrpcError) {
       error = GrpcError.unknown(error.toString());
     }

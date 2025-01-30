@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'dart:async';
+// ignore: deprecated_member_use (#756)
 import 'dart:html';
 
 import 'src/generated/echo.pbgrpc.dart';
