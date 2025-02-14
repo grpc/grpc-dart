@@ -18,7 +18,7 @@ library;
 
 import 'dart:async';
 import 'dart:js_interop';
-
+import 'dart:typed_data';
 import 'package:async/async.dart';
 import 'package:grpc/src/client/call.dart';
 import 'package:grpc/src/client/transport/xhr_transport.dart';
@@ -54,9 +54,9 @@ class MockHttpRequest extends Mock implements IXMLHttpRequest {
   @override
   final int status;
 
-  // Some test code expects to call this
-  set readyState(int state);
-  set responseText(String text);
+  @override
+  String get responseText =>
+      super.noSuchMethod(Invocation.getter(#responseText), returnValue: '');
 
   @override
   int get readyState =>
@@ -214,7 +214,8 @@ void main() {
     await stream.terminate();
 
     final expectedData = frame(data);
-    verify(connection.latestRequest.send(expectedData.toJSBox));
+    verify(
+        connection.latestRequest.send(Uint8List.fromList(expectedData).toJS));
   });
 
   test('Stream handles headers properly', () async {
@@ -230,16 +231,15 @@ void main() {
         (error, _) => fail(error.toString()));
 
     when(transport.latestRequest.responseHeaders).thenReturn(responseHeaders);
-    when(transport.latestRequest.response)
-        .thenReturn(String.fromCharCodes(frame(<int>[])).toJS);
+    when(transport.latestRequest.responseText)
+        .thenReturn(String.fromCharCodes(frame(<int>[])));
 
     // Set expectation for request readyState and generate two readyStateChange
     // events, so that incomingMessages stream completes.
     final readyStates = [XMLHttpRequest.HEADERS_RECEIVED, XMLHttpRequest.DONE];
-    transport.latestRequest.readyState = readyStates[0];
+    when(transport.latestRequest.readyState).thenReturnInOrder(readyStates);
     transport.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
-    transport.latestRequest.readyState = readyStates[1];
     transport.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
 
@@ -272,15 +272,15 @@ void main() {
     final encodedString = String.fromCharCodes(encodedTrailers);
 
     when(connection.latestRequest.responseHeaders).thenReturn(requestHeaders);
-    when(connection.latestRequest.response).thenReturn(encodedString.toJS);
+    when(connection.latestRequest.responseText).thenReturn(encodedString);
 
     // Set expectation for request readyState and generate events so that
     // incomingMessages stream completes.
-    connection.latestRequest.readyState = XMLHttpRequest.HEADERS_RECEIVED;
+    when(connection.latestRequest.readyState).thenReturnInOrder(
+        [XMLHttpRequest.HEADERS_RECEIVED, XMLHttpRequest.DONE]);
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
     connection.latestRequest.progressController.add(progressEvent);
-    connection.latestRequest.readyState = XMLHttpRequest.DONE;
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
 
@@ -307,14 +307,14 @@ void main() {
     final encodedString = String.fromCharCodes(encoded);
 
     when(connection.latestRequest.responseHeaders).thenReturn(requestHeaders);
-    when(connection.latestRequest.response).thenReturn(encodedString.toJS);
+    when(connection.latestRequest.responseText).thenReturn(encodedString);
     // Set expectation for request readyState and generate events so that
     // incomingMessages stream completes.
-    connection.latestRequest.readyState = XMLHttpRequest.HEADERS_RECEIVED;
+    when(connection.latestRequest.readyState).thenReturnInOrder(
+        [XMLHttpRequest.HEADERS_RECEIVED, XMLHttpRequest.DONE]);
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
     connection.latestRequest.progressController.add(progressEvent);
-    connection.latestRequest.readyState = XMLHttpRequest.DONE;
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
 
@@ -339,16 +339,16 @@ void main() {
         requestHeaders, (error, _) => fail(error.toString()));
     final data = List<int>.filled(10, 224);
     when(connection.latestRequest.responseHeaders).thenReturn(requestHeaders);
-    when(connection.latestRequest.response)
-        .thenReturn(String.fromCharCodes(frame(data)).toJS);
+    when(connection.latestRequest.responseText)
+        .thenReturn(String.fromCharCodes(frame(data)));
 
     // Set expectation for request readyState and generate events, so that
     // incomingMessages stream completes.
-    connection.latestRequest.readyState = XMLHttpRequest.HEADERS_RECEIVED;
+    when(connection.latestRequest.readyState).thenReturnInOrder(
+        [XMLHttpRequest.HEADERS_RECEIVED, XMLHttpRequest.DONE]);
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
     connection.latestRequest.progressController.add(progressEvent);
-    connection.latestRequest.readyState = XMLHttpRequest.DONE;
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
 
@@ -370,8 +370,8 @@ void main() {
     const errorDetails = 'error details';
     when(connection.latestRequest.responseHeaders)
         .thenReturn({'content-type': 'application/grpc+proto'});
-    connection.latestRequest.readyState = XMLHttpRequest.DONE;
-    connection.latestRequest.responseText = errorDetails;
+    when(connection.latestRequest.readyState).thenReturn(XMLHttpRequest.DONE);
+    when(connection.latestRequest.responseText).thenReturn(errorDetails);
     connection.latestRequest.readyStateChangeController
         .add(readyStateChangeEvent);
     await errorReceived.future;
@@ -404,12 +404,12 @@ void main() {
     // At first invocation the response should be the the first message, after
     // that first + last messages.
     var first = true;
-    when(connection.latestRequest.response).thenAnswer((_) {
+    when(connection.latestRequest.responseText).thenAnswer((_) {
       if (first) {
         first = false;
-        return encodedStrings[0].toJS;
+        return encodedStrings[0];
       }
-      return (encodedStrings[0] + encodedStrings[1]).toJS;
+      return encodedStrings[0] + encodedStrings[1];
     });
 
     final readyStates = [XMLHttpRequest.HEADERS_RECEIVED, XMLHttpRequest.DONE];
