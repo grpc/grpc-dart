@@ -13,22 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// ignore: deprecated_member_use (#756)
-import 'dart:html';
-
 import 'package:grpc/grpc_web.dart';
 import 'package:grpc_web/app.dart';
 import 'package:grpc_web/src/generated/echo.pbgrpc.dart';
+import 'package:web/web.dart';
 
 void main() {
   final channel = GrpcWebClientChannel.xhr(Uri.parse('http://localhost:8080'));
   final service = EchoServiceClient(channel);
   final app = EchoApp(service);
 
-  final button = querySelector('#send') as ButtonElement;
+  final button = document.querySelector('#send') as HTMLButtonElement;
   button.onClick.listen((e) async {
-    final msg = querySelector('#msg') as TextInputElement;
-    final value = msg.value!.trim();
+    final msg = document.querySelector('#msg') as HTMLInputElement;
+    final value = msg.value.trim();
     msg.value = '';
 
     if (value.isEmpty) return;
