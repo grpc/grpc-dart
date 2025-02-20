@@ -7,6 +7,7 @@
 * Upgrade to `package:lints` version 5.0.0 and Dart SDK version 3.5.0.
 * Upgrade `example/grpc-web` code.
 * Update xhr transport to migrate off legacy JS/HTML apis.
+* Use `package:web` to get `HttpStatus`
 
 ## 4.0.1
 
