@@ -13,8 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// ignore: deprecated_member_use (#756)
-export 'dart:html' show HttpStatus;
+export 'package:web/web.dart' show HttpStatus;
 
 /// Unavailable on the web
 class InternetAddress {}
