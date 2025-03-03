@@ -384,4 +384,221 @@ void main() {
       await harness.fromServer.done;
     });
   });
+
+  group('Server with server interceptor', () {
+    group('processes calls if interceptor allows request', () {
+      const expectedRequest = 5;
+      const expectedResponse = 7;
+      Future<int> methodHandler(ServiceCall call, Future<int> request) async {
+        expect(await request, expectedRequest);
+        return expectedResponse;
+      }
+
+      Null interceptor(call, method, requests) {
+        if (method.name == 'Unary') {
+          return null;
+        }
+        throw GrpcError.unauthenticated('Request is unauthenticated');
+      }
+
+      Future<void> doTest(TestServerInterceptorOnStart? handler) async {
+        harness
+          ..serverInterceptor.onStart = handler
+          ..service.unaryHandler = methodHandler
+          ..runTest('/Test/Unary', [expectedRequest], [expectedResponse]);
+
+        await harness.fromServer.done;
+      }
+
+      test('with sync interceptor', () => doTest(interceptor));
+      test(
+          'with async interceptor',
+          () => doTest((call, method, requests) async =>
+              interceptor(call, method, requests)));
+    });
+
+    group('returns error if interceptor blocks request', () {
+      Null interceptor(call, method, requests) {
+        if (method.name == 'Unary') {
+          throw GrpcError.unauthenticated('Request is unauthenticated');
+        }
+        return null;
+      }
+
+      Future<void> doTest(TestServerInterceptorOnStart handler) async {
+        harness
+          ..serverInterceptor.onStart = handler
+          ..expectErrorResponse(
+              StatusCode.unauthenticated, 'Request is unauthenticated')
+          ..sendRequestHeader('/Test/Unary');
+
+        await harness.fromServer.done;
+      }
+
+      test('with sync interceptor', () => doTest(interceptor));
+      test(
+          'with async interceptor',
+          () => doTest((call, method, request) async =>
+              interceptor(call, method, request)));
+    });
+
+    test("don't fail if interceptor await 2 times", () async {
+      Future<Null> interceptor(call, method, requests) async {
+        await Future.value();
+        await Future.value();
+        throw GrpcError.internal('Reason is unknown');
+      }
+
+      harness
+        ..serverInterceptor.onStart = interceptor
+        ..expectErrorResponse(StatusCode.internal, 'Reason is unknown')
+        ..sendRequestHeader('/Test/Unary')
+        ..sendData(1);
+
+      await harness.fromServer.done;
+    });
+
+    group('serviceInterceptors are invoked', () {
+      const expectedRequest = 5;
+      const expectedResponse = 7;
+      Future<int> methodHandler(ServiceCall call, Future<int> request) async {
+        expect(await request, expectedRequest);
+        return expectedResponse;
+      }
+
+      Future<void> doTest(List<TestServerInterceptor> interceptors) async {
+        harness
+          // ↓ mutation: Server is already built
+          ..serverInterceptors.addAll(interceptors)
+          ..service.unaryHandler = methodHandler
+          ..runTest('/Test/Unary', [expectedRequest], [expectedResponse]);
+
+        await harness.fromServer.done;
+      }
+
+      test('single serviceInterceptor is invoked', () async {
+        final invocationsOrderRecords = [];
+
+        await doTest([
+          TestServerInterceptor(
+            onStart: (call, method, requests) {
+              invocationsOrderRecords.add('Start');
+            },
+            onData: (call, method, requests, data) {
+              invocationsOrderRecords.add('Data [$data]');
+            },
+            onFinish: (call, method, requests) {
+              invocationsOrderRecords.add('Done');
+            },
+          )
+        ]);
+
+        expect(invocationsOrderRecords, equals(['Start', 'Data [7]', 'Done']));
+      });
+
+      test('multiple serviceInterceptors are invoked', () async {
+        final invocationsOrderRecords = [];
+
+        await doTest([
+          TestServerInterceptor(
+            onStart: (call, method, requests) {
+              invocationsOrderRecords.add('Start 1');
+            },
+            onData: (call, method, requests, data) {
+              invocationsOrderRecords.add('Data 1 [$data]');
+            },
+            onFinish: (call, method, requests) {
+              invocationsOrderRecords.add('Done 1');
+            },
+          ),
+          TestServerInterceptor(
+            onStart: (call, method, requests) {
+              invocationsOrderRecords.add('Start 2');
+            },
+            onData: (call, method, requests, data) {
+              invocationsOrderRecords.add('Data 2 [$data]');
+            },
+            onFinish: (call, method, requests) {
+              invocationsOrderRecords.add('Done 2');
+            },
+          )
+        ]);
+
+        expect(
+            invocationsOrderRecords,
+            equals([
+              'Start 1',
+              'Start 2',
+              'Data 2 [7]',
+              'Data 1 [7]',
+              'Done 2',
+              'Done 1',
+            ]));
+      });
+    });
+
+    test('can modify response', () async {
+      const expectedRequest = 5;
+      const baseResponse = 7;
+      const expectedResponse = 14;
+
+      final invocationsOrderRecords = [];
+
+      final interceptors = [
+        TestServerInterceptor(
+          onStart: (call, method, requests) {
+            invocationsOrderRecords.add('Start 1');
+          },
+          onData: (call, method, requests, data) {
+            invocationsOrderRecords.add('Data 1 [$data]');
+          },
+          onFinish: (call, method, requests) {
+            invocationsOrderRecords.add('Done 1');
+          },
+        ),
+        TestServerInterruptingInterceptor(transform: <R>(value) {
+          if (value is int) {
+            return value * 2 as R;
+          }
+
+          return value;
+        }),
+        TestServerInterceptor(
+          onStart: (call, method, requests) {
+            invocationsOrderRecords.add('Start 2');
+          },
+          onData: (call, method, requests, data) {
+            invocationsOrderRecords.add('Data 2 [$data]');
+          },
+          onFinish: (call, method, requests) {
+            invocationsOrderRecords.add('Done 2');
+          },
+        )
+      ];
+
+      Future<int> methodHandler(ServiceCall call, Future<int> request) async {
+        expect(await request, expectedRequest);
+        return baseResponse;
+      }
+
+      harness
+        // ↓ mutation: Server is already built
+        ..serverInterceptors.addAll(interceptors)
+        ..service.unaryHandler = methodHandler
+        ..runTest('/Test/Unary', [expectedRequest], [expectedResponse]);
+
+      await harness.fromServer.done;
+
+      expect(
+          invocationsOrderRecords,
+          equals([
+            'Start 1',
+            'Start 2',
+            'Data 2 [7]',
+            'Data 1 [14]',
+            'Done 2',
+            'Done 1',
+          ]));
+    });
+  });
 }
