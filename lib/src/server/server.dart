@@ -87,6 +87,7 @@ class ServerTlsCredentials extends ServerCredentials {
 class ConnectionServer {
   final Map<String, Service> _services = {};
   final List<Interceptor> _interceptors;
+  final List<ServerInterceptor> _serverInterceptors;
   final CodecRegistry? _codecRegistry;
   final GrpcErrorHandler? _errorHandler;
   final ServerKeepAliveOptions _keepAliveOptions;
@@ -100,11 +101,13 @@ class ConnectionServer {
   ConnectionServer(
     List<Service> services, [
     List<Interceptor> interceptors = const <Interceptor>[],
+    List<ServerInterceptor> serverInterceptors = const <ServerInterceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
     this._keepAliveOptions = const ServerKeepAliveOptions(),
   ])  : _codecRegistry = codecRegistry,
         _interceptors = interceptors,
+        _serverInterceptors = serverInterceptors,
         _errorHandler = errorHandler {
     for (final service in services) {
       _services[service.$name] = service;
@@ -168,6 +171,7 @@ class ConnectionServer {
         stream: stream,
         serviceLookup: lookupService,
         interceptors: _interceptors,
+        serverInterceptors: _serverInterceptors,
         codecRegistry: _codecRegistry,
         // ignore: unnecessary_cast
         clientCertificate: clientCertificate as io_bits.X509Certificate?,
@@ -201,11 +205,13 @@ class Server extends ConnectionServer {
     required List<Service> services,
     ServerKeepAliveOptions keepAliveOptions = const ServerKeepAliveOptions(),
     List<Interceptor> interceptors = const <Interceptor>[],
+    List<ServerInterceptor> serverInterceptors = const <ServerInterceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
   }) : super(
           services,
           interceptors,
+          serverInterceptors,
           codecRegistry,
           errorHandler,
           keepAliveOptions,
@@ -308,6 +314,7 @@ class Server extends ConnectionServer {
       stream: stream,
       serviceLookup: lookupService,
       interceptors: _interceptors,
+      serverInterceptors: _serverInterceptors,
       codecRegistry: _codecRegistry,
       // ignore: unnecessary_cast
       clientCertificate: clientCertificate as io_bits.X509Certificate?,

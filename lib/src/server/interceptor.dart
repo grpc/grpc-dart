@@ -27,3 +27,18 @@ import 'service.dart';
 /// If the interceptor returns null, the corresponding [ServiceMethod] of [Service] will be called.
 typedef Interceptor = FutureOr<GrpcError?> Function(
     ServiceCall call, ServiceMethod method);
+
+typedef ServerStreamingInvoker<Q, R> = Stream<R> Function(
+    ServiceCall call, ServiceMethod<Q, R> method, Stream<Q> requests);
+
+/// A gRPC Interceptor.
+///
+/// An interceptor is called around the corresponding [ServiceMethod] invocation.
+/// If the interceptor throws [GrpcError], the error will be returned as a response. [ServiceMethod] wouldn't be called if the error is thrown before calling the invoker.
+/// If the interceptor modifies the provided stream, the invocation will continue with the provided stream.
+abstract class ServerInterceptor {
+  Stream<R> intercept<Q, R>(ServiceCall call, ServiceMethod<Q, R> method,
+      Stream<Q> requests, ServerStreamingInvoker<Q, R> invoker) {
+    return invoker(call, method, requests);
+  }
+}

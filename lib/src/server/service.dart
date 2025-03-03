@@ -17,6 +17,7 @@ import 'dart:async';
 
 import '../shared/status.dart';
 import 'call.dart';
+import 'interceptor.dart';
 
 /// Definition of a gRPC service method.
 class ServiceMethod<Q, R> {
@@ -48,19 +49,39 @@ class ServiceMethod<Q, R> {
 
   List<int> serialize(dynamic response) => responseSerializer(response as R);
 
-  Stream<R> handle(ServiceCall call, Stream<Q> requests) {
-    if (streamingResponse) {
-      if (streamingRequest) {
-        return handler(call, requests);
-      } else {
-        return handler(call, _toSingleFuture(requests));
-      }
-    } else {
-      final response = streamingRequest
-          ? handler(call, requests)
-          : handler(call, _toSingleFuture(requests));
-      return response.asStream();
+  ServerStreamingInvoker<Q, R> _createCall() => ((
+        ServiceCall call,
+        ServiceMethod<Q, R> method,
+        Stream<Q> requests,
+      ) {
+        if (streamingResponse) {
+          if (streamingRequest) {
+            return handler(call, requests);
+          } else {
+            return handler(call, _toSingleFuture(requests));
+          }
+        } else {
+          final response = streamingRequest
+              ? handler(call, requests)
+              : handler(call, _toSingleFuture(requests));
+          return response.asStream();
+        }
+      });
+
+  Stream<R> handle(
+    ServiceCall call,
+    Stream<Q> requests,
+    List<ServerInterceptor> interceptors,
+  ) {
+    var invoker = _createCall();
+
+    for (final interceptor in interceptors.reversed) {
+      final delegate = invoker;
+      invoker = (call, method, requests) =>
+          interceptor.intercept<Q, R>(call, method, requests, delegate);
     }
+
+    return invoker(call, this, requests);
   }
 
   Future<Q> _toSingleFuture(Stream<Q> stream) {
