@@ -39,6 +39,8 @@ jobs:
         shell: bash
       - name: Analyze code
         run: dart analyze --fatal-infos .
+      - name: Publish to package repository
+        run: dart pub publish -f
       - name: Check that grpc-web sample builds with DDC
         if: ${{ matrix.sdk == 'dev' }}
         # build_runner build --no-release to force compilation with DDC.

@@ -3,6 +3,7 @@ description: Dart implementation of gRPC, a high performance, open-source univer
 version: 4.0.2
 
 repository: https://github.com/open-runtime/grpc-dart
+publish_to: https://dart.cloudsmith.io/pieces-for-developers/pieces-dart-package/
 
 topics:
   - grpc
