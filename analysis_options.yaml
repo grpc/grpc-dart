@@ -1,6 +1,9 @@
 include: package:lints/recommended.yaml
 
 analyzer:
+  exclude:
+    - 'example/**'
+    - 'interop/**'
   errors:
     # These should be fixed or ignored in the proto generator.
     implementation_imports: ignore
