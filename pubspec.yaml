@@ -4,6 +4,11 @@ version: 4.0.2
 
 repository: https://github.com/open-runtime/grpc-dart
 
+topics:
+  - grpc
+  - protocols
+  - rpc
+
 environment:
   sdk: ^3.5.0
 
@@ -32,10 +37,5 @@ dev_dependencies:
   fake_async: ^1.3.1
 
 false_secrets:
- - interop/server1.key
- - test/data/localhost.key
-
-topics:
- - grpc
- - rpc
- - protocols
+  - interop/server1.key
+  - test/data/localhost.key

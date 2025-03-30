@@ -1,9 +1,8 @@
-The [Dart](https://www.dart.dev/) implementation of
-[gRPC](https://grpc.io/): A high performance, open source, general RPC framework that puts mobile and HTTP/2 first.
-
 [![Dart](https://github.com/grpc/grpc-dart/actions/workflows/dart.yml/badge.svg)](https://github.com/grpc/grpc-dart/actions/workflows/dart.yml)
 [![pub package](https://img.shields.io/pub/v/grpc.svg)](https://pub.dev/packages/grpc)
 
+The [Dart](https://www.dart.dev/) implementation of
+[gRPC](https://grpc.io/): A high performance, open source, general RPC framework that puts mobile and HTTP/2 first.
 
 ## Learn more
 

@@ -137,7 +137,7 @@ void checkFinishEvent(List<Map> events) {
   expect(e.length, 2);
 }
 
-void main([args = const <String>[]]) {
+void main(List<String> args) {
   test('Test gRPC timeline logging', () async {
     final vmService = await testee();
     final timeline = await vmService.getVMTimeline();
