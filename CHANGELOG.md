@@ -1,3 +1,7 @@
+## 5.0.0
+
+* Widen `package:protobuf` constraint to allow version 4.0.0.
+
 ## 4.0.2
 
 * Internal optimization to client code.
