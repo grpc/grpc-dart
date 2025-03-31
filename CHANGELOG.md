@@ -1,4 +1,4 @@
-## 5.0.0
+## 4.0.3
 
 * Widen `package:protobuf` constraint to allow version 4.0.0.
 
