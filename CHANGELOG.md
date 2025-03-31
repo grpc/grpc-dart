@@ -1,4 +1,4 @@
-## 4.0.2-wip
+## 4.0.2
 
 * Internal optimization to client code.
 * Small fixes, such as ports in testing and enabling `timeline_test.dart`.
@@ -7,7 +7,8 @@
 * Upgrade to `package:lints` version 5.0.0 and Dart SDK version 3.5.0.
 * Upgrade `example/grpc-web` code.
 * Update xhr transport to migrate off legacy JS/HTML apis.
-* Use `package:web` to get `HttpStatus`
+* Use `package:web` to get `HttpStatus`.
+* Fix `package:web` deprecations.
 
 ## 4.0.1
 

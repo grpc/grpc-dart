@@ -61,7 +61,7 @@ class EchoApp {
         ..append(HTMLSpanElement()
           ..classList.add('label')
           ..classList.addAll(cssClass)
-          ..text = message)));
+          ..textContent = message)));
   }
 }
 
