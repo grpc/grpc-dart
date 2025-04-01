@@ -17,6 +17,7 @@ import 'dart:async';
 
 import 'package:grpc/grpc.dart';
 import 'package:grpc/src/client/http2_connection.dart';
+import 'package:grpc/src/server/interceptor.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
@@ -90,6 +91,47 @@ class TestInterceptor {
   }
 }
 
+typedef TestServerInterceptorOnStart = Function(
+    ServiceCall call, ServiceMethod method, Stream requests);
+typedef TestServerInterceptorOnData = Function(
+    ServiceCall call, ServiceMethod method, Stream requests, dynamic data);
+typedef TestServerInterceptorOnFinish = Function(
+    ServiceCall call, ServiceMethod method, Stream requests);
+
+class TestServerInterceptor extends ServerInterceptor {
+  TestServerInterceptorOnStart? onStart;
+  TestServerInterceptorOnData? onData;
+  TestServerInterceptorOnFinish? onFinish;
+
+  TestServerInterceptor({this.onStart, this.onData, this.onFinish});
+
+  @override
+  Stream<R> intercept<Q, R>(ServiceCall call, ServiceMethod<Q, R> method,
+      Stream<Q> requests, ServerStreamingInvoker<Q, R> invoker) async* {
+    await onStart?.call(call, method, requests);
+
+    await for (final chunk
+        in super.intercept(call, method, requests, invoker)) {
+      await onData?.call(call, method, requests, chunk);
+      yield chunk;
+    }
+
+    await onFinish?.call(call, method, requests);
+  }
+}
+
+class TestServerInterruptingInterceptor extends ServerInterceptor {
+  final R Function<R>(R) transform;
+
+  TestServerInterruptingInterceptor({required this.transform});
+
+  @override
+  Stream<R> intercept<Q, R>(ServiceCall call, ServiceMethod<Q, R> method,
+      Stream<Q> requests, ServerStreamingInvoker<Q, R> invoker) async* {
+    yield* super.intercept(call, method, requests, invoker).map(transform);
+  }
+}
+
 class TestServerStream extends ServerTransportStream {
   @override
   final Stream<StreamMessage> incomingMessages;
@@ -123,6 +165,7 @@ class ServerHarness extends _Harness {
   ConnectionServer createServer() => Server.create(
         services: <Service>[service],
         interceptors: <Interceptor>[interceptor.call],
+        serverInterceptors: serverInterceptors..insert(0, serverInterceptor),
       );
 
   static ServiceMethod<int, int> createMethod(String name,
@@ -161,6 +204,10 @@ abstract class _Harness {
   final fromServer = StreamController<StreamMessage>();
   final service = TestService();
   final interceptor = TestInterceptor();
+  final serverInterceptor = TestServerInterceptor();
+
+  final serverInterceptors = <ServerInterceptor>[];
+
   ConnectionServer? _server;
 
   ConnectionServer createServer();

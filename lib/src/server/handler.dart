@@ -37,6 +37,7 @@ class ServerHandler extends ServiceCall {
   final ServerTransportStream _stream;
   final ServiceLookup _serviceLookup;
   final List<Interceptor> _interceptors;
+  final List<ServerInterceptor> _serverInterceptors;
   final CodecRegistry? _codecRegistry;
   final GrpcErrorHandler? _errorHandler;
 
@@ -83,6 +84,7 @@ class ServerHandler extends ServiceCall {
     required ServerTransportStream stream,
     required ServiceLookup serviceLookup,
     required List<Interceptor> interceptors,
+    required List<ServerInterceptor> serverInterceptors,
     required CodecRegistry? codecRegistry,
     X509Certificate? clientCertificate,
     InternetAddress? remoteAddress,
@@ -94,7 +96,8 @@ class ServerHandler extends ServiceCall {
         _codecRegistry = codecRegistry,
         _clientCertificate = clientCertificate,
         _remoteAddress = remoteAddress,
-        _errorHandler = errorHandler;
+        _errorHandler = errorHandler,
+        _serverInterceptors = serverInterceptors;
 
   @override
   DateTime? get deadline => _deadline;
@@ -239,7 +242,7 @@ class ServerHandler extends ServiceCall {
       return;
     }
 
-    _responses = _descriptor.handle(this, requests.stream);
+    _responses = _descriptor.handle(this, requests.stream, _serverInterceptors);
 
     _responseSubscription = _responses.listen(_onResponse,
         onError: _onResponseError,
