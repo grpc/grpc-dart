@@ -1,3 +1,7 @@
+## 4.0.4
+
+* Allow the latest `package:googleapis_auth`.
+
 ## 4.0.3
 
 * Widen `package:protobuf` constraint to allow version 4.0.0.
