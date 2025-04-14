@@ -1,3 +1,7 @@
+## 4.1.0
+* Add a `serverInterceptors` argument to `ConnectionServer`. These interceptors are acting 
+  as middleware, wrapping a `ServiceMethod` invocation.
+
 ## 4.0.4
 
 * Allow the latest `package:googleapis_auth`.
