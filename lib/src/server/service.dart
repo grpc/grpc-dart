@@ -76,9 +76,8 @@ class ServiceMethod<Q, R> {
     var invoker = _createCall();
 
     for (final interceptor in interceptors.reversed) {
-      final delegate = invoker;
       invoker = (call, method, requests) =>
-          interceptor.intercept<Q, R>(call, method, requests, delegate);
+          interceptor.intercept<Q, R>(call, method, requests, invoker);
     }
 
     return invoker(call, this, requests);
