@@ -76,8 +76,12 @@ class ServiceMethod<Q, R> {
     var invoker = _createCall();
 
     for (final interceptor in interceptors.reversed) {
+      final delegate = invoker;
+      // invoker is actually reassigned in the same scope as the above function,
+      // reassigning invoker in delegate is required to avoid an infinite
+      // recursion
       invoker = (call, method, requests) =>
-          interceptor.intercept<Q, R>(call, method, requests, invoker);
+          interceptor.intercept<Q, R>(call, method, requests, delegate);
     }
 
     return invoker(call, this, requests);
