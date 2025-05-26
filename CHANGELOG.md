@@ -1,6 +1,8 @@
 ## 4.1.0
-* Add a `serverInterceptors` argument to `ConnectionServer`. These interceptors are acting 
+* Add a `serverInterceptors` argument to `ConnectionServer`. These interceptors are acting
   as middleware, wrapping a `ServiceMethod` invocation.
+* Make sure that `CallOptions.mergeWith` is symmetric: given `WebCallOptions`
+  it should return `WebCallOptions`.
 
 ## 4.0.4
 
