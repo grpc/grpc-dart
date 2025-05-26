@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'call.dart';
+import 'call_options/call_options.dart';
 import 'channel.dart';
 import 'common.dart';
 import 'interceptor.dart';
@@ -28,7 +29,7 @@ class Client {
   /// Interceptors will be applied in direct order before making a request.
   Client(this._channel,
       {CallOptions? options, Iterable<ClientInterceptor>? interceptors})
-      : _options = options ?? CallOptions(),
+      : _options = options ?? callOptions(),
         _interceptors = List.unmodifiable(interceptors ?? Iterable.empty());
 
   @Deprecated(r'''This method does not invoke interceptors and is superseded
