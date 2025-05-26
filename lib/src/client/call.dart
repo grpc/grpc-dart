@@ -86,6 +86,11 @@ class CallOptions {
 
   CallOptions mergedWith(CallOptions? other) {
     if (other == null) return this;
+
+    if (other is WebCallOptions) {
+      return other.mergedWith(this);
+    }
+
     final mergedMetadata = Map.of(metadata)..addAll(other.metadata);
     final mergedTimeout = other.timeout ?? timeout;
     final mergedProviders = List.of(metadataProviders)
