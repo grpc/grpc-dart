@@ -90,6 +90,7 @@ class ConnectionServer {
   final List<ServerInterceptor> _serverInterceptors;
   final CodecRegistry? _codecRegistry;
   final GrpcErrorHandler? _errorHandler;
+  final GrpcErrorTransformer? _errorTransformer;
   final ServerKeepAliveOptions _keepAliveOptions;
 
   @visibleForTesting
@@ -104,11 +105,13 @@ class ConnectionServer {
     List<ServerInterceptor> serverInterceptors = const <ServerInterceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
+    GrpcErrorTransformer? errorTransformer,
     this._keepAliveOptions = const ServerKeepAliveOptions(),
   ])  : _codecRegistry = codecRegistry,
         _interceptors = interceptors,
         _serverInterceptors = serverInterceptors,
-        _errorHandler = errorHandler {
+        _errorHandler = errorHandler,
+        _errorTransformer = errorTransformer {
     for (final service in services) {
       _services[service.$name] = service;
     }
@@ -197,6 +200,7 @@ class Server extends ConnectionServer {
     super.interceptors,
     super.codecRegistry,
     super.errorHandler,
+    super.errorTransformer,
     super.keepAlive,
   ]);
 
@@ -208,12 +212,14 @@ class Server extends ConnectionServer {
     List<ServerInterceptor> serverInterceptors = const <ServerInterceptor>[],
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
+    GrpcErrorTransformer? errorTransformer,
   }) : super(
           services,
           interceptors,
           serverInterceptors,
           codecRegistry,
           errorHandler,
+          errorTransformer,
           keepAliveOptions,
         );
 
@@ -321,6 +327,7 @@ class Server extends ConnectionServer {
       // ignore: unnecessary_cast
       remoteAddress: remoteAddress as io_bits.InternetAddress?,
       errorHandler: _errorHandler,
+      errorTransformer: _errorTransformer,
       onDataReceived: onDataReceived,
     )..handle();
   }
