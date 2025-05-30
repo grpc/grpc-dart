@@ -31,6 +31,7 @@ import 'service.dart';
 
 typedef ServiceLookup = Service? Function(String service);
 typedef GrpcErrorHandler = void Function(GrpcError error, StackTrace? trace);
+typedef GrpcErrorTransformer = GrpcError? Function(GrpcError error, StackTrace? trace);
 
 /// Handles an incoming gRPC call.
 class ServerHandler extends ServiceCall {
@@ -40,6 +41,7 @@ class ServerHandler extends ServiceCall {
   final List<ServerInterceptor> _serverInterceptors;
   final CodecRegistry? _codecRegistry;
   final GrpcErrorHandler? _errorHandler;
+  final GrpcErrorTransformer? _errorTransformer;
 
   // ignore: cancel_subscriptions
   StreamSubscription<GrpcMessage>? _incomingSubscription;
@@ -89,6 +91,7 @@ class ServerHandler extends ServiceCall {
     X509Certificate? clientCertificate,
     InternetAddress? remoteAddress,
     GrpcErrorHandler? errorHandler,
+    GrpcErrorTransformer? errorTransformer,
     this.onDataReceived,
   })  : _stream = stream,
         _serviceLookup = serviceLookup,
@@ -97,6 +100,7 @@ class ServerHandler extends ServiceCall {
         _clientCertificate = clientCertificate,
         _remoteAddress = remoteAddress,
         _errorHandler = errorHandler,
+        _errorTransformer = errorTransformer,
         _serverInterceptors = serverInterceptors;
 
   @override
@@ -458,6 +462,7 @@ class ServerHandler extends ServiceCall {
 
   void _sendError(GrpcError error, [StackTrace? trace]) {
     _errorHandler?.call(error, trace);
+    error = _errorTransformer?.call(error, trace) ?? error;
 
     sendTrailers(
       status: error.code,
