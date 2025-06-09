@@ -42,9 +42,7 @@ abstract class Response {
 }
 
 /// A gRPC response producing a single value.
-class ResponseFuture<R> extends DelegatingFuture<R>
-    with _ResponseMixin<dynamic, R> {
-  @override
+class ResponseFuture<R> extends DelegatingFuture<R> implements Response {
   final ClientCall<dynamic, R> _call;
 
   static R _ensureOnlyOneResponse<R>(R? previous, R element) {
@@ -60,24 +58,30 @@ class ResponseFuture<R> extends DelegatingFuture<R>
   }
 
   ResponseFuture(this._call)
-      : super(_call.response
+    : super(
+        _call.response
             .fold<R?>(null, _ensureOnlyOneResponse)
-            .then(_ensureOneResponse));
+            .then(_ensureOneResponse),
+      );
+
+  @override
+  Future<Map<String, String>> get headers => _call.headers;
+
+  @override
+  Future<Map<String, String>> get trailers => _call.trailers;
+
+  @override
+  Future<void> cancel() => _call.cancel();
 }
 
 /// A gRPC response producing a stream of values.
-class ResponseStream<R> extends StreamView<R> with _ResponseMixin<dynamic, R> {
-  @override
+class ResponseStream<R> extends StreamView<R> implements Response {
   final ClientCall<dynamic, R> _call;
 
   ResponseStream(this._call) : super(_call.response);
 
   @override
   ResponseFuture<R> get single => ResponseFuture(_call);
-}
-
-mixin _ResponseMixin<Q, R> implements Response {
-  ClientCall<Q, R> get _call;
 
   @override
   Future<Map<String, String>> get headers => _call.headers;
