@@ -16,12 +16,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:grpc/grpc.dart';
-
 import 'package:googleapis/src/generated/google/api/monitored_resource.pb.dart';
 import 'package:googleapis/src/generated/google/logging/type/log_severity.pb.dart';
 import 'package:googleapis/src/generated/google/logging/v2/log_entry.pb.dart';
 import 'package:googleapis/src/generated/google/logging/v2/logging.pbgrpc.dart';
+import 'package:grpc/grpc.dart';
 
 Future<void> main() async {
   final serviceAccountFile = File('logging-service-account.json');
