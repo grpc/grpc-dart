@@ -1,6 +1,7 @@
 ## 4.1.1-wip
 
 - Require Dart 3.8.
+- Dart format all files for the new 3.8 formatter.
 - Require package:googleapis_auth
 - Require package:http 1.4.0
 - Require package:lints 6.0.0

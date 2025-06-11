@@ -37,8 +37,10 @@ class Http2ClientConnection implements connection.ClientConnection {
   static final _methodPost = Header.ascii(':method', 'POST');
   static final _schemeHttp = Header.ascii(':scheme', 'http');
   static final _schemeHttps = Header.ascii(':scheme', 'https');
-  static final _contentTypeGrpc =
-      Header.ascii('content-type', 'application/grpc');
+  static final _contentTypeGrpc = Header.ascii(
+    'content-type',
+    'application/grpc',
+  );
   static final _teTrailers = Header.ascii('te', 'trailers');
 
   final ChannelOptions options;
@@ -63,10 +65,12 @@ class Http2ClientConnection implements connection.ClientConnection {
   ClientKeepAlive? keepAliveManager;
 
   Http2ClientConnection(Object host, int port, this.options)
-      : _transportConnector = SocketTransportConnector(host, port, options);
+    : _transportConnector = SocketTransportConnector(host, port, options);
 
   Http2ClientConnection.fromClientTransportConnector(
-      this._transportConnector, this.options);
+    this._transportConnector,
+    this.options,
+  );
 
   ChannelCredentials get credentials => options.credentials;
 
@@ -102,35 +106,38 @@ class Http2ClientConnection implements connection.ClientConnection {
       return;
     }
     _setState(ConnectionState.connecting);
-    connectTransport().then<void>((transport) async {
-      _currentReconnectDelay = null;
-      _transportConnection = transport;
-      if (options.keepAlive.shouldSendPings) {
-        keepAliveManager = ClientKeepAlive(
-          options: options.keepAlive,
-          ping: () {
-            if (transport.isOpen) {
-              transport.ping();
-            }
-          },
-          onPingTimeout: () => transport.finish(),
-        );
-        transport.onFrameReceived
-            .listen((_) => keepAliveManager?.onFrameReceived());
-      }
-      _connectionLifeTimer
-        ..reset()
-        ..start();
-      transport.onActiveStateChanged = _handleActiveStateChanged;
-      _setState(ConnectionState.ready);
+    connectTransport()
+        .then<void>((transport) async {
+          _currentReconnectDelay = null;
+          _transportConnection = transport;
+          if (options.keepAlive.shouldSendPings) {
+            keepAliveManager = ClientKeepAlive(
+              options: options.keepAlive,
+              ping: () {
+                if (transport.isOpen) {
+                  transport.ping();
+                }
+              },
+              onPingTimeout: () => transport.finish(),
+            );
+            transport.onFrameReceived.listen(
+              (_) => keepAliveManager?.onFrameReceived(),
+            );
+          }
+          _connectionLifeTimer
+            ..reset()
+            ..start();
+          transport.onActiveStateChanged = _handleActiveStateChanged;
+          _setState(ConnectionState.ready);
 
-      if (_hasPendingCalls()) {
-        // Take all pending calls out, and reschedule.
-        final pendingCalls = _pendingCalls.toList();
-        _pendingCalls.clear();
-        pendingCalls.forEach(dispatchCall);
-      }
-    }).catchError(_handleConnectionFailure);
+          if (_hasPendingCalls()) {
+            // Take all pending calls out, and reschedule.
+            final pendingCalls = _pendingCalls.toList();
+            _pendingCalls.clear();
+            pendingCalls.forEach(dispatchCall);
+          }
+        })
+        .catchError(_handleConnectionFailure);
   }
 
   /// Abandons the current connection if it is unhealthy or has been open for
@@ -171,9 +178,13 @@ class Http2ClientConnection implements connection.ClientConnection {
   }
 
   @override
-  GrpcTransportStream makeRequest(String path, Duration? timeout,
-      Map<String, String> metadata, ErrorHandler onRequestFailure,
-      {CallOptions? callOptions}) {
+  GrpcTransportStream makeRequest(
+    String path,
+    Duration? timeout,
+    Map<String, String> metadata,
+    ErrorHandler onRequestFailure, {
+    CallOptions? callOptions,
+  }) {
     final compressionCodec = callOptions?.compression;
     final headers = createCallHeaders(
       credentials.isSecure,
@@ -185,7 +196,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       userAgent: options.userAgent,
       grpcAcceptEncodings:
           (callOptions?.metadata ?? const {})['grpc-accept-encoding'] ??
-              options.codecRegistry?.supportedEncodings,
+          options.codecRegistry?.supportedEncodings,
     );
     final stream = _transportConnection!.makeRequest(headers);
     return Http2TransportStream(
@@ -240,9 +251,9 @@ class Http2ClientConnection implements connection.ClientConnection {
   void _handleIdleTimeout() {
     if (_timer == null || _state != ConnectionState.ready) return;
     _cancelTimer();
-    _transportConnection
-        ?.finish()
-        .catchError((_) {}); // TODO(jakobr): Log error.
+    _transportConnection?.finish().catchError(
+      (_) {},
+    ); // TODO(jakobr): Log error.
     keepAliveManager?.onTransportTermination();
     _disconnect();
     _setState(ConnectionState.idle);
@@ -344,7 +355,7 @@ class Http2ClientConnection implements connection.ClientConnection {
       if (grpcAcceptEncodings != null)
         Header.ascii('grpc-accept-encoding', grpcAcceptEncodings),
       if (compressionCodec != null)
-        Header.ascii('grpc-encoding', compressionCodec.encodingName)
+        Header.ascii('grpc-encoding', compressionCodec.encodingName),
     ];
     metadata?.forEach((key, value) {
       headers.add(Header(ascii.encode(key), utf8.encode(value)));
@@ -365,7 +376,7 @@ class SocketTransportConnector implements ClientTransportConnector {
   int get port => proxy == null ? _port : proxy!.port;
 
   SocketTransportConnector(this._host, this._port, this._options)
-      : assert(_host is InternetAddress || _host is String);
+    : assert(_host is InternetAddress || _host is String);
 
   @override
   Future<ClientTransportConnection> connect() async {
@@ -500,7 +511,8 @@ class SocketTransportConnector implements ClientTransportConnector {
       completer.complete();
     } else {
       throw TransportException(
-          'Error establishing proxy connection: $response');
+        'Error establishing proxy connection: $response',
+      );
     }
   }
 }

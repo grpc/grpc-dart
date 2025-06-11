@@ -39,16 +39,18 @@ class Http2TransportStream extends GrpcTransportStream {
     CodecRegistry? codecRegistry,
     Codec? compression,
   ) : incomingMessages = _transportStream.incomingMessages
-            .transform(GrpcHttpDecoder(forResponse: true))
-            .transform(grpcDecompressor(codecRegistry: codecRegistry)) {
+          .transform(GrpcHttpDecoder(forResponse: true))
+          .transform(grpcDecompressor(codecRegistry: codecRegistry)) {
     _outgoingMessages.stream
         .map((payload) => frame(payload, compression))
         .map<StreamMessage>((bytes) => DataStreamMessage(bytes))
         .handleError(_onError)
-        .listen(_transportStream.outgoingMessages.add,
-            onError: _transportStream.outgoingMessages.addError,
-            onDone: _transportStream.outgoingMessages.close,
-            cancelOnError: true);
+        .listen(
+          _transportStream.outgoingMessages.add,
+          onError: _transportStream.outgoingMessages.addError,
+          onDone: _transportStream.outgoingMessages.close,
+          cancelOnError: true,
+        );
   }
 
   @override

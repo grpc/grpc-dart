@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: dart pub get
       - name: Check formatting (using dev dartfmt release)
-        if: ${{ matrix.sdk == 'dev' }}
+        if: ${{ matrix.sdk == 'stable' }}
         run: dart format --output=none --set-exit-if-changed .
       - name: Analyze code (introp and examples)
         run: |

@@ -37,8 +37,26 @@ void main() {
         ..add(DataStreamMessage([0, 0, 10, 48, 49]))
         ..add(DataStreamMessage([50, 51, 52, 53]))
         ..add(DataStreamMessage([54, 55, 56, 57, 0, 0, 0]))
-        ..add(DataStreamMessage(
-            [0, 4, 97, 98, 99, 100, 0, 0, 0, 0, 1, 65, 0, 0, 0, 0]))
+        ..add(
+          DataStreamMessage([
+            0,
+            4,
+            97,
+            98,
+            99,
+            100,
+            0,
+            0,
+            0,
+            0,
+            1,
+            65,
+            0,
+            0,
+            0,
+            0,
+          ]),
+        )
         ..add(DataStreamMessage([4, 48, 49, 50, 51, 1, 0, 0, 1, 0]))
         ..add(DataStreamMessage(List.filled(256, 90)));
       input.close();
@@ -50,29 +68,41 @@ void main() {
       }
 
       expect(converted[0], TypeMatcher<GrpcMetadata>());
-      verify(
-          converted[1] as GrpcData, [48, 49, 50, 51, 52, 53, 54, 55, 56, 57]);
+      verify(converted[1] as GrpcData, [
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+      ]);
       verify(converted[2] as GrpcData, [97, 98, 99, 100]);
       verify(converted[3] as GrpcData, [65]);
       verify(converted[4] as GrpcData, [48, 49, 50, 51]);
       verify(converted[5] as GrpcData, List.filled(256, 90));
     });
 
-    test('throws error if input is closed while receiving data header',
-        () async {
-      final result = output.toList();
-      input
-        ..add(HeadersStreamMessage([]))
-        ..add(DataStreamMessage([0, 0, 0]))
-        ..close();
-      try {
-        await result;
-        fail('Did not throw');
-      } on GrpcError catch (e) {
-        expect(e.code, StatusCode.unavailable);
-        expect(e.message, 'Closed in non-idle state');
-      }
-    });
+    test(
+      'throws error if input is closed while receiving data header',
+      () async {
+        final result = output.toList();
+        input
+          ..add(HeadersStreamMessage([]))
+          ..add(DataStreamMessage([0, 0, 0]))
+          ..close();
+        try {
+          await result;
+          fail('Did not throw');
+        } on GrpcError catch (e) {
+          expect(e.code, StatusCode.unavailable);
+          expect(e.message, 'Closed in non-idle state');
+        }
+      },
+    );
 
     test('throws error if input is closed while receiving data', () async {
       final result = output.toList();
@@ -89,22 +119,24 @@ void main() {
       }
     });
 
-    test('throws error if receiving metadata while reading data header',
-        () async {
-      final result = output.toList();
-      input
-        ..add(HeadersStreamMessage([]))
-        ..add(DataStreamMessage([0, 0, 0, 0]))
-        ..add(HeadersStreamMessage([]))
-        ..close();
-      try {
-        await result;
-        fail('Did not throw');
-      } on GrpcError catch (e) {
-        expect(e.code, StatusCode.unimplemented);
-        expect(e.message, 'Received header while reading data');
-      }
-    });
+    test(
+      'throws error if receiving metadata while reading data header',
+      () async {
+        final result = output.toList();
+        input
+          ..add(HeadersStreamMessage([]))
+          ..add(DataStreamMessage([0, 0, 0, 0]))
+          ..add(HeadersStreamMessage([]))
+          ..close();
+        try {
+          await result;
+          fail('Did not throw');
+        } on GrpcError catch (e) {
+          expect(e.code, StatusCode.unimplemented);
+          expect(e.message, 'Received header while reading data');
+        }
+      },
+    );
 
     test('throws error if receiving metadata while reading data', () async {
       final result = output.toList();
