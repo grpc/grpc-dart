@@ -1,7 +1,10 @@
 ## 4.1.1-wip
 
-- Require Dart 3.6.
-- Support package:lints 6.0.0
+- Require Dart 3.8.
+- Require package:googleapis_auth
+- Require package:http 1.4.0
+- Require package:lints 6.0.0
+- Require package:protobuf 4.1.0
 
 ## 4.1.0
 
