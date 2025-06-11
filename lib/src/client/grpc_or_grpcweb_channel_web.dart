@@ -24,22 +24,25 @@ class GrpcOrGrpcWebClientChannelInternal extends GrpcWebClientChannel {
     required String grpcWebHost,
     required int grpcWebPort,
     required bool grpcWebTransportSecure,
-  }) : super.xhr(Uri(
-          host: grpcWebHost,
-          port: grpcWebPort,
-          scheme: grpcWebTransportSecure ? 'https' : 'http',
-        ));
+  }) : super.xhr(
+         Uri(
+           host: grpcWebHost,
+           port: grpcWebPort,
+           scheme: grpcWebTransportSecure ? 'https' : 'http',
+         ),
+       );
 
   GrpcOrGrpcWebClientChannelInternal.grpc(
     Object host, {
     required int port,
     required ChannelOptions options,
   }) : super.xhr(
-          Uri(
-              host: host.toString(),
-              port: port,
-              scheme: options.credentials.isSecure ? 'https' : 'http'),
-        ) {
+         Uri(
+           host: host.toString(),
+           port: port,
+           scheme: options.credentials.isSecure ? 'https' : 'http',
+         ),
+       ) {
     // Do not silently ignore options as caller may expect them to have effects.
     throw UnsupportedError('not supported by gRPC-web');
   }

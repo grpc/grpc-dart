@@ -44,8 +44,8 @@ const _reservedHeaders = [
 /// by previous metadata providers) and the [uri] that is being called, and is
 /// expected to modify the map before returning or before completing the
 /// returned [Future].
-typedef MetadataProvider = FutureOr<void> Function(
-    Map<String, String> metadata, String uri);
+typedef MetadataProvider =
+    FutureOr<void> Function(Map<String, String> metadata, String uri);
 
 /// Runtime options for an RPC.
 class CallOptions {
@@ -125,26 +125,33 @@ class WebCallOptions extends CallOptions {
   final bool? withCredentials;
   // TODO(mightyvoice): add a list of extra QueryParameter for gRPC.
 
-  WebCallOptions._(Map<String, String> metadata, Duration? timeout,
-      List<MetadataProvider> metadataProviders,
-      {this.bypassCorsPreflight, this.withCredentials})
-      : super._(metadata, timeout, metadataProviders, null);
+  WebCallOptions._(
+    Map<String, String> metadata,
+    Duration? timeout,
+    List<MetadataProvider> metadataProviders, {
+    this.bypassCorsPreflight,
+    this.withCredentials,
+  }) : super._(metadata, timeout, metadataProviders, null);
 
   /// Creates a [WebCallOptions] object.
   ///
   /// [WebCallOptions] can specify static [metadata], [timeout],
   /// metadata [providers] of [CallOptions], [bypassCorsPreflight] and
   /// [withCredentials] for CORS request.
-  factory WebCallOptions(
-      {Map<String, String>? metadata,
-      Duration? timeout,
-      List<MetadataProvider>? providers,
-      bool? bypassCorsPreflight,
-      bool? withCredentials}) {
-    return WebCallOptions._(Map.unmodifiable(metadata ?? {}), timeout,
-        List.unmodifiable(providers ?? []),
-        bypassCorsPreflight: bypassCorsPreflight ?? false,
-        withCredentials: withCredentials ?? false);
+  factory WebCallOptions({
+    Map<String, String>? metadata,
+    Duration? timeout,
+    List<MetadataProvider>? providers,
+    bool? bypassCorsPreflight,
+    bool? withCredentials,
+  }) {
+    return WebCallOptions._(
+      Map.unmodifiable(metadata ?? {}),
+      timeout,
+      List.unmodifiable(providers ?? []),
+      bypassCorsPreflight: bypassCorsPreflight ?? false,
+      withCredentials: withCredentials ?? false,
+    );
   }
 
   @override
@@ -157,19 +164,25 @@ class WebCallOptions extends CallOptions {
       ..addAll(other.metadataProviders);
 
     if (other is! WebCallOptions) {
-      return WebCallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
-          List.unmodifiable(mergedProviders),
-          bypassCorsPreflight: bypassCorsPreflight,
-          withCredentials: withCredentials);
+      return WebCallOptions._(
+        Map.unmodifiable(mergedMetadata),
+        mergedTimeout,
+        List.unmodifiable(mergedProviders),
+        bypassCorsPreflight: bypassCorsPreflight,
+        withCredentials: withCredentials,
+      );
     }
 
     final mergedBypassCorsPreflight =
         other.bypassCorsPreflight ?? bypassCorsPreflight;
     final mergedWithCredentials = other.withCredentials ?? withCredentials;
-    return WebCallOptions._(Map.unmodifiable(mergedMetadata), mergedTimeout,
-        List.unmodifiable(mergedProviders),
-        bypassCorsPreflight: mergedBypassCorsPreflight,
-        withCredentials: mergedWithCredentials);
+    return WebCallOptions._(
+      Map.unmodifiable(mergedMetadata),
+      mergedTimeout,
+      List.unmodifiable(mergedProviders),
+      bypassCorsPreflight: mergedBypassCorsPreflight,
+      withCredentials: mergedWithCredentials,
+    );
   }
 }
 
@@ -196,12 +209,19 @@ class ClientCall<Q, R> implements Response {
   final TimelineTask? _requestTimeline;
   TimelineTask? _responseTimeline;
 
-  ClientCall(this._method, this._requests, this.options,
-      [this._requestTimeline]) {
-    _requestTimeline?.start('gRPC Request: ${_method.path}', arguments: {
-      'method': _method.path,
-      'timeout': options.timeout?.toString(),
-    });
+  ClientCall(
+    this._method,
+    this._requests,
+    this.options, [
+    this._requestTimeline,
+  ]) {
+    _requestTimeline?.start(
+      'gRPC Request: ${_method.path}',
+      arguments: {
+        'method': _method.path,
+        'timeout': options.timeout?.toString(),
+      },
+    );
     _responses.onListen = _onResponseListen;
     if (options.timeout != null) {
       _timeoutTimer = Timer(options.timeout!, _onTimedOut);
@@ -213,8 +233,9 @@ class ClientCall<Q, R> implements Response {
   }
 
   void _terminateWithError(Object e) {
-    final error =
-        e is GrpcError ? e : GrpcError.unavailable('Error making call: $e');
+    final error = e is GrpcError
+        ? e
+        : GrpcError.unavailable('Error making call: $e');
     _finishTimelineWithError(error, _requestTimeline);
     _responses.addErrorIfNotClosed(error);
     _safeTerminate();
@@ -232,7 +253,7 @@ class ClientCall<Q, R> implements Response {
     return sanitizedMetadata;
   }
 
-// TODO(sigurdm): Find out why we do this.
+  // TODO(sigurdm): Find out why we do this.
   static String audiencePath(ClientMethod method) {
     final lastSlashPos = method.path.lastIndexOf('/');
     return lastSlashPos == -1
@@ -248,9 +269,12 @@ class ClientCall<Q, R> implements Response {
     } else {
       final metadata = Map<String, String>.of(options.metadata);
       Future.forEach(
-              options.metadataProviders,
-              (MetadataProvider provider) => provider(metadata,
-                  '${connection.scheme}://${connection.authority}${audiencePath(_method)}'))
+            options.metadataProviders,
+            (MetadataProvider provider) => provider(
+              metadata,
+              '${connection.scheme}://${connection.authority}${audiencePath(_method)}',
+            ),
+          )
           .then((_) => _sendRequest(connection, _sanitizeMetadata(metadata)))
           .catchError(_terminateWithError);
     }
@@ -270,22 +294,26 @@ class ClientCall<Q, R> implements Response {
       _terminateWithError(e);
       return;
     }
-    _requestTimeline?.instant('Request sent', arguments: {
-      'metadata': metadata,
-    });
+    _requestTimeline?.instant(
+      'Request sent',
+      arguments: {'metadata': metadata},
+    );
     _requestSubscription = _requests
         .map((data) {
-          _requestTimeline?.instant('Data sent', arguments: {
-            'data': data.toString(),
-          });
+          _requestTimeline?.instant(
+            'Data sent',
+            arguments: {'data': data.toString()},
+          );
           _requestTimeline?.finish();
           return _method.requestSerializer(data);
         })
         .handleError(_onRequestError)
-        .listen(stream.outgoingMessages.add,
-            onError: stream.outgoingMessages.addError,
-            onDone: stream.outgoingMessages.close,
-            cancelOnError: true);
+        .listen(
+          stream.outgoingMessages.add,
+          onError: stream.outgoingMessages.addError,
+          onDone: stream.outgoingMessages.close,
+          cancelOnError: true,
+        );
     _stream = stream;
     // The response stream might have been listened to before _stream was ready,
     // so try setting up the subscription here as well.
@@ -293,9 +321,7 @@ class ClientCall<Q, R> implements Response {
   }
 
   void _finishTimelineWithError(GrpcError error, TimelineTask? timeline) {
-    timeline?.finish(arguments: {
-      'error': error.toString(),
-    });
+    timeline?.finish(arguments: {'error': error.toString()});
   }
 
   void _onTimedOut() {
@@ -312,10 +338,12 @@ class ClientCall<Q, R> implements Response {
         _responses.hasListener &&
         _responseSubscription == null) {
       // ignore: cancel_subscriptions
-      final subscription = _stream!.incomingMessages.listen(_onResponseData,
-          onError: _onResponseError,
-          onDone: _onResponseDone,
-          cancelOnError: true);
+      final subscription = _stream!.incomingMessages.listen(
+        _onResponseData,
+        onError: _onResponseError,
+        onDone: _onResponseDone,
+        cancelOnError: true,
+      );
       if (_responses.isPaused) {
         subscription.pause();
       }
@@ -360,9 +388,10 @@ class ClientCall<Q, R> implements Response {
       }
       try {
         final decodedData = _method.responseDeserializer(data.data);
-        _responseTimeline?.instant('Data received', arguments: {
-          'data': decodedData.toString(),
-        });
+        _responseTimeline?.instant(
+          'Data received',
+          arguments: {'data': decodedData.toString()},
+        );
         _responses.add(decodedData);
         _hasReceivedResponses = true;
       } catch (e, s) {
@@ -378,9 +407,10 @@ class ClientCall<Q, R> implements Response {
           );
         }
         _responseTimeline?.start('gRPC Response');
-        _responseTimeline?.instant('Metadata received', arguments: {
-          'headers': _headerMetadata.toString(),
-        });
+        _responseTimeline?.instant(
+          'Metadata received',
+          arguments: {'headers': _headerMetadata.toString()},
+        );
         _headers.complete(_headerMetadata);
         return;
       }
@@ -389,9 +419,10 @@ class ClientCall<Q, R> implements Response {
         return;
       }
       final metadata = data.metadata;
-      _responseTimeline?.instant('Metadata received', arguments: {
-        'trailers': metadata.toString(),
-      });
+      _responseTimeline?.instant(
+        'Metadata received',
+        arguments: {'trailers': metadata.toString()},
+      );
       _trailers.complete(metadata);
 
       /// Process status error if necessary

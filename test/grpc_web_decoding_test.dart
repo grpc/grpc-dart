@@ -22,11 +22,15 @@ import 'package:test/test.dart';
 
 void main() {
   test('decoding an empty repeated', () async {
-    final data = await GrpcWebDecoder()
-        .bind(Stream.fromIterable([
-          Uint8List.fromList([0, 0, 0, 0, 0]).buffer
-        ]))
-        .first as GrpcData;
+    final data =
+        await GrpcWebDecoder()
+                .bind(
+                  Stream.fromIterable([
+                    Uint8List.fromList([0, 0, 0, 0, 0]).buffer,
+                  ]),
+                )
+                .first
+            as GrpcData;
     expect(data.data, []);
   });
 }

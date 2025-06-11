@@ -31,7 +31,7 @@ enum ConnectionState {
   idle,
 
   /// Shutting down, no further RPCs allowed.
-  shutdown
+  shutdown,
 }
 
 abstract class ClientConnection {
@@ -42,9 +42,13 @@ abstract class ClientConnection {
   void dispatchCall(ClientCall call);
 
   /// Start a request for [path] with [metadata].
-  GrpcTransportStream makeRequest(String path, Duration? timeout,
-      Map<String, String> metadata, ErrorHandler onRequestFailure,
-      {required CallOptions callOptions});
+  GrpcTransportStream makeRequest(
+    String path,
+    Duration? timeout,
+    Map<String, String> metadata,
+    ErrorHandler onRequestFailure, {
+    required CallOptions callOptions,
+  });
 
   /// Shuts down this connection.
   ///

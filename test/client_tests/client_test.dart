@@ -78,8 +78,10 @@ void main() {
     }
 
     await harness.runTest(
-      clientCall: harness.client.unary(requestValue,
-          options: CallOptions(metadata: {'grpc-accept-encoding': 'gzip'})),
+      clientCall: harness.client.unary(
+        requestValue,
+        options: CallOptions(metadata: {'grpc-accept-encoding': 'gzip'}),
+      ),
       expectedResult: responseValue,
       expectedCustomHeaders: {'grpc-accept-encoding': 'gzip'},
       expectedPath: '/Test/Unary',
@@ -157,8 +159,9 @@ void main() {
     }
 
     await harness.runTest(
-      clientCall:
-          harness.client.bidirectional(Stream.fromIterable(requests)).toList(),
+      clientCall: harness.client
+          .bidirectional(Stream.fromIterable(requests))
+          .toList(),
       expectedResult: responses,
       expectedPath: '/Test/Bidirectional',
       serverHandlers: [handleRequest, handleRequest, handleRequest],
@@ -189,8 +192,9 @@ void main() {
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
-      expectedException:
-          GrpcError.unimplemented('More than one response received'),
+      expectedException: GrpcError.unimplemented(
+        'More than one response received',
+      ),
       serverHandlers: [handleRequest],
     );
   });
@@ -229,8 +233,9 @@ void main() {
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
-      expectedException:
-          GrpcError.unimplemented('Received data before headers'),
+      expectedException: GrpcError.unimplemented(
+        'Received data before headers',
+      ),
       serverHandlers: [handleRequest],
     );
   });
@@ -245,8 +250,9 @@ void main() {
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
-      expectedException:
-          GrpcError.unimplemented('Received data after trailers'),
+      expectedException: GrpcError.unimplemented(
+        'Received data after trailers',
+      ),
       serverHandlers: [handleRequest],
     );
   });
@@ -271,50 +277,60 @@ void main() {
     const customStatusMessage = 'Custom message';
 
     void handleRequest(_) {
-      harness.toClient.add(HeadersStreamMessage([
-        Header.ascii(':status', '200'),
-        Header.ascii('content-type', 'application/grpc'),
-        Header.ascii('grpc-status', '$customStatusCode'),
-        Header.ascii('grpc-message', customStatusMessage)
-      ], endStream: true));
+      harness.toClient.add(
+        HeadersStreamMessage([
+          Header.ascii(':status', '200'),
+          Header.ascii('content-type', 'application/grpc'),
+          Header.ascii('grpc-status', '$customStatusCode'),
+          Header.ascii('grpc-message', customStatusMessage),
+        ], endStream: true),
+      );
       harness.toClient.close();
     }
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
-      expectedException:
-          GrpcError.custom(customStatusCode, customStatusMessage),
+      expectedException: GrpcError.custom(
+        customStatusCode,
+        customStatusMessage,
+      ),
       serverHandlers: [handleRequest],
     );
   });
 
   test('Call throws if HTTP status indicates an error', () async {
     void handleRequest(_) {
-      harness.toClient.add(HeadersStreamMessage([
-        Header.ascii(':status', HttpStatus.serviceUnavailable.toString()),
-        Header.ascii('content-type', 'application/grpc'),
-      ]));
+      harness.toClient.add(
+        HeadersStreamMessage([
+          Header.ascii(':status', HttpStatus.serviceUnavailable.toString()),
+          Header.ascii('content-type', 'application/grpc'),
+        ]),
+      );
       // Send a frame that might be misinterpreted as a length-prefixed proto
       // message and cause OOM.
-      harness.toClient
-          .add(DataStreamMessage([0, 0xFF, 0xFF, 0xFF, 0xFF], endStream: true));
+      harness.toClient.add(
+        DataStreamMessage([0, 0xFF, 0xFF, 0xFF, 0xFF], endStream: true),
+      );
       harness.toClient.close();
     }
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
       expectedException: GrpcError.unavailable(
-          'HTTP connection completed with 503 instead of 200'),
+        'HTTP connection completed with 503 instead of 200',
+      ),
       serverHandlers: [handleRequest],
     );
   });
 
   test('Call throws if content-type indicates an error', () async {
     void handleRequest(_) {
-      harness.toClient.add(HeadersStreamMessage([
-        Header.ascii(':status', '200'),
-        Header.ascii('content-type', 'text/html'),
-      ]));
+      harness.toClient.add(
+        HeadersStreamMessage([
+          Header.ascii(':status', '200'),
+          Header.ascii('content-type', 'text/html'),
+        ]),
+      );
       // Send a frame that might be misinterpreted as a length-prefixed proto
       // message and cause OOM.
       harness.toClient.add(DataStreamMessage([0, 0xFF, 0xFF, 0xFF, 0xFF]));
@@ -323,15 +339,16 @@ void main() {
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
-      expectedException:
-          GrpcError.unknown('unsupported content-type (text/html)'),
+      expectedException: GrpcError.unknown(
+        'unsupported content-type (text/html)',
+      ),
       serverHandlers: [handleRequest],
     );
   });
 
   for (var contentType in [
     'application/json+protobuf',
-    'application/x-protobuf'
+    'application/x-protobuf',
   ]) {
     test('$contentType content type is accepted', () async {
       const requestValue = 17;
@@ -342,10 +359,12 @@ void main() {
         expect(mockDecode(data.data), requestValue);
 
         harness
-          ..toClient.add(HeadersStreamMessage([
-            Header.ascii(':status', '200'),
-            Header.ascii('content-type', contentType),
-          ]))
+          ..toClient.add(
+            HeadersStreamMessage([
+              Header.ascii(':status', '200'),
+              Header.ascii('content-type', contentType),
+            ]),
+          )
           ..sendResponseValue(responseValue)
           ..sendResponseTrailer();
       }
@@ -365,19 +384,23 @@ void main() {
     const encodedCustomStatusMessage = '%E3%82%A8%E3%83%A9%E3%83%BC';
 
     void handleRequest(_) {
-      harness.toClient.add(HeadersStreamMessage([
-        Header.ascii(':status', '200'),
-        Header.ascii('content-type', 'application/grpc'),
-        Header.ascii('grpc-status', '$customStatusCode'),
-        Header.ascii('grpc-message', encodedCustomStatusMessage)
-      ], endStream: true));
+      harness.toClient.add(
+        HeadersStreamMessage([
+          Header.ascii(':status', '200'),
+          Header.ascii('content-type', 'application/grpc'),
+          Header.ascii('grpc-status', '$customStatusCode'),
+          Header.ascii('grpc-message', encodedCustomStatusMessage),
+        ], endStream: true),
+      );
       harness.toClient.close();
     }
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
-      expectedException:
-          GrpcError.custom(customStatusCode, customStatusMessage),
+      expectedException: GrpcError.custom(
+        customStatusCode,
+        customStatusMessage,
+      ),
       serverHandlers: [handleRequest],
     );
   });
@@ -404,9 +427,12 @@ void main() {
         ..sendResponseTrailer();
     }
 
-    harness.client = TestClient(harness.channel, decode: (bytes) {
-      throw 'error decoding';
-    });
+    harness.client = TestClient(
+      harness.channel,
+      decode: (bytes) {
+        throw 'error decoding';
+      },
+    );
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
@@ -474,15 +500,18 @@ void main() {
 
   test('Connection states are reported', () async {
     final connectionStates = <ConnectionState>[];
-    harness.channel.onConnectionStateChanged.listen((state) {
-      connectionStates.add(state);
-    }, onDone: () {
-      expect(connectionStates, [
-        ConnectionState.connecting,
-        ConnectionState.ready,
-        ConnectionState.shutdown
-      ]);
-    });
+    harness.channel.onConnectionStateChanged.listen(
+      (state) {
+        connectionStates.add(state);
+      },
+      onDone: () {
+        expect(connectionStates, [
+          ConnectionState.connecting,
+          ConnectionState.ready,
+          ConnectionState.shutdown,
+        ]);
+      },
+    );
 
     await makeUnaryCall();
   });
@@ -490,36 +519,49 @@ void main() {
   test('Connection errors are reported', () async {
     final connectionStates = <ConnectionState>[];
     harness.connection!.connectionError = 'Connection error';
-    harness.channel.onConnectionStateChanged.listen((state) {
-      connectionStates.add(state);
-    }, onDone: () {
-      expect(
-          connectionStates, [ConnectionState.connecting, ConnectionState.idle]);
-    });
+    harness.channel.onConnectionStateChanged.listen(
+      (state) {
+        connectionStates.add(state);
+      },
+      onDone: () {
+        expect(connectionStates, [
+          ConnectionState.connecting,
+          ConnectionState.idle,
+        ]);
+      },
+    );
 
-    final expectedException =
-        GrpcError.unavailable('Error connecting: Connection error');
+    final expectedException = GrpcError.unavailable(
+      'Error connecting: Connection error',
+    );
 
     await harness.expectThrows(
-        harness.client.unary(dummyValue), expectedException);
+      harness.client.unary(dummyValue),
+      expectedException,
+    );
   });
 
   test('Connections time out if idle', () async {
     final done = Completer();
     final connectionStates = <ConnectionState>[];
-    harness.channel.onConnectionStateChanged.listen((state) {
-      connectionStates.add(state);
-      if (state == ConnectionState.idle) done.complete();
-    }, onDone: () async {
-      expect(connectionStates,
-          [ConnectionState.connecting, ConnectionState.ready]);
-      await done.future;
-      expect(connectionStates, [
-        ConnectionState.connecting,
-        ConnectionState.ready,
-        ConnectionState.idle
-      ]);
-    });
+    harness.channel.onConnectionStateChanged.listen(
+      (state) {
+        connectionStates.add(state);
+        if (state == ConnectionState.idle) done.complete();
+      },
+      onDone: () async {
+        expect(connectionStates, [
+          ConnectionState.connecting,
+          ConnectionState.ready,
+        ]);
+        await done.future;
+        expect(connectionStates, [
+          ConnectionState.connecting,
+          ConnectionState.ready,
+          ConnectionState.idle,
+        ]);
+      },
+    );
 
     harness.channelOptions.idleTimeout = const Duration(microseconds: 10);
 
@@ -545,38 +587,53 @@ void main() {
 
   test('authority is computed correctly', () {
     final emptyOptions = ChannelOptions();
-    expect(Http2ClientConnection('localhost', 8080, emptyOptions).authority,
-        'localhost:8080');
-    expect(Http2ClientConnection('localhost', 443, emptyOptions).authority,
-        'localhost');
+    expect(
+      Http2ClientConnection('localhost', 8080, emptyOptions).authority,
+      'localhost:8080',
+    );
+    expect(
+      Http2ClientConnection('localhost', 443, emptyOptions).authority,
+      'localhost',
+    );
     final channelOptions = ChannelOptions(
-        credentials: ChannelCredentials.insecure(authority: 'myauthority.com'));
-    expect(Http2ClientConnection('localhost', 8080, channelOptions).authority,
-        'myauthority.com');
-    expect(Http2ClientConnection('localhost', 443, channelOptions).authority,
-        'myauthority.com');
+      credentials: ChannelCredentials.insecure(authority: 'myauthority.com'),
+    );
+    expect(
+      Http2ClientConnection('localhost', 8080, channelOptions).authority,
+      'myauthority.com',
+    );
+    expect(
+      Http2ClientConnection('localhost', 443, channelOptions).authority,
+      'myauthority.com',
+    );
   });
 
   test(
-      'decodeStatusDetails should decode details into a List<GeneratedMessage> if base64 present',
-      () {
-    final decodedDetails = decodeStatusDetails(
-        'CAMSEGFtb3VudCB0b28gc21hbGwafgopdHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUucnBjLkJhZFJlcXVlc3QSUQpPCgZhbW91bnQSRVRoZSByZXF1aXJlZCBjdXJyZW5jeSBjb252ZXJzaW9uIHdvdWxkIHJlc3VsdCBpbiBhIHplcm8gdmFsdWUgcGF5bWVudA');
-    expect(decodedDetails, isA<List<GeneratedMessage>>());
-    expect(decodedDetails.length, 1);
-  });
+    'decodeStatusDetails should decode details into a List<GeneratedMessage> if base64 present',
+    () {
+      final decodedDetails = decodeStatusDetails(
+        'CAMSEGFtb3VudCB0b28gc21hbGwafgopdHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUucnBjLkJhZFJlcXVlc3QSUQpPCgZhbW91bnQSRVRoZSByZXF1aXJlZCBjdXJyZW5jeSBjb252ZXJzaW9uIHdvdWxkIHJlc3VsdCBpbiBhIHplcm8gdmFsdWUgcGF5bWVudA',
+      );
+      expect(decodedDetails, isA<List<GeneratedMessage>>());
+      expect(decodedDetails.length, 1);
+    },
+  );
 
   test(
-      'decodeStatusDetails should decode details into an empty list for an invalid base64 string',
-      () {
-    final decodedDetails = decodeStatusDetails('xxxxxxxxxxxxxxxxxxxxxx');
-    expect(decodedDetails, isA<List<GeneratedMessage>>());
-    expect(decodedDetails.length, 0);
-  });
+    'decodeStatusDetails should decode details into an empty list for an invalid base64 string',
+    () {
+      final decodedDetails = decodeStatusDetails('xxxxxxxxxxxxxxxxxxxxxx');
+      expect(decodedDetails, isA<List<GeneratedMessage>>());
+      expect(decodedDetails.length, 0);
+    },
+  );
 
   test('parseGeneratedMessage should parse out a valid Any type', () {
-    final status = Status.fromBuffer(base64Url.decode(
-        'CAMSEGFtb3VudCB0b28gc21hbGwafgopdHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUucnBjLkJhZFJlcXVlc3QSUQpPCgZhbW91bnQSRVRoZSByZXF1aXJlZCBjdXJyZW5jeSBjb252ZXJzaW9uIHdvdWxkIHJlc3VsdCBpbiBhIHplcm8gdmFsdWUgcGF5bWVudA=='));
+    final status = Status.fromBuffer(
+      base64Url.decode(
+        'CAMSEGFtb3VudCB0b28gc21hbGwafgopdHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUucnBjLkJhZFJlcXVlc3QSUQpPCgZhbW91bnQSRVRoZSByZXF1aXJlZCBjdXJyZW5jeSBjb252ZXJzaW9uIHdvdWxkIHJlc3VsdCBpbiBhIHplcm8gdmFsdWUgcGF5bWVudA==',
+      ),
+    );
     expect(status.details, isNotEmpty);
 
     final detailItem = status.details.first;
@@ -586,8 +643,10 @@ void main() {
     final castedResult = parsedResult as BadRequest;
     expect(castedResult.fieldViolations, isNotEmpty);
     expect(castedResult.fieldViolations.first.field_1, 'amount');
-    expect(castedResult.fieldViolations.first.description,
-        'The required currency conversion would result in a zero value payment');
+    expect(
+      castedResult.fieldViolations.first.description,
+      'The required currency conversion would result in a zero value payment',
+    );
   });
 
   test('Call should throw details embedded in the headers', () async {
@@ -597,13 +656,15 @@ void main() {
         'CAMSEGFtb3VudCB0b28gc21hbGwafgopdHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUucnBjLkJhZFJlcXVlc3QSUQpPCgZhbW91bnQSRVRoZSByZXF1aXJlZCBjdXJyZW5jeSBjb252ZXJzaW9uIHdvdWxkIHJlc3VsdCBpbiBhIHplcm8gdmFsdWUgcGF5bWVudA';
 
     void handleRequest(_) {
-      harness.toClient.add(HeadersStreamMessage([
-        Header.ascii(':status', '200'),
-        Header.ascii('content-type', 'application/grpc'),
-        Header.ascii('grpc-status', code.toString()),
-        Header.ascii('grpc-message', message),
-        Header.ascii('grpc-status-details-bin', details),
-      ], endStream: true));
+      harness.toClient.add(
+        HeadersStreamMessage([
+          Header.ascii(':status', '200'),
+          Header.ascii('content-type', 'application/grpc'),
+          Header.ascii('grpc-status', code.toString()),
+          Header.ascii('grpc-message', message),
+          Header.ascii('grpc-status-details-bin', details),
+        ], endStream: true),
+      );
       harness.toClient.close();
     }
 
@@ -625,24 +686,21 @@ void main() {
     final customVal = 'some custom value';
     final customTrailers = <String, String>{customKey: customVal};
     void handleRequest(_) {
-      harness.toClient.add(HeadersStreamMessage([
-        Header.ascii(':status', '200'),
-        Header.ascii('content-type', 'application/grpc'),
-        Header.ascii('grpc-status', code.toString()),
-        Header.ascii('grpc-message', message),
-        Header.ascii(customKey, customVal),
-      ], endStream: true));
+      harness.toClient.add(
+        HeadersStreamMessage([
+          Header.ascii(':status', '200'),
+          Header.ascii('content-type', 'application/grpc'),
+          Header.ascii('grpc-status', code.toString()),
+          Header.ascii('grpc-message', message),
+          Header.ascii(customKey, customVal),
+        ], endStream: true),
+      );
       harness.toClient.close();
     }
 
     await harness.runFailureTest(
       clientCall: harness.client.unary(dummyValue),
-      expectedException: GrpcError.custom(
-        code,
-        message,
-        [],
-        customTrailers,
-      ),
+      expectedException: GrpcError.custom(code, message, [], customTrailers),
       expectedCustomTrailers: customTrailers,
       serverHandlers: [handleRequest],
     );

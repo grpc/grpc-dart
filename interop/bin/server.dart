@@ -47,10 +47,14 @@ class TestService extends TestServiceBase {
 
   @override
   Future<SimpleResponse> unaryCall(
-      ServiceCall call, SimpleRequest request) async {
+    ServiceCall call,
+    SimpleRequest request,
+  ) async {
     if (request.responseStatus.code != 0) {
       throw GrpcError.custom(
-          request.responseStatus.code, request.responseStatus.message);
+        request.responseStatus.code,
+        request.responseStatus.message,
+      );
     }
     final payload = Payload()..body = List.filled(request.responseSize, 0);
     return SimpleResponse()..payload = payload;
@@ -58,7 +62,9 @@ class TestService extends TestServiceBase {
 
   @override
   Future<SimpleResponse> cacheableUnaryCall(
-      ServiceCall call, SimpleRequest request) async {
+    ServiceCall call,
+    SimpleRequest request,
+  ) async {
     final timestamp = DateTime.now().microsecond * 1000;
     final responsePayload = Payload()..body = ascii.encode('$timestamp');
     return SimpleResponse()..payload = responsePayload;
@@ -66,9 +72,13 @@ class TestService extends TestServiceBase {
 
   @override
   Future<StreamingInputCallResponse> streamingInputCall(
-      ServiceCall call, Stream<StreamingInputCallRequest> request) async {
+    ServiceCall call,
+    Stream<StreamingInputCallRequest> request,
+  ) async {
     final aggregatedPayloadSize = await request.fold<int>(
-        0, (size, message) => size + message.payload.body.length);
+      0,
+      (size, message) => size + message.payload.body.length,
+    );
     return StreamingInputCallResponse()
       ..aggregatedPayloadSize = aggregatedPayloadSize;
   }
@@ -78,7 +88,9 @@ class TestService extends TestServiceBase {
 
   @override
   Stream<StreamingOutputCallResponse> streamingOutputCall(
-      ServiceCall call, StreamingOutputCallRequest request) async* {
+    ServiceCall call,
+    StreamingOutputCallRequest request,
+  ) async* {
     for (final entry in request.responseParameters) {
       if (entry.intervalUs > 0) {
         await Future.delayed(Duration(microseconds: entry.intervalUs));
@@ -88,10 +100,13 @@ class TestService extends TestServiceBase {
   }
 
   StreamingOutputCallResponse _responseForRequest(
-      StreamingOutputCallRequest request) {
+    StreamingOutputCallRequest request,
+  ) {
     if (request.responseStatus.code != 0) {
       throw GrpcError.custom(
-          request.responseStatus.code, request.responseStatus.message);
+        request.responseStatus.code,
+        request.responseStatus.message,
+      );
     }
     final response = StreamingOutputCallResponse();
     if (request.responseParameters.isNotEmpty) {
@@ -102,13 +117,17 @@ class TestService extends TestServiceBase {
 
   @override
   Stream<StreamingOutputCallResponse> fullDuplexCall(
-      ServiceCall call, Stream<StreamingOutputCallRequest> request) async* {
+    ServiceCall call,
+    Stream<StreamingOutputCallRequest> request,
+  ) async* {
     yield* request.map(_responseForRequest);
   }
 
   @override
   Stream<StreamingOutputCallResponse> halfDuplexCall(
-      ServiceCall call, Stream<StreamingOutputCallRequest> request) async* {
+    ServiceCall call,
+    Stream<StreamingOutputCallRequest> request,
+  ) async* {
     final bufferedResponses = await request.map(_responseForRequest).toList();
     yield* Stream.fromIterable(bufferedResponses);
   }
@@ -138,7 +157,9 @@ Future<void> main(List<String> args) async {
     final certificate = File(arguments['tls_cert_file']).readAsBytes();
     final privateKey = File(arguments['tls_key_file']).readAsBytes();
     tlsCredentials = ServerTlsCredentials(
-        certificate: await certificate, privateKey: await privateKey);
+      certificate: await certificate,
+      privateKey: await privateKey,
+    );
   }
   await server.serve(port: port, security: tlsCredentials);
   print('Server listening on port ${server.port}...');

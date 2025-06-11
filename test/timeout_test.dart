@@ -89,8 +89,10 @@ void main() {
 
       final timeout = Duration(microseconds: 1);
       await harness.runFailureTest(
-        clientCall: harness.client
-            .unary(dummyValue, options: CallOptions(timeout: timeout)),
+        clientCall: harness.client.unary(
+          dummyValue,
+          options: CallOptions(timeout: timeout),
+        ),
         expectedException: GrpcError.deadlineExceeded('Deadline exceeded'),
         expectedPath: '/Test/Unary',
         expectedTimeout: timeout,

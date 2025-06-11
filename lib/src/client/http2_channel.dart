@@ -48,11 +48,15 @@ class ClientTransportConnectorChannel extends ClientChannelBase {
   final ClientTransportConnector transportConnector;
   final ChannelOptions options;
 
-  ClientTransportConnectorChannel(this.transportConnector,
-      {this.options = const ChannelOptions()});
+  ClientTransportConnectorChannel(
+    this.transportConnector, {
+    this.options = const ChannelOptions(),
+  });
 
   @override
   ClientConnection createConnection() =>
       Http2ClientConnection.fromClientTransportConnector(
-          transportConnector, options);
+        transportConnector,
+        options,
+      );
 }

@@ -61,8 +61,8 @@ final class Idle extends KeepAliveState {
   final Stopwatch timeSinceFrame;
 
   Idle([this.pingTimer, Stopwatch? stopwatch])
-      : timeSinceFrame = stopwatch ?? clock.stopwatch()
-          ..start();
+    : timeSinceFrame = stopwatch ?? clock.stopwatch()
+        ..start();
 
   @override
   KeepAliveState? onEvent(KeepAliveEvent event, ClientKeepAlive manager) {
@@ -71,9 +71,12 @@ final class Idle extends KeepAliveState {
         // When the transport goes active, we do not reset the nextKeepaliveTime.
         // This allows us to quickly check whether the connection is still
         // working.
-        final timer = pingTimer ??
-            Timer(manager._pingInterval - timeSinceFrame.elapsed,
-                manager.sendPing);
+        final timer =
+            pingTimer ??
+            Timer(
+              manager._pingInterval - timeSinceFrame.elapsed,
+              manager.sendPing,
+            );
         return PingScheduled(timer, timeSinceFrame);
       default:
         return null;
@@ -91,8 +94,8 @@ final class PingScheduled extends KeepAliveState {
   final Stopwatch timeSinceFrame;
 
   PingScheduled(this.pingTimer, [Stopwatch? stopwatch])
-      : timeSinceFrame = stopwatch ?? clock.stopwatch()
-          ..start();
+    : timeSinceFrame = stopwatch ?? clock.stopwatch()
+        ..start();
 
   @override
   KeepAliveState? onEvent(KeepAliveEvent event, ClientKeepAlive manager) {

@@ -24,8 +24,10 @@ void testUds(String name, FutureOr<void> Function(InternetAddress) testCase) {
 
   test(name, () async {
     final tempDir = await Directory.systemTemp.createTemp();
-    final address = InternetAddress('${tempDir.path}/socket',
-        type: InternetAddressType.unix);
+    final address = InternetAddress(
+      '${tempDir.path}/socket',
+      type: InternetAddressType.unix,
+    );
     addTearDown(() => tempDir.delete(recursive: true));
     await testCase(address);
   });
@@ -33,8 +35,10 @@ void testUds(String name, FutureOr<void> Function(InternetAddress) testCase) {
 
 /// Test functionality for both TCP and Unix domain sockets.
 void testTcpAndUds(
-    String name, FutureOr<void> Function(InternetAddress) testCase,
-    {String host = 'localhost'}) {
+  String name,
+  FutureOr<void> Function(InternetAddress) testCase, {
+  String host = 'localhost',
+}) {
   test(name, () async {
     final address = await InternetAddress.lookup(host);
     await testCase(address.first);

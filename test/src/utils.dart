@@ -26,14 +26,17 @@ List<int> mockEncode(int value) => List.filled(value, 0);
 
 int mockDecode(List<int> value) => value.length;
 
-Map<String, String> headersToMap(List<Header> headers) =>
-    {for (var h in headers) ascii.decode(h.name): ascii.decode(h.value)};
+Map<String, String> headersToMap(List<Header> headers) => {
+  for (var h in headers) ascii.decode(h.name): ascii.decode(h.value),
+};
 
-void validateRequestHeaders(Map<String, String> headers,
-    {String? path,
-    String authority = 'test',
-    String? timeout,
-    Map<String, String>? customHeaders}) {
+void validateRequestHeaders(
+  Map<String, String> headers, {
+  String? path,
+  String authority = 'test',
+  String? timeout,
+  Map<String, String>? customHeaders,
+}) {
   expect(headers[':method'], 'POST');
   expect(headers[':scheme'], 'https');
   if (path != null) {
@@ -50,10 +53,12 @@ void validateRequestHeaders(Map<String, String> headers,
   });
 }
 
-void validateResponseHeaders(Map<String, String> headers,
-    {int status = 200,
-    bool allowTrailers = false,
-    Map<String, String>? customHeaders}) {
+void validateResponseHeaders(
+  Map<String, String> headers, {
+  int status = 200,
+  bool allowTrailers = false,
+  Map<String, String>? customHeaders,
+}) {
   expect(headers[':status'], '200');
   expect(headers['content-type'], startsWith('application/grpc'));
   if (!allowTrailers) {
@@ -65,8 +70,12 @@ void validateResponseHeaders(Map<String, String> headers,
   });
 }
 
-void validateResponseTrailers(Map<String, String> trailers,
-    {int status = 0, String? message, Map<String, String>? customTrailers}) {
+void validateResponseTrailers(
+  Map<String, String> trailers, {
+  int status = 0,
+  String? message,
+  Map<String, String>? customTrailers,
+}) {
   expect(trailers['grpc-status'], '$status');
   if (message != null) {
     expect(trailers['grpc-message'], message);
@@ -76,8 +85,10 @@ void validateResponseTrailers(Map<String, String> trailers,
   });
 }
 
-GrpcMetadata validateMetadataMessage(StreamMessage message,
-    {bool endStream = false}) {
+GrpcMetadata validateMetadataMessage(
+  StreamMessage message, {
+  bool endStream = false,
+}) {
   expect(message, TypeMatcher<HeadersStreamMessage>());
   expect(message.endStream, endStream);
 
@@ -103,14 +114,19 @@ void Function(StreamMessage message) headerValidator() {
 }
 
 void Function(StreamMessage message) errorTrailerValidator(
-    int status, String statusMessage,
-    {bool validateHeader = false}) {
+  int status,
+  String statusMessage, {
+  bool validateHeader = false,
+}) {
   return (StreamMessage message) {
     final trailer = validateMetadataMessage(message, endStream: true);
     if (validateHeader) {
       validateResponseHeaders(trailer.metadata, allowTrailers: true);
     }
-    validateResponseTrailers(trailer.metadata,
-        status: status, message: statusMessage);
+    validateResponseTrailers(
+      trailer.metadata,
+      status: status,
+      message: statusMessage,
+    );
   };
 }

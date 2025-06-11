@@ -74,7 +74,9 @@ abstract class HttpBasedAuthenticator extends BaseAuthenticator {
   }
 
   Future<auth.AccessCredentials> obtainCredentialsWithClient(
-      http.Client client, String uri);
+    http.Client client,
+    String uri,
+  );
 }
 
 class JwtServiceAccountAuthenticator extends BaseAuthenticator {
@@ -83,15 +85,17 @@ class JwtServiceAccountAuthenticator extends BaseAuthenticator {
   String? _keyId;
 
   JwtServiceAccountAuthenticator.fromJson(
-      Map<String, dynamic> serviceAccountJson)
-      : _serviceAccountCredentials =
-            auth.ServiceAccountCredentials.fromJson(serviceAccountJson),
-        _projectId = serviceAccountJson['project_id'],
-        _keyId = serviceAccountJson['private_key_id'];
+    Map<String, dynamic> serviceAccountJson,
+  ) : _serviceAccountCredentials = auth.ServiceAccountCredentials.fromJson(
+        serviceAccountJson,
+      ),
+      _projectId = serviceAccountJson['project_id'],
+      _keyId = serviceAccountJson['private_key_id'];
 
   factory JwtServiceAccountAuthenticator(String serviceAccountJsonString) =>
       JwtServiceAccountAuthenticator.fromJson(
-          jsonDecode(serviceAccountJsonString));
+        jsonDecode(serviceAccountJsonString),
+      );
 
   String? get projectId => _projectId;
 
@@ -103,8 +107,12 @@ class JwtServiceAccountAuthenticator extends BaseAuthenticator {
 
 // TODO(jakobr): Expose in googleapis_auth.
 auth.AccessToken _jwtTokenFor(
-    auth.ServiceAccountCredentials credentials, String? keyId, String uri,
-    {String? user, List<String>? scopes}) {
+  auth.ServiceAccountCredentials credentials,
+  String? keyId,
+  String uri, {
+  String? user,
+  List<String>? scopes,
+}) {
   // Subtracting 20 seconds from current timestamp to allow for clock skew among
   // servers.
   final timestamp =
@@ -121,7 +129,7 @@ auth.AccessToken _jwtTokenFor(
     'aud': uri,
     'exp': expiry,
     'iat': timestamp,
-    'sub': user ?? credentials.email
+    'sub': user ?? credentials.email,
   };
   if (scopes != null) {
     claims['scope'] = scopes.join(' ');
@@ -135,14 +143,27 @@ auth.AccessToken _jwtTokenFor(
   final key = credentials.privateRSAKey;
   // We convert to our internal version of RSAPrivateKey. See rsa.dart for more
   // explanation.
-  final signer = RS256Signer(RSAPrivateKey(
-      key.n, key.e, key.d, key.p, key.q, key.dmp1, key.dmq1, key.coeff));
+  final signer = RS256Signer(
+    RSAPrivateKey(
+      key.n,
+      key.e,
+      key.d,
+      key.p,
+      key.q,
+      key.dmp1,
+      key.dmq1,
+      key.coeff,
+    ),
+  );
   final signature = signer.sign(ascii.encode(data));
 
   final jwt = '$data.${_base64url(signature)}';
 
-  return auth.AccessToken('Bearer', jwt,
-      DateTime.fromMillisecondsSinceEpoch(expiry * 1000, isUtc: true));
+  return auth.AccessToken(
+    'Bearer',
+    jwt,
+    DateTime.fromMillisecondsSinceEpoch(expiry * 1000, isUtc: true),
+  );
 }
 
 String _base64url(List<int> bytes) {

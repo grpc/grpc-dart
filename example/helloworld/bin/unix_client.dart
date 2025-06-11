@@ -20,8 +20,10 @@ import 'package:helloworld/src/generated/helloworld.pbgrpc.dart';
 
 /// Dart implementation of the gRPC helloworld.Greeter client.
 Future<void> main(List<String> args) async {
-  final udsAddress =
-      InternetAddress('localhost', type: InternetAddressType.unix);
+  final udsAddress = InternetAddress(
+    'localhost',
+    type: InternetAddressType.unix,
+  );
   final channel = ClientChannel(
     udsAddress,
     port: 0,

@@ -60,9 +60,11 @@ class ResponseFuture<R> extends DelegatingFuture<R>
   }
 
   ResponseFuture(this._call)
-      : super(_call.response
+    : super(
+        _call.response
             .fold<R?>(null, _ensureOnlyOneResponse)
-            .then(_ensureOneResponse));
+            .then(_ensureOneResponse),
+      );
 }
 
 /// A gRPC response producing a stream of values.

@@ -15,7 +15,8 @@
 
 @TestOn('vm')
 @Skip(
-    'Run only as `dart run --enable-vm-service --timeline-streams=Dart test/timeline_test.dart`')
+  'Run only as `dart run --enable-vm-service --timeline-streams=Dart test/timeline_test.dart`',
+)
 library;
 
 import 'dart:async';
@@ -33,12 +34,18 @@ const String path = '/test.TestService/stream';
 
 class TestClient extends Client {
   static final _$stream = ClientMethod<int, int>(
-      path, (int value) => [value], (List<int> value) => value[0]);
+    path,
+    (int value) => [value],
+    (List<int> value) => value[0],
+  );
 
   TestClient(super.channel);
   ResponseStream<int> stream(int request, {CallOptions? options}) {
-    return $createStreamingCall(_$stream, Stream.fromIterable([request]),
-        options: options);
+    return $createStreamingCall(
+      _$stream,
+      Stream.fromIterable([request]),
+      options: options,
+    );
   }
 }
 
@@ -47,8 +54,16 @@ class TestService extends Service {
   String get $name => 'test.TestService';
 
   TestService() {
-    $addMethod(ServiceMethod<int, int>('stream', stream, false, true,
-        (List<int> value) => value[0], (int value) => [value]));
+    $addMethod(
+      ServiceMethod<int, int>(
+        'stream',
+        stream,
+        false,
+        true,
+        (List<int> value) => value[0],
+        (int value) => [value],
+      ),
+    );
   }
 
   Stream<int> stream(ServiceCall call, Future request) async* {
@@ -75,11 +90,13 @@ Future<VmService> testee() async {
   final vmService = await vmServiceConnectUri(uri.toString());
   final server = Server.create(services: [TestService()]);
   await server.serve(address: 'localhost', port: 0);
-  final channel = FixedConnectionClientChannel(Http2ClientConnection(
-    'localhost',
-    server.port!,
-    ChannelOptions(credentials: ChannelCredentials.insecure()),
-  ));
+  final channel = FixedConnectionClientChannel(
+    Http2ClientConnection(
+      'localhost',
+      server.port!,
+      ChannelOptions(credentials: ChannelCredentials.insecure()),
+    ),
+  );
   final testClient = TestClient(channel);
   await testClient.stream(1).toList();
   await server.shutdown();

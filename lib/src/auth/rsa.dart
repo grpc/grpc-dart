@@ -41,7 +41,7 @@ class RS256Signer {
     0x03,
     0x04,
     0x02,
-    0x01
+    0x01,
   ];
 
   final RSAPrivateKey _rsaKey;
@@ -69,7 +69,8 @@ class RS256Signer {
     // }
     var offset = 0;
     final digestInfo = Uint8List(
-        2 + 2 + _rsaSha256AlgorithmIdentifier.length + 2 + 2 + hash.length);
+      2 + 2 + _rsaSha256AlgorithmIdentifier.length + 2 + 2 + hash.length,
+    );
     {
       // DigestInfo
       digestInfo[offset++] = ASN1Parser.sequenceTag;
@@ -183,7 +184,8 @@ class ASN1Parser {
           return ASN1Sequence(objects);
         default:
           invalidFormat(
-              'Unexpected tag $tag at offset ${offset - 1} (end: $end).');
+            'Unexpected tag $tag at offset ${offset - 1} (end: $end).',
+          );
       }
     }
 
@@ -249,7 +251,15 @@ class RSAPrivateKey {
   int get bitLength => n.bitLength;
 
   RSAPrivateKey(
-      this.n, this.e, this.d, this.p, this.q, this.dmp1, this.dmq1, this.coeff);
+    this.n,
+    this.e,
+    this.d,
+    this.p,
+    this.q,
+    this.dmp1,
+    this.dmq1,
+    this.coeff,
+  );
 }
 
 /// Provides a [encrypt] method for encrypting messages with a [RSAPrivateKey].
@@ -261,7 +271,10 @@ abstract class RSAAlgorithm {
   /// The [intendedLength] argument specifies the number of bytes in which the
   /// result should be encoded. Zero bytes will be used for padding.
   static List<int> encrypt(
-      RSAPrivateKey key, List<int> bytes, int intendedLength) {
+    RSAPrivateKey key,
+    List<int> bytes,
+    int intendedLength,
+  ) {
     final message = bytes2BigInt(bytes);
     final encryptedMessage = _encryptInteger(key, message);
     return integer2Bytes(encryptedMessage, intendedLength);

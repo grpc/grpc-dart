@@ -27,15 +27,16 @@ void main() {
   var goAway = false;
 
   void initServer([ServerKeepAliveOptions? options]) => ServerKeepAlive(
-        options: options ??
-            ServerKeepAliveOptions(
-              maxBadPings: maxBadPings,
-              minIntervalBetweenPingsWithoutData: Duration(milliseconds: 5),
-            ),
-        pingNotifier: pingStream.stream,
-        dataNotifier: dataStream.stream,
-        tooManyBadPings: () async => goAway = true,
-      ).handle();
+    options:
+        options ??
+        ServerKeepAliveOptions(
+          maxBadPings: maxBadPings,
+          minIntervalBetweenPingsWithoutData: Duration(milliseconds: 5),
+        ),
+    pingNotifier: pingStream.stream,
+    dataNotifier: dataStream.stream,
+    tooManyBadPings: () async => goAway = true,
+  ).handle();
 
   setUp(() {
     pingStream = StreamController();
@@ -72,25 +73,28 @@ void main() {
     });
   });
   test(
-      'Sending too many pings without data doesn`t kill connection if the server doesn`t care',
-      () async {
-    FakeAsync().run((async) {
-      initServer(ServerKeepAliveOptions(
-        maxBadPings: null,
-        minIntervalBetweenPingsWithoutData: Duration(milliseconds: 5),
-      ));
-      // Send good ping
-      pingStream.sink.add(null);
-      async.elapse(timeAfterPing);
-
-      // Send a lot of bad pings, that's still ok.
-      for (var i = 0; i < 50; i++) {
+    'Sending too many pings without data doesn`t kill connection if the server doesn`t care',
+    () async {
+      FakeAsync().run((async) {
+        initServer(
+          ServerKeepAliveOptions(
+            maxBadPings: null,
+            minIntervalBetweenPingsWithoutData: Duration(milliseconds: 5),
+          ),
+        );
+        // Send good ping
         pingStream.sink.add(null);
-      }
-      async.elapse(timeAfterPing);
-      expect(goAway, false);
-    });
-  });
+        async.elapse(timeAfterPing);
+
+        // Send a lot of bad pings, that's still ok.
+        for (var i = 0; i < 50; i++) {
+          pingStream.sink.add(null);
+        }
+        async.elapse(timeAfterPing);
+        expect(goAway, false);
+      });
+    },
+  );
 
   test('Sending many pings with data doesn`t kill connection', () async {
     FakeAsync().run((async) {

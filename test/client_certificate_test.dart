@@ -35,7 +35,9 @@ class EchoService extends EchoServiceBase {
 
   @override
   Stream<ServerStreamingEchoResponse> serverStreamingEcho(
-      ServiceCall call, ServerStreamingEchoRequest request) {
+    ServiceCall call,
+    ServerStreamingEchoRequest request,
+  ) {
     // TODO: implement serverStreamingEcho
     throw UnimplementedError();
   }
@@ -53,13 +55,17 @@ Future<void> main() async {
         SecurityContextChannelCredentials.baseSecurityContext();
     channelContext.useCertificateChain('test/data/localhost.crt');
     channelContext.usePrivateKey('test/data/localhost.key');
-    final channelCredentials = SecurityContextChannelCredentials(channelContext,
-        onBadCertificate: (cert, s) {
-      return true;
-    });
-    final channel = ClientChannel(address,
-        port: server.port ?? 443,
-        options: ChannelOptions(credentials: channelCredentials));
+    final channelCredentials = SecurityContextChannelCredentials(
+      channelContext,
+      onBadCertificate: (cert, s) {
+        return true;
+      },
+    );
+    final channel = ClientChannel(
+      address,
+      port: server.port ?? 443,
+      options: ChannelOptions(credentials: channelCredentials),
+    );
     final client = EchoServiceClient(channel);
 
     // Test
@@ -79,13 +85,17 @@ Future<void> main() async {
         SecurityContextChannelCredentials.baseSecurityContext();
     channelContext.useCertificateChain('test/data/localhost.crt');
     channelContext.usePrivateKey('test/data/localhost.key');
-    final channelCredentials = SecurityContextChannelCredentials(channelContext,
-        onBadCertificate: (cert, s) {
-      return true;
-    });
-    final channel = ClientChannel(address,
-        port: server.port ?? 443,
-        options: ChannelOptions(credentials: channelCredentials));
+    final channelCredentials = SecurityContextChannelCredentials(
+      channelContext,
+      onBadCertificate: (cert, s) {
+        return true;
+      },
+    );
+    final channel = ClientChannel(
+      address,
+      port: server.port ?? 443,
+      options: ChannelOptions(credentials: channelCredentials),
+    );
     final client = EchoServiceClient(channel);
 
     // Test
@@ -103,23 +113,27 @@ Future<Server> _setUpServer([bool requireClientCertificate = false]) async {
   serverContext.useCertificateChain('test/data/localhost.crt');
   serverContext.usePrivateKey('test/data/localhost.key');
   serverContext.setTrustedCertificates('test/data/localhost.crt');
-  final ServerCredentials serverCredentials =
-      SecurityContextServerCredentials(serverContext);
+  final ServerCredentials serverCredentials = SecurityContextServerCredentials(
+    serverContext,
+  );
   await server.serve(
-      address: address,
-      port: 0,
-      security: serverCredentials,
-      requireClientCertificate: requireClientCertificate);
+    address: address,
+    port: 0,
+    security: serverCredentials,
+    requireClientCertificate: requireClientCertificate,
+  );
   return server;
 }
 
 class SecurityContextChannelCredentials extends ChannelCredentials {
   final SecurityContext _securityContext;
 
-  SecurityContextChannelCredentials(SecurityContext securityContext,
-      {super.authority, super.onBadCertificate})
-      : _securityContext = securityContext,
-        super.secure();
+  SecurityContextChannelCredentials(
+    SecurityContext securityContext, {
+    super.authority,
+    super.onBadCertificate,
+  }) : _securityContext = securityContext,
+       super.secure();
 
   @override
   SecurityContext get securityContext => _securityContext;
@@ -133,8 +147,8 @@ class SecurityContextServerCredentials extends ServerTlsCredentials {
   final SecurityContext _securityContext;
 
   SecurityContextServerCredentials(SecurityContext securityContext)
-      : _securityContext = securityContext,
-        super();
+    : _securityContext = securityContext,
+      super();
 
   @override
   SecurityContext get securityContext => _securityContext;

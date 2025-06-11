@@ -50,7 +50,8 @@ void main() {
 
   void initKeepAliveManager([ClientKeepAliveOptions? opt]) {
     reset(pinger);
-    final options = opt ??
+    final options =
+        opt ??
         ClientKeepAliveOptions(
           pingInterval: pingInterval,
           timeout: timeout,
@@ -172,11 +173,13 @@ void main() {
   test('transportGoesIdle_doesntCauseIdleWhenEnabled', () {
     FakeAsync().run((async) {
       keepAliveManager.onTransportTermination();
-      initKeepAliveManager(ClientKeepAliveOptions(
-        pingInterval: pingInterval,
-        timeout: timeout,
-        permitWithoutCalls: true,
-      ));
+      initKeepAliveManager(
+        ClientKeepAliveOptions(
+          pingInterval: pingInterval,
+          timeout: timeout,
+          permitWithoutCalls: true,
+        ),
+      );
       keepAliveManager.onTransportStarted();
 
       // Keepalive scheduling should have started immediately.
