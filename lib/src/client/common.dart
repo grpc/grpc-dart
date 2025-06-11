@@ -58,11 +58,11 @@ class ResponseFuture<R> extends DelegatingFuture<R> implements Response {
   }
 
   ResponseFuture(this._call)
-    : super(
-        _call.response
-            .fold<R?>(null, _ensureOnlyOneResponse)
-            .then(_ensureOneResponse),
-      );
+      : super(
+          _call.response
+              .fold<R?>(null, _ensureOnlyOneResponse)
+              .then(_ensureOneResponse),
+        );
 
   @override
   Future<Map<String, String>> get headers => _call.headers;
