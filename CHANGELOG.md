@@ -6,6 +6,8 @@
 - Require package:http 1.4.0
 - Require package:lints 6.0.0
 - Require package:protobuf 4.1.0
+- Simplify hierarchy of `ResponseFuture` (no longer have a private class in the
+  type hierarchy)
 
 ## 4.1.0
 
