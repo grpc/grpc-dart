@@ -1,4 +1,4 @@
-## 4.1.1-wip
+## 4.2.0-wip
 
 - Require Dart 3.8.
 - Export a protobuf generated symbol (`Any`)
