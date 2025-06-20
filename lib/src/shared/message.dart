@@ -63,13 +63,16 @@ class GrpcMessageSink implements Sink<GrpcMessage> {
 }
 
 List<int> frame(List<int> rawPayload, [Codec? codec]) {
-  final compressedPayload =
-      codec == null ? rawPayload : codec.compress(rawPayload);
+  final compressedPayload = codec == null
+      ? rawPayload
+      : codec.compress(rawPayload);
   final payloadLength = compressedPayload.length;
   final bytes = Uint8List(payloadLength + 5);
   final header = bytes.buffer.asByteData(0, 5);
   header.setUint8(
-      0, (codec == null || codec.encodingName == 'identity') ? 0 : 1);
+    0,
+    (codec == null || codec.encodingName == 'identity') ? 0 : 1,
+  );
   header.setUint32(1, payloadLength);
   bytes.setRange(5, bytes.length, compressedPayload);
   return bytes;
@@ -80,21 +83,23 @@ StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({
 }) {
   Codec? codec;
   return StreamTransformer<GrpcMessage, GrpcMessage>.fromHandlers(
-      handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
-    if (value is GrpcData && value.isCompressed) {
-      if (codec == null) {
-        sink.addError(
-          GrpcError.unimplemented('Compression mechanism not supported'),
-        );
+    handleData: (GrpcMessage value, EventSink<GrpcMessage> sink) {
+      if (value is GrpcData && value.isCompressed) {
+        if (codec == null) {
+          sink.addError(
+            GrpcError.unimplemented('Compression mechanism not supported'),
+          );
+          return;
+        }
+        sink.add(GrpcData(codec!.decompress(value.data), isCompressed: false));
         return;
       }
-      sink.add(GrpcData(codec!.decompress(value.data), isCompressed: false));
-      return;
-    }
 
-    if (value is GrpcMetadata && value.metadata.containsKey('grpc-encoding')) {
-      codec = codecRegistry?.lookup(value.metadata['grpc-encoding']!);
-    }
-    sink.add(value);
-  });
+      if (value is GrpcMetadata &&
+          value.metadata.containsKey('grpc-encoding')) {
+        codec = codecRegistry?.lookup(value.metadata['grpc-encoding']!);
+      }
+      sink.add(value);
+    },
+  );
 }

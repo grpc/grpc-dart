@@ -84,7 +84,11 @@ class _GrpcMessageConversionSink
         final chunkRemaining = chunkLength - chunkReadOffset;
         final toCopy = min(headerRemaining, chunkRemaining);
         _dataHeader.setRange(
-            _dataOffset, _dataOffset + toCopy, chunkData, chunkReadOffset);
+          _dataOffset,
+          _dataOffset + toCopy,
+          chunkData,
+          chunkReadOffset,
+        );
         _dataOffset += toCopy;
         chunkReadOffset += toCopy;
         if (_dataOffset == _dataHeader.lengthInBytes) {
@@ -101,13 +105,21 @@ class _GrpcMessageConversionSink
           final chunkRemaining = chunkLength - chunkReadOffset;
           final toCopy = min(dataRemaining, chunkRemaining);
           _data!.setRange(
-              _dataOffset, _dataOffset + toCopy, chunkData, chunkReadOffset);
+            _dataOffset,
+            _dataOffset + toCopy,
+            chunkData,
+            chunkReadOffset,
+          );
           _dataOffset += toCopy;
           chunkReadOffset += toCopy;
         }
         if (_dataOffset == _data!.lengthInBytes) {
-          _out.add(GrpcData(_data!,
-              isCompressed: _dataHeader.buffer.asByteData().getUint8(0) != 0));
+          _out.add(
+            GrpcData(
+              _data!,
+              isCompressed: _dataHeader.buffer.asByteData().getUint8(0) != 0,
+            ),
+          );
           _data = null;
           _dataOffset = 0;
         }

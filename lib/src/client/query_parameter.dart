@@ -1,4 +1,5 @@
-// Copyright 2018 Google Inc. All Rights Reserved.
+// Copyright (c) 2018, the gRPC project authors. Please see the AUTHORS file
+// for details. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +42,7 @@ class QueryParameter implements Comparable<QueryParameter> {
   /// This is not the default constructor since the single-value case is the
   /// most common.
   QueryParameter.multi(this.key, List<String> values)
-      : values = values..sort() {
+    : values = values..sort() {
     ArgumentError.checkNotNull(key);
     if (key.trim().isEmpty) {
       throw ArgumentError(key);

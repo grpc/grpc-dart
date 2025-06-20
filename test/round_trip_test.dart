@@ -28,14 +28,20 @@ import 'package:test/test.dart';
 import 'common.dart';
 
 class TestClient extends Client {
-  static final _$stream = ClientMethod<int, int>('/test.TestService/stream',
-      (int value) => [value], (List<int> value) => value[0]);
+  static final _$stream = ClientMethod<int, int>(
+    '/test.TestService/stream',
+    (int value) => [value],
+    (List<int> value) => value[0],
+  );
 
   TestClient(super.channel);
 
   ResponseStream<int> stream(int request, {CallOptions? options}) {
-    return $createStreamingCall(_$stream, Stream.value(request),
-        options: options);
+    return $createStreamingCall(
+      _$stream,
+      Stream.value(request),
+      options: options,
+    );
   }
 }
 
@@ -46,8 +52,16 @@ class TestService extends Service {
   String get $name => 'test.TestService';
 
   TestService({this.expectedAuthority}) {
-    $addMethod(ServiceMethod<int, int>('stream', stream, false, true,
-        (List<int> value) => value[0], (int value) => [value]));
+    $addMethod(
+      ServiceMethod<int, int>(
+        'stream',
+        stream,
+        false,
+        true,
+        (List<int> value) => value[0],
+        (int value) => [value],
+      ),
+    );
   }
 
   static const requestFiniteStream = 1;
@@ -85,10 +99,7 @@ class TestServiceWithGrpcError extends TestService {
       'This error should contain trailers',
       null,
       null,
-      {
-        'key1': 'value1',
-        'key2': 'value2',
-      },
+      {'key1': 'value1', 'key2': 'value2'},
     );
   }
 }
@@ -111,57 +122,74 @@ Future<void> main() async {
     final server = Server.create(services: [TestService()]);
     await server.serve(address: address, port: 0);
 
-    final channel = FixedConnectionClientChannel(Http2ClientConnection(
-      address,
-      server.port!,
-      ChannelOptions(credentials: ChannelCredentials.insecure()),
-    ));
+    final channel = FixedConnectionClientChannel(
+      Http2ClientConnection(
+        address,
+        server.port!,
+        ChannelOptions(credentials: ChannelCredentials.insecure()),
+      ),
+    );
     final testClient = TestClient(channel);
-    expect(await testClient.stream(TestService.requestFiniteStream).toList(),
-        [1, 2, 3]);
+    expect(await testClient.stream(TestService.requestFiniteStream).toList(), [
+      1,
+      2,
+      3,
+    ]);
     server.shutdown();
   });
 
   testUds('UDS provides valid default authority', (address) async {
     // round trip test of insecure connection.
-    final server =
-        Server.create(services: [TestService(expectedAuthority: 'localhost')]);
+    final server = Server.create(
+      services: [TestService(expectedAuthority: 'localhost')],
+    );
     await server.serve(address: address, port: 0);
 
-    final channel = FixedConnectionClientChannel(Http2ClientConnection(
-      address,
-      server.port!,
-      ChannelOptions(credentials: ChannelCredentials.insecure()),
-    ));
+    final channel = FixedConnectionClientChannel(
+      Http2ClientConnection(
+        address,
+        server.port!,
+        ChannelOptions(credentials: ChannelCredentials.insecure()),
+      ),
+    );
     final testClient = TestClient(channel);
-    expect(await testClient.stream(TestService.requestFiniteStream).toList(),
-        [1, 2, 3]);
+    expect(await testClient.stream(TestService.requestFiniteStream).toList(), [
+      1,
+      2,
+      3,
+    ]);
     server.shutdown();
   });
 
-  testTcpAndUds('round trip with outgoing and incoming compression',
-      (address) async {
+  testTcpAndUds('round trip with outgoing and incoming compression', (
+    address,
+  ) async {
     final server = Server.create(
       services: [TestService()],
       codecRegistry: CodecRegistry(codecs: const [GzipCodec()]),
     );
     await server.serve(address: address, port: 0);
 
-    final channel = FixedConnectionClientChannel(Http2ClientConnection(
-      address,
-      server.port!,
-      ChannelOptions(
-        credentials: ChannelCredentials.insecure(),
-        codecRegistry: CodecRegistry(codecs: const [GzipCodec()]),
+    final channel = FixedConnectionClientChannel(
+      Http2ClientConnection(
+        address,
+        server.port!,
+        ChannelOptions(
+          credentials: ChannelCredentials.insecure(),
+          codecRegistry: CodecRegistry(codecs: const [GzipCodec()]),
+        ),
       ),
-    ));
+    );
     final testClient = TestClient(channel);
     expect(
-        await testClient
-            .stream(TestService.requestFiniteStream,
-                options: CallOptions(compression: const GzipCodec()))
-            .toList(),
-        [1, 2, 3]);
+      await testClient
+          .stream(
+            TestService.requestFiniteStream,
+            options: CallOptions(compression: const GzipCodec()),
+          )
+          .toList(),
+      [1, 2, 3],
+    );
     await server.shutdown();
   });
 
@@ -169,40 +197,53 @@ Future<void> main() async {
     // round trip test of secure connection.
     final server = Server.create(services: [TestService()]);
     await server.serve(
-        address: address,
-        port: 0,
-        security: ServerTlsCredentials(
-            certificate: File('test/data/localhost.crt').readAsBytesSync(),
-            privateKey: File('test/data/localhost.key').readAsBytesSync()));
+      address: address,
+      port: 0,
+      security: ServerTlsCredentials(
+        certificate: File('test/data/localhost.crt').readAsBytesSync(),
+        privateKey: File('test/data/localhost.key').readAsBytesSync(),
+      ),
+    );
 
-    final channel = FixedConnectionClientChannel(Http2ClientConnection(
-      address,
-      server.port!,
-      ChannelOptions(
+    final channel = FixedConnectionClientChannel(
+      Http2ClientConnection(
+        address,
+        server.port!,
+        ChannelOptions(
           credentials: ChannelCredentials.secure(
-              certificates: File('test/data/localhost.crt').readAsBytesSync(),
-              authority: 'localhost')),
-    ));
+            certificates: File('test/data/localhost.crt').readAsBytesSync(),
+            authority: 'localhost',
+          ),
+        ),
+      ),
+    );
     final testClient = TestClient(channel);
-    expect(await testClient.stream(TestService.requestFiniteStream).toList(),
-        [1, 2, 3]);
+    expect(await testClient.stream(TestService.requestFiniteStream).toList(), [
+      1,
+      2,
+      3,
+    ]);
     server.shutdown();
   });
 
   test('exception in onMetadataException', () async {
-    final server =
-        Server.create(services: [TestServiceWithOnMetadataException()]);
+    final server = Server.create(
+      services: [TestServiceWithOnMetadataException()],
+    );
     await server.serve(address: 'localhost', port: 0);
 
-    final channel = FixedConnectionClientChannel(Http2ClientConnection(
-      'localhost',
-      server.port!,
-      ChannelOptions(credentials: ChannelCredentials.insecure()),
-    ));
+    final channel = FixedConnectionClientChannel(
+      Http2ClientConnection(
+        'localhost',
+        server.port!,
+        ChannelOptions(credentials: ChannelCredentials.insecure()),
+      ),
+    );
     final testClient = TestClient(channel);
     await expectLater(
-        testClient.stream(TestService.requestFiniteStream).toList(),
-        throwsA(isA<GrpcError>()));
+      testClient.stream(TestService.requestFiniteStream).toList(),
+      throwsA(isA<GrpcError>()),
+    );
     await server.shutdown();
   });
 
@@ -210,11 +251,13 @@ Future<void> main() async {
     final server = Server.create(services: [TestService()]);
     await server.serve(address: 'localhost', port: 0);
 
-    final channel = FixedConnectionClientChannel(Http2ClientConnection(
-      'localhost',
-      server.port!,
-      ChannelOptions(credentials: ChannelCredentials.insecure()),
-    ));
+    final channel = FixedConnectionClientChannel(
+      Http2ClientConnection(
+        'localhost',
+        server.port!,
+        ChannelOptions(credentials: ChannelCredentials.insecure()),
+      ),
+    );
     final testClient = TestClient(channel);
     expect(await testClient.stream(TestService.requestInfiniteStream).first, 1);
     await channel.shutdown();
@@ -225,24 +268,29 @@ Future<void> main() async {
     final server = Server.create(services: [TestServiceWithGrpcError()]);
     await server.serve(address: 'localhost', port: 0);
 
-    final channel = FixedConnectionClientChannel(Http2ClientConnection(
-      'localhost',
-      server.port!,
-      ChannelOptions(credentials: ChannelCredentials.insecure()),
-    ));
+    final channel = FixedConnectionClientChannel(
+      Http2ClientConnection(
+        'localhost',
+        server.port!,
+        ChannelOptions(credentials: ChannelCredentials.insecure()),
+      ),
+    );
     final testClient = TestClient(channel);
     await expectLater(
       testClient.stream(TestService.requestFiniteStream).toList(),
-      throwsA(predicate<GrpcError>((e) {
-        final trailers = e.trailers;
-        if (trailers == null || trailers.length != 2) return false;
-        final entries = trailers.entries.toList();
-        final isOk = entries[0].key == 'key1' &&
-            entries[0].value == 'value1' &&
-            entries[1].key == 'key2' &&
-            entries[1].value == 'value2';
-        return isOk;
-      })),
+      throwsA(
+        predicate<GrpcError>((e) {
+          final trailers = e.trailers;
+          if (trailers == null || trailers.length != 2) return false;
+          final entries = trailers.entries.toList();
+          final isOk =
+              entries[0].key == 'key1' &&
+              entries[0].value == 'value1' &&
+              entries[1].key == 'key2' &&
+              entries[1].value == 'value2';
+          return isOk;
+        }),
+      ),
     );
     await server.shutdown();
   });

@@ -23,8 +23,9 @@ Future<void> main(List<String> args) async {
     port: 50051,
     options: ChannelOptions(
       credentials: ChannelCredentials.insecure(),
-      codecRegistry:
-          CodecRegistry(codecs: const [GzipCodec(), IdentityCodec()]),
+      codecRegistry: CodecRegistry(
+        codecs: const [GzipCodec(), IdentityCodec()],
+      ),
     ),
   );
   final stub = GreeterClient(channel);
