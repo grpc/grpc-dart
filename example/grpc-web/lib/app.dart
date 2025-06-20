@@ -39,11 +39,17 @@ class EchoApp {
       ..message = message
       ..messageCount = count
       ..messageInterval = 500;
-    _service.serverStreamingEcho(request).listen((response) {
-      _addRightMessage(response.message);
-    }, onError: (error) {
-      _addRightMessage(error.toString());
-    }, onDone: () => print('Closed connection to server.'));
+    _service
+        .serverStreamingEcho(request)
+        .listen(
+          (response) {
+            _addRightMessage(response.message);
+          },
+          onError: (error) {
+            _addRightMessage(error.toString());
+          },
+          onDone: () => print('Closed connection to server.'),
+        );
   }
 
   void _addLeftMessage(String message) {
@@ -55,13 +61,20 @@ class EchoApp {
   }
 
   void _addMessage(String message, String cssClass) {
-    document.querySelector('#first')!.after(HTMLDivElement()
-      ..classList.add('row')
-      ..append(HTMLHeadingElement.h2()
-        ..append(HTMLSpanElement()
-          ..classList.add('label')
-          ..classList.addAll(cssClass)
-          ..textContent = message)));
+    document
+        .querySelector('#first')!
+        .after(
+          HTMLDivElement()
+            ..classList.add('row')
+            ..append(
+              HTMLHeadingElement.h2()..append(
+                HTMLSpanElement()
+                  ..classList.add('label')
+                  ..classList.addAll(cssClass)
+                  ..textContent = message,
+              ),
+            ),
+        );
   }
 }
 

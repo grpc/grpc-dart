@@ -35,7 +35,7 @@ class FakeConnection extends Http2ClientConnection {
   Object? connectionError;
 
   FakeConnection(String host, this.transport, ChannelOptions options)
-      : super(host, 443, options);
+    : super(host, 443, options);
 
   @override
   Future<ClientTransportConnection> connectTransport() async {
@@ -50,7 +50,7 @@ class FakeClientTransportConnection extends Http2ClientConnection {
   Object? connectionError;
 
   FakeClientTransportConnection(this.connector, ChannelOptions options)
-      : super.fromClientTransportConnector(connector, options);
+    : super.fromClientTransportConnector(connector, options);
 
   @override
   Future<ClientTransportConnection> connectTransport() async {
@@ -91,7 +91,7 @@ class FakeChannel extends ClientChannel {
   FakeChannelOptions get options => super.options as FakeChannelOptions;
 
   FakeChannel(String super.host, this.connection, FakeChannelOptions options)
-      : super(options: options);
+    : super(options: options);
 
   @override
   Future<Http2ClientConnection> getConnection() async => connection;
@@ -104,8 +104,10 @@ class FakeClientConnectorChannel extends ClientTransportConnectorChannel {
   FakeChannelOptions get options => super.options as FakeChannelOptions;
 
   FakeClientConnectorChannel(
-      super.connector, this.connection, FakeChannelOptions options)
-      : super(options: options);
+    super.connector,
+    this.connection,
+    FakeChannelOptions options,
+  ) : super(options: options);
 
   @override
   Future<Http2ClientConnection> getConnection() async => connection;
@@ -121,34 +123,57 @@ class TestClient extends Client {
 
   final int Function(List<int> value) decode;
 
-  TestClient(super.channel,
-      {super.options, super.interceptors, this.decode = mockDecode}) {
+  TestClient(
+    super.channel, {
+    super.options,
+    super.interceptors,
+    this.decode = mockDecode,
+  }) {
     _$unary = ClientMethod<int, int>('/Test/Unary', mockEncode, decode);
-    _$clientStreaming =
-        ClientMethod<int, int>('/Test/ClientStreaming', mockEncode, decode);
-    _$serverStreaming =
-        ClientMethod<int, int>('/Test/ServerStreaming', mockEncode, decode);
-    _$bidirectional =
-        ClientMethod<int, int>('/Test/Bidirectional', mockEncode, decode);
+    _$clientStreaming = ClientMethod<int, int>(
+      '/Test/ClientStreaming',
+      mockEncode,
+      decode,
+    );
+    _$serverStreaming = ClientMethod<int, int>(
+      '/Test/ServerStreaming',
+      mockEncode,
+      decode,
+    );
+    _$bidirectional = ClientMethod<int, int>(
+      '/Test/Bidirectional',
+      mockEncode,
+      decode,
+    );
   }
 
   ResponseFuture<int> unary(int request, {CallOptions? options}) {
     return $createUnaryCall(_$unary, request, options: options);
   }
 
-  ResponseFuture<int> clientStreaming(Stream<int> request,
-      {CallOptions? options}) {
-    return $createStreamingCall(_$clientStreaming, request, options: options)
-        .single;
+  ResponseFuture<int> clientStreaming(
+    Stream<int> request, {
+    CallOptions? options,
+  }) {
+    return $createStreamingCall(
+      _$clientStreaming,
+      request,
+      options: options,
+    ).single;
   }
 
   ResponseStream<int> serverStreaming(int request, {CallOptions? options}) {
-    return $createStreamingCall(_$serverStreaming, Stream.value(request),
-        options: options);
+    return $createStreamingCall(
+      _$serverStreaming,
+      Stream.value(request),
+      options: options,
+    );
   }
 
-  ResponseStream<int> bidirectional(Stream<int> request,
-      {CallOptions? options}) {
+  ResponseStream<int> bidirectional(
+    Stream<int> request, {
+    CallOptions? options,
+  }) {
     return $createStreamingCall(_$bidirectional, request, options: options);
   }
 }
@@ -226,8 +251,9 @@ abstract class _Harness {
     stream = MockClientTransportStream();
     fromClient = StreamController();
     toClient = StreamController();
-    when(transport.makeRequest(any, endStream: anyNamed('endStream')))
-        .thenReturn(stream);
+    when(
+      transport.makeRequest(any, endStream: anyNamed('endStream')),
+    ).thenReturn(stream);
     when(transport.onActiveStateChanged = captureAny).thenReturn(null);
     when(transport.isOpen).thenReturn(true);
     when(stream.outgoingMessages).thenReturn(fromClient.sink);
@@ -247,9 +273,7 @@ abstract class _Harness {
     Header.ascii('content-type', 'application/grpc'),
   ];
 
-  static final _defaultTrailers = [
-    Header.ascii('grpc-status', '0'),
-  ];
+  static final _defaultTrailers = [Header.ascii('grpc-status', '0')];
 
   void sendResponseHeader() {
     assert(!headersWereSent);
@@ -262,54 +286,66 @@ abstract class _Harness {
   }
 
   void sendResponseTrailer({bool closeStream = true}) {
-    toClient.add(HeadersStreamMessage([
-      if (!headersWereSent) ..._defaultHeaders,
-      ..._defaultTrailers,
-    ], endStream: true));
+    toClient.add(
+      HeadersStreamMessage([
+        if (!headersWereSent) ..._defaultHeaders,
+        ..._defaultTrailers,
+      ], endStream: true),
+    );
     if (closeStream) toClient.close();
   }
 
   void signalIdle() {
-    final ActiveStateHandler handler =
-        verify(transport.onActiveStateChanged = captureAny).captured.single;
+    final ActiveStateHandler handler = verify(
+      transport.onActiveStateChanged = captureAny,
+    ).captured.single;
     expect(handler, isNotNull);
     handler(false);
   }
 
-  Future<void> runTest(
-      {Future? clientCall,
-      dynamic expectedResult,
-      String? expectedPath,
-      Duration? expectedTimeout,
-      Map<String, String>? expectedCustomHeaders,
-      List<MessageHandler> serverHandlers = const [],
-      void Function()? doneHandler,
-      bool expectDone = true}) async {
+  Future<void> runTest({
+    Future? clientCall,
+    dynamic expectedResult,
+    String? expectedPath,
+    Duration? expectedTimeout,
+    Map<String, String>? expectedCustomHeaders,
+    List<MessageHandler> serverHandlers = const [],
+    void Function()? doneHandler,
+    bool expectDone = true,
+  }) async {
     var serverHandlerIndex = 0;
     void handleServerMessage(StreamMessage message) {
       serverHandlers[serverHandlerIndex++](message);
     }
 
     final clientSubscription = fromClient.stream.listen(
-        expectAsync1(handleServerMessage, count: serverHandlers.length),
-        onError: expectAsync1((dynamic _) {}, count: 0),
-        onDone: expectAsync0(doneHandler ?? () {}, count: expectDone ? 1 : 0));
+      expectAsync1(handleServerMessage, count: serverHandlers.length),
+      onError: expectAsync1((dynamic _) {}, count: 0),
+      onDone: expectAsync0(doneHandler ?? () {}, count: expectDone ? 1 : 0),
+    );
 
     final result = await clientCall;
     if (expectedResult != null) {
       expect(result, expectedResult);
     }
 
-    final List<Header> capturedHeaders =
-        verify(transport.makeRequest(captureAny)).captured.single;
+    final List<Header> capturedHeaders = verify(
+      transport.makeRequest(captureAny),
+    ).captured.single;
     validateRequestHeaders(
-        Map.fromEntries(capturedHeaders.map((header) =>
-            MapEntry(utf8.decode(header.name), utf8.decode(header.value)))),
-        path: expectedPath,
-        authority: expectedAuthority,
-        timeout:
-            expectedTimeout == null ? null : toTimeoutString(expectedTimeout),
-        customHeaders: expectedCustomHeaders);
+      Map.fromEntries(
+        capturedHeaders.map(
+          (header) =>
+              MapEntry(utf8.decode(header.name), utf8.decode(header.value)),
+        ),
+      ),
+      path: expectedPath,
+      authority: expectedAuthority,
+      timeout: expectedTimeout == null
+          ? null
+          : toTimeoutString(expectedTimeout),
+      customHeaders: expectedCustomHeaders,
+    );
 
     await clientSubscription.cancel();
   }
@@ -335,15 +371,16 @@ abstract class _Harness {
     }
   }
 
-  Future<void> runFailureTest(
-      {Future? clientCall,
-      dynamic expectedException,
-      String? expectedPath,
-      Duration? expectedTimeout,
-      Map<String, String>? expectedCustomHeaders,
-      Map<String, String>? expectedCustomTrailers,
-      List<MessageHandler> serverHandlers = const [],
-      bool expectDone = true}) async {
+  Future<void> runFailureTest({
+    Future? clientCall,
+    dynamic expectedException,
+    String? expectedPath,
+    Duration? expectedTimeout,
+    Map<String, String>? expectedCustomHeaders,
+    Map<String, String>? expectedCustomTrailers,
+    List<MessageHandler> serverHandlers = const [],
+    bool expectDone = true,
+  }) async {
     return runTest(
       clientCall: expectThrows(
         clientCall,

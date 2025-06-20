@@ -68,6 +68,7 @@ class FakeEchoService extends EchoServiceBase {
 
   @override
   Stream<ServerStreamingEchoResponse> serverStreamingEcho(
-          ServiceCall call, ServerStreamingEchoRequest request) =>
-      throw UnimplementedError();
+    ServiceCall call,
+    ServerStreamingEchoRequest request,
+  ) => throw UnimplementedError();
 }

@@ -32,28 +32,27 @@ class ServiceMethod<Q, R> {
   final Function handler;
 
   ServiceMethod(
-      this.name,
-      this.handler,
-      this.streamingRequest,
-      this.streamingResponse,
-      this.requestDeserializer,
-      this.responseSerializer);
+    this.name,
+    this.handler,
+    this.streamingRequest,
+    this.streamingResponse,
+    this.requestDeserializer,
+    this.responseSerializer,
+  );
 
   StreamController<Q> createRequestStream(StreamSubscription incoming) =>
       StreamController<Q>(
-          onListen: incoming.resume,
-          onPause: incoming.pause,
-          onResume: incoming.resume);
+        onListen: incoming.resume,
+        onPause: incoming.pause,
+        onResume: incoming.resume,
+      );
 
   Q deserialize(List<int> data) => requestDeserializer(data);
 
   List<int> serialize(dynamic response) => responseSerializer(response as R);
 
-  ServerStreamingInvoker<Q, R> _createCall() => ((
-        ServiceCall call,
-        ServiceMethod<Q, R> method,
-        Stream<Q> requests,
-      ) {
+  ServerStreamingInvoker<Q, R> _createCall() =>
+      ((ServiceCall call, ServiceMethod<Q, R> method, Stream<Q> requests) {
         if (streamingResponse) {
           if (streamingRequest) {
             return handler(call, requests);
@@ -100,8 +99,9 @@ class ServiceMethod<Q, R> {
       return value;
     }
 
-    final future =
-        stream.fold<Q?>(null, ensureOnlyOneRequest).then(ensureOneRequest);
+    final future = stream
+        .fold<Q?>(null, ensureOnlyOneRequest)
+        .then(ensureOneRequest);
     // Make sure errors on the future aren't unhandled, but return the original
     // future so the request handler can also get the error.
     _awaitAndCatch(future);

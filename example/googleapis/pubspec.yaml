@@ -3,15 +3,15 @@ description: Dart gRPC client sample for Google APIs
 publish_to: none
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ^3.8.0
 
 dependencies:
-  async: ^2.2.0
-  fixnum:
+  async: ^2.13.0
+  fixnum: ^1.1.1
   grpc:
     path: ../../
-  protobuf: ">=3.0.0 <5.0.0"
+  protobuf: ^4.1.0
 
 dev_dependencies:
-  lints: ^2.0.0
-  test: ^1.6.4
+  lints: ^6.0.0
+  test: ^1.26.2

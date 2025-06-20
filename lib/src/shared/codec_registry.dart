@@ -18,17 +18,25 @@ import 'codec.dart';
 /// Encloses classes related to the compression and decompression of messages.
 class CodecRegistry {
   CodecRegistry({List<Codec> codecs = const [IdentityCodec()]})
-      : _codecs = {for (var codec in codecs) codec.encodingName: codec},
-        _supportedEncodings = codecs.map((c) {
-          if (c.encodingName.contains(',')) {
-            throw ArgumentError.value(c.encodingName, 'codecs',
-                'contains entries with names containing ","');
-          }
-          return c.encodingName;
-        }).join(',') {
+    : _codecs = {for (var codec in codecs) codec.encodingName: codec},
+      _supportedEncodings = codecs
+          .map((c) {
+            if (c.encodingName.contains(',')) {
+              throw ArgumentError.value(
+                c.encodingName,
+                'codecs',
+                'contains entries with names containing ","',
+              );
+            }
+            return c.encodingName;
+          })
+          .join(',') {
     if (_codecs.length != codecs.length) {
       throw ArgumentError.value(
-          codecs, 'codecs', 'contains multiple entries with the same name');
+        codecs,
+        'codecs',
+        'contains multiple entries with the same name',
+      );
     }
   }
 

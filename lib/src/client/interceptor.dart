@@ -17,11 +17,19 @@ import 'call.dart';
 import 'common.dart';
 import 'method.dart';
 
-typedef ClientUnaryInvoker<Q, R> = ResponseFuture<R> Function(
-    ClientMethod<Q, R> method, Q request, CallOptions options);
+typedef ClientUnaryInvoker<Q, R> =
+    ResponseFuture<R> Function(
+      ClientMethod<Q, R> method,
+      Q request,
+      CallOptions options,
+    );
 
-typedef ClientStreamingInvoker<Q, R> = ResponseStream<R> Function(
-    ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options);
+typedef ClientStreamingInvoker<Q, R> =
+    ResponseStream<R> Function(
+      ClientMethod<Q, R> method,
+      Stream<Q> requests,
+      CallOptions options,
+    );
 
 /// ClientInterceptors intercepts client calls before they are executed.
 ///
@@ -30,18 +38,23 @@ typedef ClientStreamingInvoker<Q, R> = ResponseStream<R> Function(
 abstract class ClientInterceptor {
   // Intercept unary call.
   // This method is called when client sends single request and receives single response.
-  ResponseFuture<R> interceptUnary<Q, R>(ClientMethod<Q, R> method, Q request,
-      CallOptions options, ClientUnaryInvoker<Q, R> invoker) {
+  ResponseFuture<R> interceptUnary<Q, R>(
+    ClientMethod<Q, R> method,
+    Q request,
+    CallOptions options,
+    ClientUnaryInvoker<Q, R> invoker,
+  ) {
     return invoker(method, request, options);
   }
 
   // Intercept streaming call.
   // This method is called when client sends either request or response stream.
   ResponseStream<R> interceptStreaming<Q, R>(
-      ClientMethod<Q, R> method,
-      Stream<Q> requests,
-      CallOptions options,
-      ClientStreamingInvoker<Q, R> invoker) {
+    ClientMethod<Q, R> method,
+    Stream<Q> requests,
+    CallOptions options,
+    ClientStreamingInvoker<Q, R> invoker,
+  ) {
     return invoker(method, requests, options);
   }
 }

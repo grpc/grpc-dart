@@ -24,8 +24,9 @@ import 'auth.dart';
 class ComputeEngineAuthenticator extends HttpBasedAuthenticator {
   @override
   Future<auth.AccessCredentials> obtainCredentialsWithClient(
-          http.Client client, String uri) =>
-      auth.obtainAccessCredentialsViaMetadataServer(client);
+    http.Client client,
+    String uri,
+  ) => auth.obtainAccessCredentialsViaMetadataServer(client);
 }
 
 class ServiceAccountAuthenticator extends HttpBasedAuthenticator {
@@ -34,23 +35,32 @@ class ServiceAccountAuthenticator extends HttpBasedAuthenticator {
   String? _projectId;
 
   ServiceAccountAuthenticator.fromJson(
-      Map<String, dynamic> serviceAccountJson, this._scopes)
-      : _serviceAccountCredentials =
-            auth.ServiceAccountCredentials.fromJson(serviceAccountJson),
-        _projectId = serviceAccountJson['project_id'];
+    Map<String, dynamic> serviceAccountJson,
+    this._scopes,
+  ) : _serviceAccountCredentials = auth.ServiceAccountCredentials.fromJson(
+        serviceAccountJson,
+      ),
+      _projectId = serviceAccountJson['project_id'];
 
   factory ServiceAccountAuthenticator(
-          String serviceAccountJsonString, List<String> scopes) =>
-      ServiceAccountAuthenticator.fromJson(
-          jsonDecode(serviceAccountJsonString), scopes);
+    String serviceAccountJsonString,
+    List<String> scopes,
+  ) => ServiceAccountAuthenticator.fromJson(
+    jsonDecode(serviceAccountJsonString),
+    scopes,
+  );
 
   String? get projectId => _projectId;
 
   @override
   Future<auth.AccessCredentials> obtainCredentialsWithClient(
-          http.Client client, String uri) =>
-      auth.obtainAccessCredentialsViaServiceAccount(
-          _serviceAccountCredentials, _scopes, client);
+    http.Client client,
+    String uri,
+  ) => auth.obtainAccessCredentialsViaServiceAccount(
+    _serviceAccountCredentials,
+    _scopes,
+    client,
+  );
 }
 
 class _CredentialsRefreshingAuthenticator extends HttpBasedAuthenticator {
@@ -119,11 +129,17 @@ Future<HttpBasedAuthenticator> applicationDefaultCredentialsAuthenticator(
   // Attempt to use file created by `gcloud auth application-default login`
   File gcloudAdcFile;
   if (Platform.isWindows) {
-    gcloudAdcFile = File.fromUri(Uri.directory(Platform.environment['APPDATA']!)
-        .resolve('gcloud/application_default_credentials.json'));
+    gcloudAdcFile = File.fromUri(
+      Uri.directory(
+        Platform.environment['APPDATA']!,
+      ).resolve('gcloud/application_default_credentials.json'),
+    );
   } else {
-    gcloudAdcFile = File.fromUri(Uri.directory(Platform.environment['HOME']!)
-        .resolve('.config/gcloud/application_default_credentials.json'));
+    gcloudAdcFile = File.fromUri(
+      Uri.directory(
+        Platform.environment['HOME']!,
+      ).resolve('.config/gcloud/application_default_credentials.json'),
+    );
   }
   // Only try to load from gcloudAdcFile if it exists.
   if (credFile == null && await gcloudAdcFile.exists()) {
@@ -137,9 +153,7 @@ Future<HttpBasedAuthenticator> applicationDefaultCredentialsAuthenticator(
     try {
       credentials = json.decode(await credFile.readAsString());
     } on IOException {
-      throw Exception(
-        'Failed to read credentials file from $fileSource',
-      );
+      throw Exception('Failed to read credentials file from $fileSource');
     } on FormatException {
       throw Exception(
         'Failed to parse JSON from credentials file from $fileSource',
