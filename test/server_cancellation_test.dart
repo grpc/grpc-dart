@@ -28,7 +28,9 @@ class EchoService extends EchoServiceBase {
 
   @override
   Stream<ServerStreamingEchoResponse> serverStreamingEcho(
-      ServiceCall call, ServerStreamingEchoRequest request) async* {
+    ServiceCall call,
+    ServerStreamingEchoRequest request,
+  ) async* {
     for (var i = 0; i < request.messageCount; i++) {
       yield ServerStreamingEchoResponse(message: '$i');
       await Future.delayed(Duration(milliseconds: request.messageInterval));
@@ -44,9 +46,7 @@ void main() {
       server.handlers.entries.firstOrNull?.value.length ?? 0;
 
   setUp(() async {
-    server = Server.create(
-      services: [EchoService()],
-    );
+    server = Server.create(services: [EchoService()]);
     await server.serve(address: 'localhost', port: 0);
     channel = ClientChannel(
       'localhost',
@@ -65,12 +65,12 @@ void main() {
       messageCount: 5,
       messageInterval: 5,
     );
-    final stream1 = EchoServiceClient(channel)
-        .serverStreamingEcho(request)
-        .asBroadcastStream();
-    final stream2 = EchoServiceClient(channel)
-        .serverStreamingEcho(request)
-        .asBroadcastStream();
+    final stream1 = EchoServiceClient(
+      channel,
+    ).serverStreamingEcho(request).asBroadcastStream();
+    final stream2 = EchoServiceClient(
+      channel,
+    ).serverStreamingEcho(request).asBroadcastStream();
 
     expect(numberHandlers(), 0);
 

@@ -57,11 +57,12 @@ class ServerTlsCredentials extends ServerCredentials {
   ///
   /// If the [certificate] or [privateKey] is encrypted, the password must also
   /// be provided.
-  ServerTlsCredentials(
-      {this.certificate,
-      this.certificatePassword,
-      this.privateKey,
-      this.privateKeyPassword});
+  ServerTlsCredentials({
+    this.certificate,
+    this.certificatePassword,
+    this.privateKey,
+    this.privateKeyPassword,
+  });
 
   @override
   SecurityContext get securityContext {
@@ -70,8 +71,10 @@ class ServerTlsCredentials extends ServerCredentials {
       context.usePrivateKeyBytes(privateKey!, password: privateKeyPassword);
     }
     if (certificate != null) {
-      context.useCertificateChainBytes(certificate!,
-          password: certificatePassword);
+      context.useCertificateChainBytes(
+        certificate!,
+        password: certificatePassword,
+      );
     }
     return context;
   }
@@ -105,10 +108,10 @@ class ConnectionServer {
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
     this._keepAliveOptions = const ServerKeepAliveOptions(),
-  ])  : _codecRegistry = codecRegistry,
-        _interceptors = interceptors,
-        _serverInterceptors = serverInterceptors,
-        _errorHandler = errorHandler {
+  ]) : _codecRegistry = codecRegistry,
+       _interceptors = interceptors,
+       _serverInterceptors = serverInterceptors,
+       _errorHandler = errorHandler {
     for (final service in services) {
       _services[service.$name] = service;
     }
@@ -133,31 +136,35 @@ class ConnectionServer {
       pingNotifier: connection.onPingReceived,
       dataNotifier: onDataReceivedController.stream,
     ).handle();
-    connection.incomingStreams.listen((stream) {
-      final handler = serveStream_(
-        stream: stream,
-        clientCertificate: clientCertificate,
-        remoteAddress: remoteAddress,
-        onDataReceived: onDataReceivedController.sink,
-      );
-      handler.onCanceled.then((_) => handlers[connection]?.remove(handler));
-      handlers[connection]!.add(handler);
-    }, onError: (error, stackTrace) {
-      if (error is Error) {
-        Zone.current.handleUncaughtError(error, stackTrace);
-      }
-    }, onDone: () async {
-      // TODO(sigurdm): This is not correct behavior in the presence of
-      // half-closed tcp streams.
-      // Half-closed  streams seems to not be fully supported by package:http2.
-      // https://github.com/dart-lang/http2/issues/42
-      for (var handler in handlers[connection]!) {
-        handler.cancel();
-      }
-      _connections.remove(connection);
-      handlers.remove(connection);
-      await onDataReceivedController.close();
-    });
+    connection.incomingStreams.listen(
+      (stream) {
+        final handler = serveStream_(
+          stream: stream,
+          clientCertificate: clientCertificate,
+          remoteAddress: remoteAddress,
+          onDataReceived: onDataReceivedController.sink,
+        );
+        handler.onCanceled.then((_) => handlers[connection]?.remove(handler));
+        handlers[connection]!.add(handler);
+      },
+      onError: (error, stackTrace) {
+        if (error is Error) {
+          Zone.current.handleUncaughtError(error, stackTrace);
+        }
+      },
+      onDone: () async {
+        // TODO(sigurdm): This is not correct behavior in the presence of
+        // half-closed tcp streams.
+        // Half-closed  streams seems to not be fully supported by package:http2.
+        // https://github.com/dart-lang/http2/issues/42
+        for (var handler in handlers[connection]!) {
+          handler.cancel();
+        }
+        _connections.remove(connection);
+        handlers.remove(connection);
+        await onDataReceivedController.close();
+      },
+    );
   }
 
   @visibleForTesting
@@ -168,18 +175,18 @@ class ConnectionServer {
     Sink<void>? onDataReceived,
   }) {
     return ServerHandler(
-        stream: stream,
-        serviceLookup: lookupService,
-        interceptors: _interceptors,
-        serverInterceptors: _serverInterceptors,
-        codecRegistry: _codecRegistry,
-        // ignore: unnecessary_cast
-        clientCertificate: clientCertificate as io_bits.X509Certificate?,
-        // ignore: unnecessary_cast
-        remoteAddress: remoteAddress as io_bits.InternetAddress?,
-        errorHandler: _errorHandler,
-        onDataReceived: onDataReceived)
-      ..handle();
+      stream: stream,
+      serviceLookup: lookupService,
+      interceptors: _interceptors,
+      serverInterceptors: _serverInterceptors,
+      codecRegistry: _codecRegistry,
+      // ignore: unnecessary_cast
+      clientCertificate: clientCertificate as io_bits.X509Certificate?,
+      // ignore: unnecessary_cast
+      remoteAddress: remoteAddress as io_bits.InternetAddress?,
+      errorHandler: _errorHandler,
+      onDataReceived: onDataReceived,
+    )..handle();
   }
 }
 
@@ -209,13 +216,13 @@ class Server extends ConnectionServer {
     CodecRegistry? codecRegistry,
     GrpcErrorHandler? errorHandler,
   }) : super(
-          services,
-          interceptors,
-          serverInterceptors,
-          codecRegistry,
-          errorHandler,
-          keepAliveOptions,
-        );
+         services,
+         interceptors,
+         serverInterceptors,
+         codecRegistry,
+         errorHandler,
+         keepAliveOptions,
+       );
 
   /// The port that the server is listening on, or `null` if the server is not
   /// active.
@@ -273,33 +280,36 @@ class Server extends ConnectionServer {
       _insecureServer = _server;
       server = _server;
     }
-    server.listen((socket) {
-      // Don't wait for io buffers to fill up before sending requests.
-      if (socket.address.type != InternetAddressType.unix) {
-        socket.setOption(SocketOption.tcpNoDelay, true);
-      }
+    server.listen(
+      (socket) {
+        // Don't wait for io buffers to fill up before sending requests.
+        if (socket.address.type != InternetAddressType.unix) {
+          socket.setOption(SocketOption.tcpNoDelay, true);
+        }
 
-      X509Certificate? clientCertificate;
+        X509Certificate? clientCertificate;
 
-      if (socket is SecureSocket) {
-        clientCertificate = socket.peerCertificate;
-      }
+        if (socket is SecureSocket) {
+          clientCertificate = socket.peerCertificate;
+        }
 
-      final connection = ServerTransportConnection.viaSocket(
-        socket,
-        settings: http2ServerSettings,
-      );
+        final connection = ServerTransportConnection.viaSocket(
+          socket,
+          settings: http2ServerSettings,
+        );
 
-      serveConnection(
-        connection: connection,
-        clientCertificate: clientCertificate,
-        remoteAddress: socket.remoteAddressOrNull,
-      );
-    }, onError: (error, stackTrace) {
-      if (error is Error) {
-        Zone.current.handleUncaughtError(error, stackTrace);
-      }
-    });
+        serveConnection(
+          connection: connection,
+          clientCertificate: clientCertificate,
+          remoteAddress: socket.remoteAddressOrNull,
+        );
+      },
+      onError: (error, stackTrace) {
+        if (error is Error) {
+          Zone.current.handleUncaughtError(error, stackTrace);
+        }
+      },
+    );
   }
 
   @override
@@ -326,7 +336,8 @@ class Server extends ConnectionServer {
   }
 
   @Deprecated(
-      'This is internal functionality, and will be removed in next major version.')
+    'This is internal functionality, and will be removed in next major version.',
+  )
   void serveStream(ServerTransportStream stream) {
     serveStream_(stream: stream);
   }

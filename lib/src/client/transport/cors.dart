@@ -40,8 +40,9 @@ Uri moveHttpHeadersToQueryParam(Map<String, String> metadata, Uri requestUri) {
   final paramValue = _generateHttpHeadersOverwriteParam(metadata);
   metadata.clear();
   return requestUri.replace(
-      queryParameters: Map.of(requestUri.queryParameters)
-        ..[_httpHeadersParamName] = paramValue);
+    queryParameters: Map.of(requestUri.queryParameters)
+      ..[_httpHeadersParamName] = paramValue,
+  );
 }
 
 /// Generates the URL parameter value with custom headers encoded as

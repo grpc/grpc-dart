@@ -16,18 +16,19 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:grpc/grpc.dart';
-
 import 'package:googleapis/src/generated/google/api/monitored_resource.pb.dart';
 import 'package:googleapis/src/generated/google/logging/type/log_severity.pb.dart';
 import 'package:googleapis/src/generated/google/logging/v2/log_entry.pb.dart';
 import 'package:googleapis/src/generated/google/logging/v2/logging.pbgrpc.dart';
+import 'package:grpc/grpc.dart';
 
 Future<void> main() async {
   final serviceAccountFile = File('logging-service-account.json');
   if (!serviceAccountFile.existsSync()) {
-    print('File logging-service-account.json not found. Please follow the '
-        'steps in README.md to create it.');
+    print(
+      'File logging-service-account.json not found. Please follow the '
+      'steps in README.md to create it.',
+    );
     exit(-1);
   }
 
@@ -37,19 +38,25 @@ Future<void> main() async {
   ];
 
   final authenticator = ServiceAccountAuthenticator(
-      serviceAccountFile.readAsStringSync(), scopes);
+    serviceAccountFile.readAsStringSync(),
+    scopes,
+  );
   final projectId = authenticator.projectId;
 
   final channel = ClientChannel('logging.googleapis.com');
-  final logging =
-      LoggingServiceV2Client(channel, options: authenticator.toCallOptions);
+  final logging = LoggingServiceV2Client(
+    channel,
+    options: authenticator.toCallOptions,
+  );
 
   final request = WriteLogEntriesRequest()
-    ..entries.add(LogEntry()
-      ..logName = 'projects/$projectId/logs/example'
-      ..severity = LogSeverity.INFO
-      ..resource = (MonitoredResource()..type = 'global')
-      ..textPayload = 'This is a log entry!');
+    ..entries.add(
+      LogEntry()
+        ..logName = 'projects/$projectId/logs/example'
+        ..severity = LogSeverity.INFO
+        ..resource = (MonitoredResource()..type = 'global')
+        ..textPayload = 'This is a log entry!',
+    );
   await logging.writeLogEntries(request);
 
   await channel.shutdown();

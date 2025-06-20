@@ -112,7 +112,9 @@ void main() {
   test('Server returns error on unimplemented path', () async {
     harness
       ..expectErrorResponse(
-          StatusCode.unimplemented, 'Path /Test/NotFound not found')
+        StatusCode.unimplemented,
+        'Path /Test/NotFound not found',
+      )
       ..sendRequestHeader('/Test/NotFound');
     await harness.fromServer.done;
   });
@@ -120,7 +122,8 @@ void main() {
   /// Returns a service method handler that verifies that awaiting the request
   /// throws a specific error.
   Future<int> Function(ServiceCall call, Future<int> request) expectError(
-      expectedError) {
+    expectedError,
+  ) {
     return expectAsync2((ServiceCall call, Future<int> request) async {
       try {
         final result = await request;
@@ -140,7 +143,7 @@ void main() {
   /// Returns a service method handler that verifies that awaiting the request
   /// stream throws a specific error.
   Stream<int> Function(ServiceCall call, Stream<int> request)
-      expectErrorStreaming(expectedError) {
+  expectErrorStreaming(expectedError) {
     return (ServiceCall call, Stream<int> request) async* {
       try {
         await for (var entry in request) {
@@ -160,30 +163,35 @@ void main() {
 
   test('Server returns error on missing request for unary call', () async {
     harness
-      ..service.unaryHandler =
-          expectError(GrpcError.unimplemented('No request received'))
+      ..service.unaryHandler = expectError(
+        GrpcError.unimplemented('No request received'),
+      )
       ..expectErrorResponse(StatusCode.unimplemented, 'No request received')
       ..sendRequestHeader('/Test/Unary')
       ..toServer.close();
     await harness.fromServer.done;
   });
 
-  test('Server returns error if multiple headers are received for unary call',
-      () async {
-    harness
-      ..service.unaryHandler =
-          expectError(GrpcError.unimplemented('Expected request'))
-      ..expectErrorResponse(StatusCode.unimplemented, 'Expected request')
-      ..sendRequestHeader('/Test/Unary')
-      ..toServer.add(HeadersStreamMessage([]))
-      ..toServer.close();
-    await harness.fromServer.done;
-  });
+  test(
+    'Server returns error if multiple headers are received for unary call',
+    () async {
+      harness
+        ..service.unaryHandler = expectError(
+          GrpcError.unimplemented('Expected request'),
+        )
+        ..expectErrorResponse(StatusCode.unimplemented, 'Expected request')
+        ..sendRequestHeader('/Test/Unary')
+        ..toServer.add(HeadersStreamMessage([]))
+        ..toServer.close();
+      await harness.fromServer.done;
+    },
+  );
 
   test('Server returns error on too many requests for unary call', () async {
     harness
-      ..service.unaryHandler =
-          expectError(GrpcError.unimplemented('Too many requests'))
+      ..service.unaryHandler = expectError(
+        GrpcError.unimplemented('Too many requests'),
+      )
       ..expectErrorResponse(StatusCode.unimplemented, 'Too many requests')
       ..sendRequestHeader('/Test/Unary')
       ..sendData(dummyValue)
@@ -195,9 +203,12 @@ void main() {
   test('Server returns request deserialization errors', () async {
     harness
       ..service.bidirectionalHandler = expectErrorStreaming(
-          GrpcError.internal('Error deserializing request: Failed'))
+        GrpcError.internal('Error deserializing request: Failed'),
+      )
       ..expectErrorResponse(
-          StatusCode.internal, 'Error deserializing request: Failed')
+        StatusCode.internal,
+        'Error deserializing request: Failed',
+      )
       ..sendRequestHeader('/Test/RequestError')
       ..sendData(dummyValue)
       ..toServer.close();
@@ -207,9 +218,12 @@ void main() {
   test('Server returns response serialization errors', () async {
     harness
       ..service.bidirectionalHandler = expectErrorStreaming(
-          GrpcError.internal('Error sending response: Failed'))
+        GrpcError.internal('Error sending response: Failed'),
+      )
       ..expectErrorResponse(
-          StatusCode.internal, 'Error sending response: Failed')
+        StatusCode.internal,
+        'Error sending response: Failed',
+      )
       ..sendRequestHeader('/Test/ResponseError')
       ..sendData(dummyValue)
       ..sendData(dummyValue)
@@ -257,11 +271,13 @@ void main() {
 
     harness
       ..service.unaryHandler = methodHandler
-      ..fromServer.stream.listen(expectAsync1((_) {}, count: 0),
-          onError: expectAsync1((dynamic error) {
-            expect(error, 'TERMINATED');
-          }, count: 1),
-          onDone: expectAsync0(() {}, count: 1))
+      ..fromServer.stream.listen(
+        expectAsync1((_) {}, count: 0),
+        onError: expectAsync1((dynamic error) {
+          expect(error, 'TERMINATED');
+        }, count: 1),
+        onDone: expectAsync0(() {}, count: 1),
+      )
       ..sendRequestHeader('/Test/Unary')
       ..toServer.addError('CANCEL');
 
@@ -271,14 +287,17 @@ void main() {
   });
 
   test(
-      'Server returns error if request stream is closed before sending anything',
-      () async {
-    harness
-      ..expectErrorResponse(
-          StatusCode.unavailable, 'Request stream closed unexpectedly')
-      ..toServer.close();
-    await harness.fromServer.done;
-  });
+    'Server returns error if request stream is closed before sending anything',
+    () async {
+      harness
+        ..expectErrorResponse(
+          StatusCode.unavailable,
+          'Request stream closed unexpectedly',
+        )
+        ..toServer.close();
+      await harness.fromServer.done;
+    },
+  );
 
   group('Server with interceptor', () {
     group('processes calls if interceptor allows request', () {
@@ -306,8 +325,10 @@ void main() {
       }
 
       test('with sync interceptor', () => doTest(interceptor));
-      test('with async interceptor',
-          () => doTest((call, method) async => interceptor(call, method)));
+      test(
+        'with async interceptor',
+        () => doTest((call, method) async => interceptor(call, method)),
+      );
     });
 
     group('returns error if interceptor blocks request', () {
@@ -322,15 +343,19 @@ void main() {
         harness
           ..interceptor.handler = handler
           ..expectErrorResponse(
-              StatusCode.unauthenticated, 'Request is unauthenticated')
+            StatusCode.unauthenticated,
+            'Request is unauthenticated',
+          )
           ..sendRequestHeader('/Test/Unary');
 
         await harness.fromServer.done;
       }
 
       test('with sync interceptor', () => doTest(interceptor));
-      test('with async interceptor',
-          () => doTest((call, method) async => interceptor(call, method)));
+      test(
+        'with async interceptor',
+        () => doTest((call, method) async => interceptor(call, method)),
+      );
     });
 
     group('returns internal error if interceptor throws exception', () {
@@ -342,15 +367,19 @@ void main() {
         harness
           ..interceptor.handler = handler
           ..expectErrorResponse(
-              StatusCode.internal, 'Exception: Reason is unknown')
+            StatusCode.internal,
+            'Exception: Reason is unknown',
+          )
           ..sendRequestHeader('/Test/Unary');
 
         await harness.fromServer.done;
       }
 
       test('with sync interceptor', () => doTest(interceptor));
-      test('with async interceptor',
-          () => doTest((call, method) async => interceptor(call, method)));
+      test(
+        'with async interceptor',
+        () => doTest((call, method) async => interceptor(call, method)),
+      );
     });
 
     test("don't fail if interceptor await 2 times", () async {
@@ -363,7 +392,9 @@ void main() {
       harness
         ..interceptor.handler = interceptor
         ..expectErrorResponse(
-            StatusCode.internal, 'Exception: Reason is unknown')
+          StatusCode.internal,
+          'Exception: Reason is unknown',
+        )
         ..sendRequestHeader('/Test/Unary')
         ..sendData(1);
 

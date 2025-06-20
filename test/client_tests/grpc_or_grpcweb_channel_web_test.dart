@@ -32,11 +32,15 @@ void main() {
     expect(channel is GrpcWebClientChannel, isTrue);
     final webChannel = channel as GrpcWebClientChannel;
     expect(
-        webChannel.uri, equals(Uri(host: host, port: port, scheme: 'https')));
+      webChannel.uri,
+      equals(Uri(host: host, port: port, scheme: 'https')),
+    );
   });
 
   test('Constructor grpc on web throws UnsupportedError', () {
-    expect(() => GrpcOrGrpcWebClientChannel.grpc(host, port: port),
-        throwsUnsupportedError);
+    expect(
+      () => GrpcOrGrpcWebClientChannel.grpc(host, port: port),
+      throwsUnsupportedError,
+    );
   });
 }
