@@ -1,6 +1,7 @@
 ## 4.1.1-wip
 
 - Require Dart 3.8.
+- Export a protobuf generated symbol (`Any`)
 - Dart format all files for the new 3.8 formatter.
 - Require package:googleapis_auth
 - Require package:http 1.4.0
