@@ -15,7 +15,8 @@
 
 import 'channel.dart';
 import 'connection.dart';
-import 'transport/xhr_transport.dart';
+import 'transport/fetch_transport.dart';
+//import 'transport/xhr_transport.dart';
 
 /// A channel to a grpc-web endpoint.
 class GrpcWebClientChannel extends ClientChannelBase {
@@ -25,6 +26,7 @@ class GrpcWebClientChannel extends ClientChannelBase {
 
   @override
   ClientConnection createConnection() {
-    return XhrClientConnection(uri);
+    //return XhrClientConnection(uri);
+    return FetchClientConnection(uri);
   }
 }
