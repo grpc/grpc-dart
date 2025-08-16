@@ -1,14 +1,14 @@
-## 4.2.0-wip
+## 4.2.0
 
-- Require Dart 3.8.
 - Export a protobuf generated symbol (`Any`)
-- Dart format all files for the new 3.8 formatter.
+- Simplify hierarchy of `ResponseFuture` (no longer have a private class in the
+  type hierarchy)
+- Require Dart 3.8.
 - Require package:googleapis_auth
 - Require package:http 1.4.0
 - Require package:lints 6.0.0
 - Require package:protobuf 4.1.0
-- Simplify hierarchy of `ResponseFuture` (no longer have a private class in the
-  type hierarchy)
+- Dart format all files for the new 3.8 formatter.
 
 ## 4.1.0
 
