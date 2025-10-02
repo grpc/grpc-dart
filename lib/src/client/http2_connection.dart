@@ -366,7 +366,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
 class SocketTransportConnector implements ClientTransportConnector {
   /// Either [InternetAddress] or [String].
-  final Object _host;
+  Object _host;
   final int _port;
   final ChannelOptions _options;
   late Socket socket;
@@ -376,7 +376,13 @@ class SocketTransportConnector implements ClientTransportConnector {
   int get port => proxy == null ? _port : proxy!.port;
 
   SocketTransportConnector(this._host, this._port, this._options)
-    : assert(_host is InternetAddress || _host is String);
+    : assert(_host is InternetAddress || _host is String){
+    if (_host is InternetAddress){
+      _host = (_host as InternetAddress).host;
+    }else if (_host is String){
+      _host = (_host as String).replaceFirst(RegExp(r'\w*://'), '').split("/").first;
+    }
+  }
 
   @override
   Future<ClientTransportConnection> connect() async {

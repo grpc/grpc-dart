@@ -13,6 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io';
+import 'dart:vmservice_io';
+
+import '../../grpc_connection_interface.dart' show ClientCall;
+import '../../service_api.dart' show ClientMethod;
+import 'call.dart';
 import 'channel.dart';
 import 'client_transport_connector.dart';
 import 'connection.dart';
@@ -38,6 +44,20 @@ class ClientChannel extends ClientChannelBase {
     this.options = const ChannelOptions(),
     super.channelShutdownHandler,
   });
+
+  @override
+  ClientCall<Q, R> createCall<Q, R>(ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) {
+    var newPath = method.path;
+    if (host is String){
+      var uri = Uri.parse(host as String);
+      newPath = joinPathComponents(uri.path, method.path);
+    } else if (host is InternetAddress){
+      newPath = joinPathComponents((host as InternetAddress).address, newPath);
+    }
+
+    ClientMethod(newPath, method.requestSerializer, method.responseDeserializer);
+    return super.createCall(method, requests, options);
+  }
 
   @override
   ClientConnection createConnection() =>
