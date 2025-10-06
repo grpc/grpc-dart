@@ -2,15 +2,16 @@ name: route_guide
 description: Dart gRPC sample client and server.
 publish_to: none
 
+resolution: workspace
+
 environment:
   sdk: ^3.8.0
 
 dependencies:
-  async: ^2.13.0
-  collection: ^1.19.1
-  grpc:
-    path: ../../
-  protobuf: ^4.1.0
+  async: any
+  collection: any
+  grpc: any
+  protobuf: any
 
 dev_dependencies:
   lints: ^6.0.0

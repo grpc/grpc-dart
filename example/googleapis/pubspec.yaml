@@ -2,15 +2,16 @@ name: googleapis
 description: Dart gRPC client sample for Google APIs
 publish_to: none
 
+resolution: workspace
+
 environment:
   sdk: ^3.8.0
 
 dependencies:
-  async: ^2.13.0
-  fixnum: ^1.1.1
-  grpc:
-    path: ../../
-  protobuf: ^4.1.0
+  async: any
+  fixnum: any
+  grpc: any
+  protobuf: any
 
 dev_dependencies:
   lints: ^6.0.0

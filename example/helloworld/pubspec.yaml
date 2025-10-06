@@ -2,14 +2,15 @@ name: helloworld
 description: Dart gRPC sample client and server.
 publish_to: none
 
+resolution: workspace
+
 environment:
   sdk: ^3.8.0
 
 dependencies:
-  async: ^2.13.0
-  grpc:
-    path: ../../
-  protobuf: ^4.1.0
+  async: any
+  grpc: any
+  protobuf: any
 
 dev_dependencies:
   lints: ^6.0.0
