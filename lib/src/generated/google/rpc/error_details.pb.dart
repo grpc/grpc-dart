@@ -1,73 +1,74 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: google/rpc/error_details.proto
-//
-// @dart = 2.12
+// Generated from google/rpc/error_details.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names
 
 import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import '../protobuf/duration.pb.dart' as $1;
+import '../protobuf/duration.pb.dart' as $0;
 
-///  Describes when the clients can retry a failed request. Clients could ignore
-///  the recommendation here or retry when this information is missing from error
-///  responses.
+export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
+
+/// Describes when the clients can retry a failed request. Clients could ignore
+/// the recommendation here or retry when this information is missing from error
+/// responses.
 ///
-///  It's always recommended that clients should use exponential backoff when
-///  retrying.
+/// It's always recommended that clients should use exponential backoff when
+/// retrying.
 ///
-///  Clients should wait until `retry_delay` amount of time has passed since
-///  receiving the error response before retrying.  If retrying requests also
-///  fail, clients should use an exponential backoff scheme to gradually increase
-///  the delay between retries based on `retry_delay`, until either a maximum
-///  number of retries have been reached or a maximum retry delay cap has been
-///  reached.
+/// Clients should wait until `retry_delay` amount of time has passed since
+/// receiving the error response before retrying.  If retrying requests also
+/// fail, clients should use an exponential backoff scheme to gradually increase
+/// the delay between retries based on `retry_delay`, until either a maximum
+/// number of retries have been reached or a maximum retry delay cap has been
+/// reached.
 class RetryInfo extends $pb.GeneratedMessage {
   factory RetryInfo({
-    $1.Duration? retryDelay,
+    $0.Duration? retryDelay,
   }) {
     final result = create();
-    if (retryDelay != null) {
-      result.retryDelay = retryDelay;
-    }
+    if (retryDelay != null) result.retryDelay = retryDelay;
     return result;
   }
-  RetryInfo._() : super();
-  factory RetryInfo.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory RetryInfo.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  RetryInfo._();
+
+  factory RetryInfo.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory RetryInfo.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'RetryInfo',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'google.rpc'),
       createEmptyInstance: create)
-    ..aOM<$1.Duration>(1, _omitFieldNames ? '' : 'retryDelay',
-        subBuilder: $1.Duration.create)
+    ..aOM<$0.Duration>(1, _omitFieldNames ? '' : 'retryDelay',
+        subBuilder: $0.Duration.create)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  RetryInfo clone() => RetryInfo()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RetryInfo clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   RetryInfo copyWith(void Function(RetryInfo) updates) =>
       super.copyWith((message) => updates(message as RetryInfo)) as RetryInfo;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static RetryInfo create() => RetryInfo._();
+  @$core.override
   RetryInfo createEmptyInstance() => create();
   static $pb.PbList<RetryInfo> createRepeated() => $pb.PbList<RetryInfo>();
   @$core.pragma('dart2js:noInline')
@@ -77,18 +78,15 @@ class RetryInfo extends $pb.GeneratedMessage {
 
   /// Clients should wait at least this long between retrying the same request.
   @$pb.TagNumber(1)
-  $1.Duration get retryDelay => $_getN(0);
+  $0.Duration get retryDelay => $_getN(0);
   @$pb.TagNumber(1)
-  set retryDelay($1.Duration v) {
-    setField(1, v);
-  }
-
+  set retryDelay($0.Duration value) => $_setField(1, value);
   @$pb.TagNumber(1)
   $core.bool hasRetryDelay() => $_has(0);
   @$pb.TagNumber(1)
-  void clearRetryDelay() => clearField(1);
+  void clearRetryDelay() => $_clearField(1);
   @$pb.TagNumber(1)
-  $1.Duration ensureRetryDelay() => $_ensure(0);
+  $0.Duration ensureRetryDelay() => $_ensure(0);
 }
 
 /// Describes additional debugging info.
@@ -98,21 +96,19 @@ class DebugInfo extends $pb.GeneratedMessage {
     $core.String? detail,
   }) {
     final result = create();
-    if (stackEntries != null) {
-      result.stackEntries.addAll(stackEntries);
-    }
-    if (detail != null) {
-      result.detail = detail;
-    }
+    if (stackEntries != null) result.stackEntries.addAll(stackEntries);
+    if (detail != null) result.detail = detail;
     return result;
   }
-  DebugInfo._() : super();
-  factory DebugInfo.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory DebugInfo.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  DebugInfo._();
+
+  factory DebugInfo.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory DebugInfo.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'DebugInfo',
@@ -122,20 +118,18 @@ class DebugInfo extends $pb.GeneratedMessage {
     ..aOS(2, _omitFieldNames ? '' : 'detail')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  DebugInfo clone() => DebugInfo()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  DebugInfo clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   DebugInfo copyWith(void Function(DebugInfo) updates) =>
       super.copyWith((message) => updates(message as DebugInfo)) as DebugInfo;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static DebugInfo create() => DebugInfo._();
+  @$core.override
   DebugInfo createEmptyInstance() => create();
   static $pb.PbList<DebugInfo> createRepeated() => $pb.PbList<DebugInfo>();
   @$core.pragma('dart2js:noInline')
@@ -145,20 +139,17 @@ class DebugInfo extends $pb.GeneratedMessage {
 
   /// The stack trace entries indicating where the error occurred.
   @$pb.TagNumber(1)
-  $core.List<$core.String> get stackEntries => $_getList(0);
+  $pb.PbList<$core.String> get stackEntries => $_getList(0);
 
   /// Additional debugging information provided by the server.
   @$pb.TagNumber(2)
   $core.String get detail => $_getSZ(1);
   @$pb.TagNumber(2)
-  set detail($core.String v) {
-    $_setString(1, v);
-  }
-
+  set detail($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasDetail() => $_has(1);
   @$pb.TagNumber(2)
-  void clearDetail() => clearField(2);
+  void clearDetail() => $_clearField(2);
 }
 
 /// A message type used to describe a single quota violation.  For example, a
@@ -169,21 +160,19 @@ class QuotaFailure_Violation extends $pb.GeneratedMessage {
     $core.String? description,
   }) {
     final result = create();
-    if (subject != null) {
-      result.subject = subject;
-    }
-    if (description != null) {
-      result.description = description;
-    }
+    if (subject != null) result.subject = subject;
+    if (description != null) result.description = description;
     return result;
   }
-  QuotaFailure_Violation._() : super();
-  factory QuotaFailure_Violation.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory QuotaFailure_Violation.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  QuotaFailure_Violation._();
+
+  factory QuotaFailure_Violation.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory QuotaFailure_Violation.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'QuotaFailure.Violation',
@@ -193,23 +182,20 @@ class QuotaFailure_Violation extends $pb.GeneratedMessage {
     ..aOS(2, _omitFieldNames ? '' : 'description')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  QuotaFailure_Violation clone() =>
-      QuotaFailure_Violation()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  QuotaFailure_Violation clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   QuotaFailure_Violation copyWith(
           void Function(QuotaFailure_Violation) updates) =>
       super.copyWith((message) => updates(message as QuotaFailure_Violation))
           as QuotaFailure_Violation;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static QuotaFailure_Violation create() => QuotaFailure_Violation._();
+  @$core.override
   QuotaFailure_Violation createEmptyInstance() => create();
   static $pb.PbList<QuotaFailure_Violation> createRepeated() =>
       $pb.PbList<QuotaFailure_Violation>();
@@ -224,88 +210,79 @@ class QuotaFailure_Violation extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.String get subject => $_getSZ(0);
   @$pb.TagNumber(1)
-  set subject($core.String v) {
-    $_setString(0, v);
-  }
-
+  set subject($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
   $core.bool hasSubject() => $_has(0);
   @$pb.TagNumber(1)
-  void clearSubject() => clearField(1);
+  void clearSubject() => $_clearField(1);
 
-  ///  A description of how the quota check failed. Clients can use this
-  ///  description to find more about the quota configuration in the service's
-  ///  public documentation, or find the relevant quota limit to adjust through
-  ///  developer console.
+  /// A description of how the quota check failed. Clients can use this
+  /// description to find more about the quota configuration in the service's
+  /// public documentation, or find the relevant quota limit to adjust through
+  /// developer console.
   ///
-  ///  For example: "Service disabled" or "Daily Limit for read operations
-  ///  exceeded".
+  /// For example: "Service disabled" or "Daily Limit for read operations
+  /// exceeded".
   @$pb.TagNumber(2)
   $core.String get description => $_getSZ(1);
   @$pb.TagNumber(2)
-  set description($core.String v) {
-    $_setString(1, v);
-  }
-
+  set description($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasDescription() => $_has(1);
   @$pb.TagNumber(2)
-  void clearDescription() => clearField(2);
+  void clearDescription() => $_clearField(2);
 }
 
-///  Describes how a quota check failed.
+/// Describes how a quota check failed.
 ///
-///  For example if a daily limit was exceeded for the calling project,
-///  a service could respond with a QuotaFailure detail containing the project
-///  id and the description of the quota limit that was exceeded.  If the
-///  calling project hasn't enabled the service in the developer console, then
-///  a service could respond with the project id and set `service_disabled`
-///  to true.
+/// For example if a daily limit was exceeded for the calling project,
+/// a service could respond with a QuotaFailure detail containing the project
+/// id and the description of the quota limit that was exceeded.  If the
+/// calling project hasn't enabled the service in the developer console, then
+/// a service could respond with the project id and set `service_disabled`
+/// to true.
 ///
-///  Also see RetryInfo and Help types for other details about handling a
-///  quota failure.
+/// Also see RetryInfo and Help types for other details about handling a
+/// quota failure.
 class QuotaFailure extends $pb.GeneratedMessage {
   factory QuotaFailure({
     $core.Iterable<QuotaFailure_Violation>? violations,
   }) {
     final result = create();
-    if (violations != null) {
-      result.violations.addAll(violations);
-    }
+    if (violations != null) result.violations.addAll(violations);
     return result;
   }
-  QuotaFailure._() : super();
-  factory QuotaFailure.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory QuotaFailure.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  QuotaFailure._();
+
+  factory QuotaFailure.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory QuotaFailure.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'QuotaFailure',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'google.rpc'),
       createEmptyInstance: create)
-    ..pc<QuotaFailure_Violation>(
-        1, _omitFieldNames ? '' : 'violations', $pb.PbFieldType.PM,
+    ..pPM<QuotaFailure_Violation>(1, _omitFieldNames ? '' : 'violations',
         subBuilder: QuotaFailure_Violation.create)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  QuotaFailure clone() => QuotaFailure()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  QuotaFailure clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   QuotaFailure copyWith(void Function(QuotaFailure) updates) =>
       super.copyWith((message) => updates(message as QuotaFailure))
           as QuotaFailure;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static QuotaFailure create() => QuotaFailure._();
+  @$core.override
   QuotaFailure createEmptyInstance() => create();
   static $pb.PbList<QuotaFailure> createRepeated() =>
       $pb.PbList<QuotaFailure>();
@@ -316,58 +293,54 @@ class QuotaFailure extends $pb.GeneratedMessage {
 
   /// Describes all quota violations.
   @$pb.TagNumber(1)
-  $core.List<QuotaFailure_Violation> get violations => $_getList(0);
+  $pb.PbList<QuotaFailure_Violation> get violations => $_getList(0);
 }
 
-///  Describes the cause of the error with structured details.
+/// Describes the cause of the error with structured details.
 ///
-///  Example of an error when contacting the "pubsub.googleapis.com" API when it
-///  is not enabled:
+/// Example of an error when contacting the "pubsub.googleapis.com" API when it
+/// is not enabled:
 ///
-///      { "reason": "API_DISABLED"
-///        "domain": "googleapis.com"
-///        "metadata": {
-///          "resource": "projects/123",
-///          "service": "pubsub.googleapis.com"
-///        }
-///      }
+///     { "reason": "API_DISABLED"
+///       "domain": "googleapis.com"
+///       "metadata": {
+///         "resource": "projects/123",
+///         "service": "pubsub.googleapis.com"
+///       }
+///     }
 ///
-///  This response indicates that the pubsub.googleapis.com API is not enabled.
+/// This response indicates that the pubsub.googleapis.com API is not enabled.
 ///
-///  Example of an error that is returned when attempting to create a Spanner
-///  instance in a region that is out of stock:
+/// Example of an error that is returned when attempting to create a Spanner
+/// instance in a region that is out of stock:
 ///
-///      { "reason": "STOCKOUT"
-///        "domain": "spanner.googleapis.com",
-///        "metadata": {
-///          "availableRegions": "us-central1,us-east2"
-///        }
-///      }
+///     { "reason": "STOCKOUT"
+///       "domain": "spanner.googleapis.com",
+///       "metadata": {
+///         "availableRegions": "us-central1,us-east2"
+///       }
+///     }
 class ErrorInfo extends $pb.GeneratedMessage {
   factory ErrorInfo({
     $core.String? reason,
     $core.String? domain,
-    $core.Map<$core.String, $core.String>? metadata,
+    $core.Iterable<$core.MapEntry<$core.String, $core.String>>? metadata,
   }) {
     final result = create();
-    if (reason != null) {
-      result.reason = reason;
-    }
-    if (domain != null) {
-      result.domain = domain;
-    }
-    if (metadata != null) {
-      result.metadata.addAll(metadata);
-    }
+    if (reason != null) result.reason = reason;
+    if (domain != null) result.domain = domain;
+    if (metadata != null) result.metadata.addEntries(metadata);
     return result;
   }
-  ErrorInfo._() : super();
-  factory ErrorInfo.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ErrorInfo.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  ErrorInfo._();
+
+  factory ErrorInfo.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory ErrorInfo.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'ErrorInfo',
@@ -382,20 +355,18 @@ class ErrorInfo extends $pb.GeneratedMessage {
         packageName: const $pb.PackageName('google.rpc'))
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  ErrorInfo clone() => ErrorInfo()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ErrorInfo clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   ErrorInfo copyWith(void Function(ErrorInfo) updates) =>
       super.copyWith((message) => updates(message as ErrorInfo)) as ErrorInfo;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static ErrorInfo create() => ErrorInfo._();
+  @$core.override
   ErrorInfo createEmptyInstance() => create();
   static $pb.PbList<ErrorInfo> createRepeated() => $pb.PbList<ErrorInfo>();
   @$core.pragma('dart2js:noInline')
@@ -410,14 +381,11 @@ class ErrorInfo extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.String get reason => $_getSZ(0);
   @$pb.TagNumber(1)
-  set reason($core.String v) {
-    $_setString(0, v);
-  }
-
+  set reason($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
   $core.bool hasReason() => $_has(0);
   @$pb.TagNumber(1)
-  void clearReason() => clearField(1);
+  void clearReason() => $_clearField(1);
 
   /// The logical grouping to which the "reason" belongs. The error domain
   /// is typically the registered service name of the tool or product that
@@ -428,25 +396,22 @@ class ErrorInfo extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   $core.String get domain => $_getSZ(1);
   @$pb.TagNumber(2)
-  set domain($core.String v) {
-    $_setString(1, v);
-  }
-
+  set domain($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasDomain() => $_has(1);
   @$pb.TagNumber(2)
-  void clearDomain() => clearField(2);
+  void clearDomain() => $_clearField(2);
 
-  ///  Additional structured details about this error.
+  /// Additional structured details about this error.
   ///
-  ///  Keys should match /[a-zA-Z0-9-_]/ and be limited to 64 characters in
-  ///  length. When identifying the current value of an exceeded limit, the units
-  ///  should be contained in the key, not the value.  For example, rather than
-  ///  {"instanceLimit": "100/request"}, should be returned as,
-  ///  {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
-  ///  instances that can be created in a single (batch) request.
+  /// Keys should match /[a-zA-Z0-9-_]/ and be limited to 64 characters in
+  /// length. When identifying the current value of an exceeded limit, the units
+  /// should be contained in the key, not the value.  For example, rather than
+  /// {"instanceLimit": "100/request"}, should be returned as,
+  /// {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
+  /// instances that can be created in a single (batch) request.
   @$pb.TagNumber(3)
-  $core.Map<$core.String, $core.String> get metadata => $_getMap(2);
+  $pb.PbMap<$core.String, $core.String> get metadata => $_getMap(2);
 }
 
 /// A message type used to describe a single precondition failure.
@@ -457,24 +422,20 @@ class PreconditionFailure_Violation extends $pb.GeneratedMessage {
     $core.String? description,
   }) {
     final result = create();
-    if (type != null) {
-      result.type = type;
-    }
-    if (subject != null) {
-      result.subject = subject;
-    }
-    if (description != null) {
-      result.description = description;
-    }
+    if (type != null) result.type = type;
+    if (subject != null) result.subject = subject;
+    if (description != null) result.description = description;
     return result;
   }
-  PreconditionFailure_Violation._() : super();
-  factory PreconditionFailure_Violation.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory PreconditionFailure_Violation.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  PreconditionFailure_Violation._();
+
+  factory PreconditionFailure_Violation.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory PreconditionFailure_Violation.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'PreconditionFailure.Violation',
@@ -485,25 +446,22 @@ class PreconditionFailure_Violation extends $pb.GeneratedMessage {
     ..aOS(3, _omitFieldNames ? '' : 'description')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  PreconditionFailure_Violation clone() =>
-      PreconditionFailure_Violation()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  PreconditionFailure_Violation clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   PreconditionFailure_Violation copyWith(
           void Function(PreconditionFailure_Violation) updates) =>
       super.copyWith(
               (message) => updates(message as PreconditionFailure_Violation))
           as PreconditionFailure_Violation;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static PreconditionFailure_Violation create() =>
       PreconditionFailure_Violation._();
+  @$core.override
   PreconditionFailure_Violation createEmptyInstance() => create();
   static $pb.PbList<PreconditionFailure_Violation> createRepeated() =>
       $pb.PbList<PreconditionFailure_Violation>();
@@ -518,14 +476,11 @@ class PreconditionFailure_Violation extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.String get type => $_getSZ(0);
   @$pb.TagNumber(1)
-  set type($core.String v) {
-    $_setString(0, v);
-  }
-
+  set type($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
   $core.bool hasType() => $_has(0);
   @$pb.TagNumber(1)
-  void clearType() => clearField(1);
+  void clearType() => $_clearField(1);
 
   /// The subject, relative to the type, that failed.
   /// For example, "google.com/cloud" relative to the "TOS" type would indicate
@@ -533,79 +488,70 @@ class PreconditionFailure_Violation extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   $core.String get subject => $_getSZ(1);
   @$pb.TagNumber(2)
-  set subject($core.String v) {
-    $_setString(1, v);
-  }
-
+  set subject($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasSubject() => $_has(1);
   @$pb.TagNumber(2)
-  void clearSubject() => clearField(2);
+  void clearSubject() => $_clearField(2);
 
-  ///  A description of how the precondition failed. Developers can use this
-  ///  description to understand how to fix the failure.
+  /// A description of how the precondition failed. Developers can use this
+  /// description to understand how to fix the failure.
   ///
-  ///  For example: "Terms of service not accepted".
+  /// For example: "Terms of service not accepted".
   @$pb.TagNumber(3)
   $core.String get description => $_getSZ(2);
   @$pb.TagNumber(3)
-  set description($core.String v) {
-    $_setString(2, v);
-  }
-
+  set description($core.String value) => $_setString(2, value);
   @$pb.TagNumber(3)
   $core.bool hasDescription() => $_has(2);
   @$pb.TagNumber(3)
-  void clearDescription() => clearField(3);
+  void clearDescription() => $_clearField(3);
 }
 
-///  Describes what preconditions have failed.
+/// Describes what preconditions have failed.
 ///
-///  For example, if an RPC failed because it required the Terms of Service to be
-///  acknowledged, it could list the terms of service violation in the
-///  PreconditionFailure message.
+/// For example, if an RPC failed because it required the Terms of Service to be
+/// acknowledged, it could list the terms of service violation in the
+/// PreconditionFailure message.
 class PreconditionFailure extends $pb.GeneratedMessage {
   factory PreconditionFailure({
     $core.Iterable<PreconditionFailure_Violation>? violations,
   }) {
     final result = create();
-    if (violations != null) {
-      result.violations.addAll(violations);
-    }
+    if (violations != null) result.violations.addAll(violations);
     return result;
   }
-  PreconditionFailure._() : super();
-  factory PreconditionFailure.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory PreconditionFailure.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  PreconditionFailure._();
+
+  factory PreconditionFailure.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory PreconditionFailure.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'PreconditionFailure',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'google.rpc'),
       createEmptyInstance: create)
-    ..pc<PreconditionFailure_Violation>(
-        1, _omitFieldNames ? '' : 'violations', $pb.PbFieldType.PM,
+    ..pPM<PreconditionFailure_Violation>(1, _omitFieldNames ? '' : 'violations',
         subBuilder: PreconditionFailure_Violation.create)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  PreconditionFailure clone() => PreconditionFailure()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  PreconditionFailure clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   PreconditionFailure copyWith(void Function(PreconditionFailure) updates) =>
       super.copyWith((message) => updates(message as PreconditionFailure))
           as PreconditionFailure;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static PreconditionFailure create() => PreconditionFailure._();
+  @$core.override
   PreconditionFailure createEmptyInstance() => create();
   static $pb.PbList<PreconditionFailure> createRepeated() =>
       $pb.PbList<PreconditionFailure>();
@@ -616,7 +562,7 @@ class PreconditionFailure extends $pb.GeneratedMessage {
 
   /// Describes all precondition violations.
   @$pb.TagNumber(1)
-  $core.List<PreconditionFailure_Violation> get violations => $_getList(0);
+  $pb.PbList<PreconditionFailure_Violation> get violations => $_getList(0);
 }
 
 /// A message type used to describe a single bad request field.
@@ -626,21 +572,19 @@ class BadRequest_FieldViolation extends $pb.GeneratedMessage {
     $core.String? description,
   }) {
     final result = create();
-    if (field_1 != null) {
-      result.field_1 = field_1;
-    }
-    if (description != null) {
-      result.description = description;
-    }
+    if (field_1 != null) result.field_1 = field_1;
+    if (description != null) result.description = description;
     return result;
   }
-  BadRequest_FieldViolation._() : super();
-  factory BadRequest_FieldViolation.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory BadRequest_FieldViolation.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  BadRequest_FieldViolation._();
+
+  factory BadRequest_FieldViolation.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory BadRequest_FieldViolation.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'BadRequest.FieldViolation',
@@ -650,23 +594,20 @@ class BadRequest_FieldViolation extends $pb.GeneratedMessage {
     ..aOS(2, _omitFieldNames ? '' : 'description')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  BadRequest_FieldViolation clone() =>
-      BadRequest_FieldViolation()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  BadRequest_FieldViolation clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   BadRequest_FieldViolation copyWith(
           void Function(BadRequest_FieldViolation) updates) =>
       super.copyWith((message) => updates(message as BadRequest_FieldViolation))
           as BadRequest_FieldViolation;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static BadRequest_FieldViolation create() => BadRequest_FieldViolation._();
+  @$core.override
   BadRequest_FieldViolation createEmptyInstance() => create();
   static $pb.PbList<BadRequest_FieldViolation> createRepeated() =>
       $pb.PbList<BadRequest_FieldViolation>();
@@ -681,27 +622,21 @@ class BadRequest_FieldViolation extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.String get field_1 => $_getSZ(0);
   @$pb.TagNumber(1)
-  set field_1($core.String v) {
-    $_setString(0, v);
-  }
-
+  set field_1($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
   $core.bool hasField_1() => $_has(0);
   @$pb.TagNumber(1)
-  void clearField_1() => clearField(1);
+  void clearField_1() => $_clearField(1);
 
   /// A description of why the request element is bad.
   @$pb.TagNumber(2)
   $core.String get description => $_getSZ(1);
   @$pb.TagNumber(2)
-  set description($core.String v) {
-    $_setString(1, v);
-  }
-
+  set description($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasDescription() => $_has(1);
   @$pb.TagNumber(2)
-  void clearDescription() => clearField(2);
+  void clearDescription() => $_clearField(2);
 }
 
 /// Describes violations in a client request. This error type focuses on the
@@ -711,42 +646,40 @@ class BadRequest extends $pb.GeneratedMessage {
     $core.Iterable<BadRequest_FieldViolation>? fieldViolations,
   }) {
     final result = create();
-    if (fieldViolations != null) {
-      result.fieldViolations.addAll(fieldViolations);
-    }
+    if (fieldViolations != null) result.fieldViolations.addAll(fieldViolations);
     return result;
   }
-  BadRequest._() : super();
-  factory BadRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory BadRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  BadRequest._();
+
+  factory BadRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory BadRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'BadRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'google.rpc'),
       createEmptyInstance: create)
-    ..pc<BadRequest_FieldViolation>(
-        1, _omitFieldNames ? '' : 'fieldViolations', $pb.PbFieldType.PM,
+    ..pPM<BadRequest_FieldViolation>(
+        1, _omitFieldNames ? '' : 'fieldViolations',
         subBuilder: BadRequest_FieldViolation.create)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  BadRequest clone() => BadRequest()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  BadRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   BadRequest copyWith(void Function(BadRequest) updates) =>
       super.copyWith((message) => updates(message as BadRequest)) as BadRequest;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static BadRequest create() => BadRequest._();
+  @$core.override
   BadRequest createEmptyInstance() => create();
   static $pb.PbList<BadRequest> createRepeated() => $pb.PbList<BadRequest>();
   @$core.pragma('dart2js:noInline')
@@ -756,7 +689,7 @@ class BadRequest extends $pb.GeneratedMessage {
 
   /// Describes all violations in a client request.
   @$pb.TagNumber(1)
-  $core.List<BadRequest_FieldViolation> get fieldViolations => $_getList(0);
+  $pb.PbList<BadRequest_FieldViolation> get fieldViolations => $_getList(0);
 }
 
 /// Contains metadata about the request that clients can attach when filing a bug
@@ -767,21 +700,19 @@ class RequestInfo extends $pb.GeneratedMessage {
     $core.String? servingData,
   }) {
     final result = create();
-    if (requestId != null) {
-      result.requestId = requestId;
-    }
-    if (servingData != null) {
-      result.servingData = servingData;
-    }
+    if (requestId != null) result.requestId = requestId;
+    if (servingData != null) result.servingData = servingData;
     return result;
   }
-  RequestInfo._() : super();
-  factory RequestInfo.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory RequestInfo.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  RequestInfo._();
+
+  factory RequestInfo.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory RequestInfo.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'RequestInfo',
@@ -791,21 +722,19 @@ class RequestInfo extends $pb.GeneratedMessage {
     ..aOS(2, _omitFieldNames ? '' : 'servingData')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  RequestInfo clone() => RequestInfo()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RequestInfo clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   RequestInfo copyWith(void Function(RequestInfo) updates) =>
       super.copyWith((message) => updates(message as RequestInfo))
           as RequestInfo;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static RequestInfo create() => RequestInfo._();
+  @$core.override
   RequestInfo createEmptyInstance() => create();
   static $pb.PbList<RequestInfo> createRepeated() => $pb.PbList<RequestInfo>();
   @$core.pragma('dart2js:noInline')
@@ -818,28 +747,22 @@ class RequestInfo extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.String get requestId => $_getSZ(0);
   @$pb.TagNumber(1)
-  set requestId($core.String v) {
-    $_setString(0, v);
-  }
-
+  set requestId($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
   $core.bool hasRequestId() => $_has(0);
   @$pb.TagNumber(1)
-  void clearRequestId() => clearField(1);
+  void clearRequestId() => $_clearField(1);
 
   /// Any data that was used to serve this request. For example, an encrypted
   /// stack trace that can be sent back to the service provider for debugging.
   @$pb.TagNumber(2)
   $core.String get servingData => $_getSZ(1);
   @$pb.TagNumber(2)
-  set servingData($core.String v) {
-    $_setString(1, v);
-  }
-
+  set servingData($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasServingData() => $_has(1);
   @$pb.TagNumber(2)
-  void clearServingData() => clearField(2);
+  void clearServingData() => $_clearField(2);
 }
 
 /// Describes the resource that is being accessed.
@@ -851,27 +774,21 @@ class ResourceInfo extends $pb.GeneratedMessage {
     $core.String? description,
   }) {
     final result = create();
-    if (resourceType != null) {
-      result.resourceType = resourceType;
-    }
-    if (resourceName != null) {
-      result.resourceName = resourceName;
-    }
-    if (owner != null) {
-      result.owner = owner;
-    }
-    if (description != null) {
-      result.description = description;
-    }
+    if (resourceType != null) result.resourceType = resourceType;
+    if (resourceName != null) result.resourceName = resourceName;
+    if (owner != null) result.owner = owner;
+    if (description != null) result.description = description;
     return result;
   }
-  ResourceInfo._() : super();
-  factory ResourceInfo.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ResourceInfo.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  ResourceInfo._();
+
+  factory ResourceInfo.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory ResourceInfo.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'ResourceInfo',
@@ -883,21 +800,19 @@ class ResourceInfo extends $pb.GeneratedMessage {
     ..aOS(4, _omitFieldNames ? '' : 'description')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  ResourceInfo clone() => ResourceInfo()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ResourceInfo clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   ResourceInfo copyWith(void Function(ResourceInfo) updates) =>
       super.copyWith((message) => updates(message as ResourceInfo))
           as ResourceInfo;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static ResourceInfo create() => ResourceInfo._();
+  @$core.override
   ResourceInfo createEmptyInstance() => create();
   static $pb.PbList<ResourceInfo> createRepeated() =>
       $pb.PbList<ResourceInfo>();
@@ -912,14 +827,11 @@ class ResourceInfo extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.String get resourceType => $_getSZ(0);
   @$pb.TagNumber(1)
-  set resourceType($core.String v) {
-    $_setString(0, v);
-  }
-
+  set resourceType($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
   $core.bool hasResourceType() => $_has(0);
   @$pb.TagNumber(1)
-  void clearResourceType() => clearField(1);
+  void clearResourceType() => $_clearField(1);
 
   /// The name of the resource being accessed.  For example, a shared calendar
   /// name: "example.com_4fghdhgsrgh@group.calendar.google.com", if the current
@@ -927,14 +839,11 @@ class ResourceInfo extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   $core.String get resourceName => $_getSZ(1);
   @$pb.TagNumber(2)
-  set resourceName($core.String v) {
-    $_setString(1, v);
-  }
-
+  set resourceName($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasResourceName() => $_has(1);
   @$pb.TagNumber(2)
-  void clearResourceName() => clearField(2);
+  void clearResourceName() => $_clearField(2);
 
   /// The owner of the resource (optional).
   /// For example, "user:<owner email>" or "project:<Google developer project
@@ -942,14 +851,11 @@ class ResourceInfo extends $pb.GeneratedMessage {
   @$pb.TagNumber(3)
   $core.String get owner => $_getSZ(2);
   @$pb.TagNumber(3)
-  set owner($core.String v) {
-    $_setString(2, v);
-  }
-
+  set owner($core.String value) => $_setString(2, value);
   @$pb.TagNumber(3)
   $core.bool hasOwner() => $_has(2);
   @$pb.TagNumber(3)
-  void clearOwner() => clearField(3);
+  void clearOwner() => $_clearField(3);
 
   /// Describes what error is encountered when accessing this resource.
   /// For example, updating a cloud project may require the `writer` permission
@@ -957,14 +863,11 @@ class ResourceInfo extends $pb.GeneratedMessage {
   @$pb.TagNumber(4)
   $core.String get description => $_getSZ(3);
   @$pb.TagNumber(4)
-  set description($core.String v) {
-    $_setString(3, v);
-  }
-
+  set description($core.String value) => $_setString(3, value);
   @$pb.TagNumber(4)
   $core.bool hasDescription() => $_has(3);
   @$pb.TagNumber(4)
-  void clearDescription() => clearField(4);
+  void clearDescription() => $_clearField(4);
 }
 
 /// Describes a URL link.
@@ -974,21 +877,19 @@ class Help_Link extends $pb.GeneratedMessage {
     $core.String? url,
   }) {
     final result = create();
-    if (description != null) {
-      result.description = description;
-    }
-    if (url != null) {
-      result.url = url;
-    }
+    if (description != null) result.description = description;
+    if (url != null) result.url = url;
     return result;
   }
-  Help_Link._() : super();
-  factory Help_Link.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Help_Link.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  Help_Link._();
+
+  factory Help_Link.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory Help_Link.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'Help.Link',
@@ -998,20 +899,18 @@ class Help_Link extends $pb.GeneratedMessage {
     ..aOS(2, _omitFieldNames ? '' : 'url')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  Help_Link clone() => Help_Link()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  Help_Link clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   Help_Link copyWith(void Function(Help_Link) updates) =>
       super.copyWith((message) => updates(message as Help_Link)) as Help_Link;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static Help_Link create() => Help_Link._();
+  @$core.override
   Help_Link createEmptyInstance() => create();
   static $pb.PbList<Help_Link> createRepeated() => $pb.PbList<Help_Link>();
   @$core.pragma('dart2js:noInline')
@@ -1023,74 +922,66 @@ class Help_Link extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.String get description => $_getSZ(0);
   @$pb.TagNumber(1)
-  set description($core.String v) {
-    $_setString(0, v);
-  }
-
+  set description($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
   $core.bool hasDescription() => $_has(0);
   @$pb.TagNumber(1)
-  void clearDescription() => clearField(1);
+  void clearDescription() => $_clearField(1);
 
   /// The URL of the link.
   @$pb.TagNumber(2)
   $core.String get url => $_getSZ(1);
   @$pb.TagNumber(2)
-  set url($core.String v) {
-    $_setString(1, v);
-  }
-
+  set url($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasUrl() => $_has(1);
   @$pb.TagNumber(2)
-  void clearUrl() => clearField(2);
+  void clearUrl() => $_clearField(2);
 }
 
-///  Provides links to documentation or for performing an out of band action.
+/// Provides links to documentation or for performing an out of band action.
 ///
-///  For example, if a quota check failed with an error indicating the calling
-///  project hasn't enabled the accessed service, this can contain a URL pointing
-///  directly to the right place in the developer console to flip the bit.
+/// For example, if a quota check failed with an error indicating the calling
+/// project hasn't enabled the accessed service, this can contain a URL pointing
+/// directly to the right place in the developer console to flip the bit.
 class Help extends $pb.GeneratedMessage {
   factory Help({
     $core.Iterable<Help_Link>? links,
   }) {
     final result = create();
-    if (links != null) {
-      result.links.addAll(links);
-    }
+    if (links != null) result.links.addAll(links);
     return result;
   }
-  Help._() : super();
-  factory Help.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Help.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  Help._();
+
+  factory Help.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory Help.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'Help',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'google.rpc'),
       createEmptyInstance: create)
-    ..pc<Help_Link>(1, _omitFieldNames ? '' : 'links', $pb.PbFieldType.PM,
+    ..pPM<Help_Link>(1, _omitFieldNames ? '' : 'links',
         subBuilder: Help_Link.create)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  Help clone() => Help()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  Help clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   Help copyWith(void Function(Help) updates) =>
       super.copyWith((message) => updates(message as Help)) as Help;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static Help create() => Help._();
+  @$core.override
   Help createEmptyInstance() => create();
   static $pb.PbList<Help> createRepeated() => $pb.PbList<Help>();
   @$core.pragma('dart2js:noInline')
@@ -1100,7 +991,7 @@ class Help extends $pb.GeneratedMessage {
 
   /// URL(s) pointing to additional information on handling the current error.
   @$pb.TagNumber(1)
-  $core.List<Help_Link> get links => $_getList(0);
+  $pb.PbList<Help_Link> get links => $_getList(0);
 }
 
 /// Provides a localized error message that is safe to return to the user
@@ -1111,21 +1002,19 @@ class LocalizedMessage extends $pb.GeneratedMessage {
     $core.String? message,
   }) {
     final result = create();
-    if (locale != null) {
-      result.locale = locale;
-    }
-    if (message != null) {
-      result.message = message;
-    }
+    if (locale != null) result.locale = locale;
+    if (message != null) result.message = message;
     return result;
   }
-  LocalizedMessage._() : super();
-  factory LocalizedMessage.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory LocalizedMessage.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  LocalizedMessage._();
+
+  factory LocalizedMessage.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory LocalizedMessage.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'LocalizedMessage',
@@ -1135,21 +1024,19 @@ class LocalizedMessage extends $pb.GeneratedMessage {
     ..aOS(2, _omitFieldNames ? '' : 'message')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  LocalizedMessage clone() => LocalizedMessage()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  LocalizedMessage clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   LocalizedMessage copyWith(void Function(LocalizedMessage) updates) =>
       super.copyWith((message) => updates(message as LocalizedMessage))
           as LocalizedMessage;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static LocalizedMessage create() => LocalizedMessage._();
+  @$core.override
   LocalizedMessage createEmptyInstance() => create();
   static $pb.PbList<LocalizedMessage> createRepeated() =>
       $pb.PbList<LocalizedMessage>();
@@ -1164,29 +1051,24 @@ class LocalizedMessage extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.String get locale => $_getSZ(0);
   @$pb.TagNumber(1)
-  set locale($core.String v) {
-    $_setString(0, v);
-  }
-
+  set locale($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
   $core.bool hasLocale() => $_has(0);
   @$pb.TagNumber(1)
-  void clearLocale() => clearField(1);
+  void clearLocale() => $_clearField(1);
 
   /// The localized error message in the above locale.
   @$pb.TagNumber(2)
   $core.String get message => $_getSZ(1);
   @$pb.TagNumber(2)
-  set message($core.String v) {
-    $_setString(1, v);
-  }
-
+  set message($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasMessage() => $_has(1);
   @$pb.TagNumber(2)
-  void clearMessage() => clearField(2);
+  void clearMessage() => $_clearField(2);
 }
 
-const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
-const _omitMessageNames =
+const $core.bool _omitFieldNames =
+    $core.bool.fromEnvironment('protobuf.omit_field_names');
+const $core.bool _omitMessageNames =
     $core.bool.fromEnvironment('protobuf.omit_message_names');

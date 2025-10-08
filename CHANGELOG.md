@@ -1,3 +1,7 @@
+## 4.3.0
+
+- Require `package:protobuf` 5.0.0
+
 ## 4.2.0
 
 - Export a protobuf generated symbol (`Any`)

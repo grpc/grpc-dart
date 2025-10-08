@@ -1,19 +1,22 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: messages.proto
-//
-// @dart = 2.12
+// Generated from messages.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names
 
 import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
 import 'messages.pbenum.dart';
+
+export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
 export 'messages.pbenum.dart';
 
@@ -25,18 +28,18 @@ class BoolValue extends $pb.GeneratedMessage {
     $core.bool? value,
   }) {
     final result = create();
-    if (value != null) {
-      result.value = value;
-    }
+    if (value != null) result.value = value;
     return result;
   }
-  BoolValue._() : super();
-  factory BoolValue.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory BoolValue.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  BoolValue._();
+
+  factory BoolValue.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory BoolValue.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'BoolValue',
@@ -45,20 +48,18 @@ class BoolValue extends $pb.GeneratedMessage {
     ..aOB(1, _omitFieldNames ? '' : 'value')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  BoolValue clone() => BoolValue()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  BoolValue clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   BoolValue copyWith(void Function(BoolValue) updates) =>
       super.copyWith((message) => updates(message as BoolValue)) as BoolValue;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static BoolValue create() => BoolValue._();
+  @$core.override
   BoolValue createEmptyInstance() => create();
   static $pb.PbList<BoolValue> createRepeated() => $pb.PbList<BoolValue>();
   @$core.pragma('dart2js:noInline')
@@ -70,14 +71,11 @@ class BoolValue extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.bool get value => $_getBF(0);
   @$pb.TagNumber(1)
-  set value($core.bool v) {
-    $_setBool(0, v);
-  }
-
+  set value($core.bool value) => $_setBool(0, value);
   @$pb.TagNumber(1)
   $core.bool hasValue() => $_has(0);
   @$pb.TagNumber(1)
-  void clearValue() => clearField(1);
+  void clearValue() => $_clearField(1);
 }
 
 /// A block of data, to simply increase gRPC message size.
@@ -87,48 +85,42 @@ class Payload extends $pb.GeneratedMessage {
     $core.List<$core.int>? body,
   }) {
     final result = create();
-    if (type != null) {
-      result.type = type;
-    }
-    if (body != null) {
-      result.body = body;
-    }
+    if (type != null) result.type = type;
+    if (body != null) result.body = body;
     return result;
   }
-  Payload._() : super();
-  factory Payload.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Payload.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  Payload._();
+
+  factory Payload.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory Payload.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'Payload',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
       createEmptyInstance: create)
-    ..e<PayloadType>(1, _omitFieldNames ? '' : 'type', $pb.PbFieldType.OE,
-        defaultOrMaker: PayloadType.COMPRESSABLE,
-        valueOf: PayloadType.valueOf,
+    ..aE<PayloadType>(1, _omitFieldNames ? '' : 'type',
         enumValues: PayloadType.values)
     ..a<$core.List<$core.int>>(
         2, _omitFieldNames ? '' : 'body', $pb.PbFieldType.OY)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  Payload clone() => Payload()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  Payload clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   Payload copyWith(void Function(Payload) updates) =>
       super.copyWith((message) => updates(message as Payload)) as Payload;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static Payload create() => Payload._();
+  @$core.override
   Payload createEmptyInstance() => create();
   static $pb.PbList<Payload> createRepeated() => $pb.PbList<Payload>();
   @$core.pragma('dart2js:noInline')
@@ -141,27 +133,21 @@ class Payload extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   PayloadType get type => $_getN(0);
   @$pb.TagNumber(1)
-  set type(PayloadType v) {
-    setField(1, v);
-  }
-
+  set type(PayloadType value) => $_setField(1, value);
   @$pb.TagNumber(1)
   $core.bool hasType() => $_has(0);
   @$pb.TagNumber(1)
-  void clearType() => clearField(1);
+  void clearType() => $_clearField(1);
 
   /// Primary contents of payload.
   @$pb.TagNumber(2)
   $core.List<$core.int> get body => $_getN(1);
   @$pb.TagNumber(2)
-  set body($core.List<$core.int> v) {
-    $_setBytes(1, v);
-  }
-
+  set body($core.List<$core.int> value) => $_setBytes(1, value);
   @$pb.TagNumber(2)
   $core.bool hasBody() => $_has(1);
   @$pb.TagNumber(2)
-  void clearBody() => clearField(2);
+  void clearBody() => $_clearField(2);
 }
 
 /// A protobuf representation for grpc status. This is used by test
@@ -172,44 +158,40 @@ class EchoStatus extends $pb.GeneratedMessage {
     $core.String? message,
   }) {
     final result = create();
-    if (code != null) {
-      result.code = code;
-    }
-    if (message != null) {
-      result.message = message;
-    }
+    if (code != null) result.code = code;
+    if (message != null) result.message = message;
     return result;
   }
-  EchoStatus._() : super();
-  factory EchoStatus.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory EchoStatus.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  EchoStatus._();
+
+  factory EchoStatus.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory EchoStatus.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'EchoStatus',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
       createEmptyInstance: create)
-    ..a<$core.int>(1, _omitFieldNames ? '' : 'code', $pb.PbFieldType.O3)
+    ..aI(1, _omitFieldNames ? '' : 'code')
     ..aOS(2, _omitFieldNames ? '' : 'message')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  EchoStatus clone() => EchoStatus()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  EchoStatus clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   EchoStatus copyWith(void Function(EchoStatus) updates) =>
       super.copyWith((message) => updates(message as EchoStatus)) as EchoStatus;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static EchoStatus create() => EchoStatus._();
+  @$core.override
   EchoStatus createEmptyInstance() => create();
   static $pb.PbList<EchoStatus> createRepeated() => $pb.PbList<EchoStatus>();
   @$core.pragma('dart2js:noInline')
@@ -220,26 +202,20 @@ class EchoStatus extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.int get code => $_getIZ(0);
   @$pb.TagNumber(1)
-  set code($core.int v) {
-    $_setSignedInt32(0, v);
-  }
-
+  set code($core.int value) => $_setSignedInt32(0, value);
   @$pb.TagNumber(1)
   $core.bool hasCode() => $_has(0);
   @$pb.TagNumber(1)
-  void clearCode() => clearField(1);
+  void clearCode() => $_clearField(1);
 
   @$pb.TagNumber(2)
   $core.String get message => $_getSZ(1);
   @$pb.TagNumber(2)
-  set message($core.String v) {
-    $_setString(1, v);
-  }
-
+  set message($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasMessage() => $_has(1);
   @$pb.TagNumber(2)
-  void clearMessage() => clearField(2);
+  void clearMessage() => $_clearField(2);
 }
 
 /// Unary request.
@@ -255,50 +231,34 @@ class SimpleRequest extends $pb.GeneratedMessage {
     BoolValue? expectCompressed,
   }) {
     final result = create();
-    if (responseType != null) {
-      result.responseType = responseType;
-    }
-    if (responseSize != null) {
-      result.responseSize = responseSize;
-    }
-    if (payload != null) {
-      result.payload = payload;
-    }
-    if (fillUsername != null) {
-      result.fillUsername = fillUsername;
-    }
-    if (fillOauthScope != null) {
-      result.fillOauthScope = fillOauthScope;
-    }
-    if (responseCompressed != null) {
+    if (responseType != null) result.responseType = responseType;
+    if (responseSize != null) result.responseSize = responseSize;
+    if (payload != null) result.payload = payload;
+    if (fillUsername != null) result.fillUsername = fillUsername;
+    if (fillOauthScope != null) result.fillOauthScope = fillOauthScope;
+    if (responseCompressed != null)
       result.responseCompressed = responseCompressed;
-    }
-    if (responseStatus != null) {
-      result.responseStatus = responseStatus;
-    }
-    if (expectCompressed != null) {
-      result.expectCompressed = expectCompressed;
-    }
+    if (responseStatus != null) result.responseStatus = responseStatus;
+    if (expectCompressed != null) result.expectCompressed = expectCompressed;
     return result;
   }
-  SimpleRequest._() : super();
-  factory SimpleRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory SimpleRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  SimpleRequest._();
+
+  factory SimpleRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory SimpleRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'SimpleRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
       createEmptyInstance: create)
-    ..e<PayloadType>(
-        1, _omitFieldNames ? '' : 'responseType', $pb.PbFieldType.OE,
-        defaultOrMaker: PayloadType.COMPRESSABLE,
-        valueOf: PayloadType.valueOf,
+    ..aE<PayloadType>(1, _omitFieldNames ? '' : 'responseType',
         enumValues: PayloadType.values)
-    ..a<$core.int>(2, _omitFieldNames ? '' : 'responseSize', $pb.PbFieldType.O3)
+    ..aI(2, _omitFieldNames ? '' : 'responseSize')
     ..aOM<Payload>(3, _omitFieldNames ? '' : 'payload',
         subBuilder: Payload.create)
     ..aOB(4, _omitFieldNames ? '' : 'fillUsername')
@@ -311,21 +271,19 @@ class SimpleRequest extends $pb.GeneratedMessage {
         subBuilder: BoolValue.create)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  SimpleRequest clone() => SimpleRequest()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SimpleRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   SimpleRequest copyWith(void Function(SimpleRequest) updates) =>
       super.copyWith((message) => updates(message as SimpleRequest))
           as SimpleRequest;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static SimpleRequest create() => SimpleRequest._();
+  @$core.override
   SimpleRequest createEmptyInstance() => create();
   static $pb.PbList<SimpleRequest> createRepeated() =>
       $pb.PbList<SimpleRequest>();
@@ -340,40 +298,31 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   PayloadType get responseType => $_getN(0);
   @$pb.TagNumber(1)
-  set responseType(PayloadType v) {
-    setField(1, v);
-  }
-
+  set responseType(PayloadType value) => $_setField(1, value);
   @$pb.TagNumber(1)
   $core.bool hasResponseType() => $_has(0);
   @$pb.TagNumber(1)
-  void clearResponseType() => clearField(1);
+  void clearResponseType() => $_clearField(1);
 
   /// Desired payload size in the response from the server.
   @$pb.TagNumber(2)
   $core.int get responseSize => $_getIZ(1);
   @$pb.TagNumber(2)
-  set responseSize($core.int v) {
-    $_setSignedInt32(1, v);
-  }
-
+  set responseSize($core.int value) => $_setSignedInt32(1, value);
   @$pb.TagNumber(2)
   $core.bool hasResponseSize() => $_has(1);
   @$pb.TagNumber(2)
-  void clearResponseSize() => clearField(2);
+  void clearResponseSize() => $_clearField(2);
 
   /// Optional input payload sent along with the request.
   @$pb.TagNumber(3)
   Payload get payload => $_getN(2);
   @$pb.TagNumber(3)
-  set payload(Payload v) {
-    setField(3, v);
-  }
-
+  set payload(Payload value) => $_setField(3, value);
   @$pb.TagNumber(3)
   $core.bool hasPayload() => $_has(2);
   @$pb.TagNumber(3)
-  void clearPayload() => clearField(3);
+  void clearPayload() => $_clearField(3);
   @$pb.TagNumber(3)
   Payload ensurePayload() => $_ensure(2);
 
@@ -381,27 +330,21 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(4)
   $core.bool get fillUsername => $_getBF(3);
   @$pb.TagNumber(4)
-  set fillUsername($core.bool v) {
-    $_setBool(3, v);
-  }
-
+  set fillUsername($core.bool value) => $_setBool(3, value);
   @$pb.TagNumber(4)
   $core.bool hasFillUsername() => $_has(3);
   @$pb.TagNumber(4)
-  void clearFillUsername() => clearField(4);
+  void clearFillUsername() => $_clearField(4);
 
   /// Whether SimpleResponse should include OAuth scope.
   @$pb.TagNumber(5)
   $core.bool get fillOauthScope => $_getBF(4);
   @$pb.TagNumber(5)
-  set fillOauthScope($core.bool v) {
-    $_setBool(4, v);
-  }
-
+  set fillOauthScope($core.bool value) => $_setBool(4, value);
   @$pb.TagNumber(5)
   $core.bool hasFillOauthScope() => $_has(4);
   @$pb.TagNumber(5)
-  void clearFillOauthScope() => clearField(5);
+  void clearFillOauthScope() => $_clearField(5);
 
   /// Whether to request the server to compress the response. This field is
   /// "nullable" in order to interoperate seamlessly with clients not able to
@@ -410,14 +353,11 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(6)
   BoolValue get responseCompressed => $_getN(5);
   @$pb.TagNumber(6)
-  set responseCompressed(BoolValue v) {
-    setField(6, v);
-  }
-
+  set responseCompressed(BoolValue value) => $_setField(6, value);
   @$pb.TagNumber(6)
   $core.bool hasResponseCompressed() => $_has(5);
   @$pb.TagNumber(6)
-  void clearResponseCompressed() => clearField(6);
+  void clearResponseCompressed() => $_clearField(6);
   @$pb.TagNumber(6)
   BoolValue ensureResponseCompressed() => $_ensure(5);
 
@@ -425,14 +365,11 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(7)
   EchoStatus get responseStatus => $_getN(6);
   @$pb.TagNumber(7)
-  set responseStatus(EchoStatus v) {
-    setField(7, v);
-  }
-
+  set responseStatus(EchoStatus value) => $_setField(7, value);
   @$pb.TagNumber(7)
   $core.bool hasResponseStatus() => $_has(6);
   @$pb.TagNumber(7)
-  void clearResponseStatus() => clearField(7);
+  void clearResponseStatus() => $_clearField(7);
   @$pb.TagNumber(7)
   EchoStatus ensureResponseStatus() => $_ensure(6);
 
@@ -440,14 +377,11 @@ class SimpleRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(8)
   BoolValue get expectCompressed => $_getN(7);
   @$pb.TagNumber(8)
-  set expectCompressed(BoolValue v) {
-    setField(8, v);
-  }
-
+  set expectCompressed(BoolValue value) => $_setField(8, value);
   @$pb.TagNumber(8)
   $core.bool hasExpectCompressed() => $_has(7);
   @$pb.TagNumber(8)
-  void clearExpectCompressed() => clearField(8);
+  void clearExpectCompressed() => $_clearField(8);
   @$pb.TagNumber(8)
   BoolValue ensureExpectCompressed() => $_ensure(7);
 }
@@ -460,24 +394,20 @@ class SimpleResponse extends $pb.GeneratedMessage {
     $core.String? oauthScope,
   }) {
     final result = create();
-    if (payload != null) {
-      result.payload = payload;
-    }
-    if (username != null) {
-      result.username = username;
-    }
-    if (oauthScope != null) {
-      result.oauthScope = oauthScope;
-    }
+    if (payload != null) result.payload = payload;
+    if (username != null) result.username = username;
+    if (oauthScope != null) result.oauthScope = oauthScope;
     return result;
   }
-  SimpleResponse._() : super();
-  factory SimpleResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory SimpleResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  SimpleResponse._();
+
+  factory SimpleResponse.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory SimpleResponse.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'SimpleResponse',
@@ -489,21 +419,19 @@ class SimpleResponse extends $pb.GeneratedMessage {
     ..aOS(3, _omitFieldNames ? '' : 'oauthScope')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  SimpleResponse clone() => SimpleResponse()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SimpleResponse clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   SimpleResponse copyWith(void Function(SimpleResponse) updates) =>
       super.copyWith((message) => updates(message as SimpleResponse))
           as SimpleResponse;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static SimpleResponse create() => SimpleResponse._();
+  @$core.override
   SimpleResponse createEmptyInstance() => create();
   static $pb.PbList<SimpleResponse> createRepeated() =>
       $pb.PbList<SimpleResponse>();
@@ -516,14 +444,11 @@ class SimpleResponse extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
   @$pb.TagNumber(1)
-  set payload(Payload v) {
-    setField(1, v);
-  }
-
+  set payload(Payload value) => $_setField(1, value);
   @$pb.TagNumber(1)
   $core.bool hasPayload() => $_has(0);
   @$pb.TagNumber(1)
-  void clearPayload() => clearField(1);
+  void clearPayload() => $_clearField(1);
   @$pb.TagNumber(1)
   Payload ensurePayload() => $_ensure(0);
 
@@ -532,27 +457,21 @@ class SimpleResponse extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   $core.String get username => $_getSZ(1);
   @$pb.TagNumber(2)
-  set username($core.String v) {
-    $_setString(1, v);
-  }
-
+  set username($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasUsername() => $_has(1);
   @$pb.TagNumber(2)
-  void clearUsername() => clearField(2);
+  void clearUsername() => $_clearField(2);
 
   /// OAuth scope.
   @$pb.TagNumber(3)
   $core.String get oauthScope => $_getSZ(2);
   @$pb.TagNumber(3)
-  set oauthScope($core.String v) {
-    $_setString(2, v);
-  }
-
+  set oauthScope($core.String value) => $_setString(2, value);
   @$pb.TagNumber(3)
   $core.bool hasOauthScope() => $_has(2);
   @$pb.TagNumber(3)
-  void clearOauthScope() => clearField(3);
+  void clearOauthScope() => $_clearField(3);
 }
 
 /// Client-streaming request.
@@ -562,21 +481,19 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
     BoolValue? expectCompressed,
   }) {
     final result = create();
-    if (payload != null) {
-      result.payload = payload;
-    }
-    if (expectCompressed != null) {
-      result.expectCompressed = expectCompressed;
-    }
+    if (payload != null) result.payload = payload;
+    if (expectCompressed != null) result.expectCompressed = expectCompressed;
     return result;
   }
-  StreamingInputCallRequest._() : super();
-  factory StreamingInputCallRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory StreamingInputCallRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  StreamingInputCallRequest._();
+
+  factory StreamingInputCallRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory StreamingInputCallRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'StreamingInputCallRequest',
@@ -588,23 +505,20 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
         subBuilder: BoolValue.create)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  StreamingInputCallRequest clone() =>
-      StreamingInputCallRequest()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  StreamingInputCallRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   StreamingInputCallRequest copyWith(
           void Function(StreamingInputCallRequest) updates) =>
       super.copyWith((message) => updates(message as StreamingInputCallRequest))
           as StreamingInputCallRequest;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static StreamingInputCallRequest create() => StreamingInputCallRequest._();
+  @$core.override
   StreamingInputCallRequest createEmptyInstance() => create();
   static $pb.PbList<StreamingInputCallRequest> createRepeated() =>
       $pb.PbList<StreamingInputCallRequest>();
@@ -617,14 +531,11 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
   @$pb.TagNumber(1)
-  set payload(Payload v) {
-    setField(1, v);
-  }
-
+  set payload(Payload value) => $_setField(1, value);
   @$pb.TagNumber(1)
   $core.bool hasPayload() => $_has(0);
   @$pb.TagNumber(1)
-  void clearPayload() => clearField(1);
+  void clearPayload() => $_clearField(1);
   @$pb.TagNumber(1)
   Payload ensurePayload() => $_ensure(0);
 
@@ -635,14 +546,11 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   BoolValue get expectCompressed => $_getN(1);
   @$pb.TagNumber(2)
-  set expectCompressed(BoolValue v) {
-    setField(2, v);
-  }
-
+  set expectCompressed(BoolValue value) => $_setField(2, value);
   @$pb.TagNumber(2)
   $core.bool hasExpectCompressed() => $_has(1);
   @$pb.TagNumber(2)
-  void clearExpectCompressed() => clearField(2);
+  void clearExpectCompressed() => $_clearField(2);
   @$pb.TagNumber(2)
   BoolValue ensureExpectCompressed() => $_ensure(1);
 }
@@ -653,45 +561,42 @@ class StreamingInputCallResponse extends $pb.GeneratedMessage {
     $core.int? aggregatedPayloadSize,
   }) {
     final result = create();
-    if (aggregatedPayloadSize != null) {
+    if (aggregatedPayloadSize != null)
       result.aggregatedPayloadSize = aggregatedPayloadSize;
-    }
     return result;
   }
-  StreamingInputCallResponse._() : super();
-  factory StreamingInputCallResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory StreamingInputCallResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  StreamingInputCallResponse._();
+
+  factory StreamingInputCallResponse.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory StreamingInputCallResponse.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'StreamingInputCallResponse',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
       createEmptyInstance: create)
-    ..a<$core.int>(
-        1, _omitFieldNames ? '' : 'aggregatedPayloadSize', $pb.PbFieldType.O3)
+    ..aI(1, _omitFieldNames ? '' : 'aggregatedPayloadSize')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  StreamingInputCallResponse clone() =>
-      StreamingInputCallResponse()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  StreamingInputCallResponse clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   StreamingInputCallResponse copyWith(
           void Function(StreamingInputCallResponse) updates) =>
       super.copyWith(
               (message) => updates(message as StreamingInputCallResponse))
           as StreamingInputCallResponse;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static StreamingInputCallResponse create() => StreamingInputCallResponse._();
+  @$core.override
   StreamingInputCallResponse createEmptyInstance() => create();
   static $pb.PbList<StreamingInputCallResponse> createRepeated() =>
       $pb.PbList<StreamingInputCallResponse>();
@@ -704,14 +609,11 @@ class StreamingInputCallResponse extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.int get aggregatedPayloadSize => $_getIZ(0);
   @$pb.TagNumber(1)
-  set aggregatedPayloadSize($core.int v) {
-    $_setSignedInt32(0, v);
-  }
-
+  set aggregatedPayloadSize($core.int value) => $_setSignedInt32(0, value);
   @$pb.TagNumber(1)
   $core.bool hasAggregatedPayloadSize() => $_has(0);
   @$pb.TagNumber(1)
-  void clearAggregatedPayloadSize() => clearField(1);
+  void clearAggregatedPayloadSize() => $_clearField(1);
 }
 
 /// Configuration for a particular response.
@@ -722,50 +624,44 @@ class ResponseParameters extends $pb.GeneratedMessage {
     BoolValue? compressed,
   }) {
     final result = create();
-    if (size != null) {
-      result.size = size;
-    }
-    if (intervalUs != null) {
-      result.intervalUs = intervalUs;
-    }
-    if (compressed != null) {
-      result.compressed = compressed;
-    }
+    if (size != null) result.size = size;
+    if (intervalUs != null) result.intervalUs = intervalUs;
+    if (compressed != null) result.compressed = compressed;
     return result;
   }
-  ResponseParameters._() : super();
-  factory ResponseParameters.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ResponseParameters.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  ResponseParameters._();
+
+  factory ResponseParameters.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory ResponseParameters.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'ResponseParameters',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
       createEmptyInstance: create)
-    ..a<$core.int>(1, _omitFieldNames ? '' : 'size', $pb.PbFieldType.O3)
-    ..a<$core.int>(2, _omitFieldNames ? '' : 'intervalUs', $pb.PbFieldType.O3)
+    ..aI(1, _omitFieldNames ? '' : 'size')
+    ..aI(2, _omitFieldNames ? '' : 'intervalUs')
     ..aOM<BoolValue>(3, _omitFieldNames ? '' : 'compressed',
         subBuilder: BoolValue.create)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  ResponseParameters clone() => ResponseParameters()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ResponseParameters clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   ResponseParameters copyWith(void Function(ResponseParameters) updates) =>
       super.copyWith((message) => updates(message as ResponseParameters))
           as ResponseParameters;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static ResponseParameters create() => ResponseParameters._();
+  @$core.override
   ResponseParameters createEmptyInstance() => create();
   static $pb.PbList<ResponseParameters> createRepeated() =>
       $pb.PbList<ResponseParameters>();
@@ -778,28 +674,22 @@ class ResponseParameters extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.int get size => $_getIZ(0);
   @$pb.TagNumber(1)
-  set size($core.int v) {
-    $_setSignedInt32(0, v);
-  }
-
+  set size($core.int value) => $_setSignedInt32(0, value);
   @$pb.TagNumber(1)
   $core.bool hasSize() => $_has(0);
   @$pb.TagNumber(1)
-  void clearSize() => clearField(1);
+  void clearSize() => $_clearField(1);
 
   /// Desired interval between consecutive responses in the response stream in
   /// microseconds.
   @$pb.TagNumber(2)
   $core.int get intervalUs => $_getIZ(1);
   @$pb.TagNumber(2)
-  set intervalUs($core.int v) {
-    $_setSignedInt32(1, v);
-  }
-
+  set intervalUs($core.int value) => $_setSignedInt32(1, value);
   @$pb.TagNumber(2)
   $core.bool hasIntervalUs() => $_has(1);
   @$pb.TagNumber(2)
-  void clearIntervalUs() => clearField(2);
+  void clearIntervalUs() => $_clearField(2);
 
   /// Whether to request the server to compress the response. This field is
   /// "nullable" in order to interoperate seamlessly with clients not able to
@@ -808,14 +698,11 @@ class ResponseParameters extends $pb.GeneratedMessage {
   @$pb.TagNumber(3)
   BoolValue get compressed => $_getN(2);
   @$pb.TagNumber(3)
-  set compressed(BoolValue v) {
-    setField(3, v);
-  }
-
+  set compressed(BoolValue value) => $_setField(3, value);
   @$pb.TagNumber(3)
   $core.bool hasCompressed() => $_has(2);
   @$pb.TagNumber(3)
-  void clearCompressed() => clearField(3);
+  void clearCompressed() => $_clearField(3);
   @$pb.TagNumber(3)
   BoolValue ensureCompressed() => $_ensure(2);
 }
@@ -829,39 +716,30 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
     EchoStatus? responseStatus,
   }) {
     final result = create();
-    if (responseType != null) {
-      result.responseType = responseType;
-    }
-    if (responseParameters != null) {
+    if (responseType != null) result.responseType = responseType;
+    if (responseParameters != null)
       result.responseParameters.addAll(responseParameters);
-    }
-    if (payload != null) {
-      result.payload = payload;
-    }
-    if (responseStatus != null) {
-      result.responseStatus = responseStatus;
-    }
+    if (payload != null) result.payload = payload;
+    if (responseStatus != null) result.responseStatus = responseStatus;
     return result;
   }
-  StreamingOutputCallRequest._() : super();
-  factory StreamingOutputCallRequest.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory StreamingOutputCallRequest.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  StreamingOutputCallRequest._();
+
+  factory StreamingOutputCallRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory StreamingOutputCallRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'StreamingOutputCallRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
       createEmptyInstance: create)
-    ..e<PayloadType>(
-        1, _omitFieldNames ? '' : 'responseType', $pb.PbFieldType.OE,
-        defaultOrMaker: PayloadType.COMPRESSABLE,
-        valueOf: PayloadType.valueOf,
+    ..aE<PayloadType>(1, _omitFieldNames ? '' : 'responseType',
         enumValues: PayloadType.values)
-    ..pc<ResponseParameters>(
-        2, _omitFieldNames ? '' : 'responseParameters', $pb.PbFieldType.PM,
+    ..pPM<ResponseParameters>(2, _omitFieldNames ? '' : 'responseParameters',
         subBuilder: ResponseParameters.create)
     ..aOM<Payload>(3, _omitFieldNames ? '' : 'payload',
         subBuilder: Payload.create)
@@ -869,24 +747,21 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
         subBuilder: EchoStatus.create)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  StreamingOutputCallRequest clone() =>
-      StreamingOutputCallRequest()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  StreamingOutputCallRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   StreamingOutputCallRequest copyWith(
           void Function(StreamingOutputCallRequest) updates) =>
       super.copyWith(
               (message) => updates(message as StreamingOutputCallRequest))
           as StreamingOutputCallRequest;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static StreamingOutputCallRequest create() => StreamingOutputCallRequest._();
+  @$core.override
   StreamingOutputCallRequest createEmptyInstance() => create();
   static $pb.PbList<StreamingOutputCallRequest> createRepeated() =>
       $pb.PbList<StreamingOutputCallRequest>();
@@ -903,31 +778,25 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   PayloadType get responseType => $_getN(0);
   @$pb.TagNumber(1)
-  set responseType(PayloadType v) {
-    setField(1, v);
-  }
-
+  set responseType(PayloadType value) => $_setField(1, value);
   @$pb.TagNumber(1)
   $core.bool hasResponseType() => $_has(0);
   @$pb.TagNumber(1)
-  void clearResponseType() => clearField(1);
+  void clearResponseType() => $_clearField(1);
 
   /// Configuration for each expected response message.
   @$pb.TagNumber(2)
-  $core.List<ResponseParameters> get responseParameters => $_getList(1);
+  $pb.PbList<ResponseParameters> get responseParameters => $_getList(1);
 
   /// Optional input payload sent along with the request.
   @$pb.TagNumber(3)
   Payload get payload => $_getN(2);
   @$pb.TagNumber(3)
-  set payload(Payload v) {
-    setField(3, v);
-  }
-
+  set payload(Payload value) => $_setField(3, value);
   @$pb.TagNumber(3)
   $core.bool hasPayload() => $_has(2);
   @$pb.TagNumber(3)
-  void clearPayload() => clearField(3);
+  void clearPayload() => $_clearField(3);
   @$pb.TagNumber(3)
   Payload ensurePayload() => $_ensure(2);
 
@@ -935,14 +804,11 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(7)
   EchoStatus get responseStatus => $_getN(3);
   @$pb.TagNumber(7)
-  set responseStatus(EchoStatus v) {
-    setField(7, v);
-  }
-
+  set responseStatus(EchoStatus value) => $_setField(7, value);
   @$pb.TagNumber(7)
   $core.bool hasResponseStatus() => $_has(3);
   @$pb.TagNumber(7)
-  void clearResponseStatus() => clearField(7);
+  void clearResponseStatus() => $_clearField(7);
   @$pb.TagNumber(7)
   EchoStatus ensureResponseStatus() => $_ensure(3);
 }
@@ -953,18 +819,18 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
     Payload? payload,
   }) {
     final result = create();
-    if (payload != null) {
-      result.payload = payload;
-    }
+    if (payload != null) result.payload = payload;
     return result;
   }
-  StreamingOutputCallResponse._() : super();
-  factory StreamingOutputCallResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory StreamingOutputCallResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  StreamingOutputCallResponse._();
+
+  factory StreamingOutputCallResponse.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory StreamingOutputCallResponse.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'StreamingOutputCallResponse',
@@ -974,25 +840,22 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
         subBuilder: Payload.create)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  StreamingOutputCallResponse clone() =>
-      StreamingOutputCallResponse()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  StreamingOutputCallResponse clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   StreamingOutputCallResponse copyWith(
           void Function(StreamingOutputCallResponse) updates) =>
       super.copyWith(
               (message) => updates(message as StreamingOutputCallResponse))
           as StreamingOutputCallResponse;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static StreamingOutputCallResponse create() =>
       StreamingOutputCallResponse._();
+  @$core.override
   StreamingOutputCallResponse createEmptyInstance() => create();
   static $pb.PbList<StreamingOutputCallResponse> createRepeated() =>
       $pb.PbList<StreamingOutputCallResponse>();
@@ -1005,14 +868,11 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   Payload get payload => $_getN(0);
   @$pb.TagNumber(1)
-  set payload(Payload v) {
-    setField(1, v);
-  }
-
+  set payload(Payload value) => $_setField(1, value);
   @$pb.TagNumber(1)
   $core.bool hasPayload() => $_has(0);
   @$pb.TagNumber(1)
-  void clearPayload() => clearField(1);
+  void clearPayload() => $_clearField(1);
   @$pb.TagNumber(1)
   Payload ensurePayload() => $_ensure(0);
 }
@@ -1024,42 +884,40 @@ class ReconnectParams extends $pb.GeneratedMessage {
     $core.int? maxReconnectBackoffMs,
   }) {
     final result = create();
-    if (maxReconnectBackoffMs != null) {
+    if (maxReconnectBackoffMs != null)
       result.maxReconnectBackoffMs = maxReconnectBackoffMs;
-    }
     return result;
   }
-  ReconnectParams._() : super();
-  factory ReconnectParams.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ReconnectParams.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  ReconnectParams._();
+
+  factory ReconnectParams.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory ReconnectParams.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'ReconnectParams',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'grpc.testing'),
       createEmptyInstance: create)
-    ..a<$core.int>(
-        1, _omitFieldNames ? '' : 'maxReconnectBackoffMs', $pb.PbFieldType.O3)
+    ..aI(1, _omitFieldNames ? '' : 'maxReconnectBackoffMs')
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  ReconnectParams clone() => ReconnectParams()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ReconnectParams clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   ReconnectParams copyWith(void Function(ReconnectParams) updates) =>
       super.copyWith((message) => updates(message as ReconnectParams))
           as ReconnectParams;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static ReconnectParams create() => ReconnectParams._();
+  @$core.override
   ReconnectParams createEmptyInstance() => create();
   static $pb.PbList<ReconnectParams> createRepeated() =>
       $pb.PbList<ReconnectParams>();
@@ -1071,14 +929,11 @@ class ReconnectParams extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.int get maxReconnectBackoffMs => $_getIZ(0);
   @$pb.TagNumber(1)
-  set maxReconnectBackoffMs($core.int v) {
-    $_setSignedInt32(0, v);
-  }
-
+  set maxReconnectBackoffMs($core.int value) => $_setSignedInt32(0, value);
   @$pb.TagNumber(1)
   $core.bool hasMaxReconnectBackoffMs() => $_has(0);
   @$pb.TagNumber(1)
-  void clearMaxReconnectBackoffMs() => clearField(1);
+  void clearMaxReconnectBackoffMs() => $_clearField(1);
 }
 
 /// For reconnect interop test only.
@@ -1090,21 +945,19 @@ class ReconnectInfo extends $pb.GeneratedMessage {
     $core.Iterable<$core.int>? backoffMs,
   }) {
     final result = create();
-    if (passed != null) {
-      result.passed = passed;
-    }
-    if (backoffMs != null) {
-      result.backoffMs.addAll(backoffMs);
-    }
+    if (passed != null) result.passed = passed;
+    if (backoffMs != null) result.backoffMs.addAll(backoffMs);
     return result;
   }
-  ReconnectInfo._() : super();
-  factory ReconnectInfo.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory ReconnectInfo.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
+
+  ReconnectInfo._();
+
+  factory ReconnectInfo.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory ReconnectInfo.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       _omitMessageNames ? '' : 'ReconnectInfo',
@@ -1114,21 +967,19 @@ class ReconnectInfo extends $pb.GeneratedMessage {
     ..p<$core.int>(2, _omitFieldNames ? '' : 'backoffMs', $pb.PbFieldType.K3)
     ..hasRequiredFields = false;
 
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  ReconnectInfo clone() => ReconnectInfo()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  ReconnectInfo clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
   ReconnectInfo copyWith(void Function(ReconnectInfo) updates) =>
       super.copyWith((message) => updates(message as ReconnectInfo))
           as ReconnectInfo;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static ReconnectInfo create() => ReconnectInfo._();
+  @$core.override
   ReconnectInfo createEmptyInstance() => create();
   static $pb.PbList<ReconnectInfo> createRepeated() =>
       $pb.PbList<ReconnectInfo>();
@@ -1140,19 +991,17 @@ class ReconnectInfo extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.bool get passed => $_getBF(0);
   @$pb.TagNumber(1)
-  set passed($core.bool v) {
-    $_setBool(0, v);
-  }
-
+  set passed($core.bool value) => $_setBool(0, value);
   @$pb.TagNumber(1)
   $core.bool hasPassed() => $_has(0);
   @$pb.TagNumber(1)
-  void clearPassed() => clearField(1);
+  void clearPassed() => $_clearField(1);
 
   @$pb.TagNumber(2)
-  $core.List<$core.int> get backoffMs => $_getList(1);
+  $pb.PbList<$core.int> get backoffMs => $_getList(1);
 }
 
-const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
-const _omitMessageNames =
+const $core.bool _omitFieldNames =
+    $core.bool.fromEnvironment('protobuf.omit_field_names');
+const $core.bool _omitMessageNames =
     $core.bool.fromEnvironment('protobuf.omit_message_names');
