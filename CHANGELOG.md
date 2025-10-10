@@ -1,6 +1,6 @@
 ## 4.3.0
 
-- Require `package:protobuf` 5.0.0
+- Require `package:protobuf` version 5.0.0
 
 ## 4.2.0
 
