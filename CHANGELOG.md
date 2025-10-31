@@ -1,3 +1,7 @@
+## 4.3.1
+
+- Downgrade `meta` dependency to `1.16.0`
+
 ## 4.3.0
 
 - Require `package:protobuf` 5.0.0
