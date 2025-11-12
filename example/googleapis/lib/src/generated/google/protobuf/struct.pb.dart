@@ -76,7 +76,6 @@ class Struct extends $pb.GeneratedMessage with $mixin.StructMixin {
   static Struct create() => Struct._();
   @$core.override
   Struct createEmptyInstance() => create();
-  static $pb.PbList<Struct> createRepeated() => $pb.PbList<Struct>();
   @$core.pragma('dart2js:noInline')
   static Struct getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Struct>(create);
@@ -171,7 +170,6 @@ class Value extends $pb.GeneratedMessage with $mixin.ValueMixin {
   static Value create() => Value._();
   @$core.override
   Value createEmptyInstance() => create();
-  static $pb.PbList<Value> createRepeated() => $pb.PbList<Value>();
   @$core.pragma('dart2js:noInline')
   static Value getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Value>(create);
@@ -300,7 +298,6 @@ class ListValue extends $pb.GeneratedMessage with $mixin.ListValueMixin {
   static ListValue create() => ListValue._();
   @$core.override
   ListValue createEmptyInstance() => create();
-  static $pb.PbList<ListValue> createRepeated() => $pb.PbList<ListValue>();
   @$core.pragma('dart2js:noInline')
   static ListValue getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ListValue>(create);

@@ -106,7 +106,6 @@ class HttpRequest extends $pb.GeneratedMessage {
   static HttpRequest create() => HttpRequest._();
   @$core.override
   HttpRequest createEmptyInstance() => create();
-  static $pb.PbList<HttpRequest> createRepeated() => $pb.PbList<HttpRequest>();
   @$core.pragma('dart2js:noInline')
   static HttpRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<HttpRequest>(create);

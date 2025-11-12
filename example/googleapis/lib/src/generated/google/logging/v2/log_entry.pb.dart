@@ -135,7 +135,6 @@ class LogEntry extends $pb.GeneratedMessage {
   static LogEntry create() => LogEntry._();
   @$core.override
   LogEntry createEmptyInstance() => create();
-  static $pb.PbList<LogEntry> createRepeated() => $pb.PbList<LogEntry>();
   @$core.pragma('dart2js:noInline')
   static LogEntry getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<LogEntry>(create);
@@ -500,8 +499,6 @@ class LogEntryOperation extends $pb.GeneratedMessage {
   static LogEntryOperation create() => LogEntryOperation._();
   @$core.override
   LogEntryOperation createEmptyInstance() => create();
-  static $pb.PbList<LogEntryOperation> createRepeated() =>
-      $pb.PbList<LogEntryOperation>();
   @$core.pragma('dart2js:noInline')
   static LogEntryOperation getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<LogEntryOperation>(create);
@@ -600,8 +597,6 @@ class LogEntrySourceLocation extends $pb.GeneratedMessage {
   static LogEntrySourceLocation create() => LogEntrySourceLocation._();
   @$core.override
   LogEntrySourceLocation createEmptyInstance() => create();
-  static $pb.PbList<LogEntrySourceLocation> createRepeated() =>
-      $pb.PbList<LogEntrySourceLocation>();
   @$core.pragma('dart2js:noInline')
   static LogEntrySourceLocation getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<LogEntrySourceLocation>(create);
@@ -693,7 +688,6 @@ class LogSplit extends $pb.GeneratedMessage {
   static LogSplit create() => LogSplit._();
   @$core.override
   LogSplit createEmptyInstance() => create();
-  static $pb.PbList<LogSplit> createRepeated() => $pb.PbList<LogSplit>();
   @$core.pragma('dart2js:noInline')
   static LogSplit getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<LogSplit>(create);

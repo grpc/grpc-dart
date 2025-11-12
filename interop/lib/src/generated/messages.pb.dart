@@ -61,7 +61,6 @@ class BoolValue extends $pb.GeneratedMessage {
   static BoolValue create() => BoolValue._();
   @$core.override
   BoolValue createEmptyInstance() => create();
-  static $pb.PbList<BoolValue> createRepeated() => $pb.PbList<BoolValue>();
   @$core.pragma('dart2js:noInline')
   static BoolValue getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<BoolValue>(create);
@@ -122,7 +121,6 @@ class Payload extends $pb.GeneratedMessage {
   static Payload create() => Payload._();
   @$core.override
   Payload createEmptyInstance() => create();
-  static $pb.PbList<Payload> createRepeated() => $pb.PbList<Payload>();
   @$core.pragma('dart2js:noInline')
   static Payload getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Payload>(create);
@@ -193,7 +191,6 @@ class EchoStatus extends $pb.GeneratedMessage {
   static EchoStatus create() => EchoStatus._();
   @$core.override
   EchoStatus createEmptyInstance() => create();
-  static $pb.PbList<EchoStatus> createRepeated() => $pb.PbList<EchoStatus>();
   @$core.pragma('dart2js:noInline')
   static EchoStatus getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<EchoStatus>(create);
@@ -285,8 +282,6 @@ class SimpleRequest extends $pb.GeneratedMessage {
   static SimpleRequest create() => SimpleRequest._();
   @$core.override
   SimpleRequest createEmptyInstance() => create();
-  static $pb.PbList<SimpleRequest> createRepeated() =>
-      $pb.PbList<SimpleRequest>();
   @$core.pragma('dart2js:noInline')
   static SimpleRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<SimpleRequest>(create);
@@ -433,8 +428,6 @@ class SimpleResponse extends $pb.GeneratedMessage {
   static SimpleResponse create() => SimpleResponse._();
   @$core.override
   SimpleResponse createEmptyInstance() => create();
-  static $pb.PbList<SimpleResponse> createRepeated() =>
-      $pb.PbList<SimpleResponse>();
   @$core.pragma('dart2js:noInline')
   static SimpleResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<SimpleResponse>(create);
@@ -520,8 +513,6 @@ class StreamingInputCallRequest extends $pb.GeneratedMessage {
   static StreamingInputCallRequest create() => StreamingInputCallRequest._();
   @$core.override
   StreamingInputCallRequest createEmptyInstance() => create();
-  static $pb.PbList<StreamingInputCallRequest> createRepeated() =>
-      $pb.PbList<StreamingInputCallRequest>();
   @$core.pragma('dart2js:noInline')
   static StreamingInputCallRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<StreamingInputCallRequest>(create);
@@ -598,8 +589,6 @@ class StreamingInputCallResponse extends $pb.GeneratedMessage {
   static StreamingInputCallResponse create() => StreamingInputCallResponse._();
   @$core.override
   StreamingInputCallResponse createEmptyInstance() => create();
-  static $pb.PbList<StreamingInputCallResponse> createRepeated() =>
-      $pb.PbList<StreamingInputCallResponse>();
   @$core.pragma('dart2js:noInline')
   static StreamingInputCallResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<StreamingInputCallResponse>(create);
@@ -663,8 +652,6 @@ class ResponseParameters extends $pb.GeneratedMessage {
   static ResponseParameters create() => ResponseParameters._();
   @$core.override
   ResponseParameters createEmptyInstance() => create();
-  static $pb.PbList<ResponseParameters> createRepeated() =>
-      $pb.PbList<ResponseParameters>();
   @$core.pragma('dart2js:noInline')
   static ResponseParameters getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ResponseParameters>(create);
@@ -763,8 +750,6 @@ class StreamingOutputCallRequest extends $pb.GeneratedMessage {
   static StreamingOutputCallRequest create() => StreamingOutputCallRequest._();
   @$core.override
   StreamingOutputCallRequest createEmptyInstance() => create();
-  static $pb.PbList<StreamingOutputCallRequest> createRepeated() =>
-      $pb.PbList<StreamingOutputCallRequest>();
   @$core.pragma('dart2js:noInline')
   static StreamingOutputCallRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<StreamingOutputCallRequest>(create);
@@ -857,8 +842,6 @@ class StreamingOutputCallResponse extends $pb.GeneratedMessage {
       StreamingOutputCallResponse._();
   @$core.override
   StreamingOutputCallResponse createEmptyInstance() => create();
-  static $pb.PbList<StreamingOutputCallResponse> createRepeated() =>
-      $pb.PbList<StreamingOutputCallResponse>();
   @$core.pragma('dart2js:noInline')
   static StreamingOutputCallResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<StreamingOutputCallResponse>(create);
@@ -919,8 +902,6 @@ class ReconnectParams extends $pb.GeneratedMessage {
   static ReconnectParams create() => ReconnectParams._();
   @$core.override
   ReconnectParams createEmptyInstance() => create();
-  static $pb.PbList<ReconnectParams> createRepeated() =>
-      $pb.PbList<ReconnectParams>();
   @$core.pragma('dart2js:noInline')
   static ReconnectParams getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ReconnectParams>(create);
@@ -981,8 +962,6 @@ class ReconnectInfo extends $pb.GeneratedMessage {
   static ReconnectInfo create() => ReconnectInfo._();
   @$core.override
   ReconnectInfo createEmptyInstance() => create();
-  static $pb.PbList<ReconnectInfo> createRepeated() =>
-      $pb.PbList<ReconnectInfo>();
   @$core.pragma('dart2js:noInline')
   static ReconnectInfo getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ReconnectInfo>(create);

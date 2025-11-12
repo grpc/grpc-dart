@@ -70,7 +70,6 @@ class Status extends $pb.GeneratedMessage {
   static Status create() => Status._();
   @$core.override
   Status createEmptyInstance() => create();
-  static $pb.PbList<Status> createRepeated() => $pb.PbList<Status>();
   @$core.pragma('dart2js:noInline')
   static Status getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Status>(create);

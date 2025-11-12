@@ -56,7 +56,6 @@ class EchoRequest extends $pb.GeneratedMessage {
   static EchoRequest create() => EchoRequest._();
   @$core.override
   EchoRequest createEmptyInstance() => create();
-  static $pb.PbList<EchoRequest> createRepeated() => $pb.PbList<EchoRequest>();
   @$core.pragma('dart2js:noInline')
   static EchoRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<EchoRequest>(create);
@@ -112,8 +111,6 @@ class EchoResponse extends $pb.GeneratedMessage {
   static EchoResponse create() => EchoResponse._();
   @$core.override
   EchoResponse createEmptyInstance() => create();
-  static $pb.PbList<EchoResponse> createRepeated() =>
-      $pb.PbList<EchoResponse>();
   @$core.pragma('dart2js:noInline')
   static EchoResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<EchoResponse>(create);
@@ -177,8 +174,6 @@ class ServerStreamingEchoRequest extends $pb.GeneratedMessage {
   static ServerStreamingEchoRequest create() => ServerStreamingEchoRequest._();
   @$core.override
   ServerStreamingEchoRequest createEmptyInstance() => create();
-  static $pb.PbList<ServerStreamingEchoRequest> createRepeated() =>
-      $pb.PbList<ServerStreamingEchoRequest>();
   @$core.pragma('dart2js:noInline')
   static ServerStreamingEchoRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ServerStreamingEchoRequest>(create);
@@ -255,8 +250,6 @@ class ServerStreamingEchoResponse extends $pb.GeneratedMessage {
       ServerStreamingEchoResponse._();
   @$core.override
   ServerStreamingEchoResponse createEmptyInstance() => create();
-  static $pb.PbList<ServerStreamingEchoResponse> createRepeated() =>
-      $pb.PbList<ServerStreamingEchoResponse>();
   @$core.pragma('dart2js:noInline')
   static ServerStreamingEchoResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ServerStreamingEchoResponse>(create);
