@@ -55,7 +55,6 @@ class Empty extends $pb.GeneratedMessage {
   static Empty create() => Empty._();
   @$core.override
   Empty createEmptyInstance() => create();
-  static $pb.PbList<Empty> createRepeated() => $pb.PbList<Empty>();
   @$core.pragma('dart2js:noInline')
   static Empty getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Empty>(create);
