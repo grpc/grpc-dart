@@ -13,9 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export 'package:grpc/src/generated/google/protobuf/any.pb.dart';
-export 'package:grpc/src/generated/google/rpc/error_details.pb.dart';
-
 export 'src/auth/auth.dart' show BaseAuthenticator;
 export 'src/auth/auth_io.dart'
     show
