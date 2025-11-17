@@ -65,8 +65,6 @@ class DeleteLogRequest extends $pb.GeneratedMessage {
   static DeleteLogRequest create() => DeleteLogRequest._();
   @$core.override
   DeleteLogRequest createEmptyInstance() => create();
-  static $pb.PbList<DeleteLogRequest> createRepeated() =>
-      $pb.PbList<DeleteLogRequest>();
   @$core.pragma('dart2js:noInline')
   static DeleteLogRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<DeleteLogRequest>(create);
@@ -158,8 +156,6 @@ class WriteLogEntriesRequest extends $pb.GeneratedMessage {
   static WriteLogEntriesRequest create() => WriteLogEntriesRequest._();
   @$core.override
   WriteLogEntriesRequest createEmptyInstance() => create();
-  static $pb.PbList<WriteLogEntriesRequest> createRepeated() =>
-      $pb.PbList<WriteLogEntriesRequest>();
   @$core.pragma('dart2js:noInline')
   static WriteLogEntriesRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<WriteLogEntriesRequest>(create);
@@ -308,8 +304,6 @@ class WriteLogEntriesResponse extends $pb.GeneratedMessage {
   static WriteLogEntriesResponse create() => WriteLogEntriesResponse._();
   @$core.override
   WriteLogEntriesResponse createEmptyInstance() => create();
-  static $pb.PbList<WriteLogEntriesResponse> createRepeated() =>
-      $pb.PbList<WriteLogEntriesResponse>();
   @$core.pragma('dart2js:noInline')
   static WriteLogEntriesResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<WriteLogEntriesResponse>(create);
@@ -367,8 +361,6 @@ class WriteLogEntriesPartialErrors extends $pb.GeneratedMessage {
       WriteLogEntriesPartialErrors._();
   @$core.override
   WriteLogEntriesPartialErrors createEmptyInstance() => create();
-  static $pb.PbList<WriteLogEntriesPartialErrors> createRepeated() =>
-      $pb.PbList<WriteLogEntriesPartialErrors>();
   @$core.pragma('dart2js:noInline')
   static WriteLogEntriesPartialErrors getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<WriteLogEntriesPartialErrors>(create);
@@ -438,8 +430,6 @@ class ListLogEntriesRequest extends $pb.GeneratedMessage {
   static ListLogEntriesRequest create() => ListLogEntriesRequest._();
   @$core.override
   ListLogEntriesRequest createEmptyInstance() => create();
-  static $pb.PbList<ListLogEntriesRequest> createRepeated() =>
-      $pb.PbList<ListLogEntriesRequest>();
   @$core.pragma('dart2js:noInline')
   static ListLogEntriesRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ListLogEntriesRequest>(create);
@@ -567,8 +557,6 @@ class ListLogEntriesResponse extends $pb.GeneratedMessage {
   static ListLogEntriesResponse create() => ListLogEntriesResponse._();
   @$core.override
   ListLogEntriesResponse createEmptyInstance() => create();
-  static $pb.PbList<ListLogEntriesResponse> createRepeated() =>
-      $pb.PbList<ListLogEntriesResponse>();
   @$core.pragma('dart2js:noInline')
   static ListLogEntriesResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ListLogEntriesResponse>(create);
@@ -648,8 +636,6 @@ class ListMonitoredResourceDescriptorsRequest extends $pb.GeneratedMessage {
       ListMonitoredResourceDescriptorsRequest._();
   @$core.override
   ListMonitoredResourceDescriptorsRequest createEmptyInstance() => create();
-  static $pb.PbList<ListMonitoredResourceDescriptorsRequest> createRepeated() =>
-      $pb.PbList<ListMonitoredResourceDescriptorsRequest>();
   @$core.pragma('dart2js:noInline')
   static ListMonitoredResourceDescriptorsRequest getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<
@@ -733,9 +719,6 @@ class ListMonitoredResourceDescriptorsResponse extends $pb.GeneratedMessage {
       ListMonitoredResourceDescriptorsResponse._();
   @$core.override
   ListMonitoredResourceDescriptorsResponse createEmptyInstance() => create();
-  static $pb.PbList<ListMonitoredResourceDescriptorsResponse>
-      createRepeated() =>
-          $pb.PbList<ListMonitoredResourceDescriptorsResponse>();
   @$core.pragma('dart2js:noInline')
   static ListMonitoredResourceDescriptorsResponse getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<
@@ -810,8 +793,6 @@ class ListLogsRequest extends $pb.GeneratedMessage {
   static ListLogsRequest create() => ListLogsRequest._();
   @$core.override
   ListLogsRequest createEmptyInstance() => create();
-  static $pb.PbList<ListLogsRequest> createRepeated() =>
-      $pb.PbList<ListLogsRequest>();
   @$core.pragma('dart2js:noInline')
   static ListLogsRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ListLogsRequest>(create);
@@ -920,8 +901,6 @@ class ListLogsResponse extends $pb.GeneratedMessage {
   static ListLogsResponse create() => ListLogsResponse._();
   @$core.override
   ListLogsResponse createEmptyInstance() => create();
-  static $pb.PbList<ListLogsResponse> createRepeated() =>
-      $pb.PbList<ListLogsResponse>();
   @$core.pragma('dart2js:noInline')
   static ListLogsResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ListLogsResponse>(create);
@@ -995,8 +974,6 @@ class TailLogEntriesRequest extends $pb.GeneratedMessage {
   static TailLogEntriesRequest create() => TailLogEntriesRequest._();
   @$core.override
   TailLogEntriesRequest createEmptyInstance() => create();
-  static $pb.PbList<TailLogEntriesRequest> createRepeated() =>
-      $pb.PbList<TailLogEntriesRequest>();
   @$core.pragma('dart2js:noInline')
   static TailLogEntriesRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<TailLogEntriesRequest>(create);
@@ -1098,8 +1075,6 @@ class TailLogEntriesResponse_SuppressionInfo extends $pb.GeneratedMessage {
       TailLogEntriesResponse_SuppressionInfo._();
   @$core.override
   TailLogEntriesResponse_SuppressionInfo createEmptyInstance() => create();
-  static $pb.PbList<TailLogEntriesResponse_SuppressionInfo> createRepeated() =>
-      $pb.PbList<TailLogEntriesResponse_SuppressionInfo>();
   @$core.pragma('dart2js:noInline')
   static TailLogEntriesResponse_SuppressionInfo getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<
@@ -1176,8 +1151,6 @@ class TailLogEntriesResponse extends $pb.GeneratedMessage {
   static TailLogEntriesResponse create() => TailLogEntriesResponse._();
   @$core.override
   TailLogEntriesResponse createEmptyInstance() => create();
-  static $pb.PbList<TailLogEntriesResponse> createRepeated() =>
-      $pb.PbList<TailLogEntriesResponse>();
   @$core.pragma('dart2js:noInline')
   static TailLogEntriesResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<TailLogEntriesResponse>(create);

@@ -1,5 +1,5 @@
 name: grpc
-version: 4.3.1
+version: 5.0.0
 description: Dart implementation of gRPC, a high performance, open-source universal RPC framework.
 repository: https://github.com/grpc/grpc-dart
 
@@ -27,7 +27,7 @@ dependencies:
   meta: ^1.16.0
   http: ^1.4.0
   http2: ^2.3.1
-  protobuf: ^5.0.0
+  protobuf: ^5.1.0
   clock: ^1.1.2
   web: ^1.1.1
 

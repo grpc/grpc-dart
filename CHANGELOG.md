@@ -1,3 +1,7 @@
+## 5.0.0
+
+- Upgrading protos with new `googleapis` and `protobuf` versions.
+
 ## 4.3.1
 
 - Downgrade `meta` dependency to `1.16.0`

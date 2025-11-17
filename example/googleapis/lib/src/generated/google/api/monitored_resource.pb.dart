@@ -89,8 +89,6 @@ class MonitoredResourceDescriptor extends $pb.GeneratedMessage {
       MonitoredResourceDescriptor._();
   @$core.override
   MonitoredResourceDescriptor createEmptyInstance() => create();
-  static $pb.PbList<MonitoredResourceDescriptor> createRepeated() =>
-      $pb.PbList<MonitoredResourceDescriptor>();
   @$core.pragma('dart2js:noInline')
   static MonitoredResourceDescriptor getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<MonitoredResourceDescriptor>(create);
@@ -229,8 +227,6 @@ class MonitoredResource extends $pb.GeneratedMessage {
   static MonitoredResource create() => MonitoredResource._();
   @$core.override
   MonitoredResource createEmptyInstance() => create();
-  static $pb.PbList<MonitoredResource> createRepeated() =>
-      $pb.PbList<MonitoredResource>();
   @$core.pragma('dart2js:noInline')
   static MonitoredResource getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<MonitoredResource>(create);
@@ -313,8 +309,6 @@ class MonitoredResourceMetadata extends $pb.GeneratedMessage {
   static MonitoredResourceMetadata create() => MonitoredResourceMetadata._();
   @$core.override
   MonitoredResourceMetadata createEmptyInstance() => create();
-  static $pb.PbList<MonitoredResourceMetadata> createRepeated() =>
-      $pb.PbList<MonitoredResourceMetadata>();
   @$core.pragma('dart2js:noInline')
   static MonitoredResourceMetadata getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<MonitoredResourceMetadata>(create);
