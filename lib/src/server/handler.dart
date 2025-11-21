@@ -364,7 +364,7 @@ class ServerHandler extends ServiceCall {
     };
 
     outgoingHeadersMap.addAll(_customHeaders!);
-    _customHeaders = null;
+    _customHeaders = <String, String>{};
 
     final outgoingHeaders = <Header>[];
     outgoingHeadersMap.forEach(
@@ -393,7 +393,7 @@ class ServerHandler extends ServiceCall {
         ..remove(':status')
         ..remove('content-type');
       outgoingTrailersMap.addAll(_customHeaders!);
-      _customHeaders = null;
+      _customHeaders = <String, String>{};
       _headersSent = true;
     }
     _customTrailers!
