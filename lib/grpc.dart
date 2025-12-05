@@ -39,6 +39,18 @@ export 'src/client/options.dart'
 export 'src/client/proxy.dart' show Proxy;
 export 'src/client/transport/http2_credentials.dart'
     show BadCertificateHandler, allowBadCertificates, ChannelCredentials;
+export 'src/generated/google/rpc/error_details.pb.dart'
+    show
+        RetryInfo,
+        DebugInfo,
+        QuotaFailure,
+        ErrorInfo,
+        PreconditionFailure,
+        BadRequest,
+        RequestInfo,
+        ResourceInfo,
+        Help,
+        LocalizedMessage;
 export 'src/server/call.dart' show ServiceCall;
 export 'src/server/interceptor.dart'
     show Interceptor, ServerInterceptor, ServerStreamingInvoker;
