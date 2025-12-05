@@ -1,3 +1,7 @@
+## 5.1.0
+
+- Upgrade to package `protobuf:6.0.0`.
+
 ## 5.0.0
 
 - Upgrading protos with new `googleapis` and `protobuf` versions.
