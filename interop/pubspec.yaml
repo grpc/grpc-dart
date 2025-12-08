@@ -12,7 +12,7 @@ dependencies:
   async: any
   collection: any
   grpc: any
-  protobuf: any
+  protobuf: ">=5.1.0 <7.0.0"
 
 dev_dependencies:
   lints: ^6.0.0

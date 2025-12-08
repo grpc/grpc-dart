@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   grpc: any
-  protobuf: any
+  protobuf: ">=5.1.0 <7.0.0"
   web: any
 
 dev_dependencies:
