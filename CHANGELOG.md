@@ -1,3 +1,8 @@
+## 5.1.0
+
+- Added `protos.dart` library.
+- Require `protobuf:6.0.0`.
+
 ## 5.0.0
 
 - Upgrading protos with new `googleapis` and `protobuf` versions.
