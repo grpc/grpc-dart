@@ -276,6 +276,28 @@ class ServerHandler extends ServiceCall {
   // -- Active state, incoming data --
 
   void _onDataActive(GrpcMessage message) {
+    try {
+      onDataReceived?.add(null);
+    } catch (error, stackTrace) {
+      final grpcError = GrpcError.internal(
+        'Error notifying data received: $error',
+      );
+      try {
+        _sendError(grpcError, stackTrace);
+      } catch (_) {
+        // Ignore any errors here.
+      }
+      try {
+        _requests!
+          ..addError(grpcError, stackTrace)
+          ..close();
+      } catch (_) {
+        // Ignore any errors here.
+      }
+      // End processing because request cannot be handled properly.
+      return;
+    }
+
     if (message is! GrpcData) {
       final error = GrpcError.unimplemented('Expected request');
       _sendError(error);
@@ -294,7 +316,6 @@ class ServerHandler extends ServiceCall {
       return;
     }
 
-    onDataReceived?.add(null);
     final data = message;
     Object? request;
     try {
