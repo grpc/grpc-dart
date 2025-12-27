@@ -283,11 +283,6 @@ class ServerHandler extends ServiceCall {
         'Error notifying data received: $error',
       );
       try {
-        _sendError(grpcError, stackTrace);
-      } catch (_) {
-        // Ignore any errors here.
-      }
-      try {
         _requests!
           ..addError(grpcError, stackTrace)
           ..close();
