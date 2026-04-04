@@ -16,6 +16,8 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:http2/transport.dart' show TransportConnectionException;
+
 import '../shared/codec.dart';
 import '../shared/message.dart';
 import '../shared/profiler.dart';
@@ -437,6 +439,17 @@ class ClientCall<Q, R> implements Response {
   void _onResponseError(Object error, StackTrace stackTrace) {
     if (error is GrpcError) {
       _responseError(error, stackTrace);
+      return;
+    }
+    // A GOAWAY with NO_ERROR (errorCode 0) signals a graceful server shutdown.
+    // Map to UNAVAILABLE so retry middleware can reconnect transparently
+    // instead of surfacing UNKNOWN to the caller. Any non-zero errorCode is a
+    // real connection failure and retains the UNKNOWN mapping below.
+    if (error is TransportConnectionException && error.errorCode == 0) {
+      _responseError(
+        GrpcError.unavailable('Server initiated graceful shutdown: $error'),
+        stackTrace,
+      );
       return;
     }
     _responseError(GrpcError.unknown(error.toString()), stackTrace);
