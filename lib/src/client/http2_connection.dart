@@ -207,8 +207,17 @@ class Http2ClientConnection implements connection.ClientConnection {
     );
   }
 
+  /// Calls that have been dispatched to an active transport stream.
+  /// When the connection is torn down (connectionTimeout-triggered refresh or
+  /// shutdown), active calls are notified via [onConnectionError] so they
+  /// surface as errors rather than hanging indefinitely.
+  /// See: https://github.com/grpc/grpc-dart/issues/752
+  final Set<ClientCall> _activeCalls = {};
+
   void _startCall(ClientCall call) {
     if (call.isCancelled) return;
+    _activeCalls.add(call);
+    call.onDone.then((_) => _activeCalls.remove(call));
     call.onConnectionReady(this);
   }
 
@@ -307,6 +316,15 @@ class Http2ClientConnection implements connection.ClientConnection {
     _transportConnection = null;
     keepAliveManager?.onTransportTermination();
     keepAliveManager = null;
+    if (_activeCalls.isNotEmpty) {
+      final error = GrpcError.unavailable(
+        'Connection reset: connectionTimeout exceeded or transport closed',
+      );
+      for (final call in List.of(_activeCalls)) {
+        call.onConnectionError(error);
+      }
+      _activeCalls.clear();
+    }
   }
 
   void _abandonConnection() {
@@ -414,7 +432,12 @@ class SocketTransportConnector implements ClientTransportConnector {
   }
 
   Future<Socket> initSocket(Object host, int port) async {
-    return await Socket.connect(host, port, timeout: _options.connectTimeout);
+    return await Socket.connect(
+      host,
+      port,
+      timeout: _options.connectTimeout,
+      sourceAddress: _options.sourceAddress,
+    );
   }
 
   void _sendConnect(Map<String, String> headers) {

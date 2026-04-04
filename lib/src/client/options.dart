@@ -62,6 +62,16 @@ class ChannelOptions {
   final ClientKeepAliveOptions keepAlive;
   final Proxy? proxy;
 
+  /// The local address to bind when creating the socket connection.
+  ///
+  /// Accepts [InternetAddress] or [String]. Passed directly to
+  /// [Socket.connect]'s `sourceAddress` parameter. Useful on IVI Linux
+  /// head-units that communicate via a specific loopback interface or when
+  /// the outgoing interface must be pinned for routing purposes.
+  /// Defaults to null (OS assigns the source address).
+  /// See: https://github.com/grpc/grpc-dart/issues/758
+  final Object? sourceAddress;
+
   const ChannelOptions({
     this.credentials = const ChannelCredentials.secure(),
     this.idleTimeout = defaultIdleTimeout,
@@ -72,5 +82,6 @@ class ChannelOptions {
     this.codecRegistry,
     this.keepAlive = const ClientKeepAliveOptions(),
     this.proxy,
+    this.sourceAddress,
   });
 }
