@@ -115,10 +115,20 @@ class Http2ClientConnection implements connection.ClientConnection {
               options: options.keepAlive,
               ping: () {
                 if (transport.isOpen) {
-                  transport.ping();
+                  // Errors are handled via the keepalive timeout; the
+                  // returned future errors when terminate() tears the
+                  // transport down mid-ping and must not surface as an
+                  // unhandled async exception.
+                  transport.ping().catchError((_) {});
                 }
               },
-              onPingTimeout: () => transport.finish(),
+              // terminate(), not finish(): finish() waits for active
+              // streams to drain, which never happens on a silently
+              // partitioned connection — the exact condition keepalive
+              // exists to detect. terminate() hard-closes the transport
+              // so in-flight calls fail fast (matches gRPC C-core
+              // keepalive watchdog behavior).
+              onPingTimeout: () => transport.terminate(),
             );
             transport.onFrameReceived.listen(
               (_) => keepAliveManager?.onFrameReceived(),
