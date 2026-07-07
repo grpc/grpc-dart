@@ -18,10 +18,6 @@ import 'package:test/test.dart';
 
 /// Test functionality for Unix domain socket.
 void testUds(String name, FutureOr<void> Function(InternetAddress) testCase) {
-  if (Platform.isWindows) {
-    return;
-  }
-
   test(name, () async {
     final tempDir = await Directory.systemTemp.createTemp();
     final address = InternetAddress(
