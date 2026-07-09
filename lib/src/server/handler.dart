@@ -30,7 +30,8 @@ import 'interceptor.dart';
 import 'service.dart';
 
 typedef ServiceLookup = Service? Function(String service);
-typedef GrpcErrorHandler = void Function(GrpcError error, StackTrace? trace);
+typedef GrpcErrorHandler = GrpcError? Function(
+    GrpcError error, StackTrace? trace);
 
 /// Handles an incoming gRPC call.
 class ServerHandler extends ServiceCall {
@@ -465,7 +466,7 @@ class ServerHandler extends ServiceCall {
   }
 
   void _sendError(GrpcError error, [StackTrace? trace]) {
-    _errorHandler?.call(error, trace);
+    error = _errorHandler?.call(error, trace) ?? error;
 
     sendTrailers(
       status: error.code,
