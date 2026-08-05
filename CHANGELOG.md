@@ -1,3 +1,9 @@
+## 5.1.1
+
+- Enable Unix domain sockets (UDS) tests on Windows, and modify README to
+  indicate UDS are supported (requires Dart SDK >= 3.11.0, minimum version
+  in `pubspec.yaml` is not bumped as later SDK are only needed for UDS support).
+
 ## 5.1.0
 
 - Added `protos.dart` library.

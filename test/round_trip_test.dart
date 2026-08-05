@@ -158,7 +158,7 @@ Future<void> main() async {
       2,
       3,
     ]);
-    server.shutdown();
+    await server.shutdown();
   });
 
   testTcpAndUds('round trip with outgoing and incoming compression', (
@@ -223,7 +223,7 @@ Future<void> main() async {
       2,
       3,
     ]);
-    server.shutdown();
+    await server.shutdown();
   });
 
   test('exception in onMetadataException', () async {
