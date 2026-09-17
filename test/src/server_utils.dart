@@ -314,7 +314,7 @@ abstract class _Harness {
       timeout,
       metadata,
       null,
-      userAgent: 'dart-grpc/1.0.0 test',
+      userAgent: 'grpc-dart/1.0.0 test',
     );
     toServer.add(HeadersStreamMessage(headers));
   }
