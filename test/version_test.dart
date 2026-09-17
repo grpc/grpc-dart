@@ -20,7 +20,7 @@ import 'package:grpc/src/version.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('packageVersion matches pubspec.yaml version', () {
+  test('packageVersion matches pubspec.yaml version', testOn: 'vm', () {
     final pubspecContent = File('pubspec.yaml').readAsStringSync();
     final match = RegExp(
       r'^version:\s*(\S+)',
@@ -30,9 +30,25 @@ void main() {
     expect(packageVersion, match!.group(1));
   });
 
-  test('defaultUserAgent follows gRPC HTTP/2 spec format', () {
-    final sdkVersion = Platform.version.split(' ').first;
-    expect(defaultUserAgent, 'grpc-dart/$packageVersion (dart/$sdkVersion)');
+  test(
+    'defaultUserAgent follows gRPC HTTP/2 spec format on VM',
+    testOn: 'vm',
+    () {
+      final sdkVersion = Platform.version.split(' ').first;
+      expect(defaultUserAgent, 'grpc-dart/$packageVersion (dart/$sdkVersion)');
+    },
+  );
+
+  test(
+    'defaultUserAgent follows gRPC HTTP/2 spec format on browser',
+    testOn: 'browser',
+    () {
+      expect(defaultUserAgent, 'grpc-dart/$packageVersion');
+    },
+  );
+
+  test('ChannelOptions resolves defaultUserAgent and custom userAgent', () {
+    expect(defaultUserAgent, startsWith('grpc-dart/$packageVersion'));
     expect(const ChannelOptions().userAgent, defaultUserAgent);
     expect(
       const ChannelOptions(userAgent: 'custom-agent/1.0').userAgent,
