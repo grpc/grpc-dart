@@ -66,15 +66,11 @@ void main() {
     await server.shutdown();
   });
 
-  test(
-    'Sending and receiving over secure proxy works',
-    () async {
-      final echoRequest = EchoRequest(message: 'blablablubb');
-      final echoResponse = await fakeClient.echo(echoRequest);
-      expect(echoResponse.message, 'blibliblabb');
-    },
-    skip: 'Run this test iff you have a proxy running.',
-  );
+  test('Sending and receiving over secure proxy works', () async {
+    final echoRequest = EchoRequest(message: 'blablablubb');
+    final echoResponse = await fakeClient.echo(echoRequest);
+    expect(echoResponse.message, 'blibliblabb');
+  }, skip: 'Run this test iff you have a proxy running.');
 }
 
 class FakeEchoService extends EchoServiceBase {
