@@ -1,4 +1,4 @@
-## 5.1.1-wip
+## 5.1.1
 
 - Update default `user-agent` header from `dart-grpc/2.0.0` to the gRPC HTTP/2
   specification format `grpc-dart/<package_version> (dart/<sdk_version>)`.
