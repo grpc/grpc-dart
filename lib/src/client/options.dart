@@ -19,10 +19,10 @@ import '../shared/codec_registry.dart';
 import 'client_keepalive.dart';
 import 'proxy.dart';
 import 'transport/http2_credentials.dart';
-import 'user_agent_web.dart' if (dart.library.io) 'user_agent_io.dart';
+import 'user_agent_io.dart' if (dart.library.js_interop) 'user_agent_web.dart';
 
-export 'user_agent_web.dart'
-    if (dart.library.io) 'user_agent_io.dart'
+export 'user_agent_io.dart'
+    if (dart.library.js_interop) 'user_agent_web.dart'
     show defaultUserAgent;
 
 const defaultIdleTimeout = Duration(minutes: 5);

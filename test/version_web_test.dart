@@ -13,5 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// The current version of `package:grpc`, kept in sync with `pubspec.yaml`.
-const packageVersion = '5.2.0';
+@TestOn('browser')
+library;
+
+import 'package:grpc/src/client/user_agent_web.dart';
+import 'package:grpc/src/version.dart';
+import 'package:test/test.dart';
+
+void main() {
+  test('defaultUserAgent follows gRPC HTTP/2 spec format on browser', () {
+    expect(defaultUserAgent, 'grpc-dart/$packageVersion');
+  });
+}

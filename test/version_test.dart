@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+@TestOn('vm')
+library;
+
 import 'dart:io';
 
 import 'package:grpc/src/client/options.dart';
@@ -20,7 +23,7 @@ import 'package:grpc/src/version.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('packageVersion matches pubspec.yaml version', testOn: 'vm', () {
+  test('packageVersion matches pubspec.yaml version', () {
     final pubspecContent = File('pubspec.yaml').readAsStringSync();
     final match = RegExp(
       r'^version:\s*(\S+)',
@@ -30,22 +33,10 @@ void main() {
     expect(packageVersion, match!.group(1));
   });
 
-  test(
-    'defaultUserAgent follows gRPC HTTP/2 spec format on VM',
-    testOn: 'vm',
-    () {
-      final sdkVersion = Platform.version.split(' ').first;
-      expect(defaultUserAgent, 'grpc-dart/$packageVersion (dart/$sdkVersion)');
-    },
-  );
-
-  test(
-    'defaultUserAgent follows gRPC HTTP/2 spec format on browser',
-    testOn: 'browser',
-    () {
-      expect(defaultUserAgent, 'grpc-dart/$packageVersion');
-    },
-  );
+  test('defaultUserAgent follows gRPC HTTP/2 spec format on VM', () {
+    final sdkVersion = Platform.version.split(' ').first;
+    expect(defaultUserAgent, 'grpc-dart/$packageVersion (dart/$sdkVersion)');
+  });
 
   test('ChannelOptions resolves defaultUserAgent and custom userAgent', () {
     expect(defaultUserAgent, startsWith('grpc-dart/$packageVersion'));
