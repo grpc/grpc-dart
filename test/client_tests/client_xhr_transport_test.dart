@@ -24,6 +24,7 @@ import 'package:grpc/src/client/call.dart';
 import 'package:grpc/src/client/transport/xhr_transport.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:grpc/src/shared/status.dart';
+import 'package:grpc/src/version.dart';
 import 'package:mockito/mockito.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:test/test.dart';
@@ -112,7 +113,7 @@ void main() {
     verify(
       connection.latestRequest.setRequestHeader(
         'X-User-Agent',
-        'grpc-web-dart/0.1',
+        'grpc-web-dart/$packageVersion',
       ),
     );
     verify(connection.latestRequest.setRequestHeader('X-Grpc-Web', '1'));
@@ -142,7 +143,7 @@ void main() {
       verify(
         connection.latestRequest.open(
           'POST',
-          'test:path?%24httpHeaders=header_1%3Avalue_1%0D%0Aheader_2%3Avalue_2%0D%0AContent-Type%3Aapplication%2Fgrpc-web%2Bproto%0D%0AX-User-Agent%3Agrpc-web-dart%2F0.1%0D%0AX-Grpc-Web%3A1%0D%0A',
+          'test:path?%24httpHeaders=header_1%3Avalue_1%0D%0Aheader_2%3Avalue_2%0D%0AContent-Type%3Aapplication%2Fgrpc-web%2Bproto%0D%0AX-User-Agent%3Agrpc-web-dart%2F$packageVersion%0D%0AX-Grpc-Web%3A1%0D%0A',
         ),
       );
       verify(
@@ -229,7 +230,7 @@ void main() {
         'header_1': 'value_1',
         'header_2': 'value_2',
         'Content-Type': 'application/grpc-web+proto',
-        'X-User-Agent': 'grpc-web-dart/0.1',
+        'X-User-Agent': 'grpc-web-dart/$packageVersion',
         'X-Grpc-Web': '1',
       });
       verify(
@@ -241,7 +242,7 @@ void main() {
       verify(
         connection.latestRequest.setRequestHeader(
           'X-User-Agent',
-          'grpc-web-dart/0.1',
+          'grpc-web-dart/$packageVersion',
         ),
       );
       verify(connection.latestRequest.setRequestHeader('X-Grpc-Web', '1'));

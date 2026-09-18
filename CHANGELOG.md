@@ -1,3 +1,9 @@
+## 5.2.0
+
+- Update default `user-agent` header from `dart-grpc/2.0.0` to the gRPC HTTP/2
+  specification format `grpc-dart/<package_version> (dart/<sdk_version>)` (and
+  `grpc-web-dart/<package_version>` for `X-User-Agent` on gRPC-Web).
+
 ## 5.1.0
 
 - Added `protos.dart` library.

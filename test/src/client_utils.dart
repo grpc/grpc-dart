@@ -71,7 +71,7 @@ class FakeChannelOptions implements ChannelOptions {
   @override
   Duration? connectTimeout;
   @override
-  String userAgent = 'dart-grpc/1.0.0 test';
+  String userAgent = 'grpc-dart/1.0.0 test';
   @override
   BackoffStrategy backoffStrategy = testBackoff;
   @override

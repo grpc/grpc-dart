@@ -23,6 +23,7 @@ import 'package:web/web.dart';
 import '../../client/call.dart';
 import '../../shared/message.dart';
 import '../../shared/status.dart';
+import '../../version.dart';
 import '../connection.dart';
 import 'cors.dart' as cors;
 import 'transport.dart';
@@ -301,7 +302,7 @@ class XhrClientConnection implements ClientConnection {
     // gRPC-web headers.
     if (_getContentTypeHeader(metadata) == null) {
       metadata['Content-Type'] = 'application/grpc-web+proto';
-      metadata['X-User-Agent'] = 'grpc-web-dart/0.1';
+      metadata['X-User-Agent'] = 'grpc-web-dart/$packageVersion';
       metadata['X-Grpc-Web'] = '1';
     }
 

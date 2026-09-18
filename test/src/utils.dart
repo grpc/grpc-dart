@@ -46,7 +46,7 @@ void validateRequestHeaders(
   expect(headers['grpc-timeout'], timeout);
   expect(headers['content-type'], 'application/grpc');
   expect(headers['te'], 'trailers');
-  expect(headers['user-agent'], startsWith('dart-grpc/'));
+  expect(headers['user-agent'], startsWith('grpc-dart/'));
 
   customHeaders?.forEach((key, value) {
     expect(headers[key], value);
