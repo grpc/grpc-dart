@@ -19,6 +19,11 @@ import '../shared/codec_registry.dart';
 import 'client_keepalive.dart';
 import 'proxy.dart';
 import 'transport/http2_credentials.dart';
+import 'user_agent_io.dart' if (dart.library.js_interop) 'user_agent_web.dart';
+
+export 'user_agent_io.dart'
+    if (dart.library.js_interop) 'user_agent_web.dart'
+    show defaultUserAgent;
 
 const defaultIdleTimeout = Duration(minutes: 5);
 
@@ -26,7 +31,6 @@ const defaultIdleTimeout = Duration(minutes: 5);
 /// connection after precisely 1 hour. So we *proactively* refresh our
 /// connection after 50 minutes. This will avoid one failed RPC call.
 const defaultConnectionTimeOut = Duration(minutes: 50);
-const defaultUserAgent = 'dart-grpc/2.0.0';
 
 typedef BackoffStrategy = Duration Function(Duration? lastBackoff);
 
@@ -58,19 +62,20 @@ class ChannelOptions {
   /// a timeout may occur sooner than specified in [connectTimeout].
   final Duration? connectTimeout;
   final BackoffStrategy backoffStrategy;
-  final String userAgent;
+  final String? _userAgent;
+  String get userAgent => _userAgent ?? defaultUserAgent;
   final ClientKeepAliveOptions keepAlive;
   final Proxy? proxy;
 
   const ChannelOptions({
     this.credentials = const ChannelCredentials.secure(),
     this.idleTimeout = defaultIdleTimeout,
-    this.userAgent = defaultUserAgent,
+    String? userAgent,
     this.backoffStrategy = defaultBackoffStrategy,
     this.connectTimeout,
     this.connectionTimeout = defaultConnectionTimeOut,
     this.codecRegistry,
     this.keepAlive = const ClientKeepAliveOptions(),
     this.proxy,
-  });
+  }) : _userAgent = userAgent;
 }
