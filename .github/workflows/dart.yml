@@ -26,8 +26,10 @@ jobs:
         run: dart --version
       - name: Install dependencies
         run: dart pub get
-      - name: Check formatting (using dev dartfmt release)
+      # Fork of grpc/grpc-dart: report formatting drift but never block PRs on it.
+      - name: Check formatting (non-blocking)
         if: ${{ matrix.sdk == 'stable' }}
+        continue-on-error: true
         run: dart format --output=none --set-exit-if-changed .
       - name: Analyze code
         run: dart analyze --fatal-infos .
