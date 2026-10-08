@@ -151,6 +151,7 @@ class ServerHandler extends ServiceCall {
   // -- Idle state, incoming data --
 
   void _onDataIdle(GrpcMessage headerMessage) async {
+    if (isCanceled) return;
     onDataReceived?.add(null);
     if (headerMessage is! GrpcMetadata) {
       _sendError(GrpcError.unimplemented('Expected header frame'));
@@ -276,6 +277,7 @@ class ServerHandler extends ServiceCall {
   // -- Active state, incoming data --
 
   void _onDataActive(GrpcMessage message) {
+    if (isCanceled) return;
     if (message is! GrpcData) {
       final error = GrpcError.unimplemented('Expected request');
       _sendError(error);
@@ -316,6 +318,7 @@ class ServerHandler extends ServiceCall {
   // -- Active state, outgoing response data --
 
   void _onResponse(dynamic response) {
+    if (isCanceled) return;
     try {
       final bytes = _descriptor.serialize(response);
       if (!_headersSent) {
@@ -336,10 +339,12 @@ class ServerHandler extends ServiceCall {
   }
 
   void _onResponseDone() {
+    if (isCanceled) return;
     sendTrailers();
   }
 
   void _onResponseError(Object error, StackTrace trace) {
+    if (isCanceled) return;
     if (error is GrpcError) {
       _sendError(error, trace);
     } else {
@@ -443,6 +448,7 @@ class ServerHandler extends ServiceCall {
   }
 
   void _onDoneExpected() {
+    if (isCanceled) return;
     if (!(_hasReceivedRequest || _descriptor.streamingRequest)) {
       final error = GrpcError.unimplemented('No request received');
       _sendError(error);
