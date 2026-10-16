@@ -1,3 +1,13 @@
+## 5.2.1-wip
+
+- Terminate the transport when a keepalive ping times out, instead of finishing
+  it: a graceful finish never ends the calls bound to a silently dead
+  connection, so they hung until the OS gave up on TCP. Pending keepalive pings
+  no longer surface an unhandled error when the transport is terminated.
+- The keepalive pings a transport that cannot open a stream, so a draining
+  transport or one at the peer's concurrent-stream limit is declared dead only
+  when it stops answering.
+
 ## 5.2.0
 
 - Update default `user-agent` header from `dart-grpc/2.0.0` to the gRPC HTTP/2

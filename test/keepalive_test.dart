@@ -33,6 +33,7 @@ void main() {
   late FakeClientChannel fakeChannel;
   late EchoServiceClient unresponsiveClient;
   late FakeClientChannel unresponsiveChannel;
+  late ClientKeepAliveOptions clientOptions;
 
   final pingInterval = Duration(milliseconds: 10);
   final timeout = Duration(milliseconds: 30);
@@ -43,7 +44,7 @@ void main() {
       maxBadPings: maxBadPings,
       minIntervalBetweenPingsWithoutData: Duration(milliseconds: 10),
     );
-    final clientOptions = ClientKeepAliveOptions(
+    clientOptions = ClientKeepAliveOptions(
       pingInterval: pingInterval,
       timeout: timeout,
       permitWithoutCalls: true,
@@ -118,6 +119,76 @@ void main() {
       //A second request gets a new connection
       await unresponsiveClient.echo(EchoRequest());
       expect(unresponsiveChannel.newConnectionCounter, 2);
+    },
+  );
+
+  test(
+    'Server doesnt ack the ping, making the client fail the calls still bound '
+    'to the transport',
+    () async {
+      // A long-lived server stream, as a live subscription would be.
+      final firstResponse = Completer<void>();
+      Object? failure;
+      unresponsiveClient
+          .serverStreamingEcho(ServerStreamingEchoRequest())
+          .listen(
+            (_) {
+              if (!firstResponse.isCompleted) firstResponse.complete();
+            },
+            onError: (Object error) => failure ??= error,
+            cancelOnError: false,
+          );
+      await firstResponse.future;
+
+      //Ping is not being acked on time
+      await Future.delayed(timeout * 2);
+
+      // The stream is bound to the transport the keepalive declared dead:
+      // it must fail rather than wait for an answer that cannot come.
+      expect(failure, isA<GrpcError>());
+    },
+  );
+
+  test(
+    'Client retires the connection while a call is still bound: the keepalive '
+    'keeps pinging and does not terminate a drain that answers',
+    () async {
+      // The drain below is pinged at the test's cadence with nothing else
+      // flowing, which the shared server would count as bad pings.
+      final lenientServer = Server.create(
+        services: [FakeEchoService()],
+        keepAliveOptions: ServerKeepAliveOptions(maxBadPings: null),
+      );
+      await lenientServer.serve(address: 'localhost', port: 0);
+      final channel = FakeClientChannel(
+        'localhost',
+        port: lenientServer.port!,
+        options: ChannelOptions(
+          credentials: ChannelCredentials.insecure(),
+          keepAlive: clientOptions,
+        ),
+      );
+      final firstResponse = Completer<void>();
+      Object? failure;
+      EchoServiceClient(channel)
+          .serverStreamingEcho(ServerStreamingEchoRequest())
+          .listen(
+            (_) {
+              if (!firstResponse.isCompleted) firstResponse.complete();
+            },
+            onError: (Object error) => failure ??= error,
+            cancelOnError: false,
+          );
+      await firstResponse.future;
+
+      // finish() keeps the bound call open until it ends by itself, so the
+      // drain outlives several keepalive timeouts, answering pings all along.
+      unawaited(channel.shutdown());
+      await Future.delayed(timeout * 3);
+
+      expect(failure, isNull);
+      await channel.terminate();
+      await lenientServer.shutdown();
     },
   );
 }
@@ -208,9 +279,13 @@ class FakeEchoService extends EchoServiceBase {
   Future<EchoResponse> echo(ServiceCall call, EchoRequest request) async =>
       EchoResponse(message: 'Echo messsage');
 
+  /// Answers once and then stays open, as a live subscription does.
   @override
   Stream<ServerStreamingEchoResponse> serverStreamingEcho(
     ServiceCall call,
     ServerStreamingEchoRequest request,
-  ) => throw UnsupportedError('Not used in this test');
+  ) async* {
+    yield ServerStreamingEchoResponse(message: 'Echo message');
+    await Completer<void>().future;
+  }
 }
