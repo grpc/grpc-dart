@@ -458,10 +458,15 @@ class ServerHandler extends ServiceCall {
 
   /// Sink incoming requests. This is used when an error has already been
   /// reported, but we still need to consume the request stream from the client.
+  ///
+  /// The subscription may have been paused while the call was set up, and it
+  /// has to be resumed: a request body that is never read never returns its
+  /// bytes to the connection's flow-control window.
   void _sinkIncoming() {
     _incomingSubscription!
       ..onData((_) {})
-      ..onDone(_onDone);
+      ..onDone(_onDone)
+      ..resume();
   }
 
   void _sendError(GrpcError error, [StackTrace? trace]) {

@@ -1,3 +1,11 @@
+## 5.2.1-wip
+
+- Fix the server never reading the request body of a call it refuses before
+  the handler runs - an interceptor's error, an unknown path - which kept the
+  body's bytes out of the connection's flow-control window, so a long-lived
+  channel stalled once it was used up
+  ([#843](https://github.com/grpc/grpc-dart/issues/843)).
+
 ## 5.2.0
 
 - Update default `user-agent` header from `dart-grpc/2.0.0` to the gRPC HTTP/2
