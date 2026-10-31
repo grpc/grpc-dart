@@ -15,6 +15,7 @@
 
 export 'src/client/call.dart' show WebCallOptions;
 
+export 'src/client/options.dart' show GrpcWebTransport;
 export 'src/client/web_channel.dart' show GrpcWebClientChannel;
 
 export 'src/shared/api.dart';

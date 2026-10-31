@@ -25,6 +25,7 @@ class GrpcOrGrpcWebClientChannelInternal extends ClientChannel {
     required String grpcWebHost,
     required int grpcWebPort,
     required bool grpcWebTransportSecure,
+    required GrpcWebTransport grpcWebTransport,
   }) : super(
          grpcHost,
          port: grpcPort,

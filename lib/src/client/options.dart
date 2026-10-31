@@ -79,3 +79,21 @@ class ChannelOptions {
     this.proxy,
   }) : _userAgent = userAgent;
 }
+
+/// The browser API a gRPC-web channel sends its calls with.
+enum GrpcWebTransport {
+  /// `XMLHttpRequest`, the default.
+  ///
+  /// The response is read as text: each progress event copies the whole
+  /// response received so far, and the browser keeps that response until the
+  /// call ends. Reading a large response costs time on the UI thread that
+  /// grows with its size, and a long server stream keeps all of its messages
+  /// in memory.
+  xhr,
+
+  /// `fetch` with a streamed response body.
+  ///
+  /// Each body chunk is read once, as bytes, and is not kept after its
+  /// messages are decoded. Status codes and error messages match [xhr].
+  fetch,
+}

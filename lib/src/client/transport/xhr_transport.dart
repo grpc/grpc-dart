@@ -20,16 +20,11 @@ import 'dart:typed_data';
 import 'package:meta/meta.dart';
 import 'package:web/web.dart';
 
-import '../../client/call.dart';
 import '../../shared/message.dart';
 import '../../shared/status.dart';
-import '../../version.dart';
-import '../connection.dart';
-import 'cors.dart' as cors;
 import 'transport.dart';
+import 'web_connection.dart';
 import 'web_streams.dart';
-
-const _contentTypeKey = 'Content-Type';
 
 class XhrTransportStream implements GrpcTransportStream {
   final IXMLHttpRequest _request;
@@ -265,18 +260,8 @@ class XMLHttpRequestImpl implements IXMLHttpRequest {
   }
 }
 
-class XhrClientConnection implements ClientConnection {
-  final Uri uri;
-
-  final _requests = <XhrTransportStream>{};
-
-  XhrClientConnection(this.uri);
-
-  @override
-  String get authority => uri.authority;
-
-  @override
-  String get scheme => uri.scheme;
+class XhrClientConnection extends WebClientConnection<XhrTransportStream> {
+  XhrClientConnection(super.uri);
 
   void _initializeRequest(
     IXMLHttpRequest request,
@@ -292,81 +277,21 @@ class XhrClientConnection implements ClientConnection {
   IXMLHttpRequest createHttpRequest() => XMLHttpRequestImpl();
 
   @override
-  GrpcTransportStream makeRequest(
-    String path,
-    Duration? timeout,
-    Map<String, String> metadata,
+  XhrTransportStream createStream(
+    Uri requestUri,
+    Map<String, String> headers,
     ErrorHandler onError, {
-    CallOptions? callOptions,
+    required bool withCredentials,
+    required void Function(XhrTransportStream stream) onDone,
   }) {
-    // gRPC-web headers.
-    if (_getContentTypeHeader(metadata) == null) {
-      metadata['Content-Type'] = 'application/grpc-web+proto';
-      metadata['X-User-Agent'] = 'grpc-web-dart/$packageVersion';
-      metadata['X-Grpc-Web'] = '1';
-    }
-
-    var requestUri = uri.resolve(path);
-    if (callOptions is WebCallOptions &&
-        callOptions.bypassCorsPreflight == true) {
-      requestUri = cors.moveHttpHeadersToQueryParam(metadata, requestUri);
-    }
-
     final request = createHttpRequest();
     request.open('POST', requestUri.toString());
-    if (callOptions is WebCallOptions && callOptions.withCredentials == true) {
+    if (withCredentials) {
       request.withCredentials = true;
     }
     // Must set headers after calling open().
-    _initializeRequest(request, metadata);
+    _initializeRequest(request, headers);
 
-    final transportStream = _createXhrTransportStream(
-      request,
-      onError,
-      _removeStream,
-    );
-    _requests.add(transportStream);
-    return transportStream;
-  }
-
-  XhrTransportStream _createXhrTransportStream(
-    IXMLHttpRequest request,
-    ErrorHandler onError,
-    void Function(XhrTransportStream stream) onDone,
-  ) {
     return XhrTransportStream(request, onError: onError, onDone: onDone);
   }
-
-  void _removeStream(XhrTransportStream stream) {
-    _requests.remove(stream);
-  }
-
-  @override
-  Future<void> terminate() async {
-    for (var request in List.of(_requests)) {
-      request.terminate();
-    }
-  }
-
-  @override
-  void dispatchCall(ClientCall call) {
-    call.onConnectionReady(this);
-  }
-
-  @override
-  Future<void> shutdown() async {}
-
-  @override
-  set onStateChanged(void Function(ConnectionState) cb) {
-    // Do nothing.
-  }
-}
-
-MapEntry<String, String>? _getContentTypeHeader(Map<String, String> metadata) {
-  for (var entry in metadata.entries) {
-    if (entry.key.toLowerCase() == _contentTypeKey.toLowerCase()) {
-      return entry;
-    }
-  }
-  return null;
 }
