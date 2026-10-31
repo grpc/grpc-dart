@@ -18,6 +18,7 @@ import 'src/client/grpc_or_grpcweb_channel_grpc.dart'
 import 'src/client/http2_channel.dart';
 import 'src/client/options.dart';
 
+export 'src/client/options.dart' show GrpcWebTransport;
 export 'src/shared/api.dart';
 
 /// A client channel that underneath uses gRPC [ClientChannel] on all platforms
@@ -32,6 +33,9 @@ export 'src/shared/api.dart';
 /// a completely separate endpoints (for example if Envoy and gRPC server are
 /// exposed as different kubernetes services). A corresponding constructor is
 /// provided for each case.
+///
+/// On web, `grpcWebTransport` picks the browser API calls are sent with; see
+/// [GrpcWebTransport]. Other platforms ignore it.
 class GrpcOrGrpcWebClientChannel extends GrpcOrGrpcWebClientChannelInternal {
   GrpcOrGrpcWebClientChannel.toSeparateEndpoints({
     required super.grpcHost,
@@ -40,6 +44,7 @@ class GrpcOrGrpcWebClientChannel extends GrpcOrGrpcWebClientChannelInternal {
     required super.grpcWebHost,
     required super.grpcWebPort,
     required super.grpcWebTransportSecure,
+    super.grpcWebTransport = GrpcWebTransport.xhr,
   });
 
   GrpcOrGrpcWebClientChannel.toSeparatePorts({
@@ -48,12 +53,14 @@ class GrpcOrGrpcWebClientChannel extends GrpcOrGrpcWebClientChannelInternal {
     required super.grpcTransportSecure,
     required super.grpcWebPort,
     required super.grpcWebTransportSecure,
+    super.grpcWebTransport = GrpcWebTransport.xhr,
   }) : super(grpcHost: host, grpcWebHost: host);
 
   GrpcOrGrpcWebClientChannel.toSingleEndpoint({
     required String host,
     required int port,
     required bool transportSecure,
+    super.grpcWebTransport = GrpcWebTransport.xhr,
   }) : super(
          grpcHost: host,
          grpcPort: port,

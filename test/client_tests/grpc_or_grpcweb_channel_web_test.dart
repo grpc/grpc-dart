@@ -35,6 +35,17 @@ void main() {
       webChannel.uri,
       equals(Uri(host: host, port: port, scheme: 'https')),
     );
+    expect(webChannel.transport, GrpcWebTransport.xhr);
+  });
+
+  test('Channel on web uses the chosen gRPC-web transport', () {
+    final channel = GrpcOrGrpcWebClientChannel.toSingleEndpoint(
+      host: host,
+      port: port,
+      transportSecure: true,
+      grpcWebTransport: GrpcWebTransport.fetch,
+    );
+    expect((channel as GrpcWebClientChannel).transport, GrpcWebTransport.fetch);
   });
 
   test('Constructor grpc on web throws UnsupportedError', () {

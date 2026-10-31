@@ -15,16 +15,37 @@
 
 import 'channel.dart';
 import 'connection.dart';
+import 'options.dart';
+import 'transport/browser_fetch.dart';
+import 'transport/fetch_transport.dart';
 import 'transport/xhr_transport.dart';
 
 /// A channel to a grpc-web endpoint.
 class GrpcWebClientChannel extends ClientChannelBase {
   final Uri uri;
 
-  GrpcWebClientChannel.xhr(this.uri, {super.channelShutdownHandler});
+  /// The browser API calls are sent with.
+  final GrpcWebTransport transport;
+
+  /// Creates a channel to [uri] whose calls are sent with [transport].
+  GrpcWebClientChannel(
+    this.uri, {
+    this.transport = GrpcWebTransport.xhr,
+    super.channelShutdownHandler,
+  });
+
+  /// Creates a channel to [uri] whose calls are sent with `XMLHttpRequest`.
+  GrpcWebClientChannel.xhr(this.uri, {super.channelShutdownHandler})
+    : transport = GrpcWebTransport.xhr;
 
   @override
   ClientConnection createConnection() {
-    return XhrClientConnection(uri);
+    return switch (transport) {
+      GrpcWebTransport.xhr => XhrClientConnection(uri),
+      GrpcWebTransport.fetch => FetchClientConnection(
+        uri,
+        BrowserFetchRequest.new,
+      ),
+    };
   }
 }

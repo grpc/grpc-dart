@@ -24,12 +24,14 @@ class GrpcOrGrpcWebClientChannelInternal extends GrpcWebClientChannel {
     required String grpcWebHost,
     required int grpcWebPort,
     required bool grpcWebTransportSecure,
-  }) : super.xhr(
+    required GrpcWebTransport grpcWebTransport,
+  }) : super(
          Uri(
            host: grpcWebHost,
            port: grpcWebPort,
            scheme: grpcWebTransportSecure ? 'https' : 'http',
          ),
+         transport: grpcWebTransport,
        );
 
   GrpcOrGrpcWebClientChannelInternal.grpc(

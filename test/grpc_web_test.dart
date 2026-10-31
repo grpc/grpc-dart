@@ -36,146 +36,166 @@ void main() {
     await server.shutdown();
   });
 
-  // Test verifies that gRPC-web echo example works by talking to a gRPC
-  // server (written in Dart) via gRPC-web protocol through a third party
-  // gRPC-web proxy.
-  test('gRPC-web echo test', () async {
-    final channel = GrpcWebClientChannel.xhr(server.grpcUri);
-    final service = EchoServiceClient(channel);
-
-    const testMessage = 'hello from gRPC-web';
-
-    // First test a simple echo request.
-    final response = await service.echo(EchoRequest()..message = testMessage);
-    expect(response.message, equals(testMessage));
-
-    // Now test that streaming requests also works by asking echo server
-    // to send us a number of messages every 100 ms. Check that we receive
-    // them fast enough (if streaming is broken we will receive all of them
-    // in one go).
-    final sw = Stopwatch()..start();
-    final timings = await service
-        .serverStreamingEcho(
-          ServerStreamingEchoRequest()
-            ..message = testMessage
-            ..messageCount = 20
-            ..messageInterval = 100,
-        )
-        .map((response) {
-          expect(response.message, equals(testMessage));
-          final timing = sw.elapsedMilliseconds;
-          sw.reset();
-          return timing;
-        })
-        .toList();
-    final maxDelay = timings.reduce(math.max);
-    expect(maxDelay, lessThan(500));
-  });
-
-  // Verify that terminate does not cause an exception when terminating
-  // channel with multiple active requests.
-  test('terminate works', () async {
-    final channel = GrpcWebClientChannel.xhr(server.grpcUri);
-    final service = EchoServiceClient(channel);
-
-    const testMessage = 'hello from gRPC-web';
-
-    // First test a simple echo request.
-    final response = await service.echo(EchoRequest()..message = testMessage);
-    expect(response.message, equals(testMessage));
-
-    var terminated = false;
-
-    service
-        .serverStreamingEcho(
-          ServerStreamingEchoRequest()
-            ..message = testMessage
-            ..messageCount = 20
-            ..messageInterval = 100,
-        )
-        .listen(
-          (response) {
-            expect(response.message, equals(testMessage));
-          },
-          onError: (e) {
-            expect(terminated, isTrue);
-          },
+  for (final transport in GrpcWebTransport.values) {
+    group(transport.name, () {
+      // Test verifies that gRPC-web echo example works by talking to a gRPC
+      // server (written in Dart) via gRPC-web protocol through a third party
+      // gRPC-web proxy.
+      test('gRPC-web echo test', () async {
+        final channel = GrpcWebClientChannel(
+          server.grpcUri,
+          transport: transport,
         );
+        final service = EchoServiceClient(channel);
 
-    service
-        .serverStreamingEcho(
-          ServerStreamingEchoRequest()
-            ..message = testMessage
-            ..messageCount = 20
-            ..messageInterval = 100,
-        )
-        .listen(
-          (response) {
-            expect(response.message, equals(testMessage));
-          },
-          onError: (e) {
-            expect(terminated, isTrue);
-          },
+        const testMessage = 'hello from gRPC-web';
+
+        // First test a simple echo request.
+        final response = await service.echo(
+          EchoRequest()..message = testMessage,
         );
+        expect(response.message, equals(testMessage));
 
-    await Future.delayed(Duration(milliseconds: 500));
-    terminated = true;
-    await channel.terminate();
-  });
+        // Now test that streaming requests also works by asking echo server
+        // to send us a number of messages every 100 ms. Check that we receive
+        // them fast enough (if streaming is broken we will receive all of them
+        // in one go).
+        final sw = Stopwatch()..start();
+        final timings = await service
+            .serverStreamingEcho(
+              ServerStreamingEchoRequest()
+                ..message = testMessage
+                ..messageCount = 20
+                ..messageInterval = 100,
+            )
+            .map((response) {
+              expect(response.message, equals(testMessage));
+              final timing = sw.elapsedMilliseconds;
+              sw.reset();
+              return timing;
+            })
+            .toList();
+        final maxDelay = timings.reduce(math.max);
+        expect(maxDelay, lessThan(500));
+      });
 
-  // Verify that stream cancellation does not cause an exception
-  test('stream cancellation works', () async {
-    final channel = GrpcWebClientChannel.xhr(server.grpcUri);
-    final service = EchoServiceClient(channel);
+      // Verify that terminate does not cause an exception when terminating
+      // channel with multiple active requests.
+      test('terminate works', () async {
+        final channel = GrpcWebClientChannel(
+          server.grpcUri,
+          transport: transport,
+        );
+        final service = EchoServiceClient(channel);
 
-    const testMessage = 'hello from gRPC-web';
+        const testMessage = 'hello from gRPC-web';
 
-    final stream = service
-        .serverStreamingEcho(
-          ServerStreamingEchoRequest()
-            ..message = testMessage
-            ..messageCount = 20
-            ..messageInterval = 100,
-        )
-        .listen((response) {
-          expect(response.message, equals(testMessage));
+        // First test a simple echo request.
+        final response = await service.echo(
+          EchoRequest()..message = testMessage,
+        );
+        expect(response.message, equals(testMessage));
+
+        var terminated = false;
+
+        service
+            .serverStreamingEcho(
+              ServerStreamingEchoRequest()
+                ..message = testMessage
+                ..messageCount = 20
+                ..messageInterval = 100,
+            )
+            .listen(
+              (response) {
+                expect(response.message, equals(testMessage));
+              },
+              onError: (e) {
+                expect(terminated, isTrue);
+              },
+            );
+
+        service
+            .serverStreamingEcho(
+              ServerStreamingEchoRequest()
+                ..message = testMessage
+                ..messageCount = 20
+                ..messageInterval = 100,
+            )
+            .listen(
+              (response) {
+                expect(response.message, equals(testMessage));
+              },
+              onError: (e) {
+                expect(terminated, isTrue);
+              },
+            );
+
+        await Future.delayed(Duration(milliseconds: 500));
+        terminated = true;
+        await channel.terminate();
+      });
+
+      // Verify that stream cancellation does not cause an exception
+      test('stream cancellation works', () async {
+        final channel = GrpcWebClientChannel(
+          server.grpcUri,
+          transport: transport,
+        );
+        final service = EchoServiceClient(channel);
+
+        const testMessage = 'hello from gRPC-web';
+
+        final stream = service
+            .serverStreamingEcho(
+              ServerStreamingEchoRequest()
+                ..message = testMessage
+                ..messageCount = 20
+                ..messageInterval = 100,
+            )
+            .listen((response) {
+              expect(response.message, equals(testMessage));
+            });
+
+        await Future.delayed(Duration(milliseconds: 500));
+        await stream.cancel();
+
+        await channel.terminate();
+      });
+
+      final invalidResponseTests = {
+        'cors': GrpcError.unknown(
+          'HTTP request completed without a status (potential CORS issue)',
+        ),
+        'status-503': GrpcError.unavailable(
+          'HTTP connection completed with 503 instead of 200',
+        ),
+        'bad-content-type': GrpcError.unknown(
+          'unsupported content-type (text/html)',
+        ),
+      };
+
+      for (var entry in invalidResponseTests.entries) {
+        // We test a bunch of boundary conditions by starting a simple HTTP server
+        // we sends various erroneous responses back. The kind of response is
+        // selected based on the payload of the request (i.e. the server expects
+        // to get valid gRPC request with an [EchoRequest] payload and responds
+        // with different errors based on the [EchoRequest.message] value.
+        // See [startHttpServer] in [grpc_web_server.dart] for the server part.
+        test('invalid response: ${entry.key}', () async {
+          final channel = GrpcWebClientChannel(
+            server.httpUri,
+            transport: transport,
+          );
+          final service = EchoServiceClient(
+            channel,
+            options: WebCallOptions(bypassCorsPreflight: true),
+          );
+          expect(
+            () => service.echo(EchoRequest()..message = 'test:${entry.key}'),
+            throwsA(entry.value),
+          );
         });
-
-    await Future.delayed(Duration(milliseconds: 500));
-    await stream.cancel();
-
-    await channel.terminate();
-  });
-
-  final invalidResponseTests = {
-    'cors': GrpcError.unknown(
-      'HTTP request completed without a status (potential CORS issue)',
-    ),
-    'status-503': GrpcError.unavailable(
-      'HTTP connection completed with 503 instead of 200',
-    ),
-    'bad-content-type': GrpcError.unknown(
-      'unsupported content-type (text/html)',
-    ),
-  };
-
-  for (var entry in invalidResponseTests.entries) {
-    // We test a bunch of boundary conditions by starting a simple HTTP server
-    // we sends various erroneous responses back. The kind of response is
-    // selected based on the payload of the request (i.e. the server expects
-    // to get valid gRPC request with an [EchoRequest] payload and responds
-    // with different errors based on the [EchoRequest.message] value.
-    // See [startHttpServer] in [grpc_web_server.dart] for the server part.
-    test('invalid response: ${entry.key}', () async {
-      final channel = GrpcWebClientChannel.xhr(server.httpUri);
-      final service = EchoServiceClient(
-        channel,
-        options: WebCallOptions(bypassCorsPreflight: true),
-      );
-      expect(
-        () => service.echo(EchoRequest()..message = 'test:${entry.key}'),
-        throwsA(entry.value),
-      );
+      }
     });
   }
 }
@@ -228,8 +248,9 @@ class GrpcWebServer {
 
     final ports = await portCompleter.future;
 
-    final grpcPort = ports['grpcPort'];
-    final httpPort = ports['httpPort'];
+    // dart2wasm decodes the hybrid channel's JSON numbers as doubles.
+    final grpcPort = (ports['grpcPort'] as num).toInt();
+    final httpPort = (ports['httpPort'] as num).toInt();
 
     // Note: we would like to test https as well, but we can't easily do it
     // because browsers like chrome don't trust self-signed certificates by

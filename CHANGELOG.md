@@ -1,3 +1,15 @@
+## 5.3.0-wip
+
+- Add an opt-in `fetch` transport for gRPC-web:
+  `GrpcWebClientChannel(uri, transport: GrpcWebTransport.fetch)`, or
+  `grpcWebTransport: GrpcWebTransport.fetch` on `GrpcOrGrpcWebClientChannel`.
+  It reads each response chunk once as bytes instead of re-reading the
+  `XMLHttpRequest` response text on every progress event, so large responses
+  cost less UI-thread time and a long server stream no longer keeps every
+  message it received in memory
+  ([#511](https://github.com/grpc/grpc-dart/issues/511)). `XMLHttpRequest`
+  stays the default.
+
 ## 5.2.0
 
 - Update default `user-agent` header from `dart-grpc/2.0.0` to the gRPC HTTP/2
