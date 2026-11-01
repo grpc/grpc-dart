@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
@@ -21,6 +22,34 @@ import 'package:http2/transport.dart';
 
 import 'message.dart';
 import 'status.dart';
+
+final Type _http2StreamType = _probeHttp2StreamType();
+
+Type _probeHttp2StreamType() {
+  final incoming = StreamController<List<int>>();
+  final outgoing = StreamController<List<int>>();
+  final sub = outgoing.stream.listen((_) {});
+  final connection = ClientTransportConnection.viaStreams(
+    incoming.stream,
+    outgoing.sink,
+  );
+  final stream = connection.makeRequest(const [], endStream: true);
+  final type = stream.runtimeType;
+  unawaited(
+    connection.terminate().whenComplete(() async {
+      await sub.cancel();
+      await incoming.close();
+      await outgoing.close();
+    }),
+  );
+  return type;
+}
+
+/// Whether [stream] is a `package:http2` byte-stream [TransportStream] rather
+/// than a custom or mock [TransportStream] implementation that may decode one
+/// gRPC frame per [DataStreamMessage].
+bool supportsZeroCopyDataFrames(TransportStream stream) =>
+    stream.runtimeType == _http2StreamType;
 
 class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
   @override

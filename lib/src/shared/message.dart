@@ -62,19 +62,38 @@ class GrpcMessageSink implements Sink<GrpcMessage> {
   }
 }
 
+/// Payload byte-length threshold above which uncompressed outgoing gRPC
+/// messages are sent as a 5-byte header [DataStreamMessage] followed directly
+/// by the caller's payload buffer instead of copying into a `length + 5` buffer.
+///
+/// Matches the default HTTP/2 `SETTINGS_MAX_FRAME_SIZE` (16,384 bytes) minus
+/// the 5-byte gRPC frame header so payloads that fit in one default HTTP/2
+/// `DATA` frame remain coalesced in a single write.
+const int zeroCopyFrameThreshold = 16384 - 5;
+
+Uint8List frameHeader(int payloadLength, {bool compressed = false}) {
+  final header = Uint8List(5);
+  header[0] = compressed ? 1 : 0;
+  header[1] = (payloadLength >> 24) & 0xFF;
+  header[2] = (payloadLength >> 16) & 0xFF;
+  header[3] = (payloadLength >> 8) & 0xFF;
+  header[4] = payloadLength & 0xFF;
+  return header;
+}
+
 List<int> frame(List<int> rawPayload, [Codec? codec]) {
-  final compressedPayload = codec == null
+  final isIdentity = codec == null || codec.encodingName == 'identity';
+  final compressedPayload = isIdentity
       ? rawPayload
       : codec.compress(rawPayload);
   final payloadLength = compressedPayload.length;
   final bytes = Uint8List(payloadLength + 5);
-  final header = bytes.buffer.asByteData(0, 5);
-  header.setUint8(
-    0,
-    (codec == null || codec.encodingName == 'identity') ? 0 : 1,
-  );
-  header.setUint32(1, payloadLength);
-  bytes.setRange(5, bytes.length, compressedPayload);
+  bytes[0] = isIdentity ? 0 : 1;
+  bytes[1] = (payloadLength >> 24) & 0xFF;
+  bytes[2] = (payloadLength >> 16) & 0xFF;
+  bytes[3] = (payloadLength >> 8) & 0xFF;
+  bytes[4] = payloadLength & 0xFF;
+  bytes.setRange(5, payloadLength + 5, compressedPayload);
   return bytes;
 }
 
