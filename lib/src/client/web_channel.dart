@@ -21,7 +21,9 @@ import 'transport/xhr_transport.dart';
 class GrpcWebClientChannel extends ClientChannelBase {
   final Uri uri;
 
-  GrpcWebClientChannel.xhr(this.uri, {super.channelShutdownHandler});
+  GrpcWebClientChannel.xhr(this.uri, {super.channelShutdownHandler}) {
+    disableFastUnary(this);
+  }
 
   @override
   ClientConnection createConnection() {

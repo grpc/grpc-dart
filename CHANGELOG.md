@@ -6,6 +6,7 @@
 - Cache encoded HTTP/2 request headers (`:path`, `:authority`, `user-agent`, `grpc-accept-encoding`, and static `CallOptions` metadata) on `Http2ClientConnection` and reuse pre-encoded default response header/trailer lists in `ServerHandler`.
 - Lazily decode HTTP/2 header and trailer frames into `Map<String, String>` metadata only when accessed on `GrpcMetadata`, `ClientCall`, or `ServiceCall`.
 - Notify `ServerKeepAlive` synchronously as a `Sink<void>` instead of allocating a per-connection `StreamController` in `ConnectionServer.serveConnection`.
+- Add a direct single-`Completer` HTTP/2 fast path for standard unary client calls (`Client.$createUnaryCall`), avoiding per-call `Stream.value`, `StreamController`, `StreamTransformer`, and extra async microtask hops on warm channels and coalescing `END_STREAM` onto the request `DATA` frame.
 
 ## 5.2.0
 

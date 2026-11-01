@@ -64,6 +64,8 @@ class ResponseFuture<R> extends DelegatingFuture<R> implements Response {
             .then(_ensureOneResponse),
       );
 
+  ResponseFuture._direct(this._call, Future<R> future) : super(future);
+
   @override
   Future<Map<String, String>> get headers => _call.headers;
 
@@ -73,6 +75,11 @@ class ResponseFuture<R> extends DelegatingFuture<R> implements Response {
   @override
   Future<void> cancel() => _call.cancel();
 }
+
+ResponseFuture<R> createDirectResponseFuture<R>(
+  ClientCall<dynamic, R> call,
+  Future<R> future,
+) => ResponseFuture<R>._direct(call, future);
 
 /// A gRPC response producing a stream of values.
 class ResponseStream<R> extends StreamView<R> implements Response {

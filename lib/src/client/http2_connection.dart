@@ -22,7 +22,10 @@ import 'package:clock/clock.dart';
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
+import '../shared/codec_registry.dart';
+import '../shared/message.dart';
 import '../shared/status.dart';
+import '../shared/streams.dart';
 import '../shared/timeout.dart';
 import 'call.dart';
 import 'client_keepalive.dart';
@@ -381,7 +384,72 @@ class Http2ClientConnection
 
   void _startCall(ClientCall call) {
     if (call.isCancelled) return;
+    if (call is UnaryClientCall) {
+      call.dispatchHttp2Unary(_startFastUnaryCall);
+      return;
+    }
     call.onConnectionReady(this);
+  }
+
+  void _startFastUnaryCall<Q, R>(UnaryClientCall<Q, R> call) {
+    final method = call.method;
+    final callOptions = call.options;
+    final compression = callOptions.compression;
+    final headers = _buildRequestHeaders(
+      method.path,
+      callOptions.timeout,
+      sanitizedMetadataOf(callOptions),
+      compression,
+      callOptions: callOptions,
+    );
+
+    late final ClientTransportStream transportStream;
+    try {
+      transportStream = _transportConnection!.makeRequest(headers);
+    } catch (e, s) {
+      final grpcError = e is GrpcError
+          ? e
+          : GrpcError.unavailable('Error making call: $e');
+      call.failWithError(grpcError, s);
+      return;
+    }
+
+    final listener = _UnaryHttp2ResponseListener<Q, R>(
+      call,
+      transportStream,
+      options.codecRegistry,
+    );
+    listener.listen();
+
+    try {
+      final rawBytes = method.requestSerializer(call.request);
+      final useZeroCopyStream = supportsZeroCopyDataFrames(transportStream);
+      final isIdentity =
+          compression == null || compression.encodingName == 'identity';
+      if (useZeroCopyStream &&
+          isIdentity &&
+          rawBytes is Uint8List &&
+          rawBytes.length > zeroCopyFrameThreshold) {
+        transportStream.outgoingMessages.add(
+          DataStreamMessage(frameHeader(rawBytes.length)),
+        );
+        transportStream.outgoingMessages.add(
+          DataStreamMessage(rawBytes, endStream: true),
+        );
+        transportStream.outgoingMessages.close();
+      } else {
+        transportStream.outgoingMessages.add(
+          DataStreamMessage(
+            frame(rawBytes, compression),
+            endStream: useZeroCopyStream,
+          ),
+        );
+        transportStream.outgoingMessages.close();
+      }
+    } catch (e, s) {
+      final grpcError = e is GrpcError ? e : GrpcError.unknown(e.toString());
+      listener.abortWithError(grpcError, s);
+    }
   }
 
   void _failCall(ClientCall call, dynamic error) {
@@ -722,6 +790,191 @@ enum _InitialSettingsOutcome {
   static _InitialSettingsOutcome onReceived([Object? _]) => received;
   static _InitialSettingsOutcome onClosed([Object? _, StackTrace? _]) => closed;
   static _InitialSettingsOutcome onShutdown([Object? _]) => shutdown;
+}
+
+class _UnaryHttp2ResponseListener<Q, R> {
+  final UnaryClientCall<Q, R> _call;
+  final ClientTransportStream _stream;
+  final CodecRegistry? _codecRegistry;
+  final GrpcFrameParser _frameParser = GrpcFrameParser();
+
+  StreamSubscription<StreamMessage>? _subscription;
+  Http2GrpcMetadata? _headerMetadata;
+  Codec? _responseCodec;
+  bool _headersReceived = false;
+  bool _trailersReceived = false;
+  bool _hasReceivedResponse = false;
+  bool _terminated = false;
+  late R _responseValue;
+
+  _UnaryHttp2ResponseListener(this._call, this._stream, this._codecRegistry);
+
+  void listen() {
+    _call.onCancelTransport = () async {
+      _terminated = true;
+      await _subscription?.cancel();
+      _stream.terminate();
+    };
+    _subscription = _stream.incomingMessages.listen(
+      _onMessage,
+      onError: _onError,
+      onDone: _onDone,
+      cancelOnError: true,
+    );
+  }
+
+  void abortWithError(GrpcError error, [StackTrace? stackTrace]) {
+    if (_terminated) return;
+    _terminated = true;
+    _call.onCancelTransport = null;
+    _subscription?.cancel();
+    _stream.terminate();
+    _call.failWithError(error, stackTrace);
+  }
+
+  void _onMessage(StreamMessage chunk) {
+    if (_terminated || _call.isCancelled) return;
+    if (chunk is HeadersStreamMessage) {
+      _onHeaders(chunk.headers);
+    } else if (chunk is DataStreamMessage) {
+      _onData(chunk.bytes);
+    } else {
+      abortWithError(
+        GrpcError.unimplemented('Received unknown HTTP/2 frame type'),
+      );
+    }
+  }
+
+  void _onHeaders(List<Header> headers) {
+    if (_frameParser.hasPartialFrame) {
+      abortWithError(
+        GrpcError.unimplemented('Received header while reading data'),
+      );
+      return;
+    }
+
+    if (!_headersReceived) {
+      try {
+        validateRawHttp2ResponseHeaders(headers);
+      } on GrpcError catch (e, s) {
+        abortWithError(e, s);
+        return;
+      }
+      final metadata = Http2GrpcMetadata(headers);
+      final encoding = metadata.lookupRawAsciiValue(headerNameGrpcEncoding);
+      if (encoding != null) {
+        _responseCodec = _codecRegistry?.lookup(encoding);
+      }
+      _headersReceived = true;
+      _headerMetadata = metadata;
+      _call.completeHeaders(metadata);
+      return;
+    }
+
+    if (_trailersReceived) {
+      abortWithError(GrpcError.unimplemented('Received multiple trailers'));
+      return;
+    }
+    _trailersReceived = true;
+    final metadata = Http2GrpcMetadata(headers);
+    _call.completeTrailers(metadata);
+    if (metadata.isGrpcStatusZero) {
+      return;
+    }
+    final error = grpcErrorDetailsFromTrailers(metadata.metadata);
+    if (error != null) {
+      abortWithError(error);
+    }
+  }
+
+  bool _handleFrame(Uint8List payload, bool isCompressed) {
+    if (_hasReceivedResponse) {
+      abortWithError(
+        GrpcError.unimplemented('More than one response received'),
+      );
+      return false;
+    }
+    List<int> bytes = payload;
+    if (isCompressed) {
+      final codec = _responseCodec;
+      if (codec == null) {
+        abortWithError(
+          GrpcError.unimplemented('Compression mechanism not supported'),
+        );
+        return false;
+      }
+      try {
+        bytes = codec.decompress(bytes);
+      } catch (e, s) {
+        final grpcError = e is GrpcError ? e : GrpcError.unknown(e.toString());
+        abortWithError(grpcError, s);
+        return false;
+      }
+    }
+    try {
+      _responseValue = _call.method.responseDeserializer(bytes);
+      _hasReceivedResponse = true;
+      return true;
+    } catch (e, s) {
+      abortWithError(GrpcError.dataLoss('Error parsing response'), s);
+      return false;
+    }
+  }
+
+  void _onData(List<int> chunkData) {
+    if (!_headersReceived) {
+      abortWithError(GrpcError.unimplemented('Received data before headers'));
+      return;
+    }
+    if (_trailersReceived) {
+      abortWithError(GrpcError.unimplemented('Received data after trailers'));
+      return;
+    }
+    _frameParser.parse(chunkData, _handleFrame);
+  }
+
+  void _onError(Object error, StackTrace stackTrace) {
+    final grpcError = error is GrpcError
+        ? error
+        : GrpcError.unknown(error.toString());
+    abortWithError(grpcError, stackTrace);
+  }
+
+  void _onDone() {
+    if (_terminated || _call.isCancelled) return;
+    if (_frameParser.hasPartialFrame) {
+      abortWithError(GrpcError.unavailable('Closed in non-idle state'));
+      return;
+    }
+    if (!_headersReceived) {
+      abortWithError(GrpcError.unavailable('Did not receive anything'));
+      return;
+    }
+    if (!_trailersReceived) {
+      if (_hasReceivedResponse) {
+        abortWithError(GrpcError.unavailable('Missing trailers'));
+        return;
+      }
+      final headerMetadata = _headerMetadata!;
+      _trailersReceived = true;
+      _call.completeTrailers(headerMetadata);
+      if (!headerMetadata.isGrpcStatusZero) {
+        final error = grpcErrorDetailsFromTrailers(headerMetadata.metadata);
+        if (error != null) {
+          abortWithError(error);
+          return;
+        }
+      }
+    }
+    _terminated = true;
+    _call.onCancelTransport = null;
+    _subscription?.cancel();
+    if (!_hasReceivedResponse) {
+      _call.failWithError(GrpcError.unimplemented('No responses received'));
+      return;
+    }
+    _call.completeResult(_responseValue);
+  }
 }
 
 class _DisconnectAwareStream extends Stream<List<int>> {

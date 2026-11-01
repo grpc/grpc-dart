@@ -20,6 +20,7 @@ import '../shared/profiler.dart';
 import '../shared/status.dart';
 
 import 'call.dart';
+import 'common.dart';
 import 'connection.dart';
 import 'method.dart';
 
@@ -57,6 +58,7 @@ abstract class ClientChannelBase implements ClientChannel {
   late ClientConnection _connection;
   var _connected = false;
   bool _isShutdown = false;
+  bool _supportsFastUnary = true;
   final StreamController<ConnectionState> _connectionStateStreamController =
       StreamController.broadcast();
   final void Function()? _channelShutdownHandler;
@@ -119,6 +121,14 @@ abstract class ClientChannelBase implements ClientChannel {
           ? TimelineTask(filterKey: clientTimelineFilterKey)
           : null,
     );
+    if (_isShutdown) {
+      call.onConnectionError(GrpcError.unavailable('Channel shutting down.'));
+      return call;
+    }
+    if (_connected) {
+      _connection.dispatchCall(call);
+      return call;
+    }
     getConnection().then((connection) {
       if (call.isCancelled) return;
       connection.dispatchCall(call);
@@ -126,7 +136,44 @@ abstract class ClientChannelBase implements ClientChannel {
     return call;
   }
 
+  ResponseFuture<R> _createFastUnaryCall<Q, R>(
+    ClientMethod<Q, R> method,
+    Q request,
+    CallOptions options,
+  ) {
+    final call = UnaryClientCall<Q, R>(method, request, options);
+    if (_isShutdown) {
+      call.onConnectionError(GrpcError.unavailable('Channel shutting down.'));
+      return createDirectResponseFuture<R>(call, call.resultCompleter.future);
+    }
+    if (_connected) {
+      _connection.dispatchCall(call);
+      return createDirectResponseFuture<R>(call, call.resultCompleter.future);
+    }
+    getConnection().then((connection) {
+      if (call.isCancelled) return;
+      connection.dispatchCall(call);
+    }, onError: call.onConnectionError);
+    return createDirectResponseFuture<R>(call, call.resultCompleter.future);
+  }
+
   @override
   Stream<ConnectionState> get onConnectionStateChanged =>
       _connectionStateStreamController.stream;
+}
+
+void disableFastUnary(ClientChannelBase channel) {
+  channel._supportsFastUnary = false;
+}
+
+ResponseFuture<R>? tryCreateFastUnaryCall<Q, R>(
+  ClientChannel channel,
+  ClientMethod<Q, R> method,
+  Q request,
+  CallOptions options,
+) {
+  if (channel is ClientChannelBase && channel._supportsFastUnary) {
+    return channel._createFastUnaryCall<Q, R>(method, request, options);
+  }
+  return null;
 }

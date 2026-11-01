@@ -249,7 +249,7 @@ class ClientCall<Q, R> implements Response {
   bool _hasReceivedResponses = false;
 
   GrpcTransportStream? _stream;
-  final _responses = StreamController<R>();
+  late final _responses = StreamController<R>(onListen: _onResponseListen);
   StreamSubscription<List<int>>? _requestSubscription;
   StreamSubscription<GrpcMessage>? _responseSubscription;
 
@@ -272,11 +272,15 @@ class ClientCall<Q, R> implements Response {
         'timeout': options.timeout?.toString(),
       },
     );
-    _responses.onListen = _onResponseListen;
+    _responses;
     if (options.timeout != null) {
       _timeoutTimer = Timer(options.timeout!, _onTimedOut);
     }
   }
+
+  ClientCall._fastUnary(this._method, this.options)
+    : _requests = const Stream.empty(),
+      _requestTimeline = null;
 
   void onConnectionError(Object error) {
     _terminateWithError(GrpcError.unavailable('Error connecting: $error'));
@@ -612,6 +616,265 @@ class ClientCall<Q, R> implements Response {
     try {
       await _terminate();
     } catch (_) {}
+  }
+}
+
+/// Fast-path single-[Completer] unary call that avoids allocating request/response
+/// [StreamController]s and `fold`/`then` intermediate [Future]s on standard
+/// unary RPCs.
+class UnaryClientCall<Q, R> extends ClientCall<Q, R> {
+  final Q request;
+  final Completer<R> resultCompleter = Completer<R>();
+  Future<void> Function()? onCancelTransport;
+
+  UnaryClientCall(ClientMethod<Q, R> method, this.request, CallOptions options)
+    : super._fastUnary(method, options) {
+    if (options.timeout != null) {
+      _timeoutTimer = Timer(options.timeout!, _onUnaryTimedOut);
+    }
+  }
+
+  ClientMethod<Q, R> get method => _method;
+
+  void dispatchHttp2Unary(
+    void Function<T1, T2>(UnaryClientCall<T1, T2>) starter,
+  ) {
+    starter<Q, R>(this);
+  }
+
+  void completeHeaders(GrpcMetadata metadata) {
+    if (_headersCompleted) return;
+    _headerMetadata = metadata;
+    _headersCompleted = true;
+    _headers?.complete(metadata.metadata);
+  }
+
+  void completeTrailers(GrpcMetadata metadata) {
+    if (_trailersCompleted) return;
+    _trailerMetadata = metadata;
+    _trailersCompleted = true;
+    _trailers?.complete(metadata.metadata);
+  }
+
+  void completeResult(R value) {
+    _timeoutTimer?.cancel();
+    if (!resultCompleter.isCompleted) {
+      resultCompleter.complete(value);
+    }
+  }
+
+  void failWithError(GrpcError error, [StackTrace? stackTrace]) {
+    _timeoutTimer?.cancel();
+    if (!_headersCompleted) {
+      _headersCompleted = true;
+      _headers?.complete(<String, String>{});
+    }
+    if (!_trailersCompleted) {
+      _trailersCompleted = true;
+      _trailers?.complete(<String, String>{});
+    }
+    if (!resultCompleter.isCompleted) {
+      resultCompleter.completeError(error, stackTrace ?? StackTrace.current);
+    }
+  }
+
+  void _onUnaryTimedOut() {
+    if (resultCompleter.isCompleted || isCancelled) return;
+    isCancelled = true;
+    final cancelTransport = onCancelTransport;
+    onCancelTransport = null;
+    cancelTransport?.call();
+    failWithError(GrpcError.deadlineExceeded('Deadline exceeded'));
+  }
+
+  @override
+  void onConnectionError(Object error) {
+    isCancelled = true;
+    failWithError(GrpcError.unavailable('Error connecting: $error'));
+  }
+
+  @override
+  void onConnectionReady(ClientConnection connection) {
+    if (isCancelled) return;
+    // Fallback for custom non-Http2ClientConnection implementations.
+    late final GrpcTransportStream stream;
+    try {
+      final metadata = connection is NonMutatingMetadataConnection
+          ? options._sanitizedMetadata
+          : options._mutableSanitizedMetadata();
+      stream = connection.makeRequest(_method.path, options.timeout, metadata, (
+        error,
+        stackTrace,
+      ) {
+        final grpcError = error is GrpcError
+            ? error
+            : GrpcError.unknown(error.toString());
+        stream.terminate();
+        failWithError(grpcError, stackTrace);
+      }, callOptions: options);
+    } catch (e, s) {
+      final grpcError = e is GrpcError
+          ? e
+          : GrpcError.unavailable('Error making call: $e');
+      failWithError(grpcError, s);
+      return;
+    }
+
+    StreamSubscription<GrpcMessage>? sub;
+    onCancelTransport = () async {
+      await sub?.cancel();
+      await stream.terminate();
+    };
+
+    try {
+      stream.outgoingMessages.add(_method.requestSerializer(request));
+      stream.outgoingMessages.close();
+    } catch (e, s) {
+      final grpcError = e is GrpcError ? e : GrpcError.unknown(e.toString());
+      stream.terminate();
+      failWithError(grpcError, s);
+      return;
+    }
+
+    var receivedValue = false;
+    late R value;
+    GrpcMetadata? headerMetadata;
+    var receivedTrailers = false;
+
+    sub = stream.incomingMessages.listen(
+      (msg) {
+        if (msg is GrpcData) {
+          if (!_headersCompleted) {
+            sub?.cancel();
+            stream.terminate();
+            failWithError(
+              GrpcError.unimplemented('Received data before headers'),
+            );
+            return;
+          }
+          if (receivedTrailers) {
+            sub?.cancel();
+            stream.terminate();
+            failWithError(
+              GrpcError.unimplemented('Received data after trailers'),
+            );
+            return;
+          }
+          if (receivedValue) {
+            sub?.cancel();
+            stream.terminate();
+            failWithError(
+              GrpcError.unimplemented('More than one response received'),
+            );
+            return;
+          }
+          try {
+            value = _method.responseDeserializer(msg.data);
+            receivedValue = true;
+          } catch (e, s) {
+            sub?.cancel();
+            stream.terminate();
+            failWithError(GrpcError.dataLoss('Error parsing response'), s);
+          }
+        } else if (msg is GrpcMetadata) {
+          if (!_headersCompleted) {
+            headerMetadata = msg;
+            completeHeaders(msg);
+            return;
+          }
+          if (receivedTrailers) {
+            sub?.cancel();
+            stream.terminate();
+            failWithError(
+              GrpcError.unimplemented('Received multiple trailers'),
+            );
+            return;
+          }
+          receivedTrailers = true;
+          completeTrailers(msg);
+          if (msg is LazyGrpcMetadata && msg.isGrpcStatusZero) {
+            return;
+          }
+          final err = grpcErrorDetailsFromTrailers(msg.metadata);
+          if (err != null) {
+            sub?.cancel();
+            stream.terminate();
+            failWithError(err);
+          }
+        } else {
+          sub?.cancel();
+          stream.terminate();
+          failWithError(GrpcError.unimplemented('Unexpected frame received'));
+        }
+      },
+      onError: (Object e, StackTrace s) {
+        final grpcError = e is GrpcError ? e : GrpcError.unknown(e.toString());
+        sub?.cancel();
+        stream.terminate();
+        failWithError(grpcError, s);
+      },
+      onDone: () {
+        if (!_headersCompleted) {
+          stream.terminate();
+          failWithError(GrpcError.unavailable('Did not receive anything'));
+          return;
+        }
+        if (!receivedTrailers) {
+          if (receivedValue) {
+            stream.terminate();
+            failWithError(GrpcError.unavailable('Missing trailers'));
+            return;
+          }
+          final headers = headerMetadata!;
+          completeTrailers(headers);
+          if (!(headers is LazyGrpcMetadata && headers.isGrpcStatusZero)) {
+            final err = grpcErrorDetailsFromTrailers(headers.metadata);
+            if (err != null) {
+              stream.terminate();
+              failWithError(err);
+              return;
+            }
+          }
+        }
+        onCancelTransport = null;
+        sub?.cancel();
+        if (!receivedValue) {
+          failWithError(GrpcError.unimplemented('No responses received'));
+          return;
+        }
+        completeResult(value);
+      },
+      cancelOnError: true,
+    );
+  }
+
+  @override
+  Stream<R> get response => Stream<R>.fromFuture(resultCompleter.future);
+
+  @override
+  Future<void> cancel() async {
+    isCancelled = true;
+    _timeoutTimer?.cancel();
+    if (!_headersCompleted) {
+      _headersCompleted = true;
+      _headers?.complete(<String, String>{});
+    }
+    if (!_trailersCompleted) {
+      _trailersCompleted = true;
+      _trailers?.complete(<String, String>{});
+    }
+    if (!resultCompleter.isCompleted) {
+      resultCompleter.future.ignore();
+      resultCompleter.completeError(
+        GrpcError.cancelled('Cancelled by client.'),
+        StackTrace.current,
+      );
+    }
+    final cancelTransport = onCancelTransport;
+    onCancelTransport = null;
+    if (cancelTransport != null) {
+      await cancelTransport();
+    }
   }
 }
 

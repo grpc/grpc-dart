@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import '../shared/profiler.dart';
 import 'call.dart';
 import 'channel.dart';
 import 'common.dart';
@@ -52,9 +53,33 @@ regenerate these stubs using  protobuf compiler plugin version 19.2.0 or newer.
     Q request, {
     CallOptions? options,
   }) {
-    var invoker = (method, request, options) => ResponseFuture<R>(
-      _channel.createCall<Q, R>(method, Stream.value(request), options),
-    );
+    final effectiveOptions = _options.mergedWith(options);
+    if (_interceptors.isEmpty) {
+      if (!isTimelineLoggingEnabled &&
+          effectiveOptions.metadataProviders.isEmpty) {
+        final fastFuture = tryCreateFastUnaryCall<Q, R>(
+          _channel,
+          method,
+          request,
+          effectiveOptions,
+        );
+        if (fastFuture != null) {
+          return fastFuture;
+        }
+      }
+      return ResponseFuture<R>(
+        _channel.createCall<Q, R>(
+          method,
+          Stream.value(request),
+          effectiveOptions,
+        ),
+      );
+    }
+
+    var invoker = (ClientMethod<Q, R> method, Q request, CallOptions options) =>
+        ResponseFuture<R>(
+          _channel.createCall<Q, R>(method, Stream.value(request), options),
+        );
 
     for (final interceptor in _interceptors.reversed) {
       final delegate = invoker;
@@ -62,7 +87,7 @@ regenerate these stubs using  protobuf compiler plugin version 19.2.0 or newer.
           interceptor.interceptUnary<Q, R>(method, request, options, delegate);
     }
 
-    return invoker(method, request, _options.mergedWith(options));
+    return invoker(method, request, effectiveOptions);
   }
 
   ResponseStream<R> $createStreamingCall<Q, R>(
@@ -70,8 +95,18 @@ regenerate these stubs using  protobuf compiler plugin version 19.2.0 or newer.
     Stream<Q> requests, {
     CallOptions? options,
   }) {
-    var invoker = (method, requests, options) =>
-        ResponseStream<R>(_channel.createCall<Q, R>(method, requests, options));
+    final effectiveOptions = _options.mergedWith(options);
+    if (_interceptors.isEmpty) {
+      return ResponseStream<R>(
+        _channel.createCall<Q, R>(method, requests, effectiveOptions),
+      );
+    }
+
+    var invoker =
+        (ClientMethod<Q, R> method, Stream<Q> requests, CallOptions options) =>
+            ResponseStream<R>(
+              _channel.createCall<Q, R>(method, requests, options),
+            );
 
     for (final interceptor in _interceptors.reversed) {
       final delegate = invoker;
@@ -79,6 +114,6 @@ regenerate these stubs using  protobuf compiler plugin version 19.2.0 or newer.
           .interceptStreaming<Q, R>(method, requests, options, delegate);
     }
 
-    return invoker(method, requests, _options.mergedWith(options));
+    return invoker(method, requests, effectiveOptions);
   }
 }
