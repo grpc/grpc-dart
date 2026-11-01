@@ -18,9 +18,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:clock/clock.dart';
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
+import '../shared/status.dart';
 import '../shared/timeout.dart';
 import 'call.dart';
 import 'client_keepalive.dart';
@@ -53,6 +55,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   final ClientTransportConnector _transportConnector;
   ClientTransportConnection? _transportConnection;
+  Completer<void>? _connectingShutdown;
 
   /// Used for idle and reconnect timeout, depending on [_state].
   Timer? _timer;
@@ -82,21 +85,72 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   ConnectionState get state => _state;
 
-  static const _estimatedRoundTripTime = Duration(milliseconds: 20);
-
   Future<ClientTransportConnection> connectTransport() async {
+    final connectStopwatch = options.connectTimeout != null
+        ? (clock.stopwatch()..start())
+        : null;
     final connection = await _transportConnector.connect();
-    _transportConnector.done.then((_) => _abandonConnection());
-
-    // Give the settings settings-frame a bit of time to arrive.
-    // TODO(sigurdm): This is a hack. The http2 package should expose a way of
-    // waiting for the settings frame to arrive.
-    await Future.delayed(_estimatedRoundTripTime);
-
     if (_state == ConnectionState.shutdown) {
       _transportConnector.shutdown();
       throw _ShutdownException();
     }
+
+    final connectorDone = _transportConnector.done;
+    final shutdownSignal = Completer<void>();
+    _connectingShutdown = shutdownSignal;
+
+    final outcomeFuture = Future.any<_InitialSettingsOutcome>([
+      connection.onInitialPeerSettingsReceived.then(
+        _InitialSettingsOutcome.onReceived,
+      ),
+      connectorDone.then(
+        _InitialSettingsOutcome.onClosed,
+        onError: _InitialSettingsOutcome.onClosed,
+      ),
+      shutdownSignal.future.then(_InitialSettingsOutcome.onShutdown),
+    ]);
+
+    late final _InitialSettingsOutcome outcome;
+    try {
+      if (connectStopwatch != null) {
+        final remaining = options.connectTimeout! - connectStopwatch.elapsed;
+        if (remaining <= Duration.zero) {
+          throw TimeoutException(
+            'Timed out waiting for initial HTTP/2 SETTINGS frame.',
+            options.connectTimeout,
+          );
+        }
+        outcome = await outcomeFuture.timeout(remaining);
+      } else {
+        outcome = await outcomeFuture;
+      }
+    } on TimeoutException {
+      _transportConnector.shutdown();
+      throw GrpcError.unavailable(
+        'Timed out waiting for initial HTTP/2 SETTINGS frame.',
+      );
+    } catch (_) {
+      _transportConnector.shutdown();
+      rethrow;
+    } finally {
+      if (identical(_connectingShutdown, shutdownSignal)) {
+        _connectingShutdown = null;
+      }
+    }
+
+    if (outcome == _InitialSettingsOutcome.shutdown ||
+        _state == ConnectionState.shutdown) {
+      _transportConnector.shutdown();
+      throw _ShutdownException();
+    }
+    if (outcome != _InitialSettingsOutcome.received || !connection.isOpen) {
+      _transportConnector.shutdown();
+      throw GrpcError.unavailable(
+        'Connection closed before receiving initial HTTP/2 SETTINGS frame.',
+      );
+    }
+
+    connectorDone.then(_abandonConnection, onError: _abandonConnection);
     return connection;
   }
 
@@ -238,6 +292,11 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   void _setShutdownState() {
     _setState(ConnectionState.shutdown);
+    final connectingShutdown = _connectingShutdown;
+    _connectingShutdown = null;
+    if (connectingShutdown != null && !connectingShutdown.isCompleted) {
+      connectingShutdown.complete();
+    }
     _cancelTimer();
     _pendingCalls.forEach(_shutdownCall);
     _pendingCalls.clear();
@@ -309,7 +368,7 @@ class Http2ClientConnection implements connection.ClientConnection {
     keepAliveManager = null;
   }
 
-  void _abandonConnection() {
+  void _abandonConnection([Object? _, StackTrace? _]) {
     _cancelTimer();
     _disconnect();
 
@@ -370,6 +429,7 @@ class SocketTransportConnector implements ClientTransportConnector {
   final int _port;
   final ChannelOptions _options;
   late Socket socket;
+  Completer<void>? _doneCompleter;
 
   Proxy? get proxy => _options.proxy;
   Object get host => proxy == null ? _host : proxy!.host;
@@ -380,6 +440,14 @@ class SocketTransportConnector implements ClientTransportConnector {
 
   @override
   Future<ClientTransportConnection> connect() async {
+    final doneCompleter = Completer<void>();
+    _doneCompleter = doneCompleter;
+    void completeDone([Object? _, StackTrace? _]) {
+      if (!doneCompleter.isCompleted) {
+        doneCompleter.complete();
+      }
+    }
+
     final securityContext = _options.credentials.securityContext;
     var incoming = await connectImpl(proxy);
 
@@ -402,7 +470,11 @@ class SocketTransportConnector implements ClientTransportConnector {
       );
       incoming = socket;
     }
-    return ClientTransportConnection.viaStreams(incoming, socket);
+    socket.done.then(completeDone, onError: completeDone);
+    return ClientTransportConnection.viaStreams(
+      _DisconnectAwareStream(incoming, completeDone),
+      socket,
+    );
   }
 
   Future<Stream<List<int>>> connectImpl(Proxy? proxy) async {
@@ -452,13 +524,17 @@ class SocketTransportConnector implements ClientTransportConnector {
   @override
   Future get done {
     ArgumentError.checkNotNull(socket);
-    return socket.done;
+    return _doneCompleter?.future ?? socket.done;
   }
 
   @override
   void shutdown() {
     ArgumentError.checkNotNull(socket);
     socket.destroy();
+    final doneCompleter = _doneCompleter;
+    if (doneCompleter != null && !doneCompleter.isCompleted) {
+      doneCompleter.complete();
+    }
   }
 
   bool _validateBadCertificate(X509Certificate certificate) {
@@ -518,3 +594,50 @@ class SocketTransportConnector implements ClientTransportConnector {
 }
 
 class _ShutdownException implements Exception {}
+
+enum _InitialSettingsOutcome {
+  received,
+  closed,
+  shutdown;
+
+  static _InitialSettingsOutcome onReceived([Object? _]) => received;
+  static _InitialSettingsOutcome onClosed([Object? _, StackTrace? _]) => closed;
+  static _InitialSettingsOutcome onShutdown([Object? _]) => shutdown;
+}
+
+class _DisconnectAwareStream extends Stream<List<int>> {
+  final Stream<List<int>> _source;
+  final void Function() _onDisconnected;
+
+  _DisconnectAwareStream(this._source, this._onDisconnected);
+
+  @override
+  StreamSubscription<List<int>> listen(
+    void Function(List<int> event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    return _source.listen(
+      onData,
+      onError: onError == null
+          ? (Object error, StackTrace stackTrace) {
+              _onDisconnected();
+              Zone.current.handleUncaughtError(error, stackTrace);
+            }
+          : (Object error, StackTrace stackTrace) {
+              _onDisconnected();
+              if (onError is void Function(Object, StackTrace)) {
+                onError(error, stackTrace);
+              } else {
+                (onError as void Function(Object))(error);
+              }
+            },
+      onDone: () {
+        _onDisconnected();
+        onDone?.call();
+      },
+      cancelOnError: cancelOnError,
+    );
+  }
+}
