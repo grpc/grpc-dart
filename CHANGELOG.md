@@ -3,6 +3,7 @@
 - Wait for the peer's initial HTTP/2 `SETTINGS` frame (`onInitialPeerSettingsReceived`) instead of a hardcoded 20 ms sleep when establishing client connections, failing immediately if the peer closes the connection before `SETTINGS` arrive.
 - Avoid allocating and copying a new buffer in `GrpcHttpDecoder` when a complete gRPC frame arrives in a single HTTP/2 `DATA` chunk.
 - Avoid allocating and copying a `length + 5` buffer when framing large uncompressed outgoing messages (`> 16 KiB`).
+- Lazily decode HTTP/2 header and trailer frames into `Map<String, String>` metadata only when accessed on `GrpcMetadata`, `ClientCall`, or `ServiceCall`.
 
 ## 5.2.0
 
