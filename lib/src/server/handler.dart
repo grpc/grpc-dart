@@ -85,6 +85,7 @@ class ServerHandler extends ServiceCall {
   late Service _service;
   late ServiceMethod _descriptor;
 
+  GrpcMetadata? _clientMetadataMessage;
   Map<String, String>? _clientMetadata;
   Codec? _callEncodingCodec;
 
@@ -109,13 +110,19 @@ class ServerHandler extends ServiceCall {
   /// Emits a ping everytime data is received
   final Sink<void>? onDataReceived;
 
-  final Completer<void> _isCanceledCompleter = Completer<void>();
+  bool _isCanceled = false;
+  Completer<void>? _isCanceledCompleter;
 
-  Future<void> get onCanceled => _isCanceledCompleter.future;
+  Future<void> get onCanceled =>
+      (_isCanceledCompleter ??= (_isCanceled
+              ? (Completer<void>()..complete())
+              : Completer<void>()))
+          .future;
 
   set isCanceled(bool value) {
-    if (!isCanceled) {
-      _isCanceledCompleter.complete();
+    if (!_isCanceled) {
+      _isCanceled = true;
+      _isCanceledCompleter?.complete();
     }
   }
 
@@ -142,13 +149,14 @@ class ServerHandler extends ServiceCall {
   DateTime? get deadline => _deadline;
 
   @override
-  bool get isCanceled => _isCanceledCompleter.isCompleted;
+  bool get isCanceled => _isCanceled;
 
   @override
   bool get isTimedOut => _isTimedOut;
 
   @override
-  Map<String, String>? get clientMetadata => _clientMetadata;
+  Map<String, String>? get clientMetadata =>
+      _clientMetadata ??= _clientMetadataMessage?.metadata;
 
   @override
   Map<String, String>? get headers =>
@@ -191,6 +199,24 @@ class ServerHandler extends ServiceCall {
 
   // -- Idle state, incoming data --
 
+  static Codec? _negotiateEncoding(
+    CodecRegistry codecRegistry,
+    String? acceptEncoding,
+  ) {
+    if (acceptEncoding == null || acceptEncoding.isEmpty) return null;
+    var start = 0;
+    while (true) {
+      final comma = acceptEncoding.indexOf(',', start);
+      final token = comma == -1
+          ? acceptEncoding.substring(start)
+          : acceptEncoding.substring(start, comma);
+      final matched = codecRegistry.lookup(token);
+      if (matched != null) return matched;
+      if (comma == -1) return null;
+      start = comma + 1;
+    }
+  }
+
   void _onDataIdle(GrpcMessage headerMessage) async {
     onDataReceived?.add(null);
     if (headerMessage is! GrpcMetadata) {
@@ -200,22 +226,54 @@ class ServerHandler extends ServiceCall {
     }
     _incomingSubscription!.pause();
 
-    _clientMetadata = headerMessage.metadata;
-    final path = _clientMetadata![':path']!;
-    final pathSegments = path.split('/');
-    if (pathSegments.length < 3) {
+    _clientMetadataMessage = headerMessage;
+    String? path;
+    String? timeoutString;
+    String? acceptEncoding;
+    if (headerMessage is Http2GrpcMetadata && !headerMessage.isMaterialized) {
+      final rawHeaders = headerMessage.rawHeaders;
+      for (var i = 0; i < rawHeaders.length; i++) {
+        final header = rawHeaders[i];
+        final name = header.name;
+        if (headerBytesEqual(name, headerNamePath)) {
+          path = ascii.decode(header.value);
+        } else if (headerBytesEqual(name, headerNameGrpcTimeout)) {
+          timeoutString = ascii.decode(header.value);
+        } else if (_codecRegistry != null &&
+            headerBytesEqual(name, headerNameGrpcAcceptEncoding)) {
+          acceptEncoding = ascii.decode(header.value);
+        }
+      }
+    } else {
+      final metadata = clientMetadata!;
+      path = metadata[':path'];
+      timeoutString = metadata['grpc-timeout'];
+      if (_codecRegistry != null) {
+        acceptEncoding = metadata['grpc-accept-encoding'];
+      }
+    }
+
+    if (path == null) {
       _sendError(GrpcError.unimplemented('Invalid path'));
       _sinkIncoming();
       return;
     }
-    final serviceName = pathSegments[1];
-    final methodName = pathSegments[2];
+    final firstSlash = path.indexOf('/');
+    final secondSlash = firstSlash == -1
+        ? -1
+        : path.indexOf('/', firstSlash + 1);
+    if (firstSlash == -1 || secondSlash == -1) {
+      _sendError(GrpcError.unimplemented('Invalid path'));
+      _sinkIncoming();
+      return;
+    }
+    final thirdSlash = path.indexOf('/', secondSlash + 1);
+    final serviceName = path.substring(firstSlash + 1, secondSlash);
+    final methodName = thirdSlash == -1
+        ? path.substring(secondSlash + 1)
+        : path.substring(secondSlash + 1, thirdSlash);
     if (_codecRegistry != null) {
-      final acceptedEncodings =
-          clientMetadata!['grpc-accept-encoding']?.split(',') ?? [];
-      _callEncodingCodec = acceptedEncodings
-          .map(_codecRegistry.lookup)
-          .firstWhere((c) => c != null, orElse: () => null);
+      _callEncodingCodec = _negotiateEncoding(_codecRegistry, acceptEncoding);
     }
 
     final service = _serviceLookup(serviceName);
@@ -235,7 +293,7 @@ class ServerHandler extends ServiceCall {
       return;
     }
 
-    _startStreamingRequest();
+    _startStreamingRequest(timeoutString);
   }
 
   GrpcError? _onMetadata() {
@@ -265,7 +323,16 @@ class ServerHandler extends ServiceCall {
     return null;
   }
 
-  void _startStreamingRequest() {
+  void _startStreamingRequest(String? rawTimeoutString) {
+    final timeoutString = _clientMetadata != null
+        ? _clientMetadata!['grpc-timeout']
+        : rawTimeoutString;
+    final timeout = fromTimeoutString(timeoutString);
+    if (timeout != null) {
+      _deadline = DateTime.now().add(timeout);
+      _timeoutTimer = Timer(timeout, _onTimedOut);
+    }
+
     final requests = _descriptor.createRequestStream(_incomingSubscription!);
     _requests = requests;
     _incomingSubscription!.onData(_onDataActive);
@@ -293,12 +360,6 @@ class ServerHandler extends ServiceCall {
     );
     _incomingSubscription!.onData(_onDataActive);
     _incomingSubscription!.onDone(_onDoneExpected);
-
-    final timeout = fromTimeoutString(_clientMetadata!['grpc-timeout']);
-    if (timeout != null) {
-      _deadline = DateTime.now().add(timeout);
-      _timeoutTimer = Timer(timeout, _onTimedOut);
-    }
   }
 
   void _onTimedOut() {

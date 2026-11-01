@@ -30,6 +30,17 @@ class GrpcMetadata extends GrpcMessage {
   String toString() => 'gRPC Metadata ($metadata)';
 }
 
+/// Internal [GrpcMetadata] specialization that defers decoding raw transport
+/// headers into a [Map] until [metadata] is accessed.
+abstract class LazyGrpcMetadata extends GrpcMessage implements GrpcMetadata {
+  /// Looks up the last header matching [lowerCaseAsciiName] and decodes its
+  /// ASCII value without materializing [metadata].
+  String? lookupRawAsciiValue(List<int> lowerCaseAsciiName);
+
+  /// Whether the last `grpc-status` header has the exact ASCII value `'0'`.
+  bool get isGrpcStatusZero;
+}
+
 class GrpcData extends GrpcMessage {
   final List<int> data;
   final bool isCompressed;
@@ -97,6 +108,10 @@ List<int> frame(List<int> rawPayload, [Codec? codec]) {
   return bytes;
 }
 
+final Uint8List _grpcEncodingBytes = Uint8List.fromList(
+  'grpc-encoding'.codeUnits,
+);
+
 StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({
   CodecRegistry? codecRegistry,
 }) {
@@ -114,7 +129,12 @@ StreamTransformer<GrpcMessage, GrpcMessage> grpcDecompressor({
         return;
       }
 
-      if (value is GrpcMetadata &&
+      if (value is LazyGrpcMetadata) {
+        final encoding = value.lookupRawAsciiValue(_grpcEncodingBytes);
+        if (encoding != null) {
+          codec = codecRegistry?.lookup(encoding);
+        }
+      } else if (value is GrpcMetadata &&
           value.metadata.containsKey('grpc-encoding')) {
         codec = codecRegistry?.lookup(value.metadata['grpc-encoding']!);
       }

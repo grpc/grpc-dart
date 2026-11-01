@@ -238,11 +238,15 @@ class ClientCall<Q, R> implements Response {
   final Stream<Q> _requests;
   final CallOptions options;
 
-  final _headers = Completer<Map<String, String>>();
-  final _trailers = Completer<Map<String, String>>();
-  bool _hasReceivedResponses = false;
+  Completer<Map<String, String>>? _headers;
+  GrpcMetadata? _headerMetadata;
+  bool _headersCompleted = false;
 
-  late Map<String, String> _headerMetadata;
+  Completer<Map<String, String>>? _trailers;
+  GrpcMetadata? _trailerMetadata;
+  bool _trailersCompleted = false;
+
+  bool _hasReceivedResponses = false;
 
   GrpcTransportStream? _stream;
   final _responses = StreamController<R>();
@@ -416,8 +420,11 @@ class ClientCall<Q, R> implements Response {
   }
 
   /// If there's an error status then process it as a response error.
-  void _checkForErrorStatus(Map<String, String> trailers) {
-    final error = grpcErrorDetailsFromTrailers(trailers);
+  void _checkForErrorStatus(GrpcMetadata trailers) {
+    if (trailers is LazyGrpcMetadata && trailers.isGrpcStatusZero) {
+      return;
+    }
+    final error = grpcErrorDetailsFromTrailers(trailers.metadata);
     if (error != null) {
       _responseError(error);
     }
@@ -427,11 +434,11 @@ class ClientCall<Q, R> implements Response {
   /// metadata, and forwards response objects to [_responses].
   void _onResponseData(GrpcMessage data) {
     if (data is GrpcData) {
-      if (!_headers.isCompleted) {
+      if (!_headersCompleted) {
         _responseError(GrpcError.unimplemented('Received data before headers'));
         return;
       }
-      if (_trailers.isCompleted) {
+      if (_trailersCompleted) {
         _responseError(GrpcError.unimplemented('Received data after trailers'));
         return;
       }
@@ -447,35 +454,40 @@ class ClientCall<Q, R> implements Response {
         _responseError(GrpcError.dataLoss('Error parsing response'), s);
       }
     } else if (data is GrpcMetadata) {
-      if (!_headers.isCompleted) {
-        _headerMetadata = data.metadata;
+      if (!_headersCompleted) {
+        _headerMetadata = data;
+        _headersCompleted = true;
         if (_requestTimeline != null) {
-          _responseTimeline = TimelineTask(
-            parent: _requestTimeline,
-            filterKey: clientTimelineFilterKey,
-          );
+          _responseTimeline =
+              TimelineTask(
+                  parent: _requestTimeline,
+                  filterKey: clientTimelineFilterKey,
+                )
+                ..start('gRPC Response')
+                ..instant(
+                  'Metadata received',
+                  arguments: {'headers': data.metadata.toString()},
+                );
         }
-        _responseTimeline?.start('gRPC Response');
-        _responseTimeline?.instant(
-          'Metadata received',
-          arguments: {'headers': _headerMetadata.toString()},
-        );
-        _headers.complete(_headerMetadata);
+        _headers?.complete(data.metadata);
         return;
       }
-      if (_trailers.isCompleted) {
+      if (_trailersCompleted) {
         _responseError(GrpcError.unimplemented('Received multiple trailers'));
         return;
       }
-      final metadata = data.metadata;
-      _responseTimeline?.instant(
-        'Metadata received',
-        arguments: {'trailers': metadata.toString()},
-      );
-      _trailers.complete(metadata);
+      _trailerMetadata = data;
+      _trailersCompleted = true;
+      if (_responseTimeline != null) {
+        _responseTimeline!.instant(
+          'Metadata received',
+          arguments: {'trailers': data.metadata.toString()},
+        );
+      }
+      _trailers?.complete(data.metadata);
 
       /// Process status error if necessary
-      _checkForErrorStatus(metadata);
+      _checkForErrorStatus(data);
     } else {
       _responseError(GrpcError.unimplemented('Unexpected frame received'));
     }
@@ -494,11 +506,11 @@ class ClientCall<Q, R> implements Response {
   /// Handles closure of the response stream. Verifies that server has sent
   /// response messages and header/trailer metadata, as necessary.
   void _onResponseDone() {
-    if (!_headers.isCompleted) {
+    if (!_headersCompleted) {
       _responseError(GrpcError.unavailable('Did not receive anything'));
       return;
     }
-    if (!_trailers.isCompleted) {
+    if (!_trailersCompleted) {
       if (_hasReceivedResponses) {
         // Trailers are required after receiving data.
         _responseError(GrpcError.unavailable('Missing trailers'));
@@ -507,10 +519,13 @@ class ClientCall<Q, R> implements Response {
 
       // Only received a header frame and no data frames, so the header
       // should contain "trailers" as well (Trailers-Only).
-      _trailers.complete(_headerMetadata);
+      final headerMetadata = _headerMetadata!;
+      _trailerMetadata = headerMetadata;
+      _trailersCompleted = true;
+      _trailers?.complete(headerMetadata.metadata);
 
       /// Process status error if necessary
-      _checkForErrorStatus(_headerMetadata);
+      _checkForErrorStatus(headerMetadata);
     }
     _responseTimeline?.finish();
     _timeoutTimer?.cancel();
@@ -538,10 +553,22 @@ class ClientCall<Q, R> implements Response {
   Stream<R> get response => _responses.stream;
 
   @override
-  Future<Map<String, String>> get headers => _headers.future;
+  Future<Map<String, String>> get headers {
+    if (_headers != null) return _headers!.future;
+    if (_headersCompleted) {
+      return Future.value(_headerMetadata?.metadata ?? <String, String>{});
+    }
+    return (_headers = Completer<Map<String, String>>()).future;
+  }
 
   @override
-  Future<Map<String, String>> get trailers => _trailers.future;
+  Future<Map<String, String>> get trailers {
+    if (_trailers != null) return _trailers!.future;
+    if (_trailersCompleted) {
+      return Future.value(_trailerMetadata?.metadata ?? <String, String>{});
+    }
+    return (_trailers = Completer<Map<String, String>>()).future;
+  }
 
   @override
   Future<void> cancel() {
@@ -568,13 +595,17 @@ class ClientCall<Q, R> implements Response {
     if (_responseSubscription != null) {
       futures.add(_responseSubscription!.cancel());
     }
-    if (!_headers.isCompleted) {
-      _headers.complete({});
+    if (!_headersCompleted) {
+      _headersCompleted = true;
+      _headers?.complete(<String, String>{});
     }
-    if (!_trailers.isCompleted) {
-      _trailers.complete({});
+    if (!_trailersCompleted) {
+      _trailersCompleted = true;
+      _trailers?.complete(<String, String>{});
     }
-    await Future.wait(futures);
+    if (futures.isNotEmpty) {
+      await Future.wait(futures);
+    }
   }
 
   Future<void> _safeTerminate() async {

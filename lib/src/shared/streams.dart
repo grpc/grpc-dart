@@ -183,6 +183,145 @@ class GrpcFrameParser {
   }
 }
 
+final Uint8List headerNameStatus = ascii.encode(':status');
+final Uint8List headerNameContentType = ascii.encode('content-type');
+final Uint8List headerNamePath = ascii.encode(':path');
+final Uint8List headerNameGrpcTimeout = ascii.encode('grpc-timeout');
+final Uint8List headerNameGrpcEncoding = ascii.encode('grpc-encoding');
+final Uint8List headerNameGrpcAcceptEncoding = ascii.encode(
+  'grpc-accept-encoding',
+);
+final Uint8List headerNameGrpcStatus = ascii.encode('grpc-status');
+
+final Uint8List _contentTypeGrpcPrefix = ascii.encode('application/grpc');
+final Uint8List _contentTypeJsonProtoPrefix = ascii.encode(
+  'application/json+protobuf',
+);
+final Uint8List _contentTypeXProtoPrefix = ascii.encode(
+  'application/x-protobuf',
+);
+
+bool headerBytesEqual(List<int> a, List<int> b) {
+  final len = a.length;
+  if (len != b.length) return false;
+  for (var i = 0; i < len; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
+}
+
+bool headerBytesStartsWith(List<int> bytes, List<int> prefix) {
+  final prefixLen = prefix.length;
+  if (bytes.length < prefixLen) return false;
+  for (var i = 0; i < prefixLen; i++) {
+    if (bytes[i] != prefix[i]) return false;
+  }
+  return true;
+}
+
+Map<String, String> decodeHeadersToMetadata(List<Header> rawHeaders) {
+  final headers = <String, String>{};
+  for (var i = 0; i < rawHeaders.length; i++) {
+    final header = rawHeaders[i];
+    // TODO(jakobr): Handle duplicate header names correctly.
+    headers[ascii.decode(header.name)] = ascii.decode(header.value);
+  }
+  return headers;
+}
+
+bool isRawGrpcStatusOk(List<Header> rawHeaders) {
+  List<int>? statusValue;
+  for (var i = 0; i < rawHeaders.length; i++) {
+    final header = rawHeaders[i];
+    if (headerBytesEqual(header.name, headerNameGrpcStatus)) {
+      statusValue = header.value;
+    }
+  }
+  return statusValue != null &&
+      statusValue.length == 1 &&
+      statusValue[0] == 0x30;
+}
+
+void validateRawHttp2ResponseHeaders(List<Header> rawHeaders) {
+  List<int>? statusValue;
+  List<int>? contentTypeValue;
+  for (var i = 0; i < rawHeaders.length; i++) {
+    final header = rawHeaders[i];
+    final name = header.name;
+    if (headerBytesEqual(name, headerNameStatus)) {
+      statusValue = header.value;
+    } else if (headerBytesEqual(name, headerNameContentType)) {
+      contentTypeValue = header.value;
+    }
+  }
+
+  final isStatus200 =
+      statusValue != null &&
+      statusValue.length == 3 &&
+      statusValue[0] == 0x32 &&
+      statusValue[1] == 0x30 &&
+      statusValue[2] == 0x30;
+  final isValidContentType =
+      contentTypeValue != null &&
+      (headerBytesStartsWith(contentTypeValue, _contentTypeGrpcPrefix) ||
+          headerBytesStartsWith(
+            contentTypeValue,
+            _contentTypeJsonProtoPrefix,
+          ) ||
+          headerBytesStartsWith(contentTypeValue, _contentTypeXProtoPrefix));
+
+  if (isStatus200 && isValidContentType) {
+    return;
+  }
+
+  final headers = decodeHeadersToMetadata(rawHeaders);
+  final httpStatus = headers.containsKey(':status')
+      ? int.tryParse(headers[':status']!)
+      : null;
+  validateHttpStatusAndContentType(httpStatus, headers);
+}
+
+class Http2GrpcMetadata extends LazyGrpcMetadata {
+  final List<Header> rawHeaders;
+  Map<String, String>? _metadata;
+
+  Http2GrpcMetadata(this.rawHeaders);
+
+  bool get isMaterialized => _metadata != null;
+
+  @override
+  Map<String, String> get metadata =>
+      _metadata ??= decodeHeadersToMetadata(rawHeaders);
+
+  @override
+  String? lookupRawAsciiValue(List<int> lowerCaseAsciiName) {
+    final existing = _metadata;
+    if (existing != null) {
+      return existing[ascii.decode(lowerCaseAsciiName)];
+    }
+    List<int>? matched;
+    for (var i = 0; i < rawHeaders.length; i++) {
+      final header = rawHeaders[i];
+      if (headerBytesEqual(header.name, lowerCaseAsciiName)) {
+        matched = header.value;
+      }
+    }
+    return matched == null ? null : ascii.decode(matched);
+  }
+
+  @override
+  bool get isGrpcStatusZero {
+    final existing = _metadata;
+    if (existing != null) {
+      return existing['grpc-status'] == '0';
+    }
+    return isRawGrpcStatusOk(rawHeaders);
+  }
+
+  @override
+  String toString() => 'gRPC Metadata ($metadata)';
+}
+
 class _GrpcMessageConversionSink
     implements ChunkedConversionSink<StreamMessage> {
   final Sink<GrpcMessage> _out;
@@ -208,28 +347,20 @@ class _GrpcMessageConversionSink
       // is a violation of the gRPC protocol.
       throw GrpcError.unimplemented('Received header while reading data');
     }
-    final headers = <String, String>{};
-    for (var header in chunk.headers) {
-      // TODO(jakobr): Handle duplicate header names correctly.
-      headers[ascii.decode(header.name)] = ascii.decode(header.value);
-    }
     if (!_headersReceived) {
       if (_forResponse) {
         // Validate :status and content-type header here synchronously before
         // attempting to parse subsequent DataStreamMessage.
-        final httpStatus = headers.containsKey(':status')
-            ? int.tryParse(headers[':status']!)
-            : null;
-
+        //
         // Validation might throw an exception. When [GrpcHttpDecoder] is
         // used as a [StreamTransformer] the underlying implementation of
         // [StreamTransformer.bind] will take care of forwarding this
         // exception into the stream as an error.
-        validateHttpStatusAndContentType(httpStatus, headers);
+        validateRawHttp2ResponseHeaders(chunk.headers);
       }
       _headersReceived = true;
     }
-    _out.add(GrpcMetadata(headers));
+    _out.add(Http2GrpcMetadata(chunk.headers));
   }
 
   @override
