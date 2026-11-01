@@ -33,6 +33,13 @@ import 'service.dart';
 typedef ServiceLookup = Service? Function(String service);
 typedef GrpcErrorHandler = void Function(GrpcError error, StackTrace? trace);
 
+void registerServerHandlerCancelCallback(
+  ServerHandler handler,
+  void Function() callback,
+) {
+  handler._onCanceledCallback = callback;
+}
+
 /// Handles an incoming gRPC call.
 class ServerHandler extends ServiceCall {
   static final Header _status200Header = Header.ascii(':status', '200');
@@ -112,6 +119,7 @@ class ServerHandler extends ServiceCall {
 
   bool _isCanceled = false;
   Completer<void>? _isCanceledCompleter;
+  void Function()? _onCanceledCallback;
 
   Future<void> get onCanceled =>
       (_isCanceledCompleter ??= (_isCanceled
@@ -123,6 +131,9 @@ class ServerHandler extends ServiceCall {
     if (!_isCanceled) {
       _isCanceled = true;
       _isCanceledCompleter?.complete();
+      final callback = _onCanceledCallback;
+      _onCanceledCallback = null;
+      callback?.call();
     }
   }
 

@@ -5,6 +5,7 @@
 - Avoid allocating and copying a `length + 5` buffer when framing large uncompressed outgoing messages (`> 16 KiB`).
 - Cache encoded HTTP/2 request headers (`:path`, `:authority`, `user-agent`, `grpc-accept-encoding`, and static `CallOptions` metadata) on `Http2ClientConnection` and reuse pre-encoded default response header/trailer lists in `ServerHandler`.
 - Lazily decode HTTP/2 header and trailer frames into `Map<String, String>` metadata only when accessed on `GrpcMetadata`, `ClientCall`, or `ServiceCall`.
+- Notify `ServerKeepAlive` synchronously as a `Sink<void>` instead of allocating a per-connection `StreamController` in `ConnectionServer.serveConnection`.
 
 ## 5.2.0
 
