@@ -1,3 +1,7 @@
+## 5.2.1-wip
+
+- Wait for the peer's initial HTTP/2 `SETTINGS` frame (`onInitialPeerSettingsReceived`) instead of a hardcoded 20 ms sleep when establishing client connections, failing immediately if the peer closes the connection before `SETTINGS` arrive.
+
 ## 5.2.0
 
 - Update default `user-agent` header from `dart-grpc/2.0.0` to the gRPC HTTP/2
