@@ -15,6 +15,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:http2/transport.dart';
 
@@ -321,7 +322,16 @@ class ServerHandler extends ServiceCall {
       if (!_headersSent) {
         sendHeaders();
       }
-      _stream.sendData(frame(bytes, _callEncodingCodec));
+      final codec = _callEncodingCodec;
+      final isIdentity = codec == null || codec.encodingName == 'identity';
+      if (isIdentity &&
+          bytes is Uint8List &&
+          bytes.length > zeroCopyFrameThreshold) {
+        _stream.sendData(frameHeader(bytes.length));
+        _stream.sendData(bytes);
+      } else {
+        _stream.sendData(frame(bytes, codec));
+      }
     } catch (error, trace) {
       final grpcError = GrpcError.internal('Error sending response: $error');
       if (!_requests!.isClosed) {
