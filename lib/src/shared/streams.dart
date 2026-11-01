@@ -59,76 +59,122 @@ class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
   }
 }
 
+/// Incremental parser for 5-byte length-prefixed gRPC wire frames.
+///
+/// When an entire frame (`5 + length` bytes) is present in an incoming
+/// [Uint8List] chunk, emits a zero-copy [Uint8List.sublistView] directly over
+/// the chunk buffer instead of allocating and copying into a new buffer.
+class GrpcFrameParser {
+  Uint8List? _headerBuffer;
+  Uint8List? _data;
+  int _offset = 0;
+
+  /// Whether the parser is currently mid-header or mid-payload across chunks.
+  bool get hasPartialFrame => _data != null || _offset != 0;
+
+  static int _readUint32BE(List<int> bytes, int offset) =>
+      ((bytes[offset] & 0xFF) * 0x1000000) +
+      (((bytes[offset + 1] & 0xFF) << 16) |
+          ((bytes[offset + 2] & 0xFF) << 8) |
+          (bytes[offset + 3] & 0xFF));
+
+  /// Parses [chunkData] and invokes [onFrame] for each complete gRPC frame.
+  ///
+  /// Stops parsing remaining bytes in [chunkData] immediately if [onFrame]
+  /// returns `false`.
+  void parse(
+    List<int> chunkData,
+    bool Function(Uint8List payload, bool isCompressed) onFrame,
+  ) {
+    final chunkLength = chunkData.length;
+    var readOffset = 0;
+
+    while (readOffset < chunkLength) {
+      if (_data == null && _offset == 0) {
+        final remaining = chunkLength - readOffset;
+        if (remaining >= 5) {
+          final isCompressed = chunkData[readOffset] != 0;
+          final dataLength = _readUint32BE(chunkData, readOffset + 1);
+          if (remaining - 5 >= dataLength) {
+            final start = readOffset + 5;
+            final end = start + dataLength;
+            final slice = chunkData is Uint8List
+                ? Uint8List.sublistView(chunkData, start, end)
+                : Uint8List.fromList(chunkData.sublist(start, end));
+            readOffset = end;
+            if (!onFrame(slice, isCompressed)) {
+              return;
+            }
+            continue;
+          }
+          (_headerBuffer ??= Uint8List(5))[0] = isCompressed ? 1 : 0;
+          _data = Uint8List(dataLength);
+          readOffset += 5;
+        }
+      }
+
+      if (_data == null) {
+        // Reading 5-byte gRPC frame header split across chunks.
+        final headerBuffer = _headerBuffer ??= Uint8List(5);
+        final headerRemaining = 5 - _offset;
+        final chunkRemaining = chunkLength - readOffset;
+        final toCopy = min(headerRemaining, chunkRemaining);
+        headerBuffer.setRange(_offset, _offset + toCopy, chunkData, readOffset);
+        _offset += toCopy;
+        readOffset += toCopy;
+        if (_offset == 5) {
+          final dataLength = _readUint32BE(headerBuffer, 1);
+          // TODO(jakobr): Sanity check dataLength. Max size?
+          _data = Uint8List(dataLength);
+          _offset = 0;
+        }
+      }
+
+      if (_data != null) {
+        // Reading frame payload split across chunks.
+        final data = _data!;
+        final dataRemaining = data.lengthInBytes - _offset;
+        if (dataRemaining > 0) {
+          final chunkRemaining = chunkLength - readOffset;
+          final toCopy = min(dataRemaining, chunkRemaining);
+          data.setRange(_offset, _offset + toCopy, chunkData, readOffset);
+          _offset += toCopy;
+          readOffset += toCopy;
+        }
+        if (_offset == data.lengthInBytes) {
+          final isCompressed = _headerBuffer![0] != 0;
+          _data = null;
+          _offset = 0;
+          if (!onFrame(data, isCompressed)) {
+            return;
+          }
+        }
+      }
+    }
+  }
+}
+
 class _GrpcMessageConversionSink
     implements ChunkedConversionSink<StreamMessage> {
   final Sink<GrpcMessage> _out;
   final bool _forResponse;
-
-  final _dataHeader = Uint8List(5);
-  Uint8List? _data;
-  int _dataOffset = 0;
+  final GrpcFrameParser _frameParser = GrpcFrameParser();
 
   bool _headersReceived = false;
 
   _GrpcMessageConversionSink(this._out, this._forResponse);
 
-  void _addData(DataStreamMessage chunk) {
-    final chunkData = chunk.bytes;
-    final chunkLength = chunkData.length;
-    var chunkReadOffset = 0;
+  bool _emitFrame(Uint8List payload, bool isCompressed) {
+    _out.add(GrpcData(payload, isCompressed: isCompressed));
+    return true;
+  }
 
-    while (chunkReadOffset < chunkLength) {
-      if (_data == null) {
-        // Reading header.
-        final headerRemaining = _dataHeader.lengthInBytes - _dataOffset;
-        final chunkRemaining = chunkLength - chunkReadOffset;
-        final toCopy = min(headerRemaining, chunkRemaining);
-        _dataHeader.setRange(
-          _dataOffset,
-          _dataOffset + toCopy,
-          chunkData,
-          chunkReadOffset,
-        );
-        _dataOffset += toCopy;
-        chunkReadOffset += toCopy;
-        if (_dataOffset == _dataHeader.lengthInBytes) {
-          final dataLength = _dataHeader.buffer.asByteData().getUint32(1);
-          // TODO(jakobr): Sanity check dataLength. Max size?
-          _data = Uint8List(dataLength);
-          _dataOffset = 0;
-        }
-      }
-      if (_data != null) {
-        // Reading data.
-        final dataRemaining = _data!.lengthInBytes - _dataOffset;
-        if (dataRemaining > 0) {
-          final chunkRemaining = chunkLength - chunkReadOffset;
-          final toCopy = min(dataRemaining, chunkRemaining);
-          _data!.setRange(
-            _dataOffset,
-            _dataOffset + toCopy,
-            chunkData,
-            chunkReadOffset,
-          );
-          _dataOffset += toCopy;
-          chunkReadOffset += toCopy;
-        }
-        if (_dataOffset == _data!.lengthInBytes) {
-          _out.add(
-            GrpcData(
-              _data!,
-              isCompressed: _dataHeader.buffer.asByteData().getUint8(0) != 0,
-            ),
-          );
-          _data = null;
-          _dataOffset = 0;
-        }
-      }
-    }
+  void _addData(DataStreamMessage chunk) {
+    _frameParser.parse(chunk.bytes, _emitFrame);
   }
 
   void _addHeaders(HeadersStreamMessage chunk) {
-    if (_data != null || _dataOffset != 0) {
+    if (_frameParser.hasPartialFrame) {
       // We were in the middle of receiving data, so receiving a header frame
       // is a violation of the gRPC protocol.
       throw GrpcError.unimplemented('Received header while reading data');
@@ -171,7 +217,7 @@ class _GrpcMessageConversionSink
 
   @override
   void close() {
-    if (_data != null || _dataOffset != 0) {
+    if (_frameParser.hasPartialFrame) {
       throw GrpcError.unavailable('Closed in non-idle state');
     }
     _out.close();
