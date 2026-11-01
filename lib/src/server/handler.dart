@@ -35,6 +35,43 @@ typedef GrpcErrorHandler = void Function(GrpcError error, StackTrace? trace);
 
 /// Handles an incoming gRPC call.
 class ServerHandler extends ServiceCall {
+  static final Header _status200Header = Header.ascii(':status', '200');
+  static final Header _contentTypeGrpcHeader = Header.ascii(
+    'content-type',
+    'application/grpc',
+  );
+  static final Header _grpcStatusOkHeader = Header.ascii('grpc-status', '0');
+  static final Header _grpcEncodingGzipHeader = Header.ascii(
+    'grpc-encoding',
+    'gzip',
+  );
+  static final Header _grpcEncodingIdentityHeader = Header.ascii(
+    'grpc-encoding',
+    'identity',
+  );
+  static final List<Header> _defaultResponseHeaders = List.unmodifiable([
+    _status200Header,
+    _contentTypeGrpcHeader,
+  ]);
+  static final List<Header> _gzipResponseHeaders = List.unmodifiable([
+    _status200Header,
+    _contentTypeGrpcHeader,
+    _grpcEncodingGzipHeader,
+  ]);
+  static final List<Header> _identityResponseHeaders = List.unmodifiable([
+    _status200Header,
+    _contentTypeGrpcHeader,
+    _grpcEncodingIdentityHeader,
+  ]);
+  static final List<Header> _defaultResponseTrailers = List.unmodifiable([
+    _grpcStatusOkHeader,
+  ]);
+  static final List<Header> _defaultTrailersOnlyOk = List.unmodifiable([
+    _status200Header,
+    _contentTypeGrpcHeader,
+    _grpcStatusOkHeader,
+  ]);
+
   final ServerTransportStream _stream;
   final ServiceLookup _serviceLookup;
   final List<Interceptor> _interceptors;
@@ -57,9 +94,10 @@ class ServerHandler extends ServiceCall {
   late Stream _responses;
   StreamSubscription? _responseSubscription;
   bool _headersSent = false;
+  bool _trailersSent = false;
 
-  Map<String, String>? _customHeaders = {};
-  Map<String, String>? _customTrailers = {};
+  Map<String, String>? _customHeaders;
+  Map<String, String>? _customTrailers;
 
   DateTime? _deadline;
   bool _isTimedOut = false;
@@ -113,10 +151,12 @@ class ServerHandler extends ServiceCall {
   Map<String, String>? get clientMetadata => _clientMetadata;
 
   @override
-  Map<String, String>? get headers => _customHeaders;
+  Map<String, String>? get headers =>
+      _headersSent ? null : (_customHeaders ??= <String, String>{});
 
   @override
-  Map<String, String>? get trailers => _customTrailers;
+  Map<String, String>? get trailers =>
+      _trailersSent ? null : (_customTrailers ??= <String, String>{});
 
   @override
   X509Certificate? get clientCertificate => _clientCertificate;
@@ -362,9 +402,32 @@ class ServerHandler extends ServiceCall {
   void sendHeaders() {
     if (_headersSent) throw GrpcError.internal('Headers already sent');
 
-    _customHeaders!
-      ..remove(':status')
-      ..remove('content-type');
+    final customHeaders = _customHeaders;
+    _customHeaders = null;
+    if (customHeaders != null) {
+      customHeaders
+        ..remove(':status')
+        ..remove('content-type');
+    }
+
+    if (customHeaders == null || customHeaders.isEmpty) {
+      final codec = _callEncodingCodec;
+      if (codec == null) {
+        _stream.sendHeaders(_defaultResponseHeaders);
+      } else if (codec.encodingName == 'gzip') {
+        _stream.sendHeaders(_gzipResponseHeaders);
+      } else if (codec.encodingName == 'identity') {
+        _stream.sendHeaders(_identityResponseHeaders);
+      } else {
+        _stream.sendHeaders([
+          _status200Header,
+          _contentTypeGrpcHeader,
+          Header.ascii('grpc-encoding', codec.encodingName),
+        ]);
+      }
+      _headersSent = true;
+      return;
+    }
 
     // TODO(jakobr): Should come from package:http2?
     final outgoingHeadersMap = <String, String>{
@@ -374,8 +437,7 @@ class ServerHandler extends ServiceCall {
         'grpc-encoding': _callEncodingCodec!.encodingName,
     };
 
-    outgoingHeadersMap.addAll(_customHeaders!);
-    _customHeaders = null;
+    outgoingHeadersMap.addAll(customHeaders);
 
     final outgoingHeaders = <Header>[];
     outgoingHeadersMap.forEach(
@@ -394,24 +456,53 @@ class ServerHandler extends ServiceCall {
   }) {
     _timeoutTimer?.cancel();
 
+    final customHeaders = _customHeaders;
+    _customHeaders = null;
+    final customTrailers = _customTrailers;
+    _customTrailers = null;
+    _trailersSent = true;
+
+    if (!_headersSent && customHeaders != null) {
+      customHeaders
+        ..remove(':status')
+        ..remove('content-type');
+    }
+    if (customTrailers != null) {
+      customTrailers
+        ..remove(':status')
+        ..remove('content-type');
+    }
+
+    if ((customHeaders == null || customHeaders.isEmpty) &&
+        (customTrailers == null || customTrailers.isEmpty) &&
+        status == 0 &&
+        message == null &&
+        (errorTrailers == null || errorTrailers.isEmpty)) {
+      if (_headersSent) {
+        _stream.sendHeaders(_defaultResponseTrailers, endStream: true);
+      } else {
+        _headersSent = true;
+        _stream.sendHeaders(_defaultTrailersOnlyOk, endStream: true);
+      }
+      _cancelResponseSubscription();
+      _sinkIncoming();
+      return;
+    }
+
     final outgoingTrailersMap = <String, String>{};
     if (!_headersSent) {
       // TODO(jakobr): Should come from package:http2?
       outgoingTrailersMap[':status'] = '200';
       outgoingTrailersMap['content-type'] = 'application/grpc';
 
-      _customHeaders!
-        ..remove(':status')
-        ..remove('content-type');
-      outgoingTrailersMap.addAll(_customHeaders!);
-      _customHeaders = null;
+      if (customHeaders != null) {
+        outgoingTrailersMap.addAll(customHeaders);
+      }
       _headersSent = true;
     }
-    _customTrailers!
-      ..remove(':status')
-      ..remove('content-type');
-    outgoingTrailersMap.addAll(_customTrailers!);
-    _customTrailers = null;
+    if (customTrailers != null) {
+      outgoingTrailersMap.addAll(customTrailers);
+    }
     outgoingTrailersMap['grpc-status'] = status.toString();
     if (message != null) {
       outgoingTrailersMap['grpc-message'] = Uri.encodeFull(

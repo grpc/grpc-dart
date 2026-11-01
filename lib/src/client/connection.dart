@@ -68,3 +68,9 @@ abstract class ClientConnection {
   // but needed in the actual implementations
   set onStateChanged(void Function(ConnectionState) cb);
 }
+
+/// Internal marker interface for [ClientConnection] implementations whose
+/// [makeRequest] does not mutate the `metadata` map passed to it, allowing
+/// [ClientCall] to pass a cached unmodifiable map without copying per RPC.
+abstract interface class NonMutatingMetadataConnection
+    implements ClientConnection {}
