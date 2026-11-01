@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:grpc/grpc.dart';
 import 'package:http2/transport.dart';
@@ -172,5 +173,88 @@ void main() {
       data = converted[2] as GrpcData;
       expect(data.data.length, 0);
     });
+
+    test(
+      'returns zero-copy Uint8List views when complete frames arrive in one chunk',
+      () async {
+        final wireChunk = Uint8List.fromList([
+          // Frame 1: uncompressed, length 4, payload [10, 20, 30, 40]
+          0, 0, 0, 0, 4, 10, 20, 30, 40,
+          // Frame 2: compressed, length 2, payload [99, 100]
+          1, 0, 0, 0, 2, 99, 100,
+        ]);
+        final result = output.toList();
+        input
+          ..add(HeadersStreamMessage([]))
+          ..add(DataStreamMessage(wireChunk))
+          ..close();
+
+        final converted = await result;
+        expect(converted, hasLength(3));
+
+        final frame1 = converted[1] as GrpcData;
+        expect(frame1.isCompressed, isFalse);
+        expect(frame1.data, [10, 20, 30, 40]);
+        expect(frame1.data, isA<Uint8List>());
+        final view1 = frame1.data as Uint8List;
+        expect(view1.offsetInBytes, 5);
+
+        final frame2 = converted[2] as GrpcData;
+        expect(frame2.isCompressed, isTrue);
+        expect(frame2.data, [99, 100]);
+        expect(frame2.data, isA<Uint8List>());
+        final view2 = frame2.data as Uint8List;
+        expect(view2.offsetInBytes, 14);
+
+        // Mutating the underlying wire buffer reflects directly in the views,
+        // confirming no intermediate payload copy occurred.
+        wireChunk[5] = 77;
+        wireChunk[14] = 88;
+        expect(view1[0], 77);
+        expect(view2[0], 88);
+      },
+    );
+
+    test(
+      'handles non-Uint8List chunks, 1-byte split headers, and trailing coalesced frames',
+      () async {
+        final result = output.toList();
+        input
+          ..add(HeadersStreamMessage([]))
+          // Non-Uint8List List<int> containing a complete frame
+          ..add(
+            DataStreamMessage(List<int>.unmodifiable([0, 0, 0, 0, 2, 7, 8])),
+          )
+          // 5-byte header split 1 byte at a time (compressed=true, length=3)
+          ..add(DataStreamMessage(Uint8List.fromList([1])))
+          ..add(DataStreamMessage(Uint8List.fromList([0])))
+          ..add(DataStreamMessage(Uint8List.fromList([0])))
+          ..add(DataStreamMessage(Uint8List.fromList([0])))
+          ..add(DataStreamMessage(Uint8List.fromList([3])))
+          // First byte of payload, then remaining 2 bytes + a complete frame in the same chunk
+          ..add(DataStreamMessage(Uint8List.fromList([11])))
+          ..add(
+            DataStreamMessage(
+              Uint8List.fromList([12, 13, 0, 0, 0, 0, 3, 21, 22, 23]),
+            ),
+          )
+          ..close();
+
+        final converted = await result;
+        expect(converted, hasLength(4));
+
+        final f1 = converted[1] as GrpcData;
+        expect(f1.isCompressed, isFalse);
+        expect(f1.data, [7, 8]);
+
+        final f2 = converted[2] as GrpcData;
+        expect(f2.isCompressed, isTrue);
+        expect(f2.data, [11, 12, 13]);
+
+        final f3 = converted[3] as GrpcData;
+        expect(f3.isCompressed, isFalse);
+        expect(f3.data, [21, 22, 23]);
+      },
+    );
   });
 }
