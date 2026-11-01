@@ -21,6 +21,7 @@ import 'dart:js_interop';
 import 'dart:typed_data';
 import 'package:async/async.dart';
 import 'package:grpc/src/client/call.dart';
+import 'package:grpc/src/client/method.dart';
 import 'package:grpc/src/client/transport/xhr_transport.dart';
 import 'package:grpc/src/shared/message.dart';
 import 'package:grpc/src/shared/status.dart';
@@ -538,4 +539,57 @@ void main() {
     );
     expect(await queue.hasNext, isFalse);
   });
+
+  test(
+    'ClientCall dispatch works with default CallOptions and reused WebCallOptions',
+    () async {
+      final connection = MockXhrClientConnection();
+      final method = ClientMethod<int, int>(
+        '/test.Web/Echo',
+        (int v) => Uint8List.fromList([v]),
+        (List<int> b) => b.isEmpty ? 0 : b[0],
+      );
+
+      final defaultCall = ClientCall<int, int>(
+        method,
+        Stream<int>.value(1),
+        CallOptions(),
+      );
+      connection.dispatchCall(defaultCall);
+      verify(
+        connection.latestRequest.setRequestHeader(
+          'Content-Type',
+          'application/grpc-web+proto',
+        ),
+      );
+      verify(
+        connection.latestRequest.setRequestHeader(
+          'X-User-Agent',
+          'grpc-web-dart/$packageVersion',
+        ),
+      );
+      verify(connection.latestRequest.setRequestHeader('X-Grpc-Web', '1'));
+      await defaultCall.cancel();
+
+      final sharedCorsOptions = WebCallOptions(
+        metadata: {'X-Api-Key': 'secret'},
+        bypassCorsPreflight: true,
+      );
+      for (var i = 0; i < 2; i++) {
+        final call = ClientCall<int, int>(
+          method,
+          Stream<int>.value(i),
+          sharedCorsOptions,
+        );
+        connection.dispatchCall(call);
+        verify(
+          connection.latestRequest.open(
+            'POST',
+            'test:/test.Web/Echo?%24httpHeaders=x-api-key%3Asecret%0D%0AContent-Type%3Aapplication%2Fgrpc-web%2Bproto%0D%0AX-User-Agent%3Agrpc-web-dart%2F$packageVersion%0D%0AX-Grpc-Web%3A1%0D%0A',
+          ),
+        );
+        await call.cancel();
+      }
+    },
+  );
 }

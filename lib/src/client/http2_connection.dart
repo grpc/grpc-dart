@@ -35,17 +35,43 @@ import 'transport/http2_credentials.dart';
 import 'transport/http2_transport.dart';
 import 'transport/transport.dart';
 
-class Http2ClientConnection implements connection.ClientConnection {
+class Http2ClientConnection
+    implements
+        connection.ClientConnection,
+        connection.NonMutatingMetadataConnection {
   static final _methodPost = Header.ascii(':method', 'POST');
   static final _schemeHttp = Header.ascii(':scheme', 'http');
   static final _schemeHttps = Header.ascii(':scheme', 'https');
+  static final _pathNameBytes = ascii.encode(':path');
+  static final _authorityNameBytes = ascii.encode(':authority');
   static final _contentTypeGrpc = Header.ascii(
     'content-type',
     'application/grpc',
   );
   static final _teTrailers = Header.ascii('te', 'trailers');
+  static final _defaultUserAgentHeader = Header.ascii(
+    'user-agent',
+    defaultUserAgent,
+  );
+  static final _gzipEncodingHeader = Header.ascii('grpc-encoding', 'gzip');
+  static final _identityEncodingHeader = Header.ascii(
+    'grpc-encoding',
+    'identity',
+  );
+  static final Expando<List<Header>> _cachedCallOptionHeaders =
+      Expando<List<Header>>();
+  static const int _maxCachedPathHeaders = 256;
 
   final ChannelOptions options;
+
+  late final Header _userAgentHeader = options.userAgent == defaultUserAgent
+      ? _defaultUserAgentHeader
+      : Header.ascii('user-agent', options.userAgent);
+  final Map<String, Header> _pathHeaderCache = {};
+  String? _cachedAuthority;
+  Header? _cachedAuthorityHeader;
+  String? _cachedSupportedEncodings;
+  Header? _cachedAcceptEncodingHeader;
 
   connection.ConnectionState _state = ConnectionState.idle;
 
@@ -241,17 +267,12 @@ class Http2ClientConnection implements connection.ClientConnection {
     CallOptions? callOptions,
   }) {
     final compressionCodec = callOptions?.compression;
-    final headers = createCallHeaders(
-      credentials.isSecure,
-      _transportConnector.authority,
+    final headers = _buildRequestHeaders(
       path,
       timeout,
       metadata,
       compressionCodec,
-      userAgent: options.userAgent,
-      grpcAcceptEncodings:
-          (callOptions?.metadata ?? const {})['grpc-accept-encoding'] ??
-          options.codecRegistry?.supportedEncodings,
+      callOptions: callOptions,
     );
     final stream = _transportConnection!.makeRequest(headers);
     return Http2TransportStream(
@@ -260,6 +281,105 @@ class Http2ClientConnection implements connection.ClientConnection {
       options.codecRegistry,
       compressionCodec,
     );
+  }
+
+  Header _pathHeader(String path) {
+    final existing = _pathHeaderCache[path];
+    if (existing != null) return existing;
+    if (_pathHeaderCache.length >= _maxCachedPathHeaders) {
+      _pathHeaderCache.clear();
+    }
+    final encoded = Header(_pathNameBytes, utf8.encode(path));
+    _pathHeaderCache[path] = encoded;
+    return encoded;
+  }
+
+  Header _authorityHeader() {
+    final currentAuthority = _transportConnector.authority;
+    final cachedHeader = _cachedAuthorityHeader;
+    if (cachedHeader != null &&
+        (identical(_cachedAuthority, currentAuthority) ||
+            _cachedAuthority == currentAuthority)) {
+      return cachedHeader;
+    }
+    final encoded = Header(_authorityNameBytes, utf8.encode(currentAuthority));
+    _cachedAuthority = currentAuthority;
+    _cachedAuthorityHeader = encoded;
+    return encoded;
+  }
+
+  Header? _defaultAcceptEncodingHeader() {
+    final supported = options.codecRegistry?.supportedEncodings;
+    if (supported == null) return null;
+    if (identical(_cachedSupportedEncodings, supported) ||
+        _cachedSupportedEncodings == supported) {
+      return _cachedAcceptEncodingHeader;
+    }
+    final encoded = Header.ascii('grpc-accept-encoding', supported);
+    _cachedSupportedEncodings = supported;
+    _cachedAcceptEncodingHeader = encoded;
+    return encoded;
+  }
+
+  static Header _encodingHeader(Codec codec) {
+    final name = codec.encodingName;
+    if (name == 'gzip') return _gzipEncodingHeader;
+    if (name == 'identity') return _identityEncodingHeader;
+    return Header.ascii('grpc-encoding', name);
+  }
+
+  static List<Header> _encodeMetadataHeaders(Map<String, String> metadata) {
+    final encoded = <Header>[];
+    metadata.forEach((key, value) {
+      encoded.add(Header(ascii.encode(key), utf8.encode(value)));
+    });
+    return encoded;
+  }
+
+  List<Header> _buildRequestHeaders(
+    String path,
+    Duration? timeout,
+    Map<String, String> metadata,
+    Codec? compressionCodec, {
+    CallOptions? callOptions,
+  }) {
+    final customAccept = callOptions == null
+        ? null
+        : customGrpcAcceptEncodingOf(callOptions);
+    final acceptHeader = customAccept != null
+        ? Header.ascii('grpc-accept-encoding', customAccept)
+        : _defaultAcceptEncodingHeader();
+
+    final headers = <Header>[
+      _methodPost,
+      credentials.isSecure ? _schemeHttps : _schemeHttp,
+      _pathHeader(path),
+      _authorityHeader(),
+      if (timeout != null)
+        Header.ascii('grpc-timeout', toTimeoutString(timeout)),
+      _contentTypeGrpc,
+      _teTrailers,
+      _userAgentHeader,
+      ?acceptHeader,
+      if (compressionCodec != null) _encodingHeader(compressionCodec),
+    ];
+
+    if (metadata.isNotEmpty) {
+      if (callOptions != null &&
+          identical(metadata, sanitizedMetadataOf(callOptions))) {
+        var cached = _cachedCallOptionHeaders[callOptions];
+        if (cached == null) {
+          cached = _encodeMetadataHeaders(metadata);
+          _cachedCallOptionHeaders[callOptions] = cached;
+        }
+        headers.addAll(cached);
+      } else {
+        metadata.forEach((key, value) {
+          headers.add(Header(ascii.encode(key), utf8.encode(value)));
+        });
+      }
+    }
+    return headers;
   }
 
   void _startCall(ClientCall call) {
@@ -402,17 +522,18 @@ class Http2ClientConnection implements connection.ClientConnection {
     final headers = [
       _methodPost,
       useTls ? _schemeHttps : _schemeHttp,
-      Header(ascii.encode(':path'), utf8.encode(path)),
-      Header(ascii.encode(':authority'), utf8.encode(authority)),
+      Header(_pathNameBytes, utf8.encode(path)),
+      Header(_authorityNameBytes, utf8.encode(authority)),
       if (timeout != null)
         Header.ascii('grpc-timeout', toTimeoutString(timeout)),
       _contentTypeGrpc,
       _teTrailers,
-      Header.ascii('user-agent', userAgent ?? defaultUserAgent),
+      userAgent == null
+          ? _defaultUserAgentHeader
+          : Header.ascii('user-agent', userAgent),
       if (grpcAcceptEncodings != null)
         Header.ascii('grpc-accept-encoding', grpcAcceptEncodings),
-      if (compressionCodec != null)
-        Header.ascii('grpc-encoding', compressionCodec.encodingName),
+      if (compressionCodec != null) _encodingHeader(compressionCodec),
     ];
     metadata?.forEach((key, value) {
       headers.add(Header(ascii.encode(key), utf8.encode(value)));

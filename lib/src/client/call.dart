@@ -49,10 +49,29 @@ typedef MetadataProvider =
 
 /// Runtime options for an RPC.
 class CallOptions {
+  static final CallOptions _empty = CallOptions._(
+    const {},
+    null,
+    const [],
+    null,
+  );
+
   final Map<String, String> metadata;
   final Duration? timeout;
   final List<MetadataProvider> metadataProviders;
   final Codec? compression;
+
+  late final Map<String, String> _sanitizedMetadata = metadata.isEmpty
+      ? const {}
+      : Map.unmodifiable(ClientCall._sanitizeMetadata(metadata));
+
+  Map<String, String> _mutableSanitizedMetadata() => _sanitizedMetadata.isEmpty
+      ? <String, String>{}
+      : Map<String, String>.of(_sanitizedMetadata);
+
+  late final String? _customGrpcAcceptEncoding = metadata.isEmpty
+      ? null
+      : metadata['grpc-accept-encoding'];
 
   CallOptions._(
     this.metadata,
@@ -60,6 +79,12 @@ class CallOptions {
     this.metadataProviders,
     this.compression,
   );
+
+  bool get _isEmpty =>
+      metadata.isEmpty &&
+      timeout == null &&
+      metadataProviders.isEmpty &&
+      compression == null;
 
   /// Creates a [CallOptions] object.
   ///
@@ -73,22 +98,37 @@ class CallOptions {
     List<MetadataProvider>? providers,
     Codec? compression,
   }) {
+    if ((metadata == null || metadata.isEmpty) &&
+        timeout == null &&
+        (providers == null || providers.isEmpty) &&
+        compression == null) {
+      return _empty;
+    }
     return CallOptions._(
-      Map.unmodifiable(metadata ?? {}),
+      metadata == null || metadata.isEmpty
+          ? const {}
+          : Map.unmodifiable(metadata),
       timeout,
-      List.unmodifiable(providers ?? []),
+      providers == null || providers.isEmpty
+          ? const []
+          : List.unmodifiable(providers),
       compression,
     );
   }
 
   factory CallOptions.from(Iterable<CallOptions> options) =>
-      options.fold(CallOptions(), (p, o) => p.mergedWith(o));
+      options.fold(_empty, (p, o) => p.mergedWith(o));
 
   CallOptions mergedWith(CallOptions? other) {
     if (other == null) return this;
 
     if (other is WebCallOptions) {
       return other.mergedWith(this);
+    }
+
+    if (this is! WebCallOptions) {
+      if (_isEmpty) return other;
+      if (other._isEmpty) return this;
     }
 
     final mergedMetadata = Map.of(metadata)..addAll(other.metadata);
@@ -104,6 +144,12 @@ class CallOptions {
     );
   }
 }
+
+Map<String, String> sanitizedMetadataOf(CallOptions options) =>
+    options._sanitizedMetadata;
+
+String? customGrpcAcceptEncodingOf(CallOptions options) =>
+    options._customGrpcAcceptEncoding;
 
 /// Runtime options for gRPC-web.
 class WebCallOptions extends CallOptions {
@@ -265,7 +311,10 @@ class ClientCall<Q, R> implements Response {
     if (isCancelled) return;
 
     if (options.metadataProviders.isEmpty) {
-      _sendRequest(connection, _sanitizeMetadata(options.metadata));
+      final metadata = connection is NonMutatingMetadataConnection
+          ? options._sanitizedMetadata
+          : options._mutableSanitizedMetadata();
+      _sendRequest(connection, metadata);
     } else {
       final metadata = Map<String, String>.of(options.metadata);
       Future.forEach(
