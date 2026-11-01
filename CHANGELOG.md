@@ -1,3 +1,11 @@
+## 5.2.1-wip
+
+- Wait for the server's initial HTTP/2 `SETTINGS` frame instead of a hardcoded
+  20 ms sleep when establishing client connections. The connection attempt fails
+  with `UNAVAILABLE` if the server closes the connection first, or if no
+  `SETTINGS` arrive within `ChannelOptions.connectTimeout` (20 s if unset). A
+  connection reset by the server is now also detected immediately.
+
 ## 5.2.0
 
 - Update default `user-agent` header from `dart-grpc/2.0.0` to the gRPC HTTP/2
