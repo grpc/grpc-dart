@@ -21,6 +21,7 @@ import 'dart:typed_data';
 import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
+import '../shared/status.dart';
 import '../shared/timeout.dart';
 import 'call.dart';
 import 'client_keepalive.dart';
@@ -53,6 +54,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   final ClientTransportConnector _transportConnector;
   ClientTransportConnection? _transportConnection;
+  final _shutdownSignal = Completer<void>();
 
   /// Used for idle and reconnect timeout, depending on [_state].
   Timer? _timer;
@@ -82,21 +84,33 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   ConnectionState get state => _state;
 
-  static const _estimatedRoundTripTime = Duration(milliseconds: 20);
+  /// How long [connectTransport] waits for the server's initial SETTINGS
+  /// frame when [ChannelOptions.connectTimeout] is not set.
+  static const _defaultSettingsTimeout = Duration(seconds: 20);
 
   Future<ClientTransportConnection> connectTransport() async {
     final connection = await _transportConnector.connect();
-    _transportConnector.done.then((_) => _abandonConnection());
-
-    // Give the settings settings-frame a bit of time to arrive.
-    // TODO(sigurdm): This is a hack. The http2 package should expose a way of
-    // waiting for the settings frame to arrive.
-    await Future.delayed(_estimatedRoundTripTime);
-
+    final settingsReceived =
+        await Future.any<bool>([
+          connection.onInitialPeerSettingsReceived.then((_) => true),
+          _transportConnector.done.then((_) => false, onError: (_) => false),
+          _shutdownSignal.future.then((_) => false),
+        ]).timeout(
+          options.connectTimeout ?? _defaultSettingsTimeout,
+          onTimeout: () => false,
+        );
     if (_state == ConnectionState.shutdown) {
       _transportConnector.shutdown();
       throw _ShutdownException();
     }
+    if (!settingsReceived || !connection.isOpen) {
+      _transportConnector.shutdown();
+      throw GrpcError.unavailable(
+        'Connection closed or timed out before the initial HTTP/2 SETTINGS '
+        'frame was received.',
+      );
+    }
+    _transportConnector.done.whenComplete(_abandonConnection).ignore();
     return connection;
   }
 
@@ -238,6 +252,7 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   void _setShutdownState() {
     _setState(ConnectionState.shutdown);
+    if (!_shutdownSignal.isCompleted) _shutdownSignal.complete();
     _cancelTimer();
     _pendingCalls.forEach(_shutdownCall);
     _pendingCalls.clear();
@@ -370,6 +385,7 @@ class SocketTransportConnector implements ClientTransportConnector {
   final int _port;
   final ChannelOptions _options;
   late Socket socket;
+  Future<void>? _done;
 
   Proxy? get proxy => _options.proxy;
   Object get host => proxy == null ? _host : proxy!.host;
@@ -402,7 +418,29 @@ class SocketTransportConnector implements ClientTransportConnector {
       );
       incoming = socket;
     }
-    return ClientTransportConnection.viaStreams(incoming, socket);
+    // dart:io does not complete `socket.done` when the peer resets the
+    // connection, so the end of the read side also counts as done.
+    final readDone = Completer<void>();
+    void onReadDone() {
+      if (!readDone.isCompleted) readDone.complete();
+    }
+
+    _done = Future.any([socket.done, readDone.future]);
+    return ClientTransportConnection.viaStreams(
+      // `bind` rather than `incoming.transform`: at runtime a socket is a
+      // `Stream<Uint8List>`, which rejects a `List<int>` transformer.
+      StreamTransformer<List<int>, List<int>>.fromHandlers(
+        handleError: (error, stackTrace, sink) {
+          onReadDone();
+          sink.addError(error, stackTrace);
+        },
+        handleDone: (sink) {
+          onReadDone();
+          sink.close();
+        },
+      ).bind(incoming),
+      socket,
+    );
   }
 
   Future<Stream<List<int>>> connectImpl(Proxy? proxy) async {
@@ -452,7 +490,7 @@ class SocketTransportConnector implements ClientTransportConnector {
   @override
   Future get done {
     ArgumentError.checkNotNull(socket);
-    return socket.done;
+    return _done ?? socket.done;
   }
 
   @override

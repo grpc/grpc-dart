@@ -14,4 +14,4 @@
 // limitations under the License.
 
 /// The current version of `package:grpc`, kept in sync with `pubspec.yaml`.
-const packageVersion = '5.2.0';
+const packageVersion = '5.2.1-wip';
