@@ -13,6 +13,10 @@
   `ClientMethod.requestSerializer` or `ServiceMethod.responseSerializer` must
   therefore not be modified after it is returned (generated protobuf code
   always returns a new list).
+- Fix server keep-alive enforcement terminating a healthy connection with
+  `ENHANCE_YOUR_CALM` when a `PING` arrived in the same read as request data,
+  and stop buffering an event per received message for the lifetime of a
+  connection when `ServerKeepAliveOptions.maxBadPings` is disabled.
 
 ## 5.2.0
 

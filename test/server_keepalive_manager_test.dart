@@ -14,40 +14,62 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:fake_async/fake_async.dart';
+import 'package:grpc/grpc.dart';
+import 'package:grpc/src/client/http2_connection.dart';
 import 'package:grpc/src/server/server_keepalive.dart';
+import 'package:http2/transport.dart';
 import 'package:test/test.dart';
+
+class _PingEchoService extends Service {
+  @override
+  String get $name => 'test.PingService';
+
+  _PingEchoService() {
+    $addMethod(
+      ServiceMethod<int, int>(
+        'Echo',
+        (ServiceCall call, Future<int> request) async => await request,
+        false,
+        false,
+        (List<int> bytes) => bytes.isEmpty ? 0 : bytes[0],
+        (int value) => Uint8List.fromList([value & 0xFF]),
+      ),
+    );
+  }
+}
 
 void main() {
   late StreamController pingStream;
-  late StreamController dataStream;
+  ServerKeepAlive? keepAlive;
   late int maxBadPings;
 
   var goAway = false;
 
-  void initServer([ServerKeepAliveOptions? options]) => ServerKeepAlive(
-    options:
-        options ??
-        ServerKeepAliveOptions(
-          maxBadPings: maxBadPings,
-          minIntervalBetweenPingsWithoutData: Duration(milliseconds: 5),
-        ),
-    pingNotifier: pingStream.stream,
-    dataNotifier: dataStream.stream,
-    tooManyBadPings: () async => goAway = true,
-  ).handle();
+  void initServer([ServerKeepAliveOptions? options]) =>
+      keepAlive = ServerKeepAlive(
+        options:
+            options ??
+            ServerKeepAliveOptions(
+              maxBadPings: maxBadPings,
+              minIntervalBetweenPingsWithoutData: Duration(milliseconds: 5),
+            ),
+        pingNotifier: pingStream.stream,
+        tooManyBadPings: () async => goAway = true,
+      )..handle();
 
   setUp(() {
     pingStream = StreamController();
-    dataStream = StreamController();
     maxBadPings = 10;
     goAway = false;
   });
 
   tearDown(() {
     pingStream.close();
-    dataStream.close();
+    keepAlive?.close();
+    keepAlive = null;
   });
 
   final timeAfterPing = Duration(milliseconds: 10);
@@ -112,7 +134,7 @@ void main() {
       expect(goAway, false);
 
       // Sending data resets the bad ping count
-      dataStream.add(null);
+      keepAlive!.add(null);
       async.elapse(timeAfterPing);
 
       // Send good ping
@@ -132,4 +154,96 @@ void main() {
       expect(goAway, true);
     });
   });
+
+  test(
+    'ConnectionServer resets ping strikes synchronously when HEADERS and PING arrive in one chunk',
+    () async {
+      final c2sRaw = StreamController<List<int>>();
+      final c2sForwarded = StreamController<List<int>>();
+      final s2c = StreamController<List<int>>();
+
+      var buffering = false;
+      final bufferedBytes = BytesBuilder(copy: false);
+      final sub = c2sRaw.stream.listen(
+        (chunk) {
+          if (buffering) {
+            bufferedBytes.add(chunk);
+          } else {
+            c2sForwarded.add(chunk);
+          }
+        },
+        onDone: c2sForwarded.close,
+        onError: c2sForwarded.addError,
+      );
+
+      final clientConn = ClientTransportConnection.viaStreams(
+        s2c.stream,
+        c2sRaw.sink,
+      );
+      final serverConn = ServerTransportConnection.viaStreams(
+        c2sForwarded.stream,
+        s2c.sink,
+      );
+
+      final server = ConnectionServer(
+        [_PingEchoService()],
+        const [],
+        const [],
+        null,
+        null,
+        const ServerKeepAliveOptions(
+          maxBadPings: 1,
+          minIntervalBetweenPingsWithoutData: Duration(milliseconds: 5),
+        ),
+      );
+      await server.serveConnection(connection: serverConn);
+      await clientConn.onInitialPeerSettingsReceived;
+
+      // Good ping 1, then bad ping 1 (_badPings == 1 == maxBadPings).
+      await clientConn.ping();
+      await Future<void>.delayed(const Duration(milliseconds: 12));
+      await clientConn.ping();
+      await Future<void>.delayed(const Duration(milliseconds: 12));
+
+      // Coalesce a new RPC (HEADERS + DATA) followed immediately by a PING
+      // into a single socket chunk delivered to the server.
+      buffering = true;
+      final stream = clientConn.makeRequest(
+        Http2ClientConnection.createCallHeaders(
+          false,
+          'localhost',
+          '/test.PingService/Echo',
+          null,
+          null,
+          null,
+        ),
+      );
+      stream.outgoingMessages.add(
+        DataStreamMessage(Uint8List.fromList([0, 0, 0, 0, 1, 77])),
+      );
+      final closeFuture = stream.outgoingMessages.close();
+      final pingFuture = clientConn.ping();
+
+      await Future<void>.delayed(Duration.zero);
+      buffering = false;
+      c2sForwarded.add(bufferedBytes.takeBytes());
+
+      await closeFuture;
+      await pingFuture;
+      final responseMessages = await stream.incomingMessages.toList();
+      final dataFrames = responseMessages.whereType<DataStreamMessage>();
+      expect(dataFrames, isNotEmpty);
+      expect(clientConn.isOpen, isTrue);
+
+      // Completed handler is removed from ConnectionServer.handlers[serverConn].
+      await Future<void>.delayed(Duration.zero);
+      expect(server.handlers[serverConn], isEmpty);
+
+      await clientConn.finish();
+      await serverConn.finish();
+      await sub.cancel();
+      await c2sRaw.close();
+      await s2c.close();
+    },
+  );
 }
