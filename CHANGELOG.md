@@ -26,6 +26,13 @@
   response without a `StreamController` per call. Calling `cancel()` on a
   `ResponseFuture` that is not awaited no longer causes an unhandled
   `CANCELLED` error.
+- Pass single requests and responses through `ServiceMethod.handle` on the
+  server without a `StreamController`, `Stream.fold` or `Future.asStream()` per
+  call, and start calls synchronously when the server has no `Interceptor`s.
+  Repeated calls to `ServiceCall.sendTrailers` are now ignored, a handler or
+  `ServerInterceptor` that throws synchronously now fails the call instead of
+  throwing an uncaught error, and the rest of a request is now consumed after
+  an `Interceptor` rejects the call.
 
 ## 5.2.0
 
