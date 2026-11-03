@@ -27,18 +27,14 @@ class Http2TransportStream extends GrpcTransportStream {
   final TransportStream _transportStream;
   @override
   final Stream<GrpcMessage> incomingMessages;
-  final StreamController<List<int>> _outgoingMessages = StreamController(
-    sync: true,
-  );
-  late final StreamSubscription<List<int>> _outgoingSubscription;
-  final ErrorHandler _onError;
+  final _OutgoingMessageSink _outgoingMessages;
 
   @override
-  StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
+  StreamSink<List<int>> get outgoingMessages => _outgoingMessages;
 
   Http2TransportStream(
     this._transportStream,
-    this._onError,
+    ErrorHandler onError,
     CodecRegistry? codecRegistry,
     Codec? compression,
   ) : incomingMessages = _transportStream.incomingMessages.transform(
@@ -46,29 +42,66 @@ class Http2TransportStream extends GrpcTransportStream {
           forResponse: true,
           codecRegistry: codecRegistry,
         ),
-      ) {
-    _outgoingSubscription = _outgoingMessages.stream.listen(
-      (payload) {
-        try {
-          addGrpcMessage(
-            _transportStream.outgoingMessages,
-            payload,
-            compression,
-          );
-        } catch (e, s) {
-          _onError(e, s);
-        }
-      },
-      onError: _onError,
-      onDone: _transportStream.outgoingMessages.close,
-      cancelOnError: true,
-    );
-  }
+      ),
+      _outgoingMessages = _OutgoingMessageSink(
+        _transportStream.outgoingMessages,
+        compression,
+        onError,
+      );
 
   @override
   Future<void> terminate() async {
-    await _outgoingSubscription.cancel();
-    await _outgoingMessages.close();
+    _outgoingMessages._isClosed = true;
     _transportStream.terminate();
   }
+}
+
+/// Frames outgoing messages and adds them to the HTTP/2 stream right away.
+class _OutgoingMessageSink implements StreamSink<List<int>>, LastMessageSink {
+  final StreamSink<StreamMessage> _sink;
+  final Codec? _compression;
+  final ErrorHandler _onError;
+
+  /// Whether messages are dropped because this sink was closed, got an error,
+  /// or the stream was terminated.
+  bool _isClosed = false;
+
+  _OutgoingMessageSink(this._sink, this._compression, this._onError);
+
+  @override
+  void add(List<int> message, {bool endStream = false}) {
+    if (_isClosed) return;
+    try {
+      addGrpcMessage(_sink, message, _compression, endStream: endStream);
+    } catch (e, s) {
+      _onError(e, s);
+    }
+  }
+
+  @override
+  void addLast(List<int> message) {
+    add(message, endStream: true);
+    close();
+  }
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) {
+    if (_isClosed) return;
+    _isClosed = true;
+    _onError(error, stackTrace ?? StackTrace.current);
+  }
+
+  @override
+  Future<void> addStream(Stream<List<int>> stream) =>
+      stream.handleError(addError).forEach(add);
+
+  @override
+  Future<void> close() {
+    if (_isClosed) return done;
+    _isClosed = true;
+    return _sink.close();
+  }
+
+  @override
+  Future<void> get done => _sink.done;
 }

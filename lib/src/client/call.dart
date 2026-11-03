@@ -16,6 +16,8 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:async/async.dart' show LazyStream;
+
 import '../shared/codec.dart';
 import '../shared/message.dart';
 import '../shared/profiler.dart';
@@ -33,6 +35,11 @@ const _reservedHeaders = [
   'grpc-encoding',
   'user-agent',
 ];
+
+/// The messages of the errors of a [ResponseFuture] whose call does not have
+/// exactly one response.
+const noResponseMessage = 'No responses received';
+const moreThanOneResponseMessage = 'More than one response received';
 
 /// Provides per-RPC metadata.
 ///
@@ -199,7 +206,15 @@ class ClientCall<Q, R> implements Response {
   late Map<String, String> _headerMetadata;
 
   GrpcTransportStream? _stream;
-  final _responses = StreamController<R>();
+
+  /// The [response] stream, created when listened to or to buffer events.
+  StreamController<R>? _responses;
+
+  /// Completes with the response, if a [ResponseFuture] asked for it before
+  /// [_responses] was created.
+  Completer<R>? _singleResponse;
+  late R _response;
+
   StreamSubscription<List<int>>? _requestSubscription;
   StreamSubscription<GrpcMessage>? _responseSubscription;
 
@@ -222,7 +237,6 @@ class ClientCall<Q, R> implements Response {
         'timeout': options.timeout?.toString(),
       },
     );
-    _responses.onListen = _onResponseListen;
     if (options.timeout != null) {
       _timeoutTimer = Timer(options.timeout!, _onTimedOut);
     }
@@ -237,7 +251,7 @@ class ClientCall<Q, R> implements Response {
         ? e
         : GrpcError.unavailable('Error making call: $e');
     _finishTimelineWithError(error, _requestTimeline);
-    _responses.addErrorIfNotClosed(error);
+    _emitError(error);
     _safeTerminate();
   }
 
@@ -298,26 +312,45 @@ class ClientCall<Q, R> implements Response {
       'Request sent',
       arguments: {'metadata': metadata},
     );
-    _requestSubscription = _requests
-        .map((data) {
-          _requestTimeline?.instant(
-            'Data sent',
-            arguments: {'data': data.toString()},
-          );
-          _requestTimeline?.finish();
-          return _method.requestSerializer(data);
-        })
-        .handleError(_onRequestError)
-        .listen(
-          stream.outgoingMessages.add,
-          onError: stream.outgoingMessages.addError,
-          onDone: stream.outgoingMessages.close,
-          cancelOnError: true,
-        );
     _stream = stream;
+    if (_requests case final SingleRequestStream<Q> requests) {
+      try {
+        final message = _serializeRequest(requests.value);
+        switch (stream.outgoingMessages) {
+          case final LastMessageSink sink:
+            sink.addLast(message);
+          case final sink:
+            sink
+              ..add(message)
+              ..close();
+        }
+      } catch (e, s) {
+        _onRequestError(e, s);
+        return;
+      }
+    } else {
+      _requestSubscription = _requests
+          .map(_serializeRequest)
+          .handleError(_onRequestError)
+          .listen(
+            stream.outgoingMessages.add,
+            onError: stream.outgoingMessages.addError,
+            onDone: stream.outgoingMessages.close,
+            cancelOnError: true,
+          );
+    }
     // The response stream might have been listened to before _stream was ready,
     // so try setting up the subscription here as well.
     _onResponseListen();
+  }
+
+  List<int> _serializeRequest(Q request) {
+    _requestTimeline?.instant(
+      'Data sent',
+      arguments: {'data': request.toString()},
+    );
+    _requestTimeline?.finish();
+    return _method.requestSerializer(request);
   }
 
   void _finishTimelineWithError(GrpcError error, TimelineTask? timeline) {
@@ -327,15 +360,16 @@ class ClientCall<Q, R> implements Response {
   void _onTimedOut() {
     final error = GrpcError.deadlineExceeded('Deadline exceeded');
     _finishTimelineWithError(error, _requestTimeline);
-    _responses.addErrorIfNotClosed(error);
+    _emitError(error);
     _safeTerminate();
   }
 
   /// Subscribe to incoming response messages, once [_stream] is available, and
-  /// the caller has subscribed to the [_responses] stream.
+  /// the caller has subscribed to the [_responses] stream or awaits the
+  /// [_singleResponse].
   void _onResponseListen() {
     if (_stream != null &&
-        _responses.hasListener &&
+        (_singleResponse != null || (_responses?.hasListener ?? false)) &&
         _responseSubscription == null) {
       // ignore: cancel_subscriptions
       final subscription = _stream!.incomingMessages.listen(
@@ -344,12 +378,14 @@ class ClientCall<Q, R> implements Response {
         onDone: _onResponseDone,
         cancelOnError: true,
       );
-      if (_responses.isPaused) {
-        subscription.pause();
+      if (_responses case final responses?) {
+        if (responses.isPaused) {
+          subscription.pause();
+        }
+        responses.onPause = subscription.pause;
+        responses.onResume = subscription.resume;
+        responses.onCancel = cancel;
       }
-      _responses.onPause = subscription.pause;
-      _responses.onResume = subscription.resume;
-      _responses.onCancel = cancel;
 
       _responseSubscription = subscription;
     }
@@ -358,12 +394,8 @@ class ClientCall<Q, R> implements Response {
   /// Emit an error response to the user, and tear down this call.
   void _responseError(GrpcError error, [StackTrace? stackTrace]) {
     _finishTimelineWithError(error, _responseTimeline);
-    _responses.addErrorIfNotClosed(error);
-    _timeoutTimer?.cancel();
-    _requestSubscription?.cancel();
-    _responseSubscription!.cancel();
-    _responses.close();
-    _stream!.terminate();
+    _emitError(error);
+    _safeTerminate();
   }
 
   /// If there's an error status then process it as a response error.
@@ -392,8 +424,7 @@ class ClientCall<Q, R> implements Response {
           'Data received',
           arguments: {'data': decodedData.toString()},
         );
-        _responses.add(decodedData);
-        _hasReceivedResponses = true;
+        _emitResponse(decodedData);
       } catch (e, s) {
         _responseError(GrpcError.dataLoss('Error parsing response'), s);
       }
@@ -465,7 +496,7 @@ class ClientCall<Q, R> implements Response {
     }
     _responseTimeline?.finish();
     _timeoutTimer?.cancel();
-    _responses.close();
+    _emitDone();
     _responseSubscription!.cancel();
   }
 
@@ -478,15 +509,74 @@ class ClientCall<Q, R> implements Response {
     }
 
     _finishTimelineWithError(error, _requestTimeline);
-    _responses.addErrorIfNotClosed(error);
-    _timeoutTimer?.cancel();
-    _responses.close();
-    _requestSubscription?.cancel();
-    _responseSubscription?.cancel();
-    _stream!.terminate();
+    _emitError(error);
+    _safeTerminate();
   }
 
-  Stream<R> get response => _responses.stream;
+  StreamController<R> get _controller =>
+      _responses ??= StreamController(onListen: _onResponseListen);
+
+  /// Adds [response] to [_responses], or keeps it for [_singleResponse].
+  void _emitResponse(R response) {
+    if (_singleResponse == null) {
+      _controller.add(response);
+    } else if (_hasReceivedResponses) {
+      _responseError(GrpcError.unimplemented(moreThanOneResponseMessage));
+    } else {
+      _response = response;
+    }
+    _hasReceivedResponses = true;
+  }
+
+  /// Adds [error] to [_responses], or completes [_singleResponse] with it.
+  void _emitError(GrpcError error) {
+    switch (_singleResponse) {
+      case null:
+        _controller.addErrorIfNotClosed(error);
+      case final single when !single.isCompleted:
+        single.completeError(error);
+    }
+  }
+
+  /// Closes [_responses], or completes [_singleResponse] with the response.
+  void _emitDone() {
+    switch (_singleResponse) {
+      case null:
+        _responses?.close();
+      case final single when !single.isCompleted:
+        if (_hasReceivedResponses) {
+          single.complete(_response);
+        } else {
+          single.completeError(GrpcError.unimplemented(noResponseMessage));
+        }
+        // Like a [response] listener that is done, stop sending requests.
+        if (_requestSubscription != null) _safeTerminate();
+    }
+  }
+
+  /// Whether [response] is closed, or [_singleResponse] is completed.
+  bool get _isDone =>
+      _singleResponse?.isCompleted ?? _responses?.isClosed ?? false;
+
+  /// The stream of [_responses], which can't be listened to after a
+  /// [ResponseFuture] asked for the [_singleResponse].
+  Stream<R> _controllerStream() {
+    if (_singleResponse != null) {
+      throw StateError('Stream has already been listened to.');
+    }
+    return _controller.stream;
+  }
+
+  /// The [_singleResponse], unless [response] has been listened to or got
+  /// events already.
+  Future<R>? _single() {
+    if (_responses != null) return null;
+    final single = _singleResponse ??= Completer();
+    _onResponseListen();
+    return single.future;
+  }
+
+  Stream<R> get response => ClientCallResponses._(this);
 
   @override
   Future<Map<String, String>> get headers => _headers.future;
@@ -496,9 +586,11 @@ class ClientCall<Q, R> implements Response {
 
   @override
   Future<void> cancel() {
-    if (!_responses.isClosed) {
+    if (!_isDone) {
       final error = GrpcError.cancelled('Cancelled by client.');
-      _responses.addError(error);
+      // Callers of cancel() don't need to handle the error of the call too.
+      _singleResponse?.future.ignore();
+      _emitError(error);
       _finishTimelineWithError(error, _requestTimeline);
     }
     return _terminate();
@@ -510,7 +602,7 @@ class ClientCall<Q, R> implements Response {
     // Don't await _responses.close() here. It'll only complete once the done
     // event has been delivered, and it's the caller of this function that is
     // reading from responses as well, so we might end up deadlocked.
-    _responses.close();
+    _emitDone();
     _stream?.terminate();
     final futures = <Future>[];
     if (_requestSubscription != null) {
@@ -533,6 +625,28 @@ class ClientCall<Q, R> implements Response {
       await _terminate();
     } catch (_) {}
   }
+}
+
+/// The [ClientCall.response] stream, which creates the [StreamController] of
+/// the call only when listened to.
+class ClientCallResponses<R> extends LazyStream<R> {
+  final ClientCall<dynamic, R> _call;
+
+  ClientCallResponses._(this._call) : super(_call._controllerStream);
+
+  /// Completes with the only response of the call, or with a [GrpcError] if
+  /// there isn't exactly one, without listening to this stream.
+  ///
+  /// `null` if this stream has been listened to.
+  Future<R>? get singleResponse => _call._single();
+}
+
+/// A stream of a single request [value], which [ClientCall] sends without
+/// listening to the stream.
+class SingleRequestStream<Q> extends LazyStream<Q> {
+  final Q value;
+
+  SingleRequestStream(this.value) : super(() => Stream.value(value));
 }
 
 extension<T> on StreamController<T> {

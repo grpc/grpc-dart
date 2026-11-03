@@ -28,3 +28,10 @@ abstract class GrpcTransportStream {
 
   Future<void> terminate();
 }
+
+/// A [GrpcTransportStream.outgoingMessages] sink that can send the last
+/// message together with the end of the stream.
+abstract interface class LastMessageSink {
+  /// Adds [message] and closes this sink.
+  void addLast(List<int> message);
+}
