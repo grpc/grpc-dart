@@ -8,6 +8,11 @@
 - Avoid allocating and copying a new buffer in `GrpcHttpDecoder` when a complete
   gRPC message arrives in a single HTTP/2 `DATA` chunk; the message is a view
   into that chunk (`GrpcData.data.offsetInBytes` may be non-zero).
+- Avoid copying large (> 16 KiB) uncompressed outgoing messages into a new
+  `length + 5` buffer when framing them. The list returned by
+  `ClientMethod.requestSerializer` or `ServiceMethod.responseSerializer` must
+  therefore not be modified after it is returned (generated protobuf code
+  always returns a new list).
 
 ## 5.2.0
 

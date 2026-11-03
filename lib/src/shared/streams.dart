@@ -13,14 +13,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http2/transport.dart';
 
+import 'codec.dart';
 import 'message.dart';
 import 'status.dart';
+
+/// Adds [payload] to [sink] as one length-prefixed gRPC message.
+///
+/// Uncompressed [Uint8List] payloads larger than [zeroCopyFrameThreshold] are
+/// added as a separate 5-byte prefix followed by [payload] itself, without
+/// copying it. package:http2 may keep a reference to [payload] until the peer's
+/// flow-control window allows it to be sent, so [payload] must not be modified
+/// afterwards.
+void addGrpcMessage(
+  StreamSink<StreamMessage> sink,
+  List<int> payload,
+  Codec? codec, {
+  bool endStream = false,
+}) {
+  if (payload is Uint8List &&
+      payload.length > zeroCopyFrameThreshold &&
+      isIdentityCodec(codec)) {
+    sink
+      ..add(DataStreamMessage(frameHeader(payload.length)))
+      ..add(DataStreamMessage(payload, endStream: endStream));
+  } else {
+    sink.add(DataStreamMessage(frame(payload, codec), endStream: endStream));
+  }
+}
 
 class GrpcHttpEncoder extends Converter<GrpcMessage, StreamMessage> {
   @override

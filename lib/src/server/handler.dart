@@ -321,7 +321,7 @@ class ServerHandler extends ServiceCall {
       if (!_headersSent) {
         sendHeaders();
       }
-      _stream.sendData(frame(bytes, _callEncodingCodec));
+      addGrpcMessage(_stream.outgoingMessages, bytes, _callEncodingCodec);
     } catch (error, trace) {
       final grpcError = GrpcError.internal('Error sending response: $error');
       if (!_requests!.isClosed) {

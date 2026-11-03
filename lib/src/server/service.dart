@@ -27,6 +27,12 @@ class ServiceMethod<Q, R> {
   final bool streamingResponse;
 
   final Q Function(List<int> request) requestDeserializer;
+
+  /// Serializes a response message.
+  ///
+  /// The returned list must not be modified afterwards: large uncompressed
+  /// messages are sent without copying, which may happen after this function
+  /// has returned (for example while waiting for HTTP/2 flow control).
   final List<int> Function(R response) responseSerializer;
 
   final Function handler;

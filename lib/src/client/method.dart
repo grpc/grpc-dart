@@ -16,6 +16,12 @@
 /// Description of a gRPC method.
 class ClientMethod<Q, R> {
   final String path;
+
+  /// Serializes a request message.
+  ///
+  /// The returned list must not be modified afterwards: large uncompressed
+  /// messages are sent without copying, which may happen after this function
+  /// has returned (for example while waiting for HTTP/2 flow control).
   final List<int> Function(Q value) requestSerializer;
   final R Function(List<int> value) responseDeserializer;
 

@@ -62,19 +62,47 @@ class GrpcMessageSink implements Sink<GrpcMessage> {
   }
 }
 
+/// Length of the gRPC message prefix: a 1-byte compressed flag followed by the
+/// 4-byte big-endian payload length.
+const int _frameHeaderLength = 5;
+
+/// Payload length above which uncompressed outgoing messages are sent as a
+/// separate 5-byte prefix followed by the serialized payload itself, instead of
+/// being copied into a new `length + 5` buffer.
+///
+/// Smaller payloads fit in one default-sized HTTP/2 DATA frame (16 KiB) together
+/// with their prefix, so they are still sent as a single DATA frame.
+const int zeroCopyFrameThreshold = 16384 - _frameHeaderLength;
+
+/// Whether [codec] leaves payloads uncompressed.
+bool isIdentityCodec(Codec? codec) =>
+    codec == null || codec.encodingName == 'identity';
+
+void _writeFrameHeader(
+  Uint8List target,
+  int payloadLength, {
+  required bool compressed,
+}) {
+  ByteData.sublistView(target, 0, _frameHeaderLength)
+    ..setUint8(0, compressed ? 1 : 0)
+    ..setUint32(1, payloadLength);
+}
+
+/// The 5-byte prefix of an uncompressed message with [payloadLength] bytes.
+Uint8List frameHeader(int payloadLength) {
+  final header = Uint8List(_frameHeaderLength);
+  _writeFrameHeader(header, payloadLength, compressed: false);
+  return header;
+}
+
 List<int> frame(List<int> rawPayload, [Codec? codec]) {
-  final compressedPayload = codec == null
+  final compressor = isIdentityCodec(codec) ? null : codec;
+  final payload = compressor == null
       ? rawPayload
-      : codec.compress(rawPayload);
-  final payloadLength = compressedPayload.length;
-  final bytes = Uint8List(payloadLength + 5);
-  final header = bytes.buffer.asByteData(0, 5);
-  header.setUint8(
-    0,
-    (codec == null || codec.encodingName == 'identity') ? 0 : 1,
-  );
-  header.setUint32(1, payloadLength);
-  bytes.setRange(5, bytes.length, compressedPayload);
+      : compressor.compress(rawPayload);
+  final bytes = Uint8List(payload.length + _frameHeaderLength);
+  _writeFrameHeader(bytes, payload.length, compressed: compressor != null);
+  bytes.setRange(_frameHeaderLength, bytes.length, payload);
   return bytes;
 }
 
