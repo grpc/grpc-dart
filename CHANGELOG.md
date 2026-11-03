@@ -33,6 +33,11 @@
   `ServerInterceptor` that throws synchronously now fails the call instead of
   throwing an uncaught error, and the rest of a request is now consumed after
   an `Interceptor` rejects the call.
+- Require `package:http2` 3.2.0. Client connections, and server connections
+  started without `http2ServerSettings`, use a 256 KiB stream and a 1 MiB
+  connection receive window instead of HTTP/2's default 64 KiB. package:http2
+  then acknowledges received data once per half window instead of once per DATA
+  frame, so large and streamed responses no longer stall on window updates.
 
 ## 5.2.0
 

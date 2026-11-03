@@ -25,6 +25,17 @@ import 'codec_registry.dart';
 import 'message.dart';
 import 'status.dart';
 
+/// HTTP/2 stream receive window requested by package:grpc's client and server
+/// connections, instead of the protocol's default of 64 KiB.
+///
+/// Larger windows let more data be in flight per round trip, but also let more
+/// data be queued ahead of other calls on the same connection.
+const defaultStreamWindowSize = 256 * 1024;
+
+/// HTTP/2 connection receive window requested by package:grpc's client and
+/// server connections, instead of the protocol's default of 64 KiB.
+const defaultConnectionWindowSize = 1024 * 1024;
+
 /// Adds [payload] to [sink] as one length-prefixed gRPC message.
 ///
 /// Uncompressed [Uint8List] payloads larger than [zeroCopyFrameThreshold] are

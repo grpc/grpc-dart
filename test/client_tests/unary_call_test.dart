@@ -193,7 +193,11 @@ class _CountingConnection implements ClientTransportConnection {
   Future<void> finish() => _inner.finish();
 
   @override
-  Future<void> terminate([int? errorCode]) => _inner.terminate(errorCode);
+  int? get peerMaxConcurrentStreams => _inner.peerMaxConcurrentStreams;
+
+  @override
+  Future<void> terminate([int? errorCode, String? message]) =>
+      _inner.terminate(errorCode, message);
 }
 
 /// A channel that logs calls and connection requests.

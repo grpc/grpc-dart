@@ -22,6 +22,7 @@ import 'package:meta/meta.dart';
 import '../shared/codec_registry.dart';
 import '../shared/io_bits/io_bits.dart' as io_bits;
 import '../shared/security.dart';
+import '../shared/streams.dart';
 import 'handler.dart';
 import 'interceptor.dart';
 import 'server_keepalive.dart';
@@ -194,6 +195,11 @@ class ConnectionServer {
 ///
 /// Listens for incoming RPCs, dispatching them to the right [Service] handler.
 class Server extends ConnectionServer {
+  static const _defaultSettings = ServerSettings(
+    streamWindowSize: defaultStreamWindowSize,
+    connectionWindowSize: defaultConnectionWindowSize,
+  );
+
   ServerSocket? _insecureServer;
   SecureServerSocket? _secureServer;
 
@@ -242,6 +248,10 @@ class Server extends ConnectionServer {
   /// If [port] is [null] then it defaults to `80` for non-secure and `443` for
   /// secure variants.  Pass `0` for [port] to let OS select a port for the
   /// server.
+  ///
+  /// If [http2ServerSettings] is `null`, each connection grants its client a
+  /// 256 KiB stream and a 1 MiB connection receive window instead of HTTP/2's
+  /// default 64 KiB.
   Future<void> serve({
     dynamic address,
     int? port,
@@ -295,7 +305,7 @@ class Server extends ConnectionServer {
 
         final connection = ServerTransportConnection.viaSocket(
           socket,
-          settings: http2ServerSettings,
+          settings: http2ServerSettings ?? _defaultSettings,
         );
 
         serveConnection(

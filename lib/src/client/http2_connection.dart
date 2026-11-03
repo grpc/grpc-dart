@@ -22,6 +22,7 @@ import 'package:http2/transport.dart';
 
 import '../shared/codec.dart';
 import '../shared/status.dart';
+import '../shared/streams.dart';
 import '../shared/timeout.dart';
 import 'call.dart';
 import 'client_keepalive.dart';
@@ -440,8 +441,18 @@ class SocketTransportConnector implements ClientTransportConnector {
         },
       ).bind(incoming),
       socket,
+      settings: _settings,
     );
   }
+
+  /// Receive windows larger than HTTP/2's default 64 KiB, so that more than
+  /// 64 KiB of responses can be in flight per round trip. package:http2 also
+  /// acknowledges received data once per half window instead of once per DATA
+  /// frame with windows of this size.
+  static const _settings = ClientSettings(
+    streamWindowSize: defaultStreamWindowSize,
+    connectionWindowSize: defaultConnectionWindowSize,
+  );
 
   Future<Stream<List<int>>> connectImpl(Proxy? proxy) async {
     socket = await initSocket(host, port);
