@@ -47,22 +47,24 @@ class ResponseFuture<R> extends DelegatingFuture<R> implements Response {
 
   static R _ensureOnlyOneResponse<R>(R? previous, R element) {
     if (previous != null) {
-      throw GrpcError.unimplemented('More than one response received');
+      throw GrpcError.unimplemented(moreThanOneResponseMessage);
     }
     return element;
   }
 
   static R _ensureOneResponse<R>(R? value) {
-    if (value == null) throw GrpcError.unimplemented('No responses received');
+    if (value == null) throw GrpcError.unimplemented(noResponseMessage);
     return value;
   }
 
   ResponseFuture(this._call)
-    : super(
-        _call.response
-            .fold<R?>(null, _ensureOnlyOneResponse)
-            .then(_ensureOneResponse),
-      );
+    : super(switch (_call.response) {
+        ClientCallResponses<R>(:final singleResponse?) => singleResponse,
+        final responses =>
+          responses
+              .fold<R?>(null, _ensureOnlyOneResponse)
+              .then(_ensureOneResponse),
+      });
 
   @override
   Future<Map<String, String>> get headers => _call.headers;

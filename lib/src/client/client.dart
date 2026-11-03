@@ -53,7 +53,7 @@ regenerate these stubs using  protobuf compiler plugin version 19.2.0 or newer.
     CallOptions? options,
   }) {
     var invoker = (method, request, options) => ResponseFuture<R>(
-      _channel.createCall<Q, R>(method, Stream.value(request), options),
+      _channel.createCall<Q, R>(method, SingleRequestStream(request), options),
     );
 
     for (final interceptor in _interceptors.reversed) {

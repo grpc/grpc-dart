@@ -87,10 +87,17 @@ abstract class ClientChannelBase implements ClientChannel {
 
   ClientConnection createConnection();
 
+  /// What [getConnection] returns once connected.
+  Future<ClientConnection>? _connectionFuture;
+
   /// Returns a connection to this [Channel]'s RPC endpoint.
   ///
   /// The connection may be shared between multiple RPCs.
-  Future<ClientConnection> getConnection() async {
+  Future<ClientConnection> getConnection() => _connected && !_isShutdown
+      ? _connectionFuture ??= Future.value(_connection)
+      : _connect();
+
+  Future<ClientConnection> _connect() async {
     if (_isShutdown) throw GrpcError.unavailable('Channel shutting down.');
     if (!_connected) {
       _connection = createConnection();
@@ -119,7 +126,14 @@ abstract class ClientChannelBase implements ClientChannel {
           ? TimelineTask(filterKey: clientTimelineFilterKey)
           : null,
     );
-    getConnection().then((connection) {
+    final connection = getConnection();
+    if (identical(connection, _connectionFuture)) {
+      // Unless a subclass overrides getConnection(), there is no need to wait
+      // for a connection that exists.
+      _connection.dispatchCall(call);
+      return call;
+    }
+    connection.then((connection) {
       if (call.isCancelled) return;
       connection.dispatchCall(call);
     }, onError: call.onConnectionError);

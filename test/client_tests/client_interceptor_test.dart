@@ -97,7 +97,7 @@ void main() {
     const responseValue = 19;
 
     void handleRequest(StreamMessage message) {
-      final data = validateDataMessage(message);
+      final data = validateDataMessage(message, endStream: true);
       expect(mockDecode(data.data), requestValue);
 
       harness
@@ -129,7 +129,7 @@ void main() {
     const responseValue = 19;
 
     void handleRequest(StreamMessage message) {
-      final data = validateDataMessage(message);
+      final data = validateDataMessage(message, endStream: true);
       expect(mockDecode(data.data), requestValue);
 
       harness

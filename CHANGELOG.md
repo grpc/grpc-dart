@@ -20,6 +20,12 @@
 - Decode and decompress incoming messages in a single stream transformation
   per call, on both client and server, instead of chaining `GrpcHttpDecoder`
   and `grpcDecompressor`.
+- Speed up unary calls: on a connected channel, `Client.$createUnaryCall` sends
+  the request before it returns, with `END_STREAM` on the request's `DATA`
+  frame instead of an extra empty `DATA` frame, and `ResponseFuture` gets the
+  response without a `StreamController` per call. Calling `cancel()` on a
+  `ResponseFuture` that is not awaited no longer causes an unhandled
+  `CANCELLED` error.
 
 ## 5.2.0
 
