@@ -17,6 +17,9 @@
   `ENHANCE_YOUR_CALM` when a `PING` arrived in the same read as request data,
   and stop buffering an event per received message for the lifetime of a
   connection when `ServerKeepAliveOptions.maxBadPings` is disabled.
+- Decode and decompress incoming messages in a single stream transformation
+  per call, on both client and server, instead of chaining `GrpcHttpDecoder`
+  and `grpcDecompressor`.
 
 ## 5.2.0
 

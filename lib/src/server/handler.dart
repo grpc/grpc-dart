@@ -142,8 +142,7 @@ class ServerHandler extends ServiceCall {
     _stream.onTerminated = (_) => cancel();
 
     _incomingSubscription = _stream.incomingMessages
-        .transform(GrpcHttpDecoder())
-        .transform(grpcDecompressor(codecRegistry: _codecRegistry))
+        .transform(GrpcDecompressingHttpDecoder(codecRegistry: _codecRegistry))
         .listen(
           _onDataIdle,
           onError: _onError,

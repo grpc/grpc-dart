@@ -21,6 +21,7 @@ import 'dart:typed_data';
 import 'package:http2/transport.dart';
 
 import 'codec.dart';
+import 'codec_registry.dart';
 import 'message.dart';
 import 'status.dart';
 
@@ -85,10 +86,34 @@ class GrpcHttpDecoder extends Converter<StreamMessage, GrpcMessage> {
   }
 }
 
+/// A [GrpcHttpDecoder] that also decompresses messages with the codec named by
+/// the `grpc-encoding` header, like a following [grpcDecompressor] would, but
+/// without a second stream transformation per call.
+class GrpcDecompressingHttpDecoder extends GrpcHttpDecoder {
+  final CodecRegistry? codecRegistry;
+
+  GrpcDecompressingHttpDecoder({super.forResponse, this.codecRegistry});
+
+  @override
+  Sink<StreamMessage> startChunkedConversion(Sink<GrpcMessage> sink) {
+    return _GrpcMessageConversionSink(
+      sink,
+      forResponse,
+      decompress: true,
+      codecRegistry: codecRegistry,
+    );
+  }
+}
+
 class _GrpcMessageConversionSink
     implements ChunkedConversionSink<StreamMessage> {
   final Sink<GrpcMessage> _out;
   final bool _forResponse;
+
+  /// Whether compressed messages are decompressed with [_codec].
+  final bool _decompress;
+  final CodecRegistry? _codecRegistry;
+  Codec? _codec;
 
   static const _headerLength = 5;
   final _dataHeader = Uint8List(_headerLength);
@@ -97,7 +122,25 @@ class _GrpcMessageConversionSink
 
   bool _headersReceived = false;
 
-  _GrpcMessageConversionSink(this._out, this._forResponse);
+  _GrpcMessageConversionSink(
+    this._out,
+    this._forResponse, {
+    bool decompress = false,
+    CodecRegistry? codecRegistry,
+  }) : _decompress = decompress,
+       _codecRegistry = codecRegistry;
+
+  void _addMessage(Uint8List data, {required bool isCompressed}) {
+    if (isCompressed && _decompress) {
+      final codec = _codec;
+      if (codec == null) {
+        throw GrpcError.unimplemented('Compression mechanism not supported');
+      }
+      _out.add(GrpcData(codec.decompress(data), isCompressed: false));
+    } else {
+      _out.add(GrpcData(data, isCompressed: isCompressed));
+    }
+  }
 
   void _addData(DataStreamMessage chunk) {
     final chunkData = chunk.bytes;
@@ -112,13 +155,11 @@ class _GrpcMessageConversionSink
           final header = ByteData.sublistView(chunkData, chunkReadOffset);
           final end = start + header.getUint32(1);
           if (end <= chunkLength) {
-            _out.add(
-              GrpcData(
-                Uint8List.sublistView(chunkData, start, end),
-                isCompressed: header.getUint8(0) != 0,
-              ),
-            );
             chunkReadOffset = end;
+            _addMessage(
+              Uint8List.sublistView(chunkData, start, end),
+              isCompressed: header.getUint8(0) != 0,
+            );
             continue;
           }
         }
@@ -158,15 +199,10 @@ class _GrpcMessageConversionSink
           _dataOffset += toCopy;
           chunkReadOffset += toCopy;
         }
-        if (_dataOffset == _data!.lengthInBytes) {
-          _out.add(
-            GrpcData(
-              _data!,
-              isCompressed: _dataHeader.buffer.asByteData().getUint8(0) != 0,
-            ),
-          );
+        if (_data case final data? when _dataOffset == data.lengthInBytes) {
           _data = null;
           _dataOffset = 0;
+          _addMessage(data, isCompressed: _dataHeader[0] != 0);
         }
       }
     }
@@ -198,6 +234,11 @@ class _GrpcMessageConversionSink
         validateHttpStatusAndContentType(httpStatus, headers);
       }
       _headersReceived = true;
+    }
+    if (_decompress) {
+      if (headers['grpc-encoding'] case final encoding?) {
+        _codec = _codecRegistry?.lookup(encoding);
+      }
     }
     _out.add(GrpcMetadata(headers));
   }
