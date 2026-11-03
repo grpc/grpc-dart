@@ -64,7 +64,8 @@ class _GrpcMessageConversionSink
   final Sink<GrpcMessage> _out;
   final bool _forResponse;
 
-  final _dataHeader = Uint8List(5);
+  static const _headerLength = 5;
+  final _dataHeader = Uint8List(_headerLength);
   Uint8List? _data;
   int _dataOffset = 0;
 
@@ -78,6 +79,24 @@ class _GrpcMessageConversionSink
     var chunkReadOffset = 0;
 
     while (chunkReadOffset < chunkLength) {
+      if (_data == null && _dataOffset == 0 && chunkData is Uint8List) {
+        // Fast path: emit a complete frame as a view into the chunk.
+        final start = chunkReadOffset + _headerLength;
+        if (start <= chunkLength) {
+          final header = ByteData.sublistView(chunkData, chunkReadOffset);
+          final end = start + header.getUint32(1);
+          if (end <= chunkLength) {
+            _out.add(
+              GrpcData(
+                Uint8List.sublistView(chunkData, start, end),
+                isCompressed: header.getUint8(0) != 0,
+              ),
+            );
+            chunkReadOffset = end;
+            continue;
+          }
+        }
+      }
       if (_data == null) {
         // Reading header.
         final headerRemaining = _dataHeader.lengthInBytes - _dataOffset;

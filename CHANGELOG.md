@@ -5,6 +5,9 @@
   with `UNAVAILABLE` if the server closes the connection first, or if no
   `SETTINGS` arrive within `ChannelOptions.connectTimeout` (20 s if unset). A
   connection reset by the server is now also detected immediately.
+- Avoid allocating and copying a new buffer in `GrpcHttpDecoder` when a complete
+  gRPC message arrives in a single HTTP/2 `DATA` chunk; the message is a view
+  into that chunk (`GrpcData.data.offsetInBytes` may be non-zero).
 
 ## 5.2.0
 
