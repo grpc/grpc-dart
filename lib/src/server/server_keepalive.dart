@@ -37,7 +37,9 @@ class ServerKeepAliveOptions {
 /// A keep alive "manager", deciding what do to when receiving pings from a
 /// client trying to keep the connection alive, based on the set
 /// [ServerKeepAliveOptions].
-class ServerKeepAlive {
+///
+/// Received data is reported through [add].
+class ServerKeepAlive implements Sink<void> {
   /// What to do after receiving too many bad pings, probably shut down the
   /// connection to not be DDoSed.
   final Future<void> Function()? tooManyBadPings;
@@ -47,9 +49,6 @@ class ServerKeepAlive {
   /// A stream of events for every time the server gets pinged.
   final Stream<void> pingNotifier;
 
-  /// A stream of events for every time the server receives data.
-  final Stream<void> dataNotifier;
-
   int _badPings = 0;
   Stopwatch? _timeOfLastReceivedPing;
 
@@ -57,7 +56,6 @@ class ServerKeepAlive {
     this.tooManyBadPings,
     required this.options,
     required this.pingNotifier,
-    required this.dataNotifier,
   });
 
   void handle() {
@@ -65,9 +63,18 @@ class ServerKeepAlive {
     // events.
     if (_enforcesMaxBadPings) {
       pingNotifier.listen((_) => _onPingReceived());
-      dataNotifier.listen((_) => _onDataReceived());
     }
   }
+
+  /// Records that data was received, which resets the bad ping count.
+  ///
+  /// Called synchronously for every received message, so a ping that arrives
+  /// right after data in the same read is not counted as a bad ping.
+  @override
+  void add(void data) => _onDataReceived();
+
+  @override
+  void close() {}
 
   bool get _enforcesMaxBadPings => (options.maxBadPings ?? 0) > 0;
 

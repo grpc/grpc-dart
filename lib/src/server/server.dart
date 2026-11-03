@@ -125,44 +125,44 @@ class ConnectionServer {
     InternetAddress? remoteAddress,
   }) async {
     _connections.add(connection);
-    handlers[connection] = [];
+    final connectionHandlers = <ServerHandler>[];
+    handlers[connection] = connectionHandlers;
     // TODO(jakobr): Set active state handlers, close connection after idle
     // timeout.
-    final onDataReceivedController = StreamController<void>();
-    ServerKeepAlive(
+    final keepAlive = ServerKeepAlive(
       options: _keepAliveOptions,
       tooManyBadPings: () async =>
           await connection.terminate(ErrorCode.ENHANCE_YOUR_CALM),
       pingNotifier: connection.onPingReceived,
-      dataNotifier: onDataReceivedController.stream,
-    ).handle();
+    )..handle();
     connection.incomingStreams.listen(
       (stream) {
         final handler = serveStream_(
           stream: stream,
           clientCertificate: clientCertificate,
           remoteAddress: remoteAddress,
-          onDataReceived: onDataReceivedController.sink,
+          onDataReceived: keepAlive,
         );
-        handler.onCanceled.then((_) => handlers[connection]?.remove(handler));
-        handlers[connection]!.add(handler);
+        connectionHandlers.add(handler);
+        handler.onCancel = () => connectionHandlers.remove(handler);
       },
       onError: (error, stackTrace) {
         if (error is Error) {
           Zone.current.handleUncaughtError(error, stackTrace);
         }
       },
-      onDone: () async {
+      onDone: () {
         // TODO(sigurdm): This is not correct behavior in the presence of
         // half-closed tcp streams.
         // Half-closed  streams seems to not be fully supported by package:http2.
         // https://github.com/dart-lang/http2/issues/42
-        for (var handler in handlers[connection]!) {
-          handler.cancel();
-        }
         _connections.remove(connection);
         handlers.remove(connection);
-        await onDataReceivedController.close();
+        // Canceling a handler removes it from connectionHandlers.
+        for (final handler in connectionHandlers.toList()) {
+          handler.cancel();
+        }
+        keepAlive.close();
       },
     );
   }

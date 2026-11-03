@@ -70,13 +70,28 @@ class ServerHandler extends ServiceCall {
   /// Emits a ping everytime data is received
   final Sink<void>? onDataReceived;
 
-  final Completer<void> _isCanceledCompleter = Completer<void>();
+  /// Invoked once, when this call is canceled or has finished (see
+  /// [isCanceled]).
+  ///
+  /// Unlike [onCanceled], this doesn't allocate a [Completer] per call.
+  void Function()? onCancel;
 
-  Future<void> get onCanceled => _isCanceledCompleter.future;
+  bool _isCanceled = false;
+  Completer<void>? _isCanceledCompleter;
+
+  Future<void> get onCanceled =>
+      (_isCanceledCompleter ??= _isCanceled
+              ? (Completer<void>()..complete())
+              : Completer<void>())
+          .future;
 
   set isCanceled(bool value) {
-    if (!isCanceled) {
-      _isCanceledCompleter.complete();
+    if (!_isCanceled) {
+      _isCanceled = true;
+      _isCanceledCompleter?.complete();
+      final callback = onCancel;
+      onCancel = null;
+      callback?.call();
     }
   }
 
@@ -103,7 +118,7 @@ class ServerHandler extends ServiceCall {
   DateTime? get deadline => _deadline;
 
   @override
-  bool get isCanceled => _isCanceledCompleter.isCompleted;
+  bool get isCanceled => _isCanceled;
 
   @override
   bool get isTimedOut => _isTimedOut;
