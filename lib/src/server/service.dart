@@ -53,6 +53,8 @@ class ServiceMethod<Q, R> {
         onResume: incoming.resume,
       );
 
+  SingleValueStream<Q> _createSingleRequestStream() => SingleValueStream<Q>();
+
   Q deserialize(List<int> data) => requestDeserializer(data);
 
   List<int> serialize(dynamic response) => responseSerializer(response as R);
@@ -69,7 +71,7 @@ class ServiceMethod<Q, R> {
           final response = streamingRequest
               ? handler(call, requests)
               : handler(call, _toSingleFuture(requests));
-          return response.asStream();
+          return SingleValueStream<R>()..completer.complete(response);
         }
       });
 
@@ -93,6 +95,8 @@ class ServiceMethod<Q, R> {
   }
 
   Future<Q> _toSingleFuture(Stream<Q> stream) {
+    if (stream is SingleValueStream<Q>) return stream.future;
+
     Q ensureOnlyOneRequest(Q? previous, Q element) {
       if (previous != null) {
         throw GrpcError.unimplemented('More than one request received');
@@ -138,4 +142,40 @@ abstract class Service {
   void $onMetadata(ServiceCall context) {}
 
   ServiceMethod? $lookupMethod(String name) => _$methods[name];
+}
+
+/// Creates the stream of the single request of a call to [method].
+///
+/// Not a member of [ServiceMethod], to keep it out of the public API.
+SingleValueStream createSingleRequestStream(ServiceMethod method) =>
+    method._createSingleRequestStream();
+
+/// A stream of a single value or error, the result of [future].
+///
+/// `ServerHandler` passes a single request to [ServiceMethod.handle] as a
+/// [SingleValueStream], and [ServiceMethod] returns a single response as one.
+/// Where only one value is expected, they use [future] instead of listening,
+/// but [ServerInterceptor]s can use these like any other stream.
+class SingleValueStream<T> extends Stream<T> {
+  final completer = Completer<T>();
+
+  SingleValueStream() {
+    // An error is not unhandled if nothing listens to this stream.
+    future.ignore();
+  }
+
+  Future<T> get future => completer.future;
+
+  @override
+  StreamSubscription<T> listen(
+    void Function(T value)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) => future.asStream().listen(
+    onData,
+    onError: onError,
+    onDone: onDone,
+    cancelOnError: cancelOnError,
+  );
 }
