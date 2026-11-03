@@ -17,6 +17,8 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:grpc/grpc.dart';
+import 'package:grpc/src/shared/message.dart';
+import 'package:grpc/src/shared/streams.dart';
 import 'package:http2/transport.dart';
 import 'package:test/test.dart';
 
@@ -257,4 +259,48 @@ void main() {
       },
     );
   });
+
+  // GzipCodec is not supported on the web.
+  group('GrpcDecompressingHttpDecoder', () {
+    final registry = CodecRegistry(codecs: const [GzipCodec()]);
+
+    Future<List<GrpcMessage>> decode(List<StreamMessage> messages) =>
+        Stream.fromIterable(messages)
+            .transform(GrpcDecompressingHttpDecoder(codecRegistry: registry))
+            .toList();
+
+    test(
+      'decompresses messages with the codec named by grpc-encoding',
+      () async {
+        final messages = await decode([
+          HeadersStreamMessage([Header.ascii('grpc-encoding', 'gzip')]),
+          DataStreamMessage(frame([1, 2, 3], const GzipCodec())),
+          DataStreamMessage(frame([4, 5])),
+        ]);
+        expect(messages, hasLength(3));
+        final first = messages[1] as GrpcData;
+        expect(first.isCompressed, isFalse);
+        expect(first.data, [1, 2, 3]);
+        final second = messages[2] as GrpcData;
+        expect(second.isCompressed, isFalse);
+        expect(second.data, [4, 5]);
+      },
+    );
+
+    test('fails compressed messages without a known codec', () async {
+      expect(
+        decode([
+          HeadersStreamMessage([Header.ascii('grpc-encoding', 'unknown')]),
+          DataStreamMessage(frame([1, 2, 3], const GzipCodec())),
+        ]),
+        throwsA(
+          isA<GrpcError>().having(
+            (e) => e.code,
+            'code',
+            StatusCode.unimplemented,
+          ),
+        ),
+      );
+    });
+  }, testOn: 'vm');
 }
