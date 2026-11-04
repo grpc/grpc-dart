@@ -44,8 +44,10 @@ const _reservedHeaders = [
 /// by previous metadata providers) and the [uri] that is being called, and is
 /// expected to modify the map before returning or before completing the
 /// returned [Future].
-typedef MetadataProvider =
-    FutureOr<void> Function(Map<String, String> metadata, String uri);
+typedef MetadataProvider = FutureOr<void> Function(
+  Map<String, String> metadata,
+  String uri,
+);
 
 /// Runtime options for an RPC.
 class CallOptions {
@@ -208,6 +210,8 @@ class ClientCall<Q, R> implements Response {
 
   final TimelineTask? _requestTimeline;
   TimelineTask? _responseTimeline;
+  bool _isRequestTimelineFinished = false;
+  bool _isResponseTimelineFinished = false;
 
   ClientCall(
     this._method,
@@ -223,6 +227,7 @@ class ClientCall<Q, R> implements Response {
       },
     );
     _responses.onListen = _onResponseListen;
+    _responses.onCancel = _onResponseCancel;
     if (options.timeout != null) {
       _timeoutTimer = Timer(options.timeout!, _onTimedOut);
     }
@@ -236,7 +241,8 @@ class ClientCall<Q, R> implements Response {
     final error = e is GrpcError
         ? e
         : GrpcError.unavailable('Error making call: $e');
-    _finishTimelineWithError(error, _requestTimeline);
+    _finishRequestTimeline(error);
+    _completeMetadataIfNeeded();
     _responses.addErrorIfNotClosed(error);
     _safeTerminate();
   }
@@ -281,6 +287,7 @@ class ClientCall<Q, R> implements Response {
   }
 
   void _sendRequest(ClientConnection connection, Map<String, String> metadata) {
+    if (isCancelled) return;
     late final GrpcTransportStream stream;
     try {
       stream = connection.makeRequest(
@@ -294,6 +301,7 @@ class ClientCall<Q, R> implements Response {
       _terminateWithError(e);
       return;
     }
+    _stream = stream;
     _requestTimeline?.instant(
       'Request sent',
       arguments: {'metadata': metadata},
@@ -304,7 +312,7 @@ class ClientCall<Q, R> implements Response {
             'Data sent',
             arguments: {'data': data.toString()},
           );
-          _requestTimeline?.finish();
+          _finishRequestTimeline();
           return _method.requestSerializer(data);
         })
         .handleError(_onRequestError)
@@ -314,19 +322,31 @@ class ClientCall<Q, R> implements Response {
           onDone: stream.outgoingMessages.close,
           cancelOnError: true,
         );
-    _stream = stream;
     // The response stream might have been listened to before _stream was ready,
     // so try setting up the subscription here as well.
     _onResponseListen();
   }
 
-  void _finishTimelineWithError(GrpcError error, TimelineTask? timeline) {
-    timeline?.finish(arguments: {'error': error.toString()});
+  void _finishRequestTimeline([GrpcError? error]) {
+    if (_isRequestTimelineFinished) return;
+    _isRequestTimelineFinished = true;
+    _requestTimeline?.finish(
+      arguments: error == null ? null : {'error': error.toString()},
+    );
+  }
+
+  void _finishResponseTimeline([GrpcError? error]) {
+    if (_isResponseTimelineFinished || _responseTimeline == null) return;
+    _isResponseTimelineFinished = true;
+    _responseTimeline!.finish(
+      arguments: error == null ? null : {'error': error.toString()},
+    );
   }
 
   void _onTimedOut() {
     final error = GrpcError.deadlineExceeded('Deadline exceeded');
-    _finishTimelineWithError(error, _requestTimeline);
+    _finishRequestTimeline(error);
+    _completeMetadataIfNeeded();
     _responses.addErrorIfNotClosed(error);
     _safeTerminate();
   }
@@ -335,6 +355,8 @@ class ClientCall<Q, R> implements Response {
   /// the caller has subscribed to the [_responses] stream.
   void _onResponseListen() {
     if (_stream != null &&
+        !isCancelled &&
+        !_responses.isClosed &&
         _responses.hasListener &&
         _responseSubscription == null) {
       // ignore: cancel_subscriptions
@@ -349,7 +371,7 @@ class ClientCall<Q, R> implements Response {
       }
       _responses.onPause = subscription.pause;
       _responses.onResume = subscription.resume;
-      _responses.onCancel = cancel;
+      _responses.onCancel = _onResponseCancel;
 
       _responseSubscription = subscription;
     }
@@ -357,11 +379,13 @@ class ClientCall<Q, R> implements Response {
 
   /// Emit an error response to the user, and tear down this call.
   void _responseError(GrpcError error, [StackTrace? stackTrace]) {
-    _finishTimelineWithError(error, _responseTimeline);
+    _finishResponseTimeline(error);
+    _completeMetadataIfNeeded();
     _responses.addErrorIfNotClosed(error);
     _timeoutTimer?.cancel();
     _requestSubscription?.cancel();
     _responseSubscription!.cancel();
+    _responses.onCancel = null;
     _responses.close();
     _stream!.terminate();
   }
@@ -462,9 +486,13 @@ class ClientCall<Q, R> implements Response {
 
       /// Process status error if necessary
       _checkForErrorStatus(_headerMetadata);
+      if (_responses.isClosed) return;
     }
-    _responseTimeline?.finish();
+    _finishResponseTimeline();
     _timeoutTimer?.cancel();
+    _requestSubscription?.cancel();
+    _stream?.outgoingMessages.close();
+    _responses.onCancel = null;
     _responses.close();
     _responseSubscription!.cancel();
   }
@@ -477,13 +505,15 @@ class ClientCall<Q, R> implements Response {
       error = GrpcError.unknown(error.toString());
     }
 
-    _finishTimelineWithError(error, _requestTimeline);
+    _finishRequestTimeline(error);
+    _completeMetadataIfNeeded();
     _responses.addErrorIfNotClosed(error);
     _timeoutTimer?.cancel();
+    _responses.onCancel = null;
     _responses.close();
     _requestSubscription?.cancel();
     _responseSubscription?.cancel();
-    _stream!.terminate();
+    _stream?.terminate();
   }
 
   Stream<R> get response => _responses.stream;
@@ -498,18 +528,37 @@ class ClientCall<Q, R> implements Response {
   Future<void> cancel() {
     if (!_responses.isClosed) {
       final error = GrpcError.cancelled('Cancelled by client.');
-      _responses.addError(error);
-      _finishTimelineWithError(error, _requestTimeline);
+      _completeMetadataIfNeeded();
+      _responses.addErrorIfNotClosed(error);
+      _finishRequestTimeline(error);
     }
     return _terminate();
+  }
+
+  Future<void> _onResponseCancel() {
+    if (!isCancelled && !_responses.isClosed) {
+      _finishRequestTimeline(GrpcError.cancelled('Cancelled by client.'));
+    }
+    return _terminate();
+  }
+
+  void _completeMetadataIfNeeded() {
+    if (!_headers.isCompleted) {
+      _headers.complete({});
+    }
+    if (!_trailers.isCompleted) {
+      _trailers.complete({});
+    }
   }
 
   Future<void> _terminate() async {
     isCancelled = true;
     _timeoutTimer?.cancel();
+    _completeMetadataIfNeeded();
     // Don't await _responses.close() here. It'll only complete once the done
     // event has been delivered, and it's the caller of this function that is
     // reading from responses as well, so we might end up deadlocked.
+    _responses.onCancel = null;
     _responses.close();
     _stream?.terminate();
     final futures = <Future>[];
@@ -518,12 +567,6 @@ class ClientCall<Q, R> implements Response {
     }
     if (_responseSubscription != null) {
       futures.add(_responseSubscription!.cancel());
-    }
-    if (!_headers.isCompleted) {
-      _headers.complete({});
-    }
-    if (!_trailers.isCompleted) {
-      _trailers.complete({});
     }
     await Future.wait(futures);
   }
