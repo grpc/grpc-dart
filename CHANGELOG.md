@@ -1,3 +1,13 @@
+## 5.2.1-wip
+
+- Fix `Server.shutdown()` never completing when a call ends while it runs:
+  the shutdown cancelled every call that was still running, so a call that
+  ended after it began - a unary call that answered, a response stream that
+  closed - never sent its trailers, and its connection waited for it forever
+  ([#276](https://github.com/grpc/grpc-dart/issues/276)). The shutdown now lets
+  the calls that run end, and completes once each has; a call that never ends
+  by itself has to be ended before.
+
 ## 5.2.0
 
 - Update default `user-agent` header from `dart-grpc/2.0.0` to the gRPC HTTP/2
