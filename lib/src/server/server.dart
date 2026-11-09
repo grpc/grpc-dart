@@ -153,13 +153,12 @@ class ConnectionServer {
         }
       },
       onDone: () async {
-        // TODO(sigurdm): This is not correct behavior in the presence of
-        // half-closed tcp streams.
-        // Half-closed  streams seems to not be fully supported by package:http2.
-        // https://github.com/dart-lang/http2/issues/42
-        for (var handler in handlers[connection]!) {
-          handler.cancel();
-        }
+        // The connection takes no new streams: it finishes, or it was
+        // terminated. The calls that run are not cancelled here. A finishing
+        // connection waits for each of them to end, which it does with its
+        // trailers; cancelling one would keep its response from being sent, so
+        // its stream and with it the connection would never end. A terminated
+        // connection has closed every stream, which cancels their calls.
         _connections.remove(connection);
         handlers.remove(connection);
         await onDataReceivedController.close();
@@ -342,6 +341,9 @@ class Server extends ConnectionServer {
     serveStream_(stream: stream);
   }
 
+  /// Stops taking connections and calls, and completes once every call that
+  /// runs has ended: a call that never ends by itself, such as a response
+  /// stream that never closes, has to be ended before.
   Future<void> shutdown() async {
     await Future.wait([
       for (var connection in _connections) connection.finish(),
