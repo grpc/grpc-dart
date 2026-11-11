@@ -29,6 +29,7 @@ class Http2TransportStream extends GrpcTransportStream {
   final Stream<GrpcMessage> incomingMessages;
   final StreamController<List<int>> _outgoingMessages = StreamController();
   final ErrorHandler _onError;
+  late final StreamSubscription<StreamMessage> _outgoingSubscription;
 
   @override
   StreamSink<List<int>> get outgoingMessages => _outgoingMessages.sink;
@@ -41,20 +42,40 @@ class Http2TransportStream extends GrpcTransportStream {
   ) : incomingMessages = _transportStream.incomingMessages
           .transform(GrpcHttpDecoder(forResponse: true))
           .transform(grpcDecompressor(codecRegistry: codecRegistry)) {
-    _outgoingMessages.stream
+    _outgoingSubscription = _outgoingMessages.stream
         .map((payload) => frame(payload, compression))
         .map<StreamMessage>((bytes) => DataStreamMessage(bytes))
         .handleError(_onError)
         .listen(
-          _transportStream.outgoingMessages.add,
-          onError: _transportStream.outgoingMessages.addError,
+          _onOutgoingData,
+          onError: _onOutgoingError,
           onDone: _transportStream.outgoingMessages.close,
           cancelOnError: true,
         );
+    _transportStream.onTerminated = (_) {
+      unawaited(_outgoingSubscription.cancel());
+    };
+  }
+
+  void _onOutgoingData(StreamMessage message) {
+    try {
+      _transportStream.outgoingMessages.add(message);
+    } on StateError {
+      unawaited(_outgoingSubscription.cancel());
+    }
+  }
+
+  void _onOutgoingError(Object error, StackTrace stackTrace) {
+    try {
+      _transportStream.outgoingMessages.addError(error, stackTrace);
+    } on StateError {
+      unawaited(_outgoingSubscription.cancel());
+    }
   }
 
   @override
   Future<void> terminate() async {
+    await _outgoingSubscription.cancel();
     await _outgoingMessages.close();
     _transportStream.terminate();
   }

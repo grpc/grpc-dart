@@ -1,3 +1,8 @@
+## 5.2.1-wip
+
+- Fix `StateError` crashes on abnormally closed HTTP/2 streams and cancelled or
+  completed `ClientCall` response subscriptions.
+
 ## 5.2.0
 
 - Update default `user-agent` header from `dart-grpc/2.0.0` to the gRPC HTTP/2
