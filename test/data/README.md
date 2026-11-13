@@ -1,19 +1,25 @@
 This folder contains self-signed certificates used for testing.
 
-These files are generated using the following commands:
+`localhost.crt` and `certstore.p12` are generated from `localhost.key` using
+the following commands:
 
-```
-$ faketime '2019-01-01' openssl req -newkey rsa:2048                      \
-                                    -nodes                                \
-                                    -keyout localhost.key                 \
-                                    -x509                                 \
-                                    -days 36500                           \
-                                    -out localhost.crt                    \
-                                    -addext extendedKeyUsage=serverAuth   \
-                                    -addext subjectAltName=DNS:localhost
-# CN=localhost, the rest of the fields are left empty (.)
-$ openssl pkcs12 -export -out certstore.p12 -inkey localhost.key -in localhost.crt
-# Password: correct
+```sh
+openssl req -x509 \
+            -key localhost.key \
+            -not_before 20190101000000Z \
+            -not_after 21181208000000Z \
+            -set_serial 1 \
+            -subj '/CN=localhost' \
+            -addext extendedKeyUsage=serverAuth,clientAuth \
+            -addext subjectAltName=DNS:localhost \
+            -out localhost.crt
+openssl pkcs12 -legacy \
+               -export \
+               -macsaltlen 16 \
+               -inkey localhost.key \
+               -in localhost.crt \
+               -passout pass:correct \
+               -out certstore.p12
 ```
 
 Note that the choice of starting date for certificate as well as the choice
