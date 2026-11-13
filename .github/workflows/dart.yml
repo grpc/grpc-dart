@@ -29,6 +29,21 @@ jobs:
       - name: Check formatting (using dev dartfmt release)
         if: ${{ matrix.sdk == 'stable' }}
         run: dart format --output=none --set-exit-if-changed .
+      - name: Check that test certificates match test/data/README.md
+        if: ${{ matrix.sdk == 'stable' }}
+        run: |
+          tmp=$(mktemp -d)
+          trap 'rm -rf "$tmp"' EXIT
+          cp test/data/localhost.key "$tmp/"
+          sed -n '/^```sh$/,/^```$/{ /^```/d; p; }' test/data/README.md | (cd "$tmp" && bash -euo pipefail)
+          diff -u "$tmp/localhost.crt" test/data/localhost.crt
+          # PKCS#12 export uses random salts/IVs, so verify MAC and compare the
+          # decrypted structure, attributes, cert, and key, plus DER byte length.
+          openssl pkcs12 -legacy -in "$tmp/certstore.p12" -passin pass:correct -info -noenc > "$tmp/expected.pem" 2> "$tmp/expected.info"
+          openssl pkcs12 -legacy -in test/data/certstore.p12 -passin pass:correct -info -noenc > "$tmp/actual.pem" 2> "$tmp/actual.info"
+          diff -u "$tmp/expected.info" "$tmp/actual.info"
+          diff -u "$tmp/expected.pem" "$tmp/actual.pem"
+          test "$(wc -c < test/data/certstore.p12)" -eq "$(wc -c < "$tmp/certstore.p12")"
       - name: Analyze code
         run: dart analyze --fatal-infos .
       - name: Check that grpc-web sample builds with DDC
