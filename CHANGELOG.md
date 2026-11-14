@@ -1,3 +1,12 @@
+## 5.2.1-wip
+
+- Abandon a client connection that the server reset after a call had started:
+  `SocketTransportConnector.done` now completes when the incoming stream fails
+  or ends (and the socket is destroyed), and `Http2ClientConnection` also
+  abandons the connection when `done` completes with an error. Previously the
+  dead connection stayed in the channel and `ClientChannel.shutdown()` never
+  completed ([#865](https://github.com/grpc/grpc-dart/issues/865)).
+
 ## 5.2.0
 
 - Update default `user-agent` header from `dart-grpc/2.0.0` to the gRPC HTTP/2
