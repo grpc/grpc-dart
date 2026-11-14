@@ -86,7 +86,12 @@ class Http2ClientConnection implements connection.ClientConnection {
 
   Future<ClientTransportConnection> connectTransport() async {
     final connection = await _transportConnector.connect();
-    _transportConnector.done.then((_) => _abandonConnection());
+    // The connector signals the end of this connection through [done]; an
+    // error there means the same - the connection is gone.
+    _transportConnector.done.then(
+      (_) => _abandonConnection(),
+      onError: (_) => _abandonConnection(),
+    );
 
     // Give the settings settings-frame a bit of time to arrive.
     // TODO(sigurdm): This is a hack. The http2 package should expose a way of
@@ -370,6 +375,7 @@ class SocketTransportConnector implements ClientTransportConnector {
   final int _port;
   final ChannelOptions _options;
   late Socket socket;
+  Completer<void> _closed = Completer<void>();
 
   Proxy? get proxy => _options.proxy;
   Object get host => proxy == null ? _host : proxy!.host;
@@ -402,7 +408,37 @@ class SocketTransportConnector implements ClientTransportConnector {
       );
       incoming = socket;
     }
-    return ClientTransportConnection.viaStreams(incoming, socket);
+
+    // The channel abandons a connection only when [done] completes. After the
+    // HTTP/2 layer has terminated the connection on a transport error (for
+    // example, the server reset the connection after a call was started),
+    // `socket.done` may never complete, so the dead connection would stay in
+    // the channel and a graceful `shutdown()` would wait for it forever.
+    // Signal the end of this connection on a read error or end of input too,
+    // and destroy the socket there.
+    final closed = _closed = Completer<void>();
+    final s = socket;
+    void markClosed() {
+      s.destroy();
+      if (!closed.isCompleted) closed.complete();
+    }
+
+    s.done.then((_) => markClosed(), onError: (_) => markClosed());
+    // `incoming` is the socket itself (a `Stream<Uint8List>`) unless a proxy
+    // is used; `cast` lets one transformer handle both.
+    final guarded = incoming.cast<List<int>>().transform(
+      StreamTransformer<List<int>, List<int>>.fromHandlers(
+        handleError: (error, stackTrace, sink) {
+          sink.addError(error, stackTrace);
+          markClosed();
+        },
+        handleDone: (sink) {
+          sink.close();
+          markClosed();
+        },
+      ),
+    );
+    return ClientTransportConnection.viaStreams(guarded, socket);
   }
 
   Future<Stream<List<int>>> connectImpl(Proxy? proxy) async {
@@ -450,10 +486,7 @@ class SocketTransportConnector implements ClientTransportConnector {
   }
 
   @override
-  Future get done {
-    ArgumentError.checkNotNull(socket);
-    return socket.done;
-  }
+  Future get done => _closed.future;
 
   @override
   void shutdown() {
