@@ -1,3 +1,9 @@
+## 5.2.1-wip
+
+- Fix `HttpBasedAuthenticator.obtainAccessCredentials` getting permanently stuck
+  after a failed credential fetch by clearing the in-flight future and closing
+  the temporary `http.Client` on error.
+
 ## 5.2.0
 
 - Update default `user-agent` header from `dart-grpc/2.0.0` to the gRPC HTTP/2
