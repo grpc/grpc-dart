@@ -64,11 +64,14 @@ abstract class HttpBasedAuthenticator extends BaseAuthenticator {
   Future<void> obtainAccessCredentials(String uri) {
     if (_call == null) {
       final authClient = http.Client();
-      _call = obtainCredentialsWithClient(authClient, uri).then((credentials) {
-        _accessToken = credentials.accessToken;
-        _call = null;
-        authClient.close();
-      });
+      _call = Future.sync(() => obtainCredentialsWithClient(authClient, uri))
+          .then((credentials) {
+            _accessToken = credentials.accessToken;
+          })
+          .whenComplete(() {
+            _call = null;
+            authClient.close();
+          });
     }
     return _call!;
   }
