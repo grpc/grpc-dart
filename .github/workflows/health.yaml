@@ -1,4 +1,6 @@
 name: Health
+permissions:
+  contents: read
 
 on:
   pull_request:
@@ -7,8 +9,10 @@ on:
 
 jobs:
   health:
-    uses: dart-lang/ecosystem/.github/workflows/health.yaml@main
+    uses: dart-lang/ecosystem/.github/workflows/health.yaml@1d2b5ff862c6b93cd86dd06eadac4c9f4d5d6c20 # main
     with:
-      checks: "changelog,do-not-submit,breaking,leaking"
+      checks: "changelog,do-not-submit,breaking,leaking,publish"
+      fail_on: "changelog,do-not-submit,publish"
+      warn_on: "breaking,leaking"
     permissions:
       pull-requests: write
